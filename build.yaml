@@ -1,0 +1,9 @@
+targets:
+  $default:
+    builders:
+      drift_dev:
+        options:
+          apply_converters_on_variables: true
+          generate_values_in_copy_with: true
+          named_parameters: true
+          override_hash_and_equals_in_result_sets: true

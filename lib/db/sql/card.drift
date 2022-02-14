@@ -1,0 +1,94 @@
+import 'cycle.drift';
+import 'pack.drift';
+import 'faction.drift';
+import 'side.drift';
+import 'type.drift';
+import 'mwl_card.drift';
+
+CREATE TABLE card(
+  code TEXT PRIMARY KEY NOT NULL,
+  pack_code TEXT NOT NULL,
+  faction_code TEXT NOT NULL,
+  type_code TEXT NOT NULL,
+  position INT NOT NULL,
+
+  title TEXT NOT NULL,
+  stripped_title TEXT NOT NULL,
+  body TEXT,
+  stripped_body TEXT,
+  keywords TEXT,
+  quantity INT NOT NULL,
+
+  cost INT,
+  deck_limit INT NOT NULL,
+  faction_cost INT NOT NULL,
+  uniqueness BOOLEAN NOT NULL,
+  strength INT,
+  agenda_points INT,
+  memory_cost INT,
+  advancement_cost INT,
+  trash_cost INT,
+
+  base_link INT,
+  influence_limit INT,
+  minimum_deck_size INT,
+
+  flavor TEXT,
+  illustrator TEXT
+);
+
+listCards($where = TRUE, :mwlCode AS TEXT OR NULL) AS CardResult:
+SELECT
+  card.**,
+  pack.**,
+  cycle.**,
+  faction.**,
+  side.**,
+  type.**,
+  subtype.**,
+  mwl_card.**
+FROM card
+
+INNER JOIN pack
+  ON pack.code = card.pack_code
+
+INNER JOIN cycle
+  ON cycle.code = pack.cycle_code
+
+INNER JOIN faction
+  ON faction.code = card.faction_code
+
+INNER JOIN side
+  ON side.code = faction.side_code
+
+INNER JOIN type
+  ON type.code = card.type_code
+
+LEFT JOIN type as subtype
+  ON subtype.is_subtype
+  AND (
+    subtype.name = card.keywords
+    OR card.keywords LIKE (subtype.name || ' - %')
+  )
+
+LEFT JOIN mwl_card
+  ON mwl_card.mwl_code = :mwlCode
+  AND mwl_card.card_code = card.code
+
+WHERE $where;
+
+listIdentityCards:
+SELECT code
+FROM card
+
+WHERE type_code = 'identity'
+AND code in :codeList;
+
+getIdentityCode:
+SELECT code
+FROM card
+
+WHERE type_code = 'identity'
+AND code in :codeList
+
+LIMIT 1;

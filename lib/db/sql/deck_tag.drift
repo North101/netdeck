@@ -1,0 +1,47 @@
+import 'deck.drift';
+
+CREATE TABLE deck_tag(
+  deck_id TEXT NOT NULL,
+  tag TEXT NOT NULL,
+
+  PRIMARY KEY (deck_id, tag)
+);
+
+listDeckTags($where = TRUE):
+SELECT deck_tag.*
+FROM deck_tag
+
+INNER JOIN deck
+  ON deck.id = deck_tag.deck_id
+
+WHERE $where
+AND deck.state != 'deleted';
+
+listDistinctDeckTags($where = TRUE):
+SELECT tag
+FROM (
+  SELECT deck_tag.tag, COUNT(*) AS count
+  FROM deck_tag
+
+  INNER JOIN deck
+    ON deck.id = deck_tag.deck_id
+
+  WHERE $where
+  AND deck.state != 'deleted'
+
+  GROUP BY deck_tag.tag
+) AS deck_tag
+
+ORDER BY count DESC;
+
+deleteDeckTags:
+DELETE FROM deck_tag
+WHERE deck_id IN :deckIds;
+
+copyDeckTags:
+INSERT INTO deck_tag
+SELECT
+  :newDeckId,
+  tag
+FROM deck_tag
+WHERE deck_id = :oldDeckId;

@@ -1,0 +1,41 @@
+import '../types.dart';
+import 'format.drift';
+
+CREATE TABLE settings(
+  id BOOLEAN PRIMARY KEY NOT NULL DEFAULT TRUE,
+  filter_format_code TEXT DEFAULT NULL,
+  filter_rotation_code TEXT DEFAULT NULL,
+  filter_mwl_code TEXT DEFAULT NULL,
+  filter_collection BOOLEAN NOT NULL DEFAULT FALSE,
+  card_sort TEXT MAPPED BY `const CardSortConverter(CardSort.set)` DEFAULT NULL,
+  card_group TEXT MAPPED BY `const CardGroupConverter(CardGroup.type)` DEFAULT NULL,
+  deck_sort TEXT MAPPED BY `const DeckSortConverter(DeckSort.updated)` DEFAULT NULL,
+  deck_group TEXT MAPPED BY `const DeckGroupConverter(DeckGroup.side)` DEFAULT NULL,
+  deck_card_sort TEXT MAPPED BY `const CardSortConverter(CardSort.set)` DEFAULT NULL,
+  deck_card_group TEXT MAPPED BY `const CardGroupConverter(CardGroup.type)` DEFAULT NULL,
+  apex_resources BOOLEAN NOT NULL DEFAULT FALSE,
+  CONSTRAINT settings_id CHECK (id = TRUE)
+) AS SettingsData;
+
+getSettings AS SettingResult:
+SELECT
+  settings.**,
+  filter_format.**,
+  filter_rotation.**,
+  filter_mwl.**
+FROM settings
+
+LEFT JOIN format AS filter_format
+  ON filter_format.code = settings.filter_format_code
+
+LEFT JOIN rotation AS filter_rotation
+  ON filter_rotation.code = settings.filter_rotation_code
+
+LEFT JOIN mwl AS filter_mwl
+  ON filter_mwl.code = settings.filter_mwl_code
+
+LIMIT 1;
+
+@create:
+INSERT INTO settings
+DEFAULT VALUES;

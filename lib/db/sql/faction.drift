@@ -1,0 +1,23 @@
+import '../types.dart';
+
+import 'side.drift';
+
+CREATE TABLE faction(
+  code TEXT PRIMARY KEY NOT NULL,
+  side_code TEXT NOT NULL,
+
+  name TEXT NOT NULL,
+  color INT MAPPED BY `const ColorConverter()` NOT NULL,
+  is_mini BOOLEAN NOT NULL
+);
+
+listFactions($where = TRUE) AS FactionResult:
+SELECT
+  faction.**,
+  side.**
+FROM faction
+
+INNER JOIN side
+  ON side.code = faction.side_code
+
+WHERE $where;

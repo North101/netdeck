@@ -1,0 +1,93 @@
+{
+  "data": [
+    {
+      "code": "standard-2017",
+      "date_start": "2017-10-01",
+      "format_code": "standard",
+      "name": "Standard First Rotation",
+      "current": false,
+      "latest": false,
+      "rotated": ["core", "genesis", "spin"]
+    },
+    {
+      "code": "standard-2018",
+      "date_start": "2018-12-21",
+      "format_code": "standard",
+      "name": "Standard Second Rotation",
+      "current": false,
+      "latest": false,
+      "rotated": ["core", "genesis", "spin", "core2", "terminal-directive"]
+    },
+    {
+      "code": "standard-2019",
+      "date_start": "2019-12-27",
+      "format_code": "standard",
+      "name": "Standard Third Rotation",
+      "current": false,
+      "latest": false,
+      "rotated": [
+        "core",
+        "genesis",
+        "spin",
+        "core2",
+        "terminal-directive",
+        "creation-and-control",
+        "lunar"
+      ]
+    },
+    {
+      "code": "standard-2021",
+      "date_start": "2021-04-09",
+      "format_code": "standard",
+      "name": "Standard Fourth Rotation",
+      "current": true,
+      "latest": true,
+      "rotated": [
+        "order-and-chaos",
+        "data-and-destiny",
+        "mumbad",
+        "flashpoint",
+        "red-sand",
+        "kitara",
+        "reign-and-reverie",
+        "magnum-opus",
+        "ashes",
+        "system-gateway",
+        "system-update-2021"
+      ]
+    },
+    {
+      "code": "startup-2021",
+      "date_start": "2021-02-28",
+      "format_code": "startup",
+      "name": "Startup First Rotation",
+      "current": true,
+      "latest": true,
+      "rotated": ["ashes", "system-gateway", "system-update-2021"]
+    },
+    {
+      "code": "snapshot-2018",
+      "date_start": "2018-11-16",
+      "format_code": "snapshot",
+      "name": "Snapshot First Rotation",
+      "current": true,
+      "latest": true,
+      "rotated": [
+        "creation-and-control",
+        "honor-and-profit",
+        "lunar",
+        "order-and-chaos",
+        "sansan",
+        "data-and-destiny",
+        "mumbad",
+        "flashpoint",
+        "red-sand",
+        "terminal-directive",
+        "core2",
+        "kitara",
+        "reign-and-reverie"
+      ]
+    }
+  ],
+  "last_updated": "2021-07-02T18:43:00+00:00"
+}

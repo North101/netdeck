@@ -1,0 +1,22 @@
+import 'card.drift';
+import 'cycle.drift';
+import 'pack.drift';
+import 'side.drift';
+import 'faction.drift';
+import 'type.drift';
+
+countStuff(
+  $cards = TRUE,
+  $cycles = TRUE,
+  $packs = TRUE,
+  $sides = TRUE,
+  $factions = TRUE,
+  $types = TRUE
+):
+SELECT
+  (SELECT COUNT(*) FROM card WHERE $cards) AS card_count,
+  (SELECT COUNT(*) FROM cycle WHERE $cycles) AS cycle_count,
+  (SELECT COUNT(*) FROM pack WHERE $packs) AS pack_count,
+  (SELECT COUNT(*) FROM side WHERE $sides) AS side_count,
+  (SELECT COUNT(*) FROM faction INNER JOIN side ON side.code = faction.side_code WHERE $factions) AS faction_count,
+  (SELECT COUNT(*) FROM type INNER JOIN side ON side.code = type.side_code WHERE $types) AS type_count;

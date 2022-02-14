@@ -1,0 +1,30 @@
+import 'pack.drift';
+import 'cycle.drift';
+import 'card.drift';
+
+CREATE TABLE collection(
+  pack_code TEXT NOT NULL PRIMARY KEY
+);
+
+listCollection(:onlyInCollection AS BOOLEAN) AS CollectionResult:
+SELECT
+  pack.**,
+  cycle.**,
+  (collection.pack_code IS NOT NULL) AS in_collection
+FROM pack
+
+INNER JOIN cycle
+  ON cycle.code = pack.cycle_code
+
+LEFT JOIN collection
+  ON collection.pack_code = pack.code
+
+WHERE (
+  NOT :inCollection
+  OR (collection.pack_code IS NOT NULL)
+)
+
+ORDER BY cycle.position DESC, pack.position;
+
+deleteCollection:
+DELETE FROM collection;

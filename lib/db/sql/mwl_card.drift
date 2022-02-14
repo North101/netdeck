@@ -1,0 +1,12 @@
+import '../types.dart';
+
+CREATE TABLE mwl_card(
+  mwl_code TEXT NOT NULL,
+  card_code TEXT NOT NULL,
+  is_restricted BOOL NOT NULL,
+  global_penalty INT,
+  universal_faction_cost INT,
+  deck_limit INT,
+
+  PRIMARY KEY (mwl_code, card_code)
+);

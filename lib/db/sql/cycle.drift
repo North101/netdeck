@@ -1,0 +1,13 @@
+CREATE TABLE cycle(
+  code TEXT PRIMARY KEY NOT NULL,
+  position INT NOT NULL,
+
+  name TEXT NOT NULL,
+  size INT NOT NULL,
+  rotated BOOLEAN NOT NULL
+);
+
+listCycles:
+SELECT *
+FROM cycle
+ORDER BY position DESC;

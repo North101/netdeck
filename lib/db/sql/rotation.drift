@@ -1,0 +1,130 @@
+import '../types.dart';
+
+import 'format.drift';
+import 'pack.drift';
+import 'cycle.drift';
+import 'card.drift';
+import 'settings.drift';
+
+CREATE TABLE rotation(
+  code TEXT NOT NULL PRIMARY KEY,
+  format_code TEXT NOT NULL,
+  name TEXT NOT NULL,
+  date_start INT MAPPED BY `const DateTimeUtcConverter()` NOT NULL,
+  "current" BOOLEAN NOT NULL,
+  latest BOOLEAN NOT NULL
+);
+
+CREATE TABLE rotation_cycle(
+  rotation_code TEXT NOT NULL,
+  cycle_code TEXT NOT NULL,
+
+  PRIMARY KEY (rotation_code, cycle_code)
+);
+
+listRotations($where = TRUE):
+SELECT
+  rotation.*
+
+FROM rotation
+
+INNER JOIN format
+  ON format.code = rotation.format_code
+
+WHERE $where
+
+ORDER BY
+  format.id,
+  rotation.latest,
+  rotation.current,
+  rotation.date_start DESC;
+
+listRotationPacks($where = TRUE) AS RotationPackResult:
+SELECT
+  format.**,
+  rotation.**,
+  pack.**,
+  cycle.**
+FROM rotation
+
+INNER JOIN format
+  ON format.code = rotation.format_code
+
+LEFT JOIN rotation_cycle
+  ON rotation_cycle.rotation_code = rotation.code
+
+INNER JOIN cycle
+  ON cycle.code = rotation_cycle.cycle_code
+
+INNER JOIN pack
+  ON pack.cycle_code = cycle.code
+
+WHERE $where
+
+ORDER BY
+  format.id,
+  rotation.latest,
+  rotation.current,
+  rotation.date_start DESC,
+  cycle.position DESC,
+  pack.position;
+
+listDefaultFormatPacks AS FormatPackResult:
+SELECT
+  format.**,
+  rotation.**,
+  pack.**,
+  cycle.**
+FROM settings
+
+INNER JOIN format
+  ON format.code = settings.filter_format_code
+
+INNER JOIN rotation
+  ON rotation.format_code = format.code
+  AND rotation.current
+
+LEFT JOIN rotation_cycle
+  ON rotation_cycle.rotation_code = rotation.code
+
+INNER JOIN cycle
+  ON cycle.code = rotation_cycle.cycle_code
+
+INNER JOIN pack
+  ON pack.cycle_code = cycle.code
+
+ORDER BY
+  cycle.position DESC,
+  pack.position;
+
+listRotationCards($where = TRUE) AS RotationCardResult:
+SELECT
+  format.**,
+  rotation.**,
+  pack.**,
+  cycle.**,
+  card.**
+FROM rotation
+
+INNER JOIN format
+  ON format.code = rotation.format_code
+
+LEFT JOIN rotation_cycle
+  ON rotation_cycle.rotation_code = rotation.code
+
+INNER JOIN cycle
+  ON cycle.code = rotation_cycle.cycle_code
+
+INNER JOIN pack
+  ON pack.cycle_code = cycle.code
+
+INNER JOIN card
+  ON card.pack_code = pack.code
+
+WHERE $where
+
+ORDER BY
+  rotation.date_start DESC,
+  cycle.position DESC,
+  pack.position,
+  card.position;

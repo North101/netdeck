@@ -1,0 +1,26 @@
+import '../types.dart';
+import 'cycle.drift';
+import 'rotation.drift';
+
+CREATE TABLE pack(
+  code TEXT PRIMARY KEY NOT NULL,
+  cycle_code TEXT NOT NULL,
+  position INT NOT NULL,
+
+  name TEXT NOT NULL,
+  date_release INT MAPPED BY `const DateTimeUtcConverter()`,
+  size INT
+);
+
+listPacks($where = TRUE) AS PackResult:
+SELECT
+  pack.**,
+  cycle.**
+FROM pack
+
+INNER JOIN cycle
+  ON cycle.code = pack.cycle_code
+
+WHERE $where
+
+ORDER BY cycle.position DESC, pack.position;

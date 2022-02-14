@@ -1,0 +1,55 @@
+name: netrunner_deckbuilder
+description: 'An Android: Netrunner Deckbuilder'
+
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=2.16.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cached_network_image: any
+  drift: any
+  flutter_appauth: { path: ../flutter_appauth/flutter_appauth/ }
+  flutter_cache_manager: any
+  flutter_dotenv: any
+  flutter_html: 3.0.0-alpha.2
+  flutter_riverpod: 2.0.0-dev.3
+  flutter_secure_storage: any
+  flutter_sticky_header: any
+  freezed: any
+  kotlin_flavor: any
+  path_provider: any
+  path: any
+  query: any
+  rxdart: any
+  sqlite3_flutter_libs: any
+  timeago: any
+  tuple: any
+  uuid: any
+
+dev_dependencies:
+  build_runner: any
+  drift_dev: any
+  environment_config: any
+  flutter_lints: any
+  http: any
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/nrdb/
+
+environment_config:
+  fields:
+    ? nrdbClientId
+    ? nrdbClientSecret
+    ? nrdbRedirectUrl
+    ? nrdbAuthUrl
+    ? nrdbTokenUrl

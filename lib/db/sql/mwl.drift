@@ -1,0 +1,28 @@
+import '../types.dart';
+
+import 'format.drift';
+
+CREATE TABLE mwl(
+  code TEXT NOT NULL PRIMARY KEY,
+  format_code TEXT NOT NULL,
+  name TEXT NOT NULL,
+  date_start INT MAPPED BY `const DateTimeUtcConverter()` NOT NULL,
+  active BOOLEAN NOT NULL,
+  latest BOOLEAN NOT NULL
+);
+
+listMwl($where = TRUE):
+SELECT
+  mwl.*
+FROM mwl
+
+INNER JOIN format
+  ON format.code = mwl.format_code
+
+WHERE $where
+
+ORDER BY
+  format.id,
+  mwl.latest,
+  mwl.active,
+  mwl.date_start DESC;

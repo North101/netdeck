@@ -1,0 +1,23 @@
+import 'side.drift';
+
+CREATE TABLE type(
+  code TEXT PRIMARY KEY NOT NULL,
+  side_code TEXT,
+  position INT NOT NULL,
+
+  name TEXT NOT NULL,
+  is_subtype BOOLEAN NOT NULL
+);
+
+listTypes($where = TRUE) AS TypeResult:
+SELECT
+  type.**,
+  side.**
+FROM type
+
+LEFT JOIN side
+  ON side.code = type.side_code
+
+WHERE $where
+  
+ORDER BY type.position;

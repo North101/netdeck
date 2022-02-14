@@ -1,0 +1,9 @@
+CREATE TABLE side(
+  code TEXT PRIMARY KEY NOT NULL,
+  name TEXT NOT NULL
+);
+
+listSides($where = TRUE):
+SELECT *
+FROM side
+WHERE $where;

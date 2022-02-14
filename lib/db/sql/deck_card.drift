@@ -1,0 +1,73 @@
+import 'deck.drift';
+import 'card.drift';
+import 'cycle.drift';
+import 'pack.drift';
+import 'faction.drift';
+import 'side.drift';
+import 'type.drift';
+import 'mwl_card.drift';
+
+CREATE TABLE deck_card(
+  deck_id TEXT NOT NULL,
+  card_code TEXT NOT NULL,
+  quantity INT NOT NULL,
+
+  PRIMARY KEY (deck_id, card_code)
+);
+
+listDeckCards($where = TRUE, :mwlCode AS TEXT OR NULL) AS DeckCardResult:
+SELECT
+  deck_card.**,
+  card.**,
+  pack.**,
+  cycle.**,
+  faction.**,
+  side.**,
+  type.**,
+  subtype.**,
+  mwl_card.**
+FROM deck_card
+
+INNER JOIN card
+  ON card.code = deck_card.card_code
+
+INNER JOIN pack
+  ON pack.code = card.pack_code
+
+INNER JOIN cycle
+  ON cycle.code = pack.cycle_code
+
+INNER JOIN faction
+  ON faction.code = card.faction_code
+
+INNER JOIN side
+  ON side.code = faction.side_code
+
+INNER JOIN type
+  ON type.code = card.type_code
+
+LEFT JOIN type as subtype
+  ON subtype.is_subtype
+  AND (
+    subtype.name = card.keywords
+    OR card.keywords LIKE (subtype.name || ' - %')
+  )
+
+LEFT JOIN mwl_card
+  ON mwl_card.mwl_code = :mwlCode
+  AND mwl_card.card_code = card.code
+
+WHERE $where;
+
+deleteDeckCards:
+DELETE FROM deck_card
+WHERE deck_id IN :deckIds;
+
+copyDeckCards:
+INSERT INTO deck_card
+SELECT
+  :newDeckId,
+  card_code,
+  quantity
+FROM deck_card
+WHERE deck_id = :oldDeckId;

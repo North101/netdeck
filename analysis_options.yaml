@@ -1,0 +1,12 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    - '**/*.freezed.dart'
+    - '**/*.g.dart'
+
+linter:
+  rules:
+    avoid_print: false
+    lines_longer_than_80_chars: false
+    prefer_single_quotes: true
