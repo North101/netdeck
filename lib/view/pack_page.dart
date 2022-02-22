@@ -2,21 +2,21 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
-import 'package:netrunner_deckbuilder/view/header_list_tile.dart';
 
 import '/db/database.dart' hide Card;
 import '/providers.dart';
 import '/util/filter_type.dart';
+import 'header_list_tile.dart';
 
 final packListProvider = StreamProvider((ref) {
   final db = ref.watch(dbProvider);
-  final neverPacks = ref.watch(filterPacksProvider).never;
-  return db.listPacks(where: db.pack.code.isNotIn(neverPacks)).watch().map((items) {
+  final where = ref.watch(filterPackFilterProvider(const TypeFilterState(values: false)));
+  return db.listPacks(where: where).watch().map((items) {
     return groupBy<PackResult, CycleData>(items, (item) {
       return item.cycle;
     }).entries;
   });
-}, dependencies: [dbProvider, filterPacksProvider]);
+}, dependencies: [dbProvider, filterPackFilterProvider]);
 
 class FilterCycleCheckbox extends ConsumerWidget {
   const FilterCycleCheckbox({
@@ -55,7 +55,6 @@ class FilterCycleCheckbox extends ConsumerWidget {
         delegate: SliverChildListDelegate([
           HeaderListTile(
             child: CheckboxListTile(
-              controlAffinity: ListTileControlAffinity.leading,
               tristate: true,
               value: selected,
               title: Text(cycle.name),
@@ -68,7 +67,6 @@ class FilterCycleCheckbox extends ConsumerWidget {
       return SliverStickyHeader(
         header: HeaderListTile(
           child: CheckboxListTile(
-            controlAffinity: ListTileControlAffinity.leading,
             tristate: true,
             value: selected,
             title: Text(cycle.name),
@@ -79,9 +77,8 @@ class FilterCycleCheckbox extends ConsumerWidget {
           delegate: SliverChildListDelegate([
             ...packList.map(
               (e) => Material(
-                color: Theme.of(context).cardColor,
+                color: Theme.of(context).splashColor,
                 child: CheckboxListTile(
-                  controlAffinity: ListTileControlAffinity.leading,
                   value: packs.contains(e.pack.code),
                   title: Text(e.pack.name),
                   onChanged: packs.always.contains(e.pack.code)
@@ -113,8 +110,8 @@ class FilterPacksPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final packs = ref.watch(filterPacksProvider);
-    if (!packs.visible) return const SizedBox.shrink();
+    final visible = ref.watch(filterPacksProvider.select((value) => value.visible));
+    if (!visible) return const SizedBox.shrink();
 
     final packList = ref.watch(packListProvider);
     return Scaffold(

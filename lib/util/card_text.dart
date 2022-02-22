@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '/db/database.dart';
 import '/util/extensions.dart';
+import '/view/text_scaled_builder.dart';
 import 'assets.gen.dart';
 
 String formatText(String text, int count, int total) {
@@ -11,29 +12,16 @@ String formatText(String text, int count, int total) {
   return '$text ($count / $total)';
 }
 
-class AssetGenBuilder extends StatelessWidget {
-  const AssetGenBuilder({Key? key, required this.image}) : super(key: key);
-
-  final AssetGenImage image;
-
-  @override
-  Widget build(BuildContext context) {
-    final textScaleFactor = MediaQuery.of(context).textScaleFactor;
-    final fontSize = DefaultTextStyle.of(context).style.fontSize!;
-    return image.image(height: textScaleFactor * fontSize);
-  }
-}
-
 class CardUniquenessSpan extends TextSpan {
   const CardUniquenessSpan() : super(text: '◆');
 }
 
 class CardInfluenceSpan extends TextSpan {
-  CardInfluenceSpan(CardResult card, {TextStyle? style})
+  CardInfluenceSpan(CardResult card, {FactionData? faction, TextStyle? style})
       : super(
           children: [
-            TextSpan(text: '●' * card.factionCost),
-            TextSpan(text: '○' * (5 - card.factionCost)),
+            TextSpan(text: '●' * (card.faction == faction ? 0 : card.factionCost)),
+            TextSpan(text: '○' * (5 - (card.faction == faction ? 0 : card.factionCost))),
           ],
           style: (style ?? const TextStyle()).copyWith(color: card.faction.color),
         );
@@ -57,35 +45,47 @@ TextSpan cardInfo(CardResult card) {
       if (card.card.baseLink != null)
         TextSpan(children: [
           TextSpan(text: '${card.card.baseLink}'),
-          WidgetSpan(child: AssetGenBuilder(image: Assets.images.link)),
+          WidgetSpan(child: TextScaledBuilder(builder: (context, height) {
+            return Assets.images.link.image(height: height);
+          })),
         ]),
       if (card.card.influenceLimit != null || card.card.minimumDeckSize != null)
         TextSpan(text: '${card.card.minimumDeckSize ?? 0} / ${card.card.influenceLimit ?? "∞"}'),
       if (card.card.cost != null)
         TextSpan(children: [
           TextSpan(text: '${card.card.cost}'),
-          WidgetSpan(child: AssetGenBuilder(image: Assets.images.credit)),
+          WidgetSpan(child: TextScaledBuilder(builder: (context, height) {
+            return Assets.images.credit.image(height: height);
+          })),
         ]),
       if (card.card.trashCost != null)
         TextSpan(children: [
           TextSpan(text: '${card.card.trashCost}'),
-          WidgetSpan(child: AssetGenBuilder(image: Assets.images.trash)),
+          WidgetSpan(child: TextScaledBuilder(builder: (context, height) {
+            return Assets.images.trash.image(height: height);
+          })),
         ]),
       if (card.card.memoryCost != null)
         TextSpan(children: [
           TextSpan(text: '${card.card.memoryCost}'),
-          WidgetSpan(child: AssetGenBuilder(image: Assets.images.mu)),
+          WidgetSpan(child: TextScaledBuilder(builder: (context, height) {
+            return Assets.images.mu.image(height: height);
+          })),
         ]),
       if (card.card.strength != null) TextSpan(text: '${card.card.strength} Strength'),
       if (card.card.advancementCost != null)
         TextSpan(children: [
           TextSpan(text: '${card.card.advancementCost}'),
-          WidgetSpan(child: AssetGenBuilder(image: Assets.images.credit)),
+          WidgetSpan(child: TextScaledBuilder(builder: (context, height) {
+            return Assets.images.credit.image(height: height);
+          })),
         ]),
       if (card.card.agendaPoints != null)
         TextSpan(children: [
           TextSpan(text: '${card.card.agendaPoints}'),
-          WidgetSpan(child: AssetGenBuilder(image: Assets.images.agenda)),
+          WidgetSpan(child: TextScaledBuilder(builder: (context, height) {
+            return Assets.images.agenda.image(height: height);
+          })),
         ]),
     ].seperatedBy(const TextSpan(text: ', ')).toList(),
   );

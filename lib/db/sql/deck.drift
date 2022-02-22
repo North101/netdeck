@@ -17,8 +17,9 @@ CREATE TABLE deck(
   description TEXT NOT NULL,
   created INT MAPPED BY `const DateTimeUtcConverter()` NOT NULL,
   updated INT MAPPED BY `const DateTimeUtcConverter()` NOT NULL,
-  state TEXT MAPPED BY `const DeckStateConverter(DeckState.local)` NOT NULL,
-  last_synced INT MAPPED BY `const DateTimeUtcConverter()`
+  deleted BOOLEAN NOT NULL,
+  remote_updated INT MAPPED BY `const DateTimeUtcConverter()`,
+  synced INT MAPPED BY `const DateTimeUtcConverter()`
 );
 
 listDecks($where = TRUE) AS DeckResult:
@@ -80,9 +81,3 @@ WHERE id = :deckId;
 deleteDecks:
 DELETE FROM deck
 WHERE id IN :deckIds;
-
-setDecksState($where = TRUE):
-UPDATE deck
-SET
-  state = :state
-WHERE $where;

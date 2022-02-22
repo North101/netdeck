@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart' as drift;
+import 'package:kotlin_flavor/scope_functions.dart';
 import 'package:petitparser/petitparser.dart';
 import 'package:query/query.dart';
 
@@ -244,6 +245,29 @@ class BoolQueryBuilder extends ColumnQueryBuilder<bool?> {
   }
 }
 
+class TagQueryBuilder extends QueryBuilder {
+  TagQueryBuilder(
+    this.db, {
+    FieldMap fields = const {},
+    FieldMap extraFields = const {},
+  }) : super(
+          fields: fields,
+          extraFields: extraFields,
+        );
+
+  final Database db;
+
+  @override
+  drift.Expression<bool?> equal(TextQuery query) {
+    return db.deck.id.isInQuery(
+      db.selectOnly(db.deckTag).also((e) {
+        e.addColumns([db.deckTag.deckId]);
+        e.where(db.deckTag.tag.lower().equals(query.text.toLowerCase()));
+      }),
+    );
+  }
+}
+
 class CardQueryBuilder extends CodeNameQueryBuilder {
   CardQueryBuilder._(
     Database db,
@@ -307,7 +331,7 @@ class DeckQueryBuilder extends ContainsStringQueryBuilder {
     final FieldMap extraFields = {};
     extraFields.addAll({
       'deck': DeckQueryBuilder._(db, db.deck, extraFields: extraFields),
-      //'tag': TagQueryBuilder(db, 'deck tag', extraFields: extraFields),
+      'tag': TagQueryBuilder(db, extraFields: extraFields),
       'identity': CardQueryBuilder._(db, db.card.createAlias('identity'), extraFields: extraFields),
       'cycle': CycleQueryBuilder(db, extraFields: extraFields),
       'pack': PackQueryBuilder(db, extraFields: extraFields),

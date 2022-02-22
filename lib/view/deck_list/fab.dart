@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
-import '../card_gallery/page.dart';
-import '../card_tile.dart';
 import '/db/database.dart';
 import '/providers.dart';
 import '/util/filter_type.dart';
+import '/view/card_gallery_page.dart';
 import '/view/card_list/page.dart';
-import '../deck_page/page.dart';
+import '/view/card_tile.dart';
+import '/view/deck/page.dart';
 
 class DeckListFloatingActionBar extends ConsumerWidget {
   const DeckListFloatingActionBar({Key? key}) : super(key: key);
@@ -34,24 +34,22 @@ class DeckListFloatingActionBar extends ConsumerWidget {
               cardTile: (context, ref, index, card) => CardTile(
                 card,
                 trailing: IconButton(
-                  icon: const Icon(Icons.check),
+                  icon: const Icon(Icons.add),
                   onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                     return DeckPage.withOverrides(
                       deck: card.toDeck(
-                        DeckData(
+                        deck: DeckData(
                           id: const Uuid().v4(),
                           identityCode: card.code,
                           name: card.card.title,
                           description: '',
                           created: DateTime.now(),
                           updated: DateTime.now(),
-                          state: DeckState.local,
+                          deleted: false,
                         ),
-                        null,
-                        null,
+                        cards: {},
+                        tags: [],
                       ),
-                      cards: {},
-                      tags: [],
                     );
                   })),
                 ),

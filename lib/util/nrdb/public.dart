@@ -9,8 +9,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:http/http.dart' as http;
 
 import '/db/database.dart';
-import '../assets.gen.dart';
-import '../extensions.dart';
+import '/util/assets.gen.dart';
+import '/util/extensions.dart';
 
 const headerIfNotModifiedSince = 'if-modified-since';
 
@@ -460,12 +460,13 @@ class NrdbPublicApi {
         );
       }
 
-      final cycleLastUpdated = await fetchCycles(nrdb.cycleLastUpdated);
-      final packLastUpdated = await fetchPacks(nrdb.packLastUpdated);
-      final sideLastUpdated = await fetchSides(nrdb.sideLastUpdated);
-      final factionLastUpdated = await fetchFactions(nrdb.factionLastUpdated);
-      final typeLastUpdated = await fetchTypes(nrdb.typeLastUpdated);
-      final cardLastUpdated = await fetchCards(nrdb.cardLastUpdated);
+      final cycleLastUpdated = await fetchCycles(nrdb.cycleLastUpdated).catchError((e) => nrdb!.cycleLastUpdated);
+      final packLastUpdated = await fetchPacks(nrdb.packLastUpdated).catchError((e) => nrdb!.packLastUpdated);
+      final sideLastUpdated = await fetchSides(nrdb.sideLastUpdated).catchError((e) => nrdb!.sideLastUpdated);
+      final factionLastUpdated =
+          await fetchFactions(nrdb.factionLastUpdated).catchError((e) => nrdb!.factionLastUpdated);
+      final typeLastUpdated = await fetchTypes(nrdb.typeLastUpdated).catchError((e) => nrdb!.typeLastUpdated);
+      final cardLastUpdated = await fetchCards(nrdb.cardLastUpdated).catchError((e) => nrdb!.cardLastUpdated);
       //final formatLastUpdated = await fetchMwl(nrdb.formatLastUpdated);
       //final rotationLastUpdated = await fetchMwl(nrdb.rotationLastUpdated);
       //final mwlLastUpdated = await fetchMwl(nrdb.mwlLastUpdated);
@@ -495,11 +496,9 @@ class NrdbPublicApiNotifier extends StateNotifier<AsyncValue<DateTime>> {
   }
 
   final NrdbPublicApi api;
-  DateTime? value;
 
   void update({bool force = false}) async {
     state = const AsyncValue.loading();
     state = await AsyncValue.guard(() => api.updateDatabase(force: force));
-    state.whenData((value) => this.value = value);
   }
 }

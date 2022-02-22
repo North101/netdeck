@@ -1,9 +1,11 @@
 import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 
 import '/db/database.dart';
 import '/providers.dart';
+import '/view/header_list_tile.dart';
 
 class CardFilterCycleCheckbox extends ConsumerWidget {
   const CardFilterCycleCheckbox({
@@ -44,29 +46,45 @@ class CardFilterCycleCheckbox extends ConsumerWidget {
     } else {
       selected = false;
     }
-    return SliverList(
-      delegate: SliverChildListDelegate([
-        CheckboxListTile(
-          controlAffinity: ListTileControlAffinity.leading,
-          tristate: true,
-          value: selected,
-          title: Text(cycle.name),
-          onChanged: (selected) => setCollection(ref, selected, packList.map((e) => e.pack.code)),
-        ),
-        if (packList.length != 1 || !packList[0].hasCycleName)
-          ...packList.map(
-            (e) => Padding(
-              padding: const EdgeInsets.only(left: 16),
-              child: CheckboxListTile(
-                controlAffinity: ListTileControlAffinity.leading,
-                value: packs.contains(e.pack.code),
-                title: Text(e.pack.name),
-                onChanged: (selected) => setCollection(ref, selected, {e.pack.code}),
-              ),
+    if (packList.length == 1 && packList.first.hasCycleName) {
+      return SliverList(
+        delegate: SliverChildListDelegate([
+          HeaderListTile(
+            child: CheckboxListTile(
+              tristate: true,
+              value: selected,
+              title: Text(cycle.name),
+              onChanged: (selected) => setCollection(ref, selected, packList.map((e) => e.pack.code)),
             ),
           ),
-      ]),
-    );
+        ]),
+      );
+    } else {
+      return SliverStickyHeader(
+        header: HeaderListTile(
+          child: CheckboxListTile(
+            tristate: true,
+            value: selected,
+            title: Text(cycle.name),
+            onChanged: (selected) => setCollection(ref, selected, packList.map((e) => e.pack.code)),
+          ),
+        ),
+        sliver: SliverList(
+          delegate: SliverChildListDelegate([
+            ...packList.map(
+              (e) => Material(
+                color: Theme.of(context).splashColor,
+                child: CheckboxListTile(
+                  value: packs.contains(e.pack.code),
+                  title: Text(e.pack.name),
+                  onChanged: (selected) => setCollection(ref, selected, {e.pack.code}),
+                ),
+              ),
+            ),
+          ]),
+        ),
+      );
+    }
   }
 }
 
@@ -84,7 +102,7 @@ class CollectionSettingsPage extends ConsumerWidget {
         data: (items) {
           return CustomScrollView(
             slivers: [
-              ...items.map((e) => CardFilterCycleCheckbox(cycle: e.key, packList: e.value)),
+              ...items.entries.map((e) => CardFilterCycleCheckbox(cycle: e.key, packList: e.value)),
             ],
           );
         },

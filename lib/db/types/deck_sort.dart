@@ -1,8 +1,8 @@
 import 'package:collection/collection.dart';
 import 'package:drift/drift.dart';
 
+import '/db/database.dart';
 import '/util.dart';
-import '../database.dart';
 
 enum DeckSort {
   name,
@@ -83,7 +83,7 @@ extension DeckSortEx on DeckSort {
     }
   }
 
-  List<DeckResult> call(Iterable<DeckResult> items) => items.sorted(sorted);
+  List<T> call<T extends DeckResult>(Iterable<T> items) => items.sorted(sorted);
 }
 
 class DeckSortConverter extends NullAwareTypeConverter<DeckSort, String> {

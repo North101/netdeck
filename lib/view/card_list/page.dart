@@ -9,9 +9,16 @@ import 'appbar.dart';
 import 'body.dart';
 
 class CardListPage extends ConsumerWidget {
-  const CardListPage({required this.title, Key? key}) : super(key: key);
+  const CardListPage({
+    required this.automaticallyImplyLeading,
+    this.color,
+    required this.title,
+    Key? key,
+  }) : super(key: key);
 
   static withOverrides({
+    bool automaticallyImplyLeading = true,
+    Color? color,
     required String title,
     bool filterSearching = false,
     Query? filterQuery,
@@ -23,7 +30,7 @@ class CardListPage extends ConsumerWidget {
     FilterType<String>? filterSides,
     FilterType<String>? filterFactions,
     FilterType<String>? filterTypes,
-    DeckCardListNotifier? deckCardList,
+    Set<CardResult>? deckCardList,
     required Widget Function(BuildContext context, WidgetRef ref, int index, CardResult card) cardTile,
     Key? key,
   }) {
@@ -39,19 +46,29 @@ class CardListPage extends ConsumerWidget {
         filterSidesProvider.overrideWithValue(StateController(filterSides ?? FilterType())),
         filterFactionsProvider.overrideWithValue(StateController(filterFactions ?? FilterType())),
         filterTypesProvider.overrideWithValue(StateController(filterTypes ?? FilterType())),
-        deckCardListProvider.overrideWithValue((deckCardList ?? DeckCardListNotifier({}))),
+        deckCardListProvider.overrideWithValue(deckCardList ?? const {}),
         cardTileProvider.overrideWithValue(cardTile),
       ],
-      child: CardListPage(title: title),
+      child: CardListPage(
+        automaticallyImplyLeading: automaticallyImplyLeading,
+        color: color,
+        title: title,
+      ),
     );
   }
 
+  final bool automaticallyImplyLeading;
+  final Color? color;
   final String title;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      appBar: CardListAppBar(title: title),
+      appBar: CardListAppBar(
+        automaticallyImplyLeading: automaticallyImplyLeading,
+        color: color,
+        title: title,
+      ),
       body: const CardListBody(),
     );
   }

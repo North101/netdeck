@@ -1,9 +1,10 @@
 import 'package:collection/collection.dart';
-import 'package:flutter/material.dart';
 import 'package:drift/drift.dart';
+import 'package:flutter/material.dart';
 
+import '/db/database.dart';
 import '/util.dart';
-import '../database.dart';
+import '/util/header_list.dart';
 
 enum DeckGroup {
   name,
@@ -60,7 +61,7 @@ extension DeckGroupEx on DeckGroup {
   }
 
   int _sortBySynced(DeckResult a, DeckResult b) {
-    return (a.deck.nrdbId != null ? 1 : 0).compareTo((b.deck.nrdbId != null ? 1 : 0));
+    return (a.deck.remoteUpdated != null ? 1 : 0).compareTo((b.deck.remoteUpdated != null ? 1 : 0));
   }
 
   int Function(DeckResult a, DeckResult b) get sorted {
@@ -125,7 +126,7 @@ extension DeckGroupEx on DeckGroup {
   }
 
   String _groupBySynced(DeckResult item) {
-    return item.deck.nrdbId != null ? 'Online' : 'Offline';
+    return item.deck.remoteUpdated != null ? 'Online' : 'Offline';
   }
 
   String Function(DeckResult item) get grouped {
@@ -174,11 +175,11 @@ extension DeckGroupEx on DeckGroup {
     }
   }
 
-  HeaderList<DeckResult> call(List<DeckResult> list) {
-    return HeaderList(groupBy<DeckResult, String>(list, grouped)
+  HeaderList<T> call<T extends DeckResult>(List<T> list) {
+    return HeaderList(groupBy<T, String>(list, grouped)
         .entries
         .map((e) => HeaderItems(e.key, e.value))
-        .sortedByCompare<DeckResult>((e) => e.first, sorted));
+        .sortedByCompare<T>((e) => e.first, sorted));
   }
 }
 

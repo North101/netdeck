@@ -6,8 +6,8 @@ import 'package:timeago/timeago.dart' as timeago;
 
 import '/providers.dart';
 import '/util/nrdb/private.dart';
-import '../header_list_tile.dart';
-import '../stream_builder_wrapper.dart';
+import '/view/header_list_tile.dart';
+import '/view/stream_builder_wrapper.dart';
 import 'collection_page.dart';
 import 'default_filter_page.dart';
 
@@ -100,11 +100,19 @@ class SettingsNrdbAuth extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(nrdbAuthStateProvider);
+    final lastSync = ref.watch(lastSyncProvider);
     return ListTile(
       title: const Text('Account'),
       subtitle: authState.map<Widget>(
+        init: (state) => const Text('Initializing...'),
         connecting: (state) => const Text('Connecting...'),
-        online: (state) => const Text('Online'),
+        online: (state) => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('Online: ${state.user.username}'),
+            Text('Last Synced: ${timeago.format(lastSync)}'),
+          ],
+        ),
         offline: (state) => const Text('Offline'),
         unauthenticated: (state) => const Text('Unauthenticated'),
       ),
@@ -112,6 +120,11 @@ class SettingsNrdbAuth extends ConsumerWidget {
         width: 96,
         alignment: Alignment.center,
         child: authState.map(
+          init: (state) => const SizedBox(
+            width: 32,
+            height: 32,
+            child: CircularProgressIndicator(),
+          ),
           connecting: (state) => const SizedBox(
             width: 32,
             height: 32,

@@ -1,0 +1,34 @@
+Target dependency graph (12 targets)
+AppAuth in Pods, no dependencies
+FMDB in Pods, no dependencies
+FlutterMacOS in Pods, no dependencies
+Reachability in Pods, no dependencies
+connectivity_macos in Pods, depends on:
+FlutterMacOS in Pods (explicit)
+Reachability in Pods (explicit)
+flutter_appauth in Pods, depends on:
+AppAuth in Pods (explicit)
+FlutterMacOS in Pods (explicit)
+flutter_secure_storage_macos in Pods, depends on:
+FlutterMacOS in Pods (explicit)
+path_provider_macos in Pods, depends on:
+FlutterMacOS in Pods (explicit)
+sqflite in Pods, depends on:
+FMDB in Pods (explicit)
+FlutterMacOS in Pods (explicit)
+sqlite3 in Pods, no dependencies
+sqlite3_flutter_libs in Pods, depends on:
+FlutterMacOS in Pods (explicit)
+sqlite3 in Pods (explicit)
+Pods-Runner in Pods, depends on:
+AppAuth in Pods (explicit)
+FMDB in Pods (explicit)
+FlutterMacOS in Pods (explicit)
+Reachability in Pods (explicit)
+connectivity_macos in Pods (explicit)
+flutter_appauth in Pods (explicit)
+flutter_secure_storage_macos in Pods (explicit)
+path_provider_macos in Pods (explicit)
+sqflite in Pods (explicit)
+sqlite3 in Pods (explicit)
+sqlite3_flutter_libs in Pods (explicit)

@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/providers.dart';
 import '/util/assets.gen.dart';
-import '/util/nrdb/private.dart';
 import 'main_page.dart';
 
 class LoadingPage extends ConsumerWidget {
@@ -11,12 +10,7 @@ class LoadingPage extends ConsumerWidget {
 
   @override
   Widget build(context, ref) {
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
-      final authState = ref.read(nrdbAuthStateProvider);
-      AuthState.refreshToken(authState.ref);
-    });
-
-    final lastChecked = ref.watch(nrdbPublicApiProvider.notifier).value;
+    final lastChecked = ref.watch(nrdbPublicApiProvider).whenOrNull(data: (value) => value);
     if (lastChecked != null) return const MainPage();
 
     final data = ref.watch(nrdbPublicApiProvider);
@@ -34,6 +28,7 @@ class LoadingWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: const Text('Netdeck')),
       body: Container(
         alignment: Alignment.center,
         constraints: const BoxConstraints(minHeight: 160),

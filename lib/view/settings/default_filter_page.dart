@@ -4,10 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kotlin_flavor/scope_functions.dart';
 
 import '/db/database.dart';
-import '../format_dropdown.dart';
-import '../mwl_dropdown.dart';
 import '/providers.dart';
-import '../rotation_dropdown.dart';
+import '/view/format_dropdown.dart';
+import '/view/mwl_dropdown.dart';
+import '/view/rotation_dropdown.dart';
 
 class DefaultCardFilterPage extends ConsumerWidget {
   const DefaultCardFilterPage({Key? key}) : super(key: key);

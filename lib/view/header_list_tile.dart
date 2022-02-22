@@ -10,9 +10,18 @@ class HeaderListTile extends StatelessWidget {
     Key? key,
     required String title,
   }) : this(
-          child: ListTile(title: Text(title)),
-          key: key,
+          child: ListTile(
+            visualDensity: VisualDensity.compact,
+            title: Text(title),
+          ),
+          key: key ?? ValueKey(title),
         );
+
+  HeaderListTile.titleCount({
+    Key? key,
+    required String title,
+    required int count,
+  }) : this.title(key: key, title: '$title ($count)');
 
   final Widget child;
 

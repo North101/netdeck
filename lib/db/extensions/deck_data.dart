@@ -14,6 +14,4 @@ extension DeckDataEx on DeckData {
   //     lastSynced: Value(nrdbDeck.dateUpdate),
   //   );
   // }
-
-  int? get nrdbId => null;//parseNrdbId(id);
 }

@@ -6,6 +6,7 @@ import 'package:query/query.dart';
 import '/db/database.dart';
 import '/providers.dart';
 import '/util/filter_type.dart';
+import '/view/tags_page.dart';
 import 'factions_page.dart';
 import 'format_dropdown.dart';
 import 'mwl_dropdown.dart';
@@ -26,6 +27,7 @@ class DeckFilterPage extends ConsumerWidget {
     required StateController<FilterType<String?>> sides,
     required StateController<FilterType<String>> factions,
     required StateController<FilterType<String>> types,
+    required StateController<Set<String>> tags,
   }) {
     return ProviderScope(
       overrides: [
@@ -37,6 +39,7 @@ class DeckFilterPage extends ConsumerWidget {
         filterSidesProvider.overrideWithValue(sides),
         filterFactionsProvider.overrideWithValue(factions),
         filterTypesProvider.overrideWithValue(types),
+        filterTagsProvider.overrideWithValue(tags),
       ],
       child: const DeckFilterPage(),
     );
@@ -54,6 +57,7 @@ class DeckFilterPage extends ConsumerWidget {
           DeckFilterPacks(),
           DeckFilterFactions(),
           DeckFilterTypes(),
+          DeckFilterTags(),
         ],
       ),
     );
@@ -202,11 +206,11 @@ class DeckFilterTypes extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final db = ref.watch(dbProvider);
     final sides = ref.watch(filterSidesProvider.state);
     final types = ref.watch(filterTypesProvider.state);
     if (!types.state.visible) return const SizedBox.shrink();
 
+    final db = ref.watch(dbProvider);
     final typeList = db.listTypes().watch();
     return typeList.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -221,6 +225,34 @@ class DeckFilterTypes extends ConsumerWidget {
             return FilterTypesPage.withOverrides(
               sides: sides,
               types: types,
+            );
+          }));
+        },
+      ),
+    );
+  }
+}
+
+class DeckFilterTags extends ConsumerWidget {
+  const DeckFilterTags({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final tags = ref.watch(filterTagsProvider.state);
+    final db = ref.watch(dbProvider);
+    final tagList = db.listDistinctDeckTags().watch();
+    return tagList.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, stacktrace) => Text(error.toString()),
+      data: (items) => ListTile(
+        title: const Text('Tags'),
+        subtitle: tags.state.isNotEmpty
+            ? Text(items.where((e) => tags.state.contains(e)).map((e) => e).join(', '))
+            : null,
+        onTap: () {
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+            return FilterTagsPage.withOverrides(
+              tags: tags,
             );
           }));
         },

@@ -15,7 +15,7 @@ INNER JOIN deck
   ON deck.id = deck_tag.deck_id
 
 WHERE $where
-AND deck.state != 'deleted';
+AND NOT deck.deleted;
 
 listDistinctDeckTags($where = TRUE):
 SELECT tag
@@ -27,7 +27,7 @@ FROM (
     ON deck.id = deck_tag.deck_id
 
   WHERE $where
-  AND deck.state != 'deleted'
+  AND NOT deck.deleted
 
   GROUP BY deck_tag.tag
 ) AS deck_tag

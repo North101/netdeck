@@ -9,9 +9,15 @@ import 'appbar.dart';
 import 'body.dart';
 
 class DeckListPage extends ConsumerWidget {
-  const DeckListPage({Key? key}) : super(key: key);
+  const DeckListPage({
+    required this.automaticallyImplyLeading,
+    required this.title,
+    Key? key,
+  }) : super(key: key);
 
   static withOverrides({
+    bool automaticallyImplyLeading = false,
+    required String title,
     bool filterSearching = false,
     Query? filterQuery,
     FormatData? filterFormat,
@@ -21,6 +27,8 @@ class DeckListPage extends ConsumerWidget {
     FilterType<String?>? filterSides,
     FilterType<String>? filterFactions,
     FilterType<String>? filterTypes,
+    required Widget Function(BuildContext context, WidgetRef ref, int index, DeckResult2 deck) deckTile,
+    Widget? fab,
   }) {
     return ProviderScope(
       overrides: [
@@ -33,16 +41,30 @@ class DeckListPage extends ConsumerWidget {
         filterSidesProvider.overrideWithValue(StateController(filterSides ?? FilterType())),
         filterFactionsProvider.overrideWithValue(StateController(filterFactions ?? FilterType())),
         filterTypesProvider.overrideWithValue(StateController(filterTypes ?? FilterType())),
+        filterTagsProvider.overrideWithValue(StateController(const {})),
+        deckTileProvider.overrideWithValue(deckTile),
+        deckFabProvider.overrideWithValue(fab),
       ],
-      child: const DeckListPage(),
+      child: DeckListPage(
+        automaticallyImplyLeading: automaticallyImplyLeading,
+        title: title,
+      ),
     );
   }
 
+  final bool automaticallyImplyLeading;
+  final String title;
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final fab = ref.watch(deckFabProvider);
     return Scaffold(
-      appBar: DeckListAppBar(title: 'Decks'),
+      appBar: DeckListAppBar(
+        automaticallyImplyLeading: automaticallyImplyLeading,
+        title: title,
+      ),
       body: const DeckListBody(),
+      floatingActionButton: fab,
     );
   }
 }

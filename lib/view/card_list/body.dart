@@ -4,6 +4,7 @@ import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 
 import '/db/database.dart';
 import '/providers.dart';
+import '/util/header_list.dart';
 import '/view/filter_chips.dart';
 import '/view/header_list_tile.dart';
 
@@ -55,11 +56,18 @@ class CardHeader extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cardTile = ref.watch(cardTileProvider);
     return SliverStickyHeader(
-      header: HeaderListTile.title(title: '${headerList.header} (${headerList.length})'),
+      header: HeaderListTile.titleCount(title: headerList.header, count: headerList.length),
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate(
-          (context, index) => cardTile(context, ref, indexOffset + index, headerList[index]),
-          childCount: headerList.length,
+          (context, index) {
+            if (index.isEven) {
+              final realIndex = index ~/ 2;
+              return cardTile(context, ref, indexOffset + realIndex, headerList[realIndex]);
+            } else {
+              return const Divider();
+            }
+          },
+          childCount: headerList.length * 2,
         ),
       ),
     );
@@ -93,13 +101,33 @@ class CardListBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: const [
-        CardListFilters(),
-        Expanded(child: CardListList()),
+    return Stack(
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: const [
+            CardListFilters(),
+            Expanded(child: CardListList()),
+          ],
+        ),
+        const CardListLoading(),
       ],
     );
+  }
+}
+
+class CardListLoading extends ConsumerWidget {
+  const CardListLoading({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isLoading = ref.watch(groupedCardListProvider.select((value) => value.maybeMap(
+          data: (data) => data.isLoading,
+          orElse: () => false,
+        )));
+    if (!isLoading) return const SizedBox.shrink();
+
+    return const LinearProgressIndicator();
   }
 }

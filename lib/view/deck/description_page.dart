@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/providers.dart';
-import '/db/database.dart';
+import '/view/search_theme.dart';
 
 class DeckDescriptionRoute<T> extends PageRoute<T> {
   DeckDescriptionRoute(this.child);
@@ -48,7 +47,7 @@ class DeckDescriptionPage extends ConsumerWidget {
   const DeckDescriptionPage({Key? key}) : super(key: key);
 
   static withOverrides({
-    required StateController<DeckResult> deck,
+    required DeckNotifier deck,
   }) {
     return ProviderScope(
       overrides: [
@@ -58,42 +57,26 @@ class DeckDescriptionPage extends ConsumerWidget {
     );
   }
 
-  ThemeData theme(BuildContext context) {
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
-    return theme.copyWith(
-      appBarTheme: AppBarTheme(
-        systemOverlayStyle: const SystemUiOverlayStyle(statusBarBrightness: Brightness.dark),
-        backgroundColor: colorScheme.brightness == Brightness.dark ? Colors.grey[900] : Colors.white,
-        iconTheme: theme.primaryIconTheme.copyWith(color: Colors.grey),
-        titleTextStyle: theme.textTheme.headline6?.copyWith(color: Colors.black),
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        hintStyle: theme.inputDecorationTheme.hintStyle,
-        border: InputBorder.none,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final deck = ref.watch(deckProvider.state);
+    final deck = ref.watch(deckProvider);
     return Theme(
-      data: theme(context),
+      data: SearchTheme.of(context),
       child: Scaffold(
         appBar: AppBar(title: const Text('Description')),
         body: Padding(
           padding: const EdgeInsets.all(16),
           child: TextFormField(
-            initialValue: deck.state.deck.description,
+            initialValue: deck.deck.description,
             keyboardType: TextInputType.multiline,
             expands: true,
             minLines: null,
             maxLines: null,
             autofocus: true,
             onChanged: (value) {
-              deck.state = deck.state.copyWith(
-                deck: deck.state.deck.copyWith(description: value),
+              final deck = ref.watch(deckProvider.notifier);
+              deck.value = deck.value.copyWith(
+                deck: deck.value.deck.copyWith(description: value),
               );
             },
           ),

@@ -1,0 +1,14 @@
+TODO:
+
+localization
+
+DeckListPage:
+upload
+download
+confirm delete
+
+DeckPage:
+confirm delete
+
+BackupRestorePage:
+everything

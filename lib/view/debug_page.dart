@@ -1,15 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:drift_dev/api/migrations.dart';
 
 import '/db/database.dart';
 
-final dbExistsProvider = FutureProvider((ref) {
-  return Database.dbFilename().then((value) {
-    return value.exists();
-  });
+abstract class DatabaseResult {}
+
+class NoneDatabaseResult implements DatabaseResult {
+  const NoneDatabaseResult();
+}
+
+class ValidDatabaseResult implements DatabaseResult {
+  const ValidDatabaseResult();
+}
+
+class InvalidDatabaseResult implements DatabaseResult {
+  const InvalidDatabaseResult(this.error);
+
+  final SchemaMismatch error;
+}
+
+final dbStateProvider = FutureProvider((ref) async {
+  final dbFile = await Database.dbFilename();
+  if (!await dbFile.exists()) return const NoneDatabaseResult();
+
+  final db = Database();
+  try {
+    await db.validateDatabaseSchema();
+    return const ValidDatabaseResult();
+  } on SchemaMismatch catch (exception) {
+    return InvalidDatabaseResult(exception);
+  } finally {
+    await db.close();
+  }
 });
 
-class DebugPage extends StatelessWidget {
+class DebugPage extends ConsumerWidget {
   const DebugPage({
     required this.home,
     Key? key,
@@ -26,40 +52,73 @@ class DebugPage extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final dbState = ref.watch(dbStateProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Debug'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: ElevatedButton(
-                onPressed: () => openPage(context),
-                child: const Text('Keep Database'),
+      body: dbState.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, stackTrace) => Text(error.toString()),
+        data: (state) => Stack(
+          children: [
+            SizedBox.expand(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: ElevatedButton(
+                      style: state is InvalidDatabaseResult
+                          ? ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all(Colors.red),
+                            )
+                          : null,
+                      onPressed: () => openPage(context),
+                      child: state is NoneDatabaseResult ? const Text('New Database') : const Text('Keep Database'),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: ElevatedButton(
+                      onPressed: state is! NoneDatabaseResult
+                          ? () async {
+                              await Database.deleteDatabase();
+                              ref.refresh(dbStateProvider);
+                            }
+                          : null,
+                      child: const Text('Delete Database'),
+                    ),
+                  ),
+                ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8),
-              child: Consumer(builder: (context, ref, child) {
-                final dbExists = ref.watch(dbExistsProvider).maybeWhen(
-                  data: (data) => data,
-                  orElse: () => false,
-                );
-                return ElevatedButton(
-                  onPressed: dbExists
-                      ? () async {
-                          await Database.deleteDatabase();
-                          await openPage(context);
-                        }
-                      : null,
-                  child: const Text('Delete Database'),
-                );
-              }),
-            ),
+            if (state is InvalidDatabaseResult)
+              MaterialBanner(
+                content: const Text('Database not valid'),
+                leading: const Icon(Icons.error, color: Colors.red),
+                actions: <Widget>[
+                  TextButton(
+                    onPressed: () => showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Database Error'),
+                        content: SingleChildScrollView(
+                          child: Text(state.error.explanation),
+                        ),
+                        actions: [
+                          ElevatedButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Close'),
+                          ),
+                        ],
+                      ),
+                    ),
+                    child: const Text('View Error'),
+                  ),
+                ],
+              ),
           ],
         ),
       ),

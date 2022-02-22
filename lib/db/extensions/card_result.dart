@@ -5,8 +5,14 @@ extension CardResultEx on CardResult {
 
   int get factionCost => mwlCard?.universalFactionCost ?? card.factionCost;
 
-  DeckResult toDeck(DeckData deck, FormatData? format, MwlData? mwl) {
-    return DeckResult(
+  DeckResult2 toDeck({
+    required DeckData deck,
+    FormatData? format,
+    MwlData? mwl,
+    required Map<CardResult, int> cards,
+    required List<String> tags,
+  }) {
+    return DeckResult2(
       deck: deck,
       identity: card,
       pack: pack,
@@ -17,6 +23,8 @@ extension CardResultEx on CardResult {
       subtype: subtype,
       format: format,
       mwl: mwl,
+      cards: cards,
+      tags: tags,
     );
   }
 

@@ -1,5 +1,4 @@
 import 'package:collection/collection.dart';
-import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
@@ -11,9 +10,10 @@ import 'header_list_tile.dart';
 
 final factionListProvider = StreamProvider((ref) {
   final db = ref.watch(dbProvider);
-  final neverSides = ref.watch(filterSidesProvider).never;
-  final neverFactions = ref.watch(filterFactionsProvider).never;
-  final where = db.side.code.isNotIn(neverSides) & db.type.code.isNotIn(neverFactions);
+  final where = buildAnd([
+    ref.watch(filterSideFilterProvider(const FilterState(values: false))),
+    ref.watch(filterFactionFilterProvider(const FilterState(values: false))),
+  ]);
   return db.listFactions(where: where).watch().map((items) {
     return groupBy<FactionResult, SideData>(items, (item) {
       return item.side;
@@ -21,7 +21,7 @@ final factionListProvider = StreamProvider((ref) {
       return a.key.code.compareTo(b.key.code);
     });
   });
-}, dependencies: [dbProvider, filterSidesProvider, filterFactionsProvider]);
+}, dependencies: [dbProvider, filterSideFilterProvider, filterFactionFilterProvider]);
 
 class FilterFactionCheckbox extends ConsumerWidget {
   const FilterFactionCheckbox({
@@ -58,7 +58,6 @@ class FilterFactionCheckbox extends ConsumerWidget {
     return SliverStickyHeader(
       header: HeaderListTile(
         child: CheckboxListTile(
-          controlAffinity: ListTileControlAffinity.leading,
           tristate: true,
           value: selected,
           title: Text(side.name),
@@ -69,9 +68,8 @@ class FilterFactionCheckbox extends ConsumerWidget {
         delegate: SliverChildListDelegate([
           ...factionList.map(
             (e) => Material(
-              color: Theme.of(context).cardColor,
+              color: Theme.of(context).splashColor,
               child: CheckboxListTile(
-                controlAffinity: ListTileControlAffinity.leading,
                 value: factions.contains(e.faction.code),
                 title: Text(e.faction.name),
                 onChanged: factions.always.contains(e.faction.code)
@@ -104,8 +102,8 @@ class FilterFactionsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final factions = ref.watch(filterFactionsProvider);
-    if (!factions.visible) return const SizedBox.shrink();
+    final visible = ref.watch(filterFactionsProvider.select((value) => value.visible));
+    if (!visible) return const SizedBox.shrink();
 
     final factionList = ref.watch(factionListProvider);
     return Scaffold(

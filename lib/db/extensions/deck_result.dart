@@ -39,4 +39,25 @@ extension DeckResultEx on DeckResult {
       subtype: subtype,
     );
   }
+
+  SyncIssues syncIssues([DateTime? remoteUpdated]) {
+    final hasLocalChanges = deck.synced != null && deck.updated != deck.synced;
+    final hasRemoteChanges = deck.synced != null && deck.synced != (remoteUpdated ?? deck.remoteUpdated);
+    if (hasLocalChanges && hasRemoteChanges) {
+      return SyncIssues.both;
+    } else if (hasLocalChanges) {
+      return SyncIssues.local;
+    } else if (hasRemoteChanges) {
+      return SyncIssues.remote;
+    } else {
+      return SyncIssues.none;
+    }
+  }
+}
+
+enum SyncIssues {
+  none,
+  local,
+  remote,
+  both,
 }

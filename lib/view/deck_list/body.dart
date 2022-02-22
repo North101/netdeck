@@ -1,15 +1,15 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
-import 'package:netrunner_deckbuilder/view/deck_page/loading_page.dart';
 
-import '../card_cycle.dart';
-import '../floatingactionbutton_spacer.dart';
 import '/db/database.dart';
 import '/providers.dart';
-import '../filter_chips.dart';
-import '../header_list_tile.dart';
+import '/util/header_list.dart';
+import '/util/nrdb/private.dart';
+import '/view/fab_spacer.dart';
+import '/view/filter_chips.dart';
+import '/view/header_list_tile.dart';
+import '/view/tag_chip.dart';
 
 class DeckListFilters extends ConsumerWidget {
   const DeckListFilters({Key? key}) : super(key: key);
@@ -21,6 +21,7 @@ class DeckListFilters extends ConsumerWidget {
       return const SizedBox();
     }
 
+    final tags = ref.watch(filterTagsProvider);
     final countStuff = ref.watch(countStuffProvider);
     return countStuff.when(
       loading: () => const Center(child: LinearProgressIndicator()),
@@ -38,6 +39,7 @@ class DeckListFilters extends ConsumerWidget {
               PacksChip(count: data.packCount),
               FactionsChip(count: data.factionCount),
               TypesChip(count: data.typeCount),
+              if (tags.isNotEmpty) ...tags.map((e) => TagChip(e)),
             ],
           ),
         );
@@ -49,37 +51,27 @@ class DeckListFilters extends ConsumerWidget {
 class DeckHeader extends ConsumerWidget {
   const DeckHeader(this.indexOffset, this.headerList, {Key? key}) : super(key: key);
 
-  final HeaderItems<DeckResult> headerList;
+  final HeaderItems<DeckResult2> headerList;
   final int indexOffset;
 
   void onTap(BuildContext context, WidgetRef ref, int index) {}
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final deckTile = ref.watch(deckTileProvider);
     return SliverStickyHeader(
-      header: HeaderListTile.title(title: '${headerList.header} (${headerList.length})'),
+      header: HeaderListTile.titleCount(title: headerList.header, count: headerList.length),
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate(
           (context, index) {
-            final deck = headerList[index];
-            return ListTile(
-              leading: deck.faction.icon?.image(height: 36),
-              title: Text(deck.deck.name),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(deck.identity.title),
-                  CardCycleWidget(deck.toCard()),
-                ],
-              ),
-              onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                  return DeckLoaderPage(deckId: deck.deck.id);
-                }));
-              },
-            );
+            if (index.isEven) {
+              final realIndex = index ~/ 2;
+              return deckTile(context, ref, realIndex, headerList[realIndex]);
+            } else {
+              return const Divider();
+            }
           },
-          childCount: headerList.length,
+          childCount: headerList.length * 2,
         ),
       ),
     );
@@ -87,12 +79,7 @@ class DeckHeader extends ConsumerWidget {
 }
 
 class DeckListList extends ConsumerWidget {
-  const DeckListList({
-    this.onDeckPressed,
-    Key? key,
-  }) : super(key: key);
-
-  final void Function(dynamic)? onDeckPressed;
+  const DeckListList({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -121,13 +108,58 @@ class DeckListBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: const [
-        DeckListFilters(),
-        Expanded(child: DeckListList()),
+    return Stack(
+      children: [
+        RefreshIndicator(
+          onRefresh: () async {
+            final nrdbAuthState = ref.read(nrdbAuthStateProvider);
+            final online = nrdbAuthState.maybeMap(
+              online: (state) => state,
+              orElse: () => null,
+            );
+            if (online == null) {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text('You are not online or connected your netrunnerdb account'),
+              ));
+              return;
+            }
+
+            final decks = await online.listDecks();
+            if (decks is SuccessHttpResult<List<NrdbDeck>>) {
+              final db = ref.read(dbProvider);
+              await online.syncDecks(db, decks.value);
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text('Fail to refresh decks'),
+              ));
+            }
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: const [
+              DeckListFilters(),
+              Expanded(child: DeckListList()),
+            ],
+          ),
+        ),
+        const DeckListLoading(),
       ],
     );
+  }
+}
+
+class DeckListLoading extends ConsumerWidget {
+  const DeckListLoading({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isLoading = ref.watch(groupedDeckListProvider.select((value) => value.maybeMap(
+          data: (data) => data.isLoading,
+          orElse: () => false,
+        )));
+    if (!isLoading) return const SizedBox.shrink();
+
+    return const LinearProgressIndicator();
   }
 }

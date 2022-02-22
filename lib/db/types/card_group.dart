@@ -1,9 +1,10 @@
 import 'package:collection/collection.dart';
-import 'package:flutter/material.dart';
 import 'package:drift/drift.dart';
+import 'package:flutter/material.dart';
 
+import '/db/database.dart';
 import '/util.dart';
-import '../database.dart';
+import '/util/header_list.dart';
 
 enum CardGroup {
   name,

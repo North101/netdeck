@@ -486,12 +486,13 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
   final String? filterRotationCode;
   final String? filterMwlCode;
   final bool filterCollection;
-  final CardSort? cardSort;
-  final CardGroup? cardGroup;
-  final DeckSort? deckSort;
-  final DeckGroup? deckGroup;
-  final CardSort? deckCardSort;
-  final CardGroup? deckCardGroup;
+  final CardSort cardSort;
+  final CardGroup cardGroup;
+  final DeckSort deckSort;
+  final DeckGroup deckGroup;
+  final CardSort deckCardSort;
+  final CardGroup deckCardGroup;
+  final CardSort compareCardSort;
   final bool apexResources;
   SettingsData(
       {required this.id,
@@ -499,12 +500,13 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       this.filterRotationCode,
       this.filterMwlCode,
       required this.filterCollection,
-      this.cardSort,
-      this.cardGroup,
-      this.deckSort,
-      this.deckGroup,
-      this.deckCardSort,
-      this.deckCardGroup,
+      required this.cardSort,
+      required this.cardGroup,
+      required this.deckSort,
+      required this.deckGroup,
+      required this.deckCardSort,
+      required this.deckCardGroup,
+      required this.compareCardSort,
       required this.apexResources});
   factory SettingsData.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
@@ -520,17 +522,20 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       filterCollection: const BoolType().mapFromDatabaseResponse(
           data['${effectivePrefix}filter_collection'])!,
       cardSort: Settings.$converter0.mapToDart(const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}card_sort'])),
+          .mapFromDatabaseResponse(data['${effectivePrefix}card_sort']))!,
       cardGroup: Settings.$converter1.mapToDart(const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}card_group'])),
+          .mapFromDatabaseResponse(data['${effectivePrefix}card_group']))!,
       deckSort: Settings.$converter2.mapToDart(const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}deck_sort'])),
+          .mapFromDatabaseResponse(data['${effectivePrefix}deck_sort']))!,
       deckGroup: Settings.$converter3.mapToDart(const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}deck_group'])),
+          .mapFromDatabaseResponse(data['${effectivePrefix}deck_group']))!,
       deckCardSort: Settings.$converter4.mapToDart(const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}deck_card_sort'])),
+          .mapFromDatabaseResponse(data['${effectivePrefix}deck_card_sort']))!,
       deckCardGroup: Settings.$converter5.mapToDart(const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}deck_card_group'])),
+          .mapFromDatabaseResponse(data['${effectivePrefix}deck_card_group']))!,
+      compareCardSort: Settings.$converter6.mapToDart(const StringType()
+          .mapFromDatabaseResponse(
+              data['${effectivePrefix}compare_card_sort']))!,
       apexResources: const BoolType()
           .mapFromDatabaseResponse(data['${effectivePrefix}apex_resources'])!,
     );
@@ -549,31 +554,36 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       map['filter_mwl_code'] = Variable<String?>(filterMwlCode);
     }
     map['filter_collection'] = Variable<bool>(filterCollection);
-    if (!nullToAbsent || cardSort != null) {
+    {
       final converter = Settings.$converter0;
-      map['card_sort'] = Variable<String?>(converter.mapToSql(cardSort));
+      map['card_sort'] = Variable<String>(converter.mapToSql(cardSort)!);
     }
-    if (!nullToAbsent || cardGroup != null) {
+    {
       final converter = Settings.$converter1;
-      map['card_group'] = Variable<String?>(converter.mapToSql(cardGroup));
+      map['card_group'] = Variable<String>(converter.mapToSql(cardGroup)!);
     }
-    if (!nullToAbsent || deckSort != null) {
+    {
       final converter = Settings.$converter2;
-      map['deck_sort'] = Variable<String?>(converter.mapToSql(deckSort));
+      map['deck_sort'] = Variable<String>(converter.mapToSql(deckSort)!);
     }
-    if (!nullToAbsent || deckGroup != null) {
+    {
       final converter = Settings.$converter3;
-      map['deck_group'] = Variable<String?>(converter.mapToSql(deckGroup));
+      map['deck_group'] = Variable<String>(converter.mapToSql(deckGroup)!);
     }
-    if (!nullToAbsent || deckCardSort != null) {
+    {
       final converter = Settings.$converter4;
       map['deck_card_sort'] =
-          Variable<String?>(converter.mapToSql(deckCardSort));
+          Variable<String>(converter.mapToSql(deckCardSort)!);
     }
-    if (!nullToAbsent || deckCardGroup != null) {
+    {
       final converter = Settings.$converter5;
       map['deck_card_group'] =
-          Variable<String?>(converter.mapToSql(deckCardGroup));
+          Variable<String>(converter.mapToSql(deckCardGroup)!);
+    }
+    {
+      final converter = Settings.$converter6;
+      map['compare_card_sort'] =
+          Variable<String>(converter.mapToSql(compareCardSort)!);
     }
     map['apex_resources'] = Variable<bool>(apexResources);
     return map;
@@ -592,24 +602,13 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           ? const Value.absent()
           : Value(filterMwlCode),
       filterCollection: Value(filterCollection),
-      cardSort: cardSort == null && nullToAbsent
-          ? const Value.absent()
-          : Value(cardSort),
-      cardGroup: cardGroup == null && nullToAbsent
-          ? const Value.absent()
-          : Value(cardGroup),
-      deckSort: deckSort == null && nullToAbsent
-          ? const Value.absent()
-          : Value(deckSort),
-      deckGroup: deckGroup == null && nullToAbsent
-          ? const Value.absent()
-          : Value(deckGroup),
-      deckCardSort: deckCardSort == null && nullToAbsent
-          ? const Value.absent()
-          : Value(deckCardSort),
-      deckCardGroup: deckCardGroup == null && nullToAbsent
-          ? const Value.absent()
-          : Value(deckCardGroup),
+      cardSort: Value(cardSort),
+      cardGroup: Value(cardGroup),
+      deckSort: Value(deckSort),
+      deckGroup: Value(deckGroup),
+      deckCardSort: Value(deckCardSort),
+      deckCardGroup: Value(deckCardGroup),
+      compareCardSort: Value(compareCardSort),
       apexResources: Value(apexResources),
     );
   }
@@ -625,12 +624,13 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           serializer.fromJson<String?>(json['filter_rotation_code']),
       filterMwlCode: serializer.fromJson<String?>(json['filter_mwl_code']),
       filterCollection: serializer.fromJson<bool>(json['filter_collection']),
-      cardSort: serializer.fromJson<CardSort?>(json['card_sort']),
-      cardGroup: serializer.fromJson<CardGroup?>(json['card_group']),
-      deckSort: serializer.fromJson<DeckSort?>(json['deck_sort']),
-      deckGroup: serializer.fromJson<DeckGroup?>(json['deck_group']),
-      deckCardSort: serializer.fromJson<CardSort?>(json['deck_card_sort']),
-      deckCardGroup: serializer.fromJson<CardGroup?>(json['deck_card_group']),
+      cardSort: serializer.fromJson<CardSort>(json['card_sort']),
+      cardGroup: serializer.fromJson<CardGroup>(json['card_group']),
+      deckSort: serializer.fromJson<DeckSort>(json['deck_sort']),
+      deckGroup: serializer.fromJson<DeckGroup>(json['deck_group']),
+      deckCardSort: serializer.fromJson<CardSort>(json['deck_card_sort']),
+      deckCardGroup: serializer.fromJson<CardGroup>(json['deck_card_group']),
+      compareCardSort: serializer.fromJson<CardSort>(json['compare_card_sort']),
       apexResources: serializer.fromJson<bool>(json['apex_resources']),
     );
   }
@@ -643,12 +643,13 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       'filter_rotation_code': serializer.toJson<String?>(filterRotationCode),
       'filter_mwl_code': serializer.toJson<String?>(filterMwlCode),
       'filter_collection': serializer.toJson<bool>(filterCollection),
-      'card_sort': serializer.toJson<CardSort?>(cardSort),
-      'card_group': serializer.toJson<CardGroup?>(cardGroup),
-      'deck_sort': serializer.toJson<DeckSort?>(deckSort),
-      'deck_group': serializer.toJson<DeckGroup?>(deckGroup),
-      'deck_card_sort': serializer.toJson<CardSort?>(deckCardSort),
-      'deck_card_group': serializer.toJson<CardGroup?>(deckCardGroup),
+      'card_sort': serializer.toJson<CardSort>(cardSort),
+      'card_group': serializer.toJson<CardGroup>(cardGroup),
+      'deck_sort': serializer.toJson<DeckSort>(deckSort),
+      'deck_group': serializer.toJson<DeckGroup>(deckGroup),
+      'deck_card_sort': serializer.toJson<CardSort>(deckCardSort),
+      'deck_card_group': serializer.toJson<CardGroup>(deckCardGroup),
+      'compare_card_sort': serializer.toJson<CardSort>(compareCardSort),
       'apex_resources': serializer.toJson<bool>(apexResources),
     };
   }
@@ -659,12 +660,13 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           Value<String?> filterRotationCode = const Value.absent(),
           Value<String?> filterMwlCode = const Value.absent(),
           bool? filterCollection,
-          Value<CardSort?> cardSort = const Value.absent(),
-          Value<CardGroup?> cardGroup = const Value.absent(),
-          Value<DeckSort?> deckSort = const Value.absent(),
-          Value<DeckGroup?> deckGroup = const Value.absent(),
-          Value<CardSort?> deckCardSort = const Value.absent(),
-          Value<CardGroup?> deckCardGroup = const Value.absent(),
+          CardSort? cardSort,
+          CardGroup? cardGroup,
+          DeckSort? deckSort,
+          DeckGroup? deckGroup,
+          CardSort? deckCardSort,
+          CardGroup? deckCardGroup,
+          CardSort? compareCardSort,
           bool? apexResources}) =>
       SettingsData(
         id: id ?? this.id,
@@ -677,14 +679,13 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
         filterMwlCode:
             filterMwlCode.present ? filterMwlCode.value : this.filterMwlCode,
         filterCollection: filterCollection ?? this.filterCollection,
-        cardSort: cardSort.present ? cardSort.value : this.cardSort,
-        cardGroup: cardGroup.present ? cardGroup.value : this.cardGroup,
-        deckSort: deckSort.present ? deckSort.value : this.deckSort,
-        deckGroup: deckGroup.present ? deckGroup.value : this.deckGroup,
-        deckCardSort:
-            deckCardSort.present ? deckCardSort.value : this.deckCardSort,
-        deckCardGroup:
-            deckCardGroup.present ? deckCardGroup.value : this.deckCardGroup,
+        cardSort: cardSort ?? this.cardSort,
+        cardGroup: cardGroup ?? this.cardGroup,
+        deckSort: deckSort ?? this.deckSort,
+        deckGroup: deckGroup ?? this.deckGroup,
+        deckCardSort: deckCardSort ?? this.deckCardSort,
+        deckCardGroup: deckCardGroup ?? this.deckCardGroup,
+        compareCardSort: compareCardSort ?? this.compareCardSort,
         apexResources: apexResources ?? this.apexResources,
       );
   @override
@@ -701,6 +702,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           ..write('deckGroup: $deckGroup, ')
           ..write('deckCardSort: $deckCardSort, ')
           ..write('deckCardGroup: $deckCardGroup, ')
+          ..write('compareCardSort: $compareCardSort, ')
           ..write('apexResources: $apexResources')
           ..write(')'))
         .toString();
@@ -719,6 +721,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       deckGroup,
       deckCardSort,
       deckCardGroup,
+      compareCardSort,
       apexResources);
   @override
   bool operator ==(Object other) =>
@@ -735,6 +738,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           other.deckGroup == this.deckGroup &&
           other.deckCardSort == this.deckCardSort &&
           other.deckCardGroup == this.deckCardGroup &&
+          other.compareCardSort == this.compareCardSort &&
           other.apexResources == this.apexResources);
 }
 
@@ -744,12 +748,13 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
   final Value<String?> filterRotationCode;
   final Value<String?> filterMwlCode;
   final Value<bool> filterCollection;
-  final Value<CardSort?> cardSort;
-  final Value<CardGroup?> cardGroup;
-  final Value<DeckSort?> deckSort;
-  final Value<DeckGroup?> deckGroup;
-  final Value<CardSort?> deckCardSort;
-  final Value<CardGroup?> deckCardGroup;
+  final Value<CardSort> cardSort;
+  final Value<CardGroup> cardGroup;
+  final Value<DeckSort> deckSort;
+  final Value<DeckGroup> deckGroup;
+  final Value<CardSort> deckCardSort;
+  final Value<CardGroup> deckCardGroup;
+  final Value<CardSort> compareCardSort;
   final Value<bool> apexResources;
   const SettingsCompanion({
     this.id = const Value.absent(),
@@ -763,6 +768,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     this.deckGroup = const Value.absent(),
     this.deckCardSort = const Value.absent(),
     this.deckCardGroup = const Value.absent(),
+    this.compareCardSort = const Value.absent(),
     this.apexResources = const Value.absent(),
   });
   SettingsCompanion.insert({
@@ -777,6 +783,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     this.deckGroup = const Value.absent(),
     this.deckCardSort = const Value.absent(),
     this.deckCardGroup = const Value.absent(),
+    this.compareCardSort = const Value.absent(),
     this.apexResources = const Value.absent(),
   });
   static Insertable<SettingsData> custom({
@@ -785,12 +792,13 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Expression<String?>? filterRotationCode,
     Expression<String?>? filterMwlCode,
     Expression<bool>? filterCollection,
-    Expression<CardSort?>? cardSort,
-    Expression<CardGroup?>? cardGroup,
-    Expression<DeckSort?>? deckSort,
-    Expression<DeckGroup?>? deckGroup,
-    Expression<CardSort?>? deckCardSort,
-    Expression<CardGroup?>? deckCardGroup,
+    Expression<CardSort>? cardSort,
+    Expression<CardGroup>? cardGroup,
+    Expression<DeckSort>? deckSort,
+    Expression<DeckGroup>? deckGroup,
+    Expression<CardSort>? deckCardSort,
+    Expression<CardGroup>? deckCardGroup,
+    Expression<CardSort>? compareCardSort,
     Expression<bool>? apexResources,
   }) {
     return RawValuesInsertable({
@@ -806,6 +814,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       if (deckGroup != null) 'deck_group': deckGroup,
       if (deckCardSort != null) 'deck_card_sort': deckCardSort,
       if (deckCardGroup != null) 'deck_card_group': deckCardGroup,
+      if (compareCardSort != null) 'compare_card_sort': compareCardSort,
       if (apexResources != null) 'apex_resources': apexResources,
     });
   }
@@ -816,12 +825,13 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       Value<String?>? filterRotationCode,
       Value<String?>? filterMwlCode,
       Value<bool>? filterCollection,
-      Value<CardSort?>? cardSort,
-      Value<CardGroup?>? cardGroup,
-      Value<DeckSort?>? deckSort,
-      Value<DeckGroup?>? deckGroup,
-      Value<CardSort?>? deckCardSort,
-      Value<CardGroup?>? deckCardGroup,
+      Value<CardSort>? cardSort,
+      Value<CardGroup>? cardGroup,
+      Value<DeckSort>? deckSort,
+      Value<DeckGroup>? deckGroup,
+      Value<CardSort>? deckCardSort,
+      Value<CardGroup>? deckCardGroup,
+      Value<CardSort>? compareCardSort,
       Value<bool>? apexResources}) {
     return SettingsCompanion(
       id: id ?? this.id,
@@ -835,6 +845,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       deckGroup: deckGroup ?? this.deckGroup,
       deckCardSort: deckCardSort ?? this.deckCardSort,
       deckCardGroup: deckCardGroup ?? this.deckCardGroup,
+      compareCardSort: compareCardSort ?? this.compareCardSort,
       apexResources: apexResources ?? this.apexResources,
     );
   }
@@ -859,31 +870,36 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     }
     if (cardSort.present) {
       final converter = Settings.$converter0;
-      map['card_sort'] = Variable<String?>(converter.mapToSql(cardSort.value));
+      map['card_sort'] = Variable<String>(converter.mapToSql(cardSort.value)!);
     }
     if (cardGroup.present) {
       final converter = Settings.$converter1;
       map['card_group'] =
-          Variable<String?>(converter.mapToSql(cardGroup.value));
+          Variable<String>(converter.mapToSql(cardGroup.value)!);
     }
     if (deckSort.present) {
       final converter = Settings.$converter2;
-      map['deck_sort'] = Variable<String?>(converter.mapToSql(deckSort.value));
+      map['deck_sort'] = Variable<String>(converter.mapToSql(deckSort.value)!);
     }
     if (deckGroup.present) {
       final converter = Settings.$converter3;
       map['deck_group'] =
-          Variable<String?>(converter.mapToSql(deckGroup.value));
+          Variable<String>(converter.mapToSql(deckGroup.value)!);
     }
     if (deckCardSort.present) {
       final converter = Settings.$converter4;
       map['deck_card_sort'] =
-          Variable<String?>(converter.mapToSql(deckCardSort.value));
+          Variable<String>(converter.mapToSql(deckCardSort.value)!);
     }
     if (deckCardGroup.present) {
       final converter = Settings.$converter5;
       map['deck_card_group'] =
-          Variable<String?>(converter.mapToSql(deckCardGroup.value));
+          Variable<String>(converter.mapToSql(deckCardGroup.value)!);
+    }
+    if (compareCardSort.present) {
+      final converter = Settings.$converter6;
+      map['compare_card_sort'] =
+          Variable<String>(converter.mapToSql(compareCardSort.value)!);
     }
     if (apexResources.present) {
       map['apex_resources'] = Variable<bool>(apexResources.value);
@@ -905,6 +921,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
           ..write('deckGroup: $deckGroup, ')
           ..write('deckCardSort: $deckCardSort, ')
           ..write('deckCardGroup: $deckCardGroup, ')
+          ..write('compareCardSort: $compareCardSort, ')
           ..write('apexResources: $apexResources')
           ..write(')'))
         .toString();
@@ -957,55 +974,65 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
       defaultValue: const CustomExpression<bool>('FALSE'));
   final VerificationMeta _cardSortMeta = const VerificationMeta('cardSort');
   late final GeneratedColumnWithTypeConverter<CardSort, String?> cardSort =
-      GeneratedColumn<String?>('card_sort', aliasedName, true,
+      GeneratedColumn<String?>('card_sort', aliasedName, false,
               type: const StringType(),
               requiredDuringInsert: false,
-              $customConstraints: 'DEFAULT NULL',
-              defaultValue: const CustomExpression<String>('NULL'))
+              $customConstraints: 'NOT NULL DEFAULT \'\'',
+              defaultValue: const CustomExpression<String>('\'\''))
           .withConverter<CardSort>(Settings.$converter0);
   final VerificationMeta _cardGroupMeta = const VerificationMeta('cardGroup');
   late final GeneratedColumnWithTypeConverter<CardGroup, String?> cardGroup =
-      GeneratedColumn<String?>('card_group', aliasedName, true,
+      GeneratedColumn<String?>('card_group', aliasedName, false,
               type: const StringType(),
               requiredDuringInsert: false,
-              $customConstraints: 'DEFAULT NULL',
-              defaultValue: const CustomExpression<String>('NULL'))
+              $customConstraints: 'NOT NULL DEFAULT \'\'',
+              defaultValue: const CustomExpression<String>('\'\''))
           .withConverter<CardGroup>(Settings.$converter1);
   final VerificationMeta _deckSortMeta = const VerificationMeta('deckSort');
   late final GeneratedColumnWithTypeConverter<DeckSort, String?> deckSort =
-      GeneratedColumn<String?>('deck_sort', aliasedName, true,
+      GeneratedColumn<String?>('deck_sort', aliasedName, false,
               type: const StringType(),
               requiredDuringInsert: false,
-              $customConstraints: 'DEFAULT NULL',
-              defaultValue: const CustomExpression<String>('NULL'))
+              $customConstraints: 'NOT NULL DEFAULT \'\'',
+              defaultValue: const CustomExpression<String>('\'\''))
           .withConverter<DeckSort>(Settings.$converter2);
   final VerificationMeta _deckGroupMeta = const VerificationMeta('deckGroup');
   late final GeneratedColumnWithTypeConverter<DeckGroup, String?> deckGroup =
-      GeneratedColumn<String?>('deck_group', aliasedName, true,
+      GeneratedColumn<String?>('deck_group', aliasedName, false,
               type: const StringType(),
               requiredDuringInsert: false,
-              $customConstraints: 'DEFAULT NULL',
-              defaultValue: const CustomExpression<String>('NULL'))
+              $customConstraints: 'NOT NULL DEFAULT \'\'',
+              defaultValue: const CustomExpression<String>('\'\''))
           .withConverter<DeckGroup>(Settings.$converter3);
   final VerificationMeta _deckCardSortMeta =
       const VerificationMeta('deckCardSort');
   late final GeneratedColumnWithTypeConverter<CardSort, String?> deckCardSort =
-      GeneratedColumn<String?>('deck_card_sort', aliasedName, true,
+      GeneratedColumn<String?>('deck_card_sort', aliasedName, false,
               type: const StringType(),
               requiredDuringInsert: false,
-              $customConstraints: 'DEFAULT NULL',
-              defaultValue: const CustomExpression<String>('NULL'))
+              $customConstraints: 'NOT NULL DEFAULT \'\'',
+              defaultValue: const CustomExpression<String>('\'\''))
           .withConverter<CardSort>(Settings.$converter4);
   final VerificationMeta _deckCardGroupMeta =
       const VerificationMeta('deckCardGroup');
   late final GeneratedColumnWithTypeConverter<CardGroup, String?>
       deckCardGroup = GeneratedColumn<String?>(
-              'deck_card_group', aliasedName, true,
+              'deck_card_group', aliasedName, false,
               type: const StringType(),
               requiredDuringInsert: false,
-              $customConstraints: 'DEFAULT NULL',
-              defaultValue: const CustomExpression<String>('NULL'))
+              $customConstraints: 'NOT NULL DEFAULT \'\'',
+              defaultValue: const CustomExpression<String>('\'\''))
           .withConverter<CardGroup>(Settings.$converter5);
+  final VerificationMeta _compareCardSortMeta =
+      const VerificationMeta('compareCardSort');
+  late final GeneratedColumnWithTypeConverter<CardSort, String?>
+      compareCardSort = GeneratedColumn<String?>(
+              'compare_card_sort', aliasedName, false,
+              type: const StringType(),
+              requiredDuringInsert: false,
+              $customConstraints: 'NOT NULL DEFAULT \'\'',
+              defaultValue: const CustomExpression<String>('\'\''))
+          .withConverter<CardSort>(Settings.$converter6);
   final VerificationMeta _apexResourcesMeta =
       const VerificationMeta('apexResources');
   late final GeneratedColumn<bool?> apexResources = GeneratedColumn<bool?>(
@@ -1027,6 +1054,7 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
         deckGroup,
         deckCardSort,
         deckCardGroup,
+        compareCardSort,
         apexResources
       ];
   @override
@@ -1071,6 +1099,7 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     context.handle(_deckGroupMeta, const VerificationResult.success());
     context.handle(_deckCardSortMeta, const VerificationResult.success());
     context.handle(_deckCardGroupMeta, const VerificationResult.success());
+    context.handle(_compareCardSortMeta, const VerificationResult.success());
     if (data.containsKey('apex_resources')) {
       context.handle(
           _apexResourcesMeta,
@@ -1105,6 +1134,8 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
       const CardSortConverter(CardSort.set);
   static TypeConverter<CardGroup, String> $converter5 =
       const CardGroupConverter(CardGroup.type);
+  static TypeConverter<CardSort, String> $converter6 =
+      const CardSortConverter(CardSort.set);
   @override
   List<String> get customConstraints =>
       const ['CONSTRAINT settings_id CHECK (id = TRUE)'];
@@ -3785,8 +3816,9 @@ class DeckData extends DataClass implements Insertable<DeckData> {
   final String description;
   final DateTime created;
   final DateTime updated;
-  final DeckState state;
-  final DateTime? lastSynced;
+  final bool deleted;
+  final DateTime? remoteUpdated;
+  final DateTime? synced;
   DeckData(
       {required this.id,
       required this.identityCode,
@@ -3797,8 +3829,9 @@ class DeckData extends DataClass implements Insertable<DeckData> {
       required this.description,
       required this.created,
       required this.updated,
-      required this.state,
-      this.lastSynced});
+      required this.deleted,
+      this.remoteUpdated,
+      this.synced});
   factory DeckData.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return DeckData(
@@ -3820,10 +3853,12 @@ class DeckData extends DataClass implements Insertable<DeckData> {
           .mapFromDatabaseResponse(data['${effectivePrefix}created']))!,
       updated: Deck.$converter1.mapToDart(const IntType()
           .mapFromDatabaseResponse(data['${effectivePrefix}updated']))!,
-      state: Deck.$converter2.mapToDart(const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}state']))!,
-      lastSynced: Deck.$converter3.mapToDart(const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}last_synced'])),
+      deleted: const BoolType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}deleted'])!,
+      remoteUpdated: Deck.$converter2.mapToDart(const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}remote_updated'])),
+      synced: Deck.$converter3.mapToDart(const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}synced'])),
     );
   }
   @override
@@ -3850,13 +3885,14 @@ class DeckData extends DataClass implements Insertable<DeckData> {
       final converter = Deck.$converter1;
       map['updated'] = Variable<int>(converter.mapToSql(updated)!);
     }
-    {
+    map['deleted'] = Variable<bool>(deleted);
+    if (!nullToAbsent || remoteUpdated != null) {
       final converter = Deck.$converter2;
-      map['state'] = Variable<String>(converter.mapToSql(state)!);
+      map['remote_updated'] = Variable<int?>(converter.mapToSql(remoteUpdated));
     }
-    if (!nullToAbsent || lastSynced != null) {
+    if (!nullToAbsent || synced != null) {
       final converter = Deck.$converter3;
-      map['last_synced'] = Variable<int?>(converter.mapToSql(lastSynced));
+      map['synced'] = Variable<int?>(converter.mapToSql(synced));
     }
     return map;
   }
@@ -3878,10 +3914,12 @@ class DeckData extends DataClass implements Insertable<DeckData> {
       description: Value(description),
       created: Value(created),
       updated: Value(updated),
-      state: Value(state),
-      lastSynced: lastSynced == null && nullToAbsent
+      deleted: Value(deleted),
+      remoteUpdated: remoteUpdated == null && nullToAbsent
           ? const Value.absent()
-          : Value(lastSynced),
+          : Value(remoteUpdated),
+      synced:
+          synced == null && nullToAbsent ? const Value.absent() : Value(synced),
     );
   }
 
@@ -3898,8 +3936,9 @@ class DeckData extends DataClass implements Insertable<DeckData> {
       description: serializer.fromJson<String>(json['description']),
       created: serializer.fromJson<DateTime>(json['created']),
       updated: serializer.fromJson<DateTime>(json['updated']),
-      state: serializer.fromJson<DeckState>(json['state']),
-      lastSynced: serializer.fromJson<DateTime?>(json['last_synced']),
+      deleted: serializer.fromJson<bool>(json['deleted']),
+      remoteUpdated: serializer.fromJson<DateTime?>(json['remote_updated']),
+      synced: serializer.fromJson<DateTime?>(json['synced']),
     );
   }
   @override
@@ -3915,8 +3954,9 @@ class DeckData extends DataClass implements Insertable<DeckData> {
       'description': serializer.toJson<String>(description),
       'created': serializer.toJson<DateTime>(created),
       'updated': serializer.toJson<DateTime>(updated),
-      'state': serializer.toJson<DeckState>(state),
-      'last_synced': serializer.toJson<DateTime?>(lastSynced),
+      'deleted': serializer.toJson<bool>(deleted),
+      'remote_updated': serializer.toJson<DateTime?>(remoteUpdated),
+      'synced': serializer.toJson<DateTime?>(synced),
     };
   }
 
@@ -3930,8 +3970,9 @@ class DeckData extends DataClass implements Insertable<DeckData> {
           String? description,
           DateTime? created,
           DateTime? updated,
-          DeckState? state,
-          Value<DateTime?> lastSynced = const Value.absent()}) =>
+          bool? deleted,
+          Value<DateTime?> remoteUpdated = const Value.absent(),
+          Value<DateTime?> synced = const Value.absent()}) =>
       DeckData(
         id: id ?? this.id,
         identityCode: identityCode ?? this.identityCode,
@@ -3943,8 +3984,10 @@ class DeckData extends DataClass implements Insertable<DeckData> {
         description: description ?? this.description,
         created: created ?? this.created,
         updated: updated ?? this.updated,
-        state: state ?? this.state,
-        lastSynced: lastSynced.present ? lastSynced.value : this.lastSynced,
+        deleted: deleted ?? this.deleted,
+        remoteUpdated:
+            remoteUpdated.present ? remoteUpdated.value : this.remoteUpdated,
+        synced: synced.present ? synced.value : this.synced,
       );
   @override
   String toString() {
@@ -3958,15 +4001,27 @@ class DeckData extends DataClass implements Insertable<DeckData> {
           ..write('description: $description, ')
           ..write('created: $created, ')
           ..write('updated: $updated, ')
-          ..write('state: $state, ')
-          ..write('lastSynced: $lastSynced')
+          ..write('deleted: $deleted, ')
+          ..write('remoteUpdated: $remoteUpdated, ')
+          ..write('synced: $synced')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, identityCode, formatCode, rotationCode,
-      mwlCode, name, description, created, updated, state, lastSynced);
+  int get hashCode => Object.hash(
+      id,
+      identityCode,
+      formatCode,
+      rotationCode,
+      mwlCode,
+      name,
+      description,
+      created,
+      updated,
+      deleted,
+      remoteUpdated,
+      synced);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -3980,8 +4035,9 @@ class DeckData extends DataClass implements Insertable<DeckData> {
           other.description == this.description &&
           other.created == this.created &&
           other.updated == this.updated &&
-          other.state == this.state &&
-          other.lastSynced == this.lastSynced);
+          other.deleted == this.deleted &&
+          other.remoteUpdated == this.remoteUpdated &&
+          other.synced == this.synced);
 }
 
 class DeckCompanion extends UpdateCompanion<DeckData> {
@@ -3994,8 +4050,9 @@ class DeckCompanion extends UpdateCompanion<DeckData> {
   final Value<String> description;
   final Value<DateTime> created;
   final Value<DateTime> updated;
-  final Value<DeckState> state;
-  final Value<DateTime?> lastSynced;
+  final Value<bool> deleted;
+  final Value<DateTime?> remoteUpdated;
+  final Value<DateTime?> synced;
   const DeckCompanion({
     this.id = const Value.absent(),
     this.identityCode = const Value.absent(),
@@ -4006,8 +4063,9 @@ class DeckCompanion extends UpdateCompanion<DeckData> {
     this.description = const Value.absent(),
     this.created = const Value.absent(),
     this.updated = const Value.absent(),
-    this.state = const Value.absent(),
-    this.lastSynced = const Value.absent(),
+    this.deleted = const Value.absent(),
+    this.remoteUpdated = const Value.absent(),
+    this.synced = const Value.absent(),
   });
   DeckCompanion.insert({
     required String id,
@@ -4019,15 +4077,16 @@ class DeckCompanion extends UpdateCompanion<DeckData> {
     required String description,
     required DateTime created,
     required DateTime updated,
-    required DeckState state,
-    this.lastSynced = const Value.absent(),
+    required bool deleted,
+    this.remoteUpdated = const Value.absent(),
+    this.synced = const Value.absent(),
   })  : id = Value(id),
         identityCode = Value(identityCode),
         name = Value(name),
         description = Value(description),
         created = Value(created),
         updated = Value(updated),
-        state = Value(state);
+        deleted = Value(deleted);
   static Insertable<DeckData> custom({
     Expression<String>? id,
     Expression<String>? identityCode,
@@ -4038,8 +4097,9 @@ class DeckCompanion extends UpdateCompanion<DeckData> {
     Expression<String>? description,
     Expression<DateTime>? created,
     Expression<DateTime>? updated,
-    Expression<DeckState>? state,
-    Expression<DateTime?>? lastSynced,
+    Expression<bool>? deleted,
+    Expression<DateTime?>? remoteUpdated,
+    Expression<DateTime?>? synced,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -4051,8 +4111,9 @@ class DeckCompanion extends UpdateCompanion<DeckData> {
       if (description != null) 'description': description,
       if (created != null) 'created': created,
       if (updated != null) 'updated': updated,
-      if (state != null) 'state': state,
-      if (lastSynced != null) 'last_synced': lastSynced,
+      if (deleted != null) 'deleted': deleted,
+      if (remoteUpdated != null) 'remote_updated': remoteUpdated,
+      if (synced != null) 'synced': synced,
     });
   }
 
@@ -4066,8 +4127,9 @@ class DeckCompanion extends UpdateCompanion<DeckData> {
       Value<String>? description,
       Value<DateTime>? created,
       Value<DateTime>? updated,
-      Value<DeckState>? state,
-      Value<DateTime?>? lastSynced}) {
+      Value<bool>? deleted,
+      Value<DateTime?>? remoteUpdated,
+      Value<DateTime?>? synced}) {
     return DeckCompanion(
       id: id ?? this.id,
       identityCode: identityCode ?? this.identityCode,
@@ -4078,8 +4140,9 @@ class DeckCompanion extends UpdateCompanion<DeckData> {
       description: description ?? this.description,
       created: created ?? this.created,
       updated: updated ?? this.updated,
-      state: state ?? this.state,
-      lastSynced: lastSynced ?? this.lastSynced,
+      deleted: deleted ?? this.deleted,
+      remoteUpdated: remoteUpdated ?? this.remoteUpdated,
+      synced: synced ?? this.synced,
     );
   }
 
@@ -4115,13 +4178,17 @@ class DeckCompanion extends UpdateCompanion<DeckData> {
       final converter = Deck.$converter1;
       map['updated'] = Variable<int>(converter.mapToSql(updated.value)!);
     }
-    if (state.present) {
-      final converter = Deck.$converter2;
-      map['state'] = Variable<String>(converter.mapToSql(state.value)!);
+    if (deleted.present) {
+      map['deleted'] = Variable<bool>(deleted.value);
     }
-    if (lastSynced.present) {
+    if (remoteUpdated.present) {
+      final converter = Deck.$converter2;
+      map['remote_updated'] =
+          Variable<int?>(converter.mapToSql(remoteUpdated.value));
+    }
+    if (synced.present) {
       final converter = Deck.$converter3;
-      map['last_synced'] = Variable<int?>(converter.mapToSql(lastSynced.value));
+      map['synced'] = Variable<int?>(converter.mapToSql(synced.value));
     }
     return map;
   }
@@ -4138,8 +4205,9 @@ class DeckCompanion extends UpdateCompanion<DeckData> {
           ..write('description: $description, ')
           ..write('created: $created, ')
           ..write('updated: $updated, ')
-          ..write('state: $state, ')
-          ..write('lastSynced: $lastSynced')
+          ..write('deleted: $deleted, ')
+          ..write('remoteUpdated: $remoteUpdated, ')
+          ..write('synced: $synced')
           ..write(')'))
         .toString();
   }
@@ -4209,16 +4277,23 @@ class Deck extends Table with TableInfo<Deck, DeckData> {
               requiredDuringInsert: true,
               $customConstraints: 'NOT NULL')
           .withConverter<DateTime>(Deck.$converter1);
-  final VerificationMeta _stateMeta = const VerificationMeta('state');
-  late final GeneratedColumnWithTypeConverter<DeckState, String?> state =
-      GeneratedColumn<String?>('state', aliasedName, false,
-              type: const StringType(),
-              requiredDuringInsert: true,
-              $customConstraints: 'NOT NULL')
-          .withConverter<DeckState>(Deck.$converter2);
-  final VerificationMeta _lastSyncedMeta = const VerificationMeta('lastSynced');
-  late final GeneratedColumnWithTypeConverter<DateTime, int?> lastSynced =
-      GeneratedColumn<int?>('last_synced', aliasedName, true,
+  final VerificationMeta _deletedMeta = const VerificationMeta('deleted');
+  late final GeneratedColumn<bool?> deleted = GeneratedColumn<bool?>(
+      'deleted', aliasedName, false,
+      type: const BoolType(),
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  final VerificationMeta _remoteUpdatedMeta =
+      const VerificationMeta('remoteUpdated');
+  late final GeneratedColumnWithTypeConverter<DateTime, int?> remoteUpdated =
+      GeneratedColumn<int?>('remote_updated', aliasedName, true,
+              type: const IntType(),
+              requiredDuringInsert: false,
+              $customConstraints: '')
+          .withConverter<DateTime>(Deck.$converter2);
+  final VerificationMeta _syncedMeta = const VerificationMeta('synced');
+  late final GeneratedColumnWithTypeConverter<DateTime, int?> synced =
+      GeneratedColumn<int?>('synced', aliasedName, true,
               type: const IntType(),
               requiredDuringInsert: false,
               $customConstraints: '')
@@ -4234,8 +4309,9 @@ class Deck extends Table with TableInfo<Deck, DeckData> {
         description,
         created,
         updated,
-        state,
-        lastSynced
+        deleted,
+        remoteUpdated,
+        synced
       ];
   @override
   String get aliasedName => _alias ?? 'deck';
@@ -4291,8 +4367,14 @@ class Deck extends Table with TableInfo<Deck, DeckData> {
     }
     context.handle(_createdMeta, const VerificationResult.success());
     context.handle(_updatedMeta, const VerificationResult.success());
-    context.handle(_stateMeta, const VerificationResult.success());
-    context.handle(_lastSyncedMeta, const VerificationResult.success());
+    if (data.containsKey('deleted')) {
+      context.handle(_deletedMeta,
+          deleted.isAcceptableOrUnknown(data['deleted']!, _deletedMeta));
+    } else if (isInserting) {
+      context.missing(_deletedMeta);
+    }
+    context.handle(_remoteUpdatedMeta, const VerificationResult.success());
+    context.handle(_syncedMeta, const VerificationResult.success());
     return context;
   }
 
@@ -4313,8 +4395,8 @@ class Deck extends Table with TableInfo<Deck, DeckData> {
       const DateTimeUtcConverter();
   static TypeConverter<DateTime, int> $converter1 =
       const DateTimeUtcConverter();
-  static TypeConverter<DeckState, String> $converter2 =
-      const DeckStateConverter(DeckState.local);
+  static TypeConverter<DateTime, int> $converter2 =
+      const DateTimeUtcConverter();
   static TypeConverter<DateTime, int> $converter3 =
       const DateTimeUtcConverter();
   @override
@@ -6274,6 +6356,7 @@ class Card extends Table with TableInfo<Card, CardData> {
 
 abstract class _$Database extends GeneratedDatabase {
   _$Database(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
+  _$Database.connect(DatabaseConnection c) : super.connect(c);
   late final Type type = Type(this);
   late final Side side = Side(this);
   late final Settings settings = Settings(this);
@@ -6293,9 +6376,12 @@ abstract class _$Database extends GeneratedDatabase {
   late final Card card = Card(this);
   Selectable<TypeResult> listTypes(
       {Expression<bool?> where = const CustomExpression('(TRUE)')}) {
-    final generatedwhere = $write(where, hasMultipleTables: true);
+    var $arrayStartIndex = 1;
+    final generatedwhere =
+        $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT\n  "type"."code" AS "nested_0.code", "type"."side_code" AS "nested_0.side_code", "type"."position" AS "nested_0.position", "type"."name" AS "nested_0.name", "type"."is_subtype" AS "nested_0.is_subtype",\n  "side"."code" AS "nested_1.code", "side"."name" AS "nested_1.name"\nFROM type\n\nLEFT JOIN side\n  ON side.code = type.side_code\n\nWHERE ${generatedwhere.sql}\n  \nORDER BY type.position',
+        'SELECT"type"."code" AS "nested_0.code", "type"."side_code" AS "nested_0.side_code", "type"."position" AS "nested_0.position", "type"."name" AS "nested_0.name", "type"."is_subtype" AS "nested_0.is_subtype","side"."code" AS "nested_1.code", "side"."name" AS "nested_1.name" FROM type LEFT JOIN side ON side.code = type.side_code WHERE ${generatedwhere.sql} ORDER BY type.position',
         variables: [
           ...generatedwhere.introducedVariables
         ],
@@ -6313,8 +6399,10 @@ abstract class _$Database extends GeneratedDatabase {
 
   Selectable<SideData> listSides(
       {Expression<bool?> where = const CustomExpression('(TRUE)')}) {
-    final generatedwhere = $write(where);
-    return customSelect('SELECT *\nFROM side\nWHERE ${generatedwhere.sql}',
+    var $arrayStartIndex = 1;
+    final generatedwhere = $write(where, startIndex: $arrayStartIndex);
+    $arrayStartIndex += generatedwhere.amountOfVariables;
+    return customSelect('SELECT * FROM side WHERE ${generatedwhere.sql}',
         variables: [
           ...generatedwhere.introducedVariables
         ],
@@ -6326,7 +6414,7 @@ abstract class _$Database extends GeneratedDatabase {
 
   Selectable<SettingResult> getSettings() {
     return customSelect(
-        'SELECT\n  "settings"."id" AS "nested_0.id", "settings"."filter_format_code" AS "nested_0.filter_format_code", "settings"."filter_rotation_code" AS "nested_0.filter_rotation_code", "settings"."filter_mwl_code" AS "nested_0.filter_mwl_code", "settings"."filter_collection" AS "nested_0.filter_collection", "settings"."card_sort" AS "nested_0.card_sort", "settings"."card_group" AS "nested_0.card_group", "settings"."deck_sort" AS "nested_0.deck_sort", "settings"."deck_group" AS "nested_0.deck_group", "settings"."deck_card_sort" AS "nested_0.deck_card_sort", "settings"."deck_card_group" AS "nested_0.deck_card_group", "settings"."apex_resources" AS "nested_0.apex_resources",\n  "filter_format"."id" AS "nested_1.id", "filter_format"."code" AS "nested_1.code", "filter_format"."name" AS "nested_1.name",\n  "filter_rotation"."code" AS "nested_2.code", "filter_rotation"."format_code" AS "nested_2.format_code", "filter_rotation"."name" AS "nested_2.name", "filter_rotation"."date_start" AS "nested_2.date_start", "filter_rotation"."current" AS "nested_2.current", "filter_rotation"."latest" AS "nested_2.latest",\n  "filter_mwl"."code" AS "nested_3.code", "filter_mwl"."format_code" AS "nested_3.format_code", "filter_mwl"."name" AS "nested_3.name", "filter_mwl"."date_start" AS "nested_3.date_start", "filter_mwl"."active" AS "nested_3.active", "filter_mwl"."latest" AS "nested_3.latest"\nFROM settings\n\nLEFT JOIN format AS filter_format\n  ON filter_format.code = settings.filter_format_code\n\nLEFT JOIN rotation AS filter_rotation\n  ON filter_rotation.code = settings.filter_rotation_code\n\nLEFT JOIN mwl AS filter_mwl\n  ON filter_mwl.code = settings.filter_mwl_code\n\nLIMIT 1',
+        'SELECT"settings"."id" AS "nested_0.id", "settings"."filter_format_code" AS "nested_0.filter_format_code", "settings"."filter_rotation_code" AS "nested_0.filter_rotation_code", "settings"."filter_mwl_code" AS "nested_0.filter_mwl_code", "settings"."filter_collection" AS "nested_0.filter_collection", "settings"."card_sort" AS "nested_0.card_sort", "settings"."card_group" AS "nested_0.card_group", "settings"."deck_sort" AS "nested_0.deck_sort", "settings"."deck_group" AS "nested_0.deck_group", "settings"."deck_card_sort" AS "nested_0.deck_card_sort", "settings"."deck_card_group" AS "nested_0.deck_card_group", "settings"."compare_card_sort" AS "nested_0.compare_card_sort", "settings"."apex_resources" AS "nested_0.apex_resources","filter_format"."id" AS "nested_1.id", "filter_format"."code" AS "nested_1.code", "filter_format"."name" AS "nested_1.name","filter_rotation"."code" AS "nested_2.code", "filter_rotation"."format_code" AS "nested_2.format_code", "filter_rotation"."name" AS "nested_2.name", "filter_rotation"."date_start" AS "nested_2.date_start", "filter_rotation"."current" AS "nested_2.current", "filter_rotation"."latest" AS "nested_2.latest","filter_mwl"."code" AS "nested_3.code", "filter_mwl"."format_code" AS "nested_3.format_code", "filter_mwl"."name" AS "nested_3.name", "filter_mwl"."date_start" AS "nested_3.date_start", "filter_mwl"."active" AS "nested_3.active", "filter_mwl"."latest" AS "nested_3.latest" FROM settings LEFT JOIN format AS filter_format ON filter_format.code = settings.filter_format_code LEFT JOIN rotation AS filter_rotation ON filter_rotation.code = settings.filter_rotation_code LEFT JOIN mwl AS filter_mwl ON filter_mwl.code = settings.filter_mwl_code LIMIT 1',
         variables: [],
         readsFrom: {
           settings,
@@ -6345,9 +6433,12 @@ abstract class _$Database extends GeneratedDatabase {
 
   Selectable<RotationData> listRotations(
       {Expression<bool?> where = const CustomExpression('(TRUE)')}) {
-    final generatedwhere = $write(where, hasMultipleTables: true);
+    var $arrayStartIndex = 1;
+    final generatedwhere =
+        $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT\n  rotation.*\n\nFROM rotation\n\nINNER JOIN format\n  ON format.code = rotation.format_code\n\nWHERE ${generatedwhere.sql}\n\nORDER BY\n  format.id,\n  rotation.latest,\n  rotation.current,\n  rotation.date_start DESC',
+        'SELECT rotation.* FROM rotation INNER JOIN format ON format.code = rotation.format_code WHERE ${generatedwhere.sql} ORDER BY format.id, rotation.latest, rotation."current", rotation.date_start DESC',
         variables: [
           ...generatedwhere.introducedVariables
         ],
@@ -6360,9 +6451,12 @@ abstract class _$Database extends GeneratedDatabase {
 
   Selectable<RotationPackResult> listRotationPacks(
       {Expression<bool?> where = const CustomExpression('(TRUE)')}) {
-    final generatedwhere = $write(where, hasMultipleTables: true);
+    var $arrayStartIndex = 1;
+    final generatedwhere =
+        $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT\n  "format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name",\n  "rotation"."code" AS "nested_1.code", "rotation"."format_code" AS "nested_1.format_code", "rotation"."name" AS "nested_1.name", "rotation"."date_start" AS "nested_1.date_start", "rotation"."current" AS "nested_1.current", "rotation"."latest" AS "nested_1.latest",\n  "pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size",\n  "cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated"\nFROM rotation\n\nINNER JOIN format\n  ON format.code = rotation.format_code\n\nLEFT JOIN rotation_cycle\n  ON rotation_cycle.rotation_code = rotation.code\n\nINNER JOIN cycle\n  ON cycle.code = rotation_cycle.cycle_code\n\nINNER JOIN pack\n  ON pack.cycle_code = cycle.code\n\nWHERE ${generatedwhere.sql}\n\nORDER BY\n  format.id,\n  rotation.latest,\n  rotation.current,\n  rotation.date_start DESC,\n  cycle.position DESC,\n  pack.position',
+        'SELECT"format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name","rotation"."code" AS "nested_1.code", "rotation"."format_code" AS "nested_1.format_code", "rotation"."name" AS "nested_1.name", "rotation"."date_start" AS "nested_1.date_start", "rotation"."current" AS "nested_1.current", "rotation"."latest" AS "nested_1.latest","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated" FROM rotation INNER JOIN format ON format.code = rotation.format_code LEFT JOIN rotation_cycle ON rotation_cycle.rotation_code = rotation.code INNER JOIN cycle ON cycle.code = rotation_cycle.cycle_code INNER JOIN pack ON pack.cycle_code = cycle.code WHERE ${generatedwhere.sql} ORDER BY format.id, rotation.latest, rotation."current", rotation.date_start DESC, cycle.position DESC, pack.position',
         variables: [
           ...generatedwhere.introducedVariables
         ],
@@ -6385,7 +6479,7 @@ abstract class _$Database extends GeneratedDatabase {
 
   Selectable<FormatPackResult> listDefaultFormatPacks() {
     return customSelect(
-        'SELECT\n  "format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name",\n  "rotation"."code" AS "nested_1.code", "rotation"."format_code" AS "nested_1.format_code", "rotation"."name" AS "nested_1.name", "rotation"."date_start" AS "nested_1.date_start", "rotation"."current" AS "nested_1.current", "rotation"."latest" AS "nested_1.latest",\n  "pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size",\n  "cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated"\nFROM settings\n\nINNER JOIN format\n  ON format.code = settings.filter_format_code\n\nINNER JOIN rotation\n  ON rotation.format_code = format.code\n  AND rotation.current\n\nLEFT JOIN rotation_cycle\n  ON rotation_cycle.rotation_code = rotation.code\n\nINNER JOIN cycle\n  ON cycle.code = rotation_cycle.cycle_code\n\nINNER JOIN pack\n  ON pack.cycle_code = cycle.code\n\nORDER BY\n  cycle.position DESC,\n  pack.position',
+        'SELECT"format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name","rotation"."code" AS "nested_1.code", "rotation"."format_code" AS "nested_1.format_code", "rotation"."name" AS "nested_1.name", "rotation"."date_start" AS "nested_1.date_start", "rotation"."current" AS "nested_1.current", "rotation"."latest" AS "nested_1.latest","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated" FROM settings INNER JOIN format ON format.code = settings.filter_format_code INNER JOIN rotation ON rotation.format_code = format.code AND rotation."current" LEFT JOIN rotation_cycle ON rotation_cycle.rotation_code = rotation.code INNER JOIN cycle ON cycle.code = rotation_cycle.cycle_code INNER JOIN pack ON pack.cycle_code = cycle.code ORDER BY cycle.position DESC, pack.position',
         variables: [],
         readsFrom: {
           settings,
@@ -6406,9 +6500,12 @@ abstract class _$Database extends GeneratedDatabase {
 
   Selectable<RotationCardResult> listRotationCards(
       {Expression<bool?> where = const CustomExpression('(TRUE)')}) {
-    final generatedwhere = $write(where, hasMultipleTables: true);
+    var $arrayStartIndex = 1;
+    final generatedwhere =
+        $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT\n  "format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name",\n  "rotation"."code" AS "nested_1.code", "rotation"."format_code" AS "nested_1.format_code", "rotation"."name" AS "nested_1.name", "rotation"."date_start" AS "nested_1.date_start", "rotation"."current" AS "nested_1.current", "rotation"."latest" AS "nested_1.latest",\n  "pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size",\n  "cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated",\n  "card"."code" AS "nested_4.code", "card"."pack_code" AS "nested_4.pack_code", "card"."faction_code" AS "nested_4.faction_code", "card"."type_code" AS "nested_4.type_code", "card"."position" AS "nested_4.position", "card"."title" AS "nested_4.title", "card"."stripped_title" AS "nested_4.stripped_title", "card"."body" AS "nested_4.body", "card"."stripped_body" AS "nested_4.stripped_body", "card"."keywords" AS "nested_4.keywords", "card"."quantity" AS "nested_4.quantity", "card"."cost" AS "nested_4.cost", "card"."deck_limit" AS "nested_4.deck_limit", "card"."faction_cost" AS "nested_4.faction_cost", "card"."uniqueness" AS "nested_4.uniqueness", "card"."strength" AS "nested_4.strength", "card"."agenda_points" AS "nested_4.agenda_points", "card"."memory_cost" AS "nested_4.memory_cost", "card"."advancement_cost" AS "nested_4.advancement_cost", "card"."trash_cost" AS "nested_4.trash_cost", "card"."base_link" AS "nested_4.base_link", "card"."influence_limit" AS "nested_4.influence_limit", "card"."minimum_deck_size" AS "nested_4.minimum_deck_size", "card"."flavor" AS "nested_4.flavor", "card"."illustrator" AS "nested_4.illustrator"\nFROM rotation\n\nINNER JOIN format\n  ON format.code = rotation.format_code\n\nLEFT JOIN rotation_cycle\n  ON rotation_cycle.rotation_code = rotation.code\n\nINNER JOIN cycle\n  ON cycle.code = rotation_cycle.cycle_code\n\nINNER JOIN pack\n  ON pack.cycle_code = cycle.code\n\nINNER JOIN card\n  ON card.pack_code = pack.code\n\nWHERE ${generatedwhere.sql}\n\nORDER BY\n  rotation.date_start DESC,\n  cycle.position DESC,\n  pack.position,\n  card.position',
+        'SELECT"format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name","rotation"."code" AS "nested_1.code", "rotation"."format_code" AS "nested_1.format_code", "rotation"."name" AS "nested_1.name", "rotation"."date_start" AS "nested_1.date_start", "rotation"."current" AS "nested_1.current", "rotation"."latest" AS "nested_1.latest","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated","card"."code" AS "nested_4.code", "card"."pack_code" AS "nested_4.pack_code", "card"."faction_code" AS "nested_4.faction_code", "card"."type_code" AS "nested_4.type_code", "card"."position" AS "nested_4.position", "card"."title" AS "nested_4.title", "card"."stripped_title" AS "nested_4.stripped_title", "card"."body" AS "nested_4.body", "card"."stripped_body" AS "nested_4.stripped_body", "card"."keywords" AS "nested_4.keywords", "card"."quantity" AS "nested_4.quantity", "card"."cost" AS "nested_4.cost", "card"."deck_limit" AS "nested_4.deck_limit", "card"."faction_cost" AS "nested_4.faction_cost", "card"."uniqueness" AS "nested_4.uniqueness", "card"."strength" AS "nested_4.strength", "card"."agenda_points" AS "nested_4.agenda_points", "card"."memory_cost" AS "nested_4.memory_cost", "card"."advancement_cost" AS "nested_4.advancement_cost", "card"."trash_cost" AS "nested_4.trash_cost", "card"."base_link" AS "nested_4.base_link", "card"."influence_limit" AS "nested_4.influence_limit", "card"."minimum_deck_size" AS "nested_4.minimum_deck_size", "card"."flavor" AS "nested_4.flavor", "card"."illustrator" AS "nested_4.illustrator" FROM rotation INNER JOIN format ON format.code = rotation.format_code LEFT JOIN rotation_cycle ON rotation_cycle.rotation_code = rotation.code INNER JOIN cycle ON cycle.code = rotation_cycle.cycle_code INNER JOIN pack ON pack.cycle_code = cycle.code INNER JOIN card ON card.pack_code = pack.code WHERE ${generatedwhere.sql} ORDER BY rotation.date_start DESC, cycle.position DESC, pack.position, card.position',
         variables: [
           ...generatedwhere.introducedVariables
         ],
@@ -6438,14 +6535,27 @@ abstract class _$Database extends GeneratedDatabase {
       Expression<bool?> sides = const CustomExpression('(TRUE)'),
       Expression<bool?> factions = const CustomExpression('(TRUE)'),
       Expression<bool?> types = const CustomExpression('(TRUE)')}) {
-    final generatedcards = $write(cards, hasMultipleTables: true);
-    final generatedcycles = $write(cycles, hasMultipleTables: true);
-    final generatedpacks = $write(packs, hasMultipleTables: true);
-    final generatedsides = $write(sides, hasMultipleTables: true);
-    final generatedfactions = $write(factions, hasMultipleTables: true);
-    final generatedtypes = $write(types, hasMultipleTables: true);
+    var $arrayStartIndex = 1;
+    final generatedcards =
+        $write(cards, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    $arrayStartIndex += generatedcards.amountOfVariables;
+    final generatedcycles =
+        $write(cycles, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    $arrayStartIndex += generatedcycles.amountOfVariables;
+    final generatedpacks =
+        $write(packs, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    $arrayStartIndex += generatedpacks.amountOfVariables;
+    final generatedsides =
+        $write(sides, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    $arrayStartIndex += generatedsides.amountOfVariables;
+    final generatedfactions =
+        $write(factions, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    $arrayStartIndex += generatedfactions.amountOfVariables;
+    final generatedtypes =
+        $write(types, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    $arrayStartIndex += generatedtypes.amountOfVariables;
     return customSelect(
-        'SELECT\n  (SELECT COUNT(*) FROM card WHERE ${generatedcards.sql}) AS card_count,\n  (SELECT COUNT(*) FROM cycle WHERE ${generatedcycles.sql}) AS cycle_count,\n  (SELECT COUNT(*) FROM pack WHERE ${generatedpacks.sql}) AS pack_count,\n  (SELECT COUNT(*) FROM side WHERE ${generatedsides.sql}) AS side_count,\n  (SELECT COUNT(*) FROM faction INNER JOIN side ON side.code = faction.side_code WHERE ${generatedfactions.sql}) AS faction_count,\n  (SELECT COUNT(*) FROM type INNER JOIN side ON side.code = type.side_code WHERE ${generatedtypes.sql}) AS type_count',
+        'SELECT (SELECT COUNT(*) FROM card WHERE ${generatedcards.sql}) AS card_count, (SELECT COUNT(*) FROM cycle WHERE ${generatedcycles.sql}) AS cycle_count, (SELECT COUNT(*) FROM pack WHERE ${generatedpacks.sql}) AS pack_count, (SELECT COUNT(*) FROM side WHERE ${generatedsides.sql}) AS side_count, (SELECT COUNT(*) FROM faction INNER JOIN side ON side.code = faction.side_code WHERE ${generatedfactions.sql}) AS faction_count, (SELECT COUNT(*) FROM type INNER JOIN side ON side.code = type.side_code WHERE ${generatedtypes.sql}) AS type_count',
         variables: [
           ...generatedcards.introducedVariables,
           ...generatedcycles.introducedVariables,
@@ -6481,9 +6591,12 @@ abstract class _$Database extends GeneratedDatabase {
 
   Selectable<PackResult> listPacks(
       {Expression<bool?> where = const CustomExpression('(TRUE)')}) {
-    final generatedwhere = $write(where, hasMultipleTables: true);
+    var $arrayStartIndex = 1;
+    final generatedwhere =
+        $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT\n  "pack"."code" AS "nested_0.code", "pack"."cycle_code" AS "nested_0.cycle_code", "pack"."position" AS "nested_0.position", "pack"."name" AS "nested_0.name", "pack"."date_release" AS "nested_0.date_release", "pack"."size" AS "nested_0.size",\n  "cycle"."code" AS "nested_1.code", "cycle"."position" AS "nested_1.position", "cycle"."name" AS "nested_1.name", "cycle"."size" AS "nested_1.size", "cycle"."rotated" AS "nested_1.rotated"\nFROM pack\n\nINNER JOIN cycle\n  ON cycle.code = pack.cycle_code\n\nWHERE ${generatedwhere.sql}\n\nORDER BY cycle.position DESC, pack.position',
+        'SELECT"pack"."code" AS "nested_0.code", "pack"."cycle_code" AS "nested_0.cycle_code", "pack"."position" AS "nested_0.position", "pack"."name" AS "nested_0.name", "pack"."date_release" AS "nested_0.date_release", "pack"."size" AS "nested_0.size","cycle"."code" AS "nested_1.code", "cycle"."position" AS "nested_1.position", "cycle"."name" AS "nested_1.name", "cycle"."size" AS "nested_1.size", "cycle"."rotated" AS "nested_1.rotated" FROM pack INNER JOIN cycle ON cycle.code = pack.cycle_code WHERE ${generatedwhere.sql} ORDER BY cycle.position DESC, pack.position',
         variables: [
           ...generatedwhere.introducedVariables
         ],
@@ -6500,16 +6613,19 @@ abstract class _$Database extends GeneratedDatabase {
   }
 
   Selectable<NrdbData> getNrdb() {
-    return customSelect('SELECT *\nFROM nrdb', variables: [], readsFrom: {
+    return customSelect('SELECT * FROM nrdb', variables: [], readsFrom: {
       nrdb,
     }).map(nrdb.mapFromRow);
   }
 
   Selectable<MwlData> listMwl(
       {Expression<bool?> where = const CustomExpression('(TRUE)')}) {
-    final generatedwhere = $write(where, hasMultipleTables: true);
+    var $arrayStartIndex = 1;
+    final generatedwhere =
+        $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT\n  mwl.*\nFROM mwl\n\nINNER JOIN format\n  ON format.code = mwl.format_code\n\nWHERE ${generatedwhere.sql}\n\nORDER BY\n  format.id,\n  mwl.latest,\n  mwl.active,\n  mwl.date_start DESC',
+        'SELECT mwl.* FROM mwl INNER JOIN format ON format.code = mwl.format_code WHERE ${generatedwhere.sql} ORDER BY format.id, mwl.latest, mwl.active, mwl.date_start DESC',
         variables: [
           ...generatedwhere.introducedVariables
         ],
@@ -6522,9 +6638,12 @@ abstract class _$Database extends GeneratedDatabase {
 
   Selectable<FormatResult> listFormats(
       {Expression<bool?> where = const CustomExpression('(TRUE)')}) {
-    final generatedwhere = $write(where, hasMultipleTables: true);
+    var $arrayStartIndex = 1;
+    final generatedwhere =
+        $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT\n  "format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name",\n  "current_rotation"."code" AS "nested_1.code", "current_rotation"."format_code" AS "nested_1.format_code", "current_rotation"."name" AS "nested_1.name", "current_rotation"."date_start" AS "nested_1.date_start", "current_rotation"."current" AS "nested_1.current", "current_rotation"."latest" AS "nested_1.latest",\n  "latest_rotation"."code" AS "nested_2.code", "latest_rotation"."format_code" AS "nested_2.format_code", "latest_rotation"."name" AS "nested_2.name", "latest_rotation"."date_start" AS "nested_2.date_start", "latest_rotation"."current" AS "nested_2.current", "latest_rotation"."latest" AS "nested_2.latest",\n  "active_mwl"."code" AS "nested_3.code", "active_mwl"."format_code" AS "nested_3.format_code", "active_mwl"."name" AS "nested_3.name", "active_mwl"."date_start" AS "nested_3.date_start", "active_mwl"."active" AS "nested_3.active", "active_mwl"."latest" AS "nested_3.latest",\n  "latest_mwl"."code" AS "nested_4.code", "latest_mwl"."format_code" AS "nested_4.format_code", "latest_mwl"."name" AS "nested_4.name", "latest_mwl"."date_start" AS "nested_4.date_start", "latest_mwl"."active" AS "nested_4.active", "latest_mwl"."latest" AS "nested_4.latest"\nFROM format\n\nLEFT JOIN rotation AS current_rotation\n  ON current_rotation.format_code = format.code\n  AND current_rotation."current"\n\nLEFT JOIN rotation AS latest_rotation\n  ON latest_rotation.format_code = format.code\n  AND latest_rotation.latest\n\nLEFT JOIN mwl AS active_mwl\n  ON active_mwl.format_code = format.code\n  AND active_mwl.active\n\nLEFT JOIN mwl AS latest_mwl\n  ON latest_mwl.format_code = format.code\n  AND latest_mwl.latest\n\nWHERE ${generatedwhere.sql}\n\nORDER BY format.id',
+        'SELECT"format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name","current_rotation"."code" AS "nested_1.code", "current_rotation"."format_code" AS "nested_1.format_code", "current_rotation"."name" AS "nested_1.name", "current_rotation"."date_start" AS "nested_1.date_start", "current_rotation"."current" AS "nested_1.current", "current_rotation"."latest" AS "nested_1.latest","latest_rotation"."code" AS "nested_2.code", "latest_rotation"."format_code" AS "nested_2.format_code", "latest_rotation"."name" AS "nested_2.name", "latest_rotation"."date_start" AS "nested_2.date_start", "latest_rotation"."current" AS "nested_2.current", "latest_rotation"."latest" AS "nested_2.latest","active_mwl"."code" AS "nested_3.code", "active_mwl"."format_code" AS "nested_3.format_code", "active_mwl"."name" AS "nested_3.name", "active_mwl"."date_start" AS "nested_3.date_start", "active_mwl"."active" AS "nested_3.active", "active_mwl"."latest" AS "nested_3.latest","latest_mwl"."code" AS "nested_4.code", "latest_mwl"."format_code" AS "nested_4.format_code", "latest_mwl"."name" AS "nested_4.name", "latest_mwl"."date_start" AS "nested_4.date_start", "latest_mwl"."active" AS "nested_4.active", "latest_mwl"."latest" AS "nested_4.latest" FROM format LEFT JOIN rotation AS current_rotation ON current_rotation.format_code = format.code AND current_rotation."current" LEFT JOIN rotation AS latest_rotation ON latest_rotation.format_code = format.code AND latest_rotation.latest LEFT JOIN mwl AS active_mwl ON active_mwl.format_code = format.code AND active_mwl.active LEFT JOIN mwl AS latest_mwl ON latest_mwl.format_code = format.code AND latest_mwl.latest WHERE ${generatedwhere.sql} ORDER BY format.id',
         variables: [
           ...generatedwhere.introducedVariables
         ],
@@ -6547,9 +6666,12 @@ abstract class _$Database extends GeneratedDatabase {
 
   Selectable<FactionResult> listFactions(
       {Expression<bool?> where = const CustomExpression('(TRUE)')}) {
-    final generatedwhere = $write(where, hasMultipleTables: true);
+    var $arrayStartIndex = 1;
+    final generatedwhere =
+        $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT\n  "faction"."code" AS "nested_0.code", "faction"."side_code" AS "nested_0.side_code", "faction"."name" AS "nested_0.name", "faction"."color" AS "nested_0.color", "faction"."is_mini" AS "nested_0.is_mini",\n  "side"."code" AS "nested_1.code", "side"."name" AS "nested_1.name"\nFROM faction\n\nINNER JOIN side\n  ON side.code = faction.side_code\n\nWHERE ${generatedwhere.sql}',
+        'SELECT"faction"."code" AS "nested_0.code", "faction"."side_code" AS "nested_0.side_code", "faction"."name" AS "nested_0.name", "faction"."color" AS "nested_0.color", "faction"."is_mini" AS "nested_0.is_mini","side"."code" AS "nested_1.code", "side"."name" AS "nested_1.name" FROM faction INNER JOIN side ON side.code = faction.side_code WHERE ${generatedwhere.sql}',
         variables: [
           ...generatedwhere.introducedVariables
         ],
@@ -6567,9 +6689,12 @@ abstract class _$Database extends GeneratedDatabase {
 
   Selectable<DeckResult> listDecks(
       {Expression<bool?> where = const CustomExpression('(TRUE)')}) {
-    final generatedwhere = $write(where, hasMultipleTables: true);
+    var $arrayStartIndex = 1;
+    final generatedwhere =
+        $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT\n  "deck"."id" AS "nested_0.id", "deck"."identity_code" AS "nested_0.identity_code", "deck"."format_code" AS "nested_0.format_code", "deck"."rotation_code" AS "nested_0.rotation_code", "deck"."mwl_code" AS "nested_0.mwl_code", "deck"."name" AS "nested_0.name", "deck"."description" AS "nested_0.description", "deck"."created" AS "nested_0.created", "deck"."updated" AS "nested_0.updated", "deck"."state" AS "nested_0.state", "deck"."last_synced" AS "nested_0.last_synced",\n  "identity"."code" AS "nested_1.code", "identity"."pack_code" AS "nested_1.pack_code", "identity"."faction_code" AS "nested_1.faction_code", "identity"."type_code" AS "nested_1.type_code", "identity"."position" AS "nested_1.position", "identity"."title" AS "nested_1.title", "identity"."stripped_title" AS "nested_1.stripped_title", "identity"."body" AS "nested_1.body", "identity"."stripped_body" AS "nested_1.stripped_body", "identity"."keywords" AS "nested_1.keywords", "identity"."quantity" AS "nested_1.quantity", "identity"."cost" AS "nested_1.cost", "identity"."deck_limit" AS "nested_1.deck_limit", "identity"."faction_cost" AS "nested_1.faction_cost", "identity"."uniqueness" AS "nested_1.uniqueness", "identity"."strength" AS "nested_1.strength", "identity"."agenda_points" AS "nested_1.agenda_points", "identity"."memory_cost" AS "nested_1.memory_cost", "identity"."advancement_cost" AS "nested_1.advancement_cost", "identity"."trash_cost" AS "nested_1.trash_cost", "identity"."base_link" AS "nested_1.base_link", "identity"."influence_limit" AS "nested_1.influence_limit", "identity"."minimum_deck_size" AS "nested_1.minimum_deck_size", "identity"."flavor" AS "nested_1.flavor", "identity"."illustrator" AS "nested_1.illustrator",\n  "pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size",\n  "cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated",\n  "faction"."code" AS "nested_4.code", "faction"."side_code" AS "nested_4.side_code", "faction"."name" AS "nested_4.name", "faction"."color" AS "nested_4.color", "faction"."is_mini" AS "nested_4.is_mini",\n  "side"."code" AS "nested_5.code", "side"."name" AS "nested_5.name",\n  "type"."code" AS "nested_6.code", "type"."side_code" AS "nested_6.side_code", "type"."position" AS "nested_6.position", "type"."name" AS "nested_6.name", "type"."is_subtype" AS "nested_6.is_subtype",\n  "subtype"."code" AS "nested_7.code", "subtype"."side_code" AS "nested_7.side_code", "subtype"."position" AS "nested_7.position", "subtype"."name" AS "nested_7.name", "subtype"."is_subtype" AS "nested_7.is_subtype",\n  "format"."id" AS "nested_8.id", "format"."code" AS "nested_8.code", "format"."name" AS "nested_8.name",\n  "rotation"."code" AS "nested_9.code", "rotation"."format_code" AS "nested_9.format_code", "rotation"."name" AS "nested_9.name", "rotation"."date_start" AS "nested_9.date_start", "rotation"."current" AS "nested_9.current", "rotation"."latest" AS "nested_9.latest",\n  "mwl"."code" AS "nested_10.code", "mwl"."format_code" AS "nested_10.format_code", "mwl"."name" AS "nested_10.name", "mwl"."date_start" AS "nested_10.date_start", "mwl"."active" AS "nested_10.active", "mwl"."latest" AS "nested_10.latest"\nFROM deck\n\nINNER JOIN card AS identity\n  ON identity.code = deck.identity_code\n\nINNER JOIN pack\n  ON pack.code = identity.pack_code\n\nINNER JOIN cycle\n  ON cycle.code = pack.cycle_code\n\nINNER JOIN faction\n  ON faction.code = identity.faction_code\n\nINNER JOIN side\n  ON side.code = faction.side_code\n\nINNER JOIN type\n  ON type.code = identity.type_code\n\nLEFT JOIN type as subtype\n  ON subtype.is_subtype\n  AND (\n    subtype.name = identity.keywords\n    OR identity.keywords LIKE (subtype.name || \' - %\')\n  )\n\nLEFT JOIN format\n  ON format.code = deck.format_code\n\nLEFT JOIN rotation\n  ON rotation.code = deck.rotation_code\n\nLEFT JOIN mwl\n  ON mwl.code = deck.mwl_code\n\nWHERE ${generatedwhere.sql}',
+        'SELECT"deck"."id" AS "nested_0.id", "deck"."identity_code" AS "nested_0.identity_code", "deck"."format_code" AS "nested_0.format_code", "deck"."rotation_code" AS "nested_0.rotation_code", "deck"."mwl_code" AS "nested_0.mwl_code", "deck"."name" AS "nested_0.name", "deck"."description" AS "nested_0.description", "deck"."created" AS "nested_0.created", "deck"."updated" AS "nested_0.updated", "deck"."deleted" AS "nested_0.deleted", "deck"."remote_updated" AS "nested_0.remote_updated", "deck"."synced" AS "nested_0.synced","identity"."code" AS "nested_1.code", "identity"."pack_code" AS "nested_1.pack_code", "identity"."faction_code" AS "nested_1.faction_code", "identity"."type_code" AS "nested_1.type_code", "identity"."position" AS "nested_1.position", "identity"."title" AS "nested_1.title", "identity"."stripped_title" AS "nested_1.stripped_title", "identity"."body" AS "nested_1.body", "identity"."stripped_body" AS "nested_1.stripped_body", "identity"."keywords" AS "nested_1.keywords", "identity"."quantity" AS "nested_1.quantity", "identity"."cost" AS "nested_1.cost", "identity"."deck_limit" AS "nested_1.deck_limit", "identity"."faction_cost" AS "nested_1.faction_cost", "identity"."uniqueness" AS "nested_1.uniqueness", "identity"."strength" AS "nested_1.strength", "identity"."agenda_points" AS "nested_1.agenda_points", "identity"."memory_cost" AS "nested_1.memory_cost", "identity"."advancement_cost" AS "nested_1.advancement_cost", "identity"."trash_cost" AS "nested_1.trash_cost", "identity"."base_link" AS "nested_1.base_link", "identity"."influence_limit" AS "nested_1.influence_limit", "identity"."minimum_deck_size" AS "nested_1.minimum_deck_size", "identity"."flavor" AS "nested_1.flavor", "identity"."illustrator" AS "nested_1.illustrator","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated","faction"."code" AS "nested_4.code", "faction"."side_code" AS "nested_4.side_code", "faction"."name" AS "nested_4.name", "faction"."color" AS "nested_4.color", "faction"."is_mini" AS "nested_4.is_mini","side"."code" AS "nested_5.code", "side"."name" AS "nested_5.name","type"."code" AS "nested_6.code", "type"."side_code" AS "nested_6.side_code", "type"."position" AS "nested_6.position", "type"."name" AS "nested_6.name", "type"."is_subtype" AS "nested_6.is_subtype","subtype"."code" AS "nested_7.code", "subtype"."side_code" AS "nested_7.side_code", "subtype"."position" AS "nested_7.position", "subtype"."name" AS "nested_7.name", "subtype"."is_subtype" AS "nested_7.is_subtype","format"."id" AS "nested_8.id", "format"."code" AS "nested_8.code", "format"."name" AS "nested_8.name","rotation"."code" AS "nested_9.code", "rotation"."format_code" AS "nested_9.format_code", "rotation"."name" AS "nested_9.name", "rotation"."date_start" AS "nested_9.date_start", "rotation"."current" AS "nested_9.current", "rotation"."latest" AS "nested_9.latest","mwl"."code" AS "nested_10.code", "mwl"."format_code" AS "nested_10.format_code", "mwl"."name" AS "nested_10.name", "mwl"."date_start" AS "nested_10.date_start", "mwl"."active" AS "nested_10.active", "mwl"."latest" AS "nested_10.latest" FROM deck INNER JOIN card AS identity ON identity.code = deck.identity_code INNER JOIN pack ON pack.code = identity.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = identity.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = identity.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = identity.keywords OR identity.keywords LIKE(subtype.name || \' - %\'))LEFT JOIN format ON format.code = deck.format_code LEFT JOIN rotation ON rotation.code = deck.rotation_code LEFT JOIN mwl ON mwl.code = deck.mwl_code WHERE ${generatedwhere.sql}',
         variables: [
           ...generatedwhere.introducedVariables
         ],
@@ -6603,7 +6728,7 @@ abstract class _$Database extends GeneratedDatabase {
   }
 
   Selectable<DeckData> getDeckById({required String deckId}) {
-    return customSelect('SELECT *\nFROM deck\nWHERE id = :deckId', variables: [
+    return customSelect('SELECT * FROM deck WHERE id = ?1', variables: [
       Variable<String>(deckId)
     ], readsFrom: {
       deck,
@@ -6615,33 +6740,21 @@ abstract class _$Database extends GeneratedDatabase {
     final expandeddeckIds = $expandVar($arrayStartIndex, deckIds.length);
     $arrayStartIndex += deckIds.length;
     return customUpdate(
-      'DELETE FROM deck\nWHERE id IN ($expandeddeckIds)',
+      'DELETE FROM deck WHERE id IN ($expandeddeckIds)',
       variables: [for (var $ in deckIds) Variable<String>($)],
       updates: {deck},
       updateKind: UpdateKind.delete,
     );
   }
 
-  Future<int> setDecksState(
-      {required DeckState state,
-      Expression<bool?> where = const CustomExpression('(TRUE)')}) {
-    final generatedwhere = $write(where);
-    return customUpdate(
-      'UPDATE deck\nSET\n  state = :state\nWHERE ${generatedwhere.sql}',
-      variables: [
-        Variable<String>(Deck.$converter2.mapToSql(state)!),
-        ...generatedwhere.introducedVariables
-      ],
-      updates: {deck},
-      updateKind: UpdateKind.update,
-    );
-  }
-
   Selectable<DeckTagData> listDeckTags(
       {Expression<bool?> where = const CustomExpression('(TRUE)')}) {
-    final generatedwhere = $write(where, hasMultipleTables: true);
+    var $arrayStartIndex = 1;
+    final generatedwhere =
+        $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT deck_tag.*\nFROM deck_tag\n\nINNER JOIN deck\n  ON deck.id = deck_tag.deck_id\n\nWHERE ${generatedwhere.sql}\nAND deck.state != \'deleted\'',
+        'SELECT deck_tag.* FROM deck_tag INNER JOIN deck ON deck.id = deck_tag.deck_id WHERE ${generatedwhere.sql} AND NOT deck.deleted',
         variables: [
           ...generatedwhere.introducedVariables
         ],
@@ -6654,9 +6767,12 @@ abstract class _$Database extends GeneratedDatabase {
 
   Selectable<String> listDistinctDeckTags(
       {Expression<bool?> where = const CustomExpression('(TRUE)')}) {
-    final generatedwhere = $write(where, hasMultipleTables: true);
+    var $arrayStartIndex = 1;
+    final generatedwhere =
+        $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT tag\nFROM (\n  SELECT deck_tag.tag, COUNT(*) AS count\n  FROM deck_tag\n\n  INNER JOIN deck\n    ON deck.id = deck_tag.deck_id\n\n  WHERE ${generatedwhere.sql}\n  AND deck.state != \'deleted\'\n\n  GROUP BY deck_tag.tag\n) AS deck_tag\n\nORDER BY count DESC',
+        'SELECT tag FROM (SELECT deck_tag.tag, COUNT(*) AS count FROM deck_tag INNER JOIN deck ON deck.id = deck_tag.deck_id WHERE ${generatedwhere.sql} AND NOT deck.deleted GROUP BY deck_tag.tag) AS deck_tag ORDER BY count DESC',
         variables: [
           ...generatedwhere.introducedVariables
         ],
@@ -6672,7 +6788,7 @@ abstract class _$Database extends GeneratedDatabase {
     final expandeddeckIds = $expandVar($arrayStartIndex, deckIds.length);
     $arrayStartIndex += deckIds.length;
     return customUpdate(
-      'DELETE FROM deck_tag\nWHERE deck_id IN ($expandeddeckIds)',
+      'DELETE FROM deck_tag WHERE deck_id IN ($expandeddeckIds)',
       variables: [for (var $ in deckIds) Variable<String>($)],
       updates: {deckTag},
       updateKind: UpdateKind.delete,
@@ -6682,7 +6798,7 @@ abstract class _$Database extends GeneratedDatabase {
   Future<int> copyDeckTags(
       {required String newDeckId, required String oldDeckId}) {
     return customInsert(
-      'INSERT INTO deck_tag\nSELECT\n  :newDeckId,\n  tag\nFROM deck_tag\nWHERE deck_id = :oldDeckId',
+      'INSERT INTO deck_tag SELECT ?1, tag FROM deck_tag WHERE deck_id = ?2',
       variables: [Variable<String>(newDeckId), Variable<String>(oldDeckId)],
       updates: {deckTag},
     );
@@ -6691,9 +6807,12 @@ abstract class _$Database extends GeneratedDatabase {
   Selectable<DeckCardResult> listDeckCards(
       {String? mwlCode,
       Expression<bool?> where = const CustomExpression('(TRUE)')}) {
-    final generatedwhere = $write(where, hasMultipleTables: true);
+    var $arrayStartIndex = 2;
+    final generatedwhere =
+        $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT\n  "deck_card"."deck_id" AS "nested_0.deck_id", "deck_card"."card_code" AS "nested_0.card_code", "deck_card"."quantity" AS "nested_0.quantity",\n  "card"."code" AS "nested_1.code", "card"."pack_code" AS "nested_1.pack_code", "card"."faction_code" AS "nested_1.faction_code", "card"."type_code" AS "nested_1.type_code", "card"."position" AS "nested_1.position", "card"."title" AS "nested_1.title", "card"."stripped_title" AS "nested_1.stripped_title", "card"."body" AS "nested_1.body", "card"."stripped_body" AS "nested_1.stripped_body", "card"."keywords" AS "nested_1.keywords", "card"."quantity" AS "nested_1.quantity", "card"."cost" AS "nested_1.cost", "card"."deck_limit" AS "nested_1.deck_limit", "card"."faction_cost" AS "nested_1.faction_cost", "card"."uniqueness" AS "nested_1.uniqueness", "card"."strength" AS "nested_1.strength", "card"."agenda_points" AS "nested_1.agenda_points", "card"."memory_cost" AS "nested_1.memory_cost", "card"."advancement_cost" AS "nested_1.advancement_cost", "card"."trash_cost" AS "nested_1.trash_cost", "card"."base_link" AS "nested_1.base_link", "card"."influence_limit" AS "nested_1.influence_limit", "card"."minimum_deck_size" AS "nested_1.minimum_deck_size", "card"."flavor" AS "nested_1.flavor", "card"."illustrator" AS "nested_1.illustrator",\n  "pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size",\n  "cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated",\n  "faction"."code" AS "nested_4.code", "faction"."side_code" AS "nested_4.side_code", "faction"."name" AS "nested_4.name", "faction"."color" AS "nested_4.color", "faction"."is_mini" AS "nested_4.is_mini",\n  "side"."code" AS "nested_5.code", "side"."name" AS "nested_5.name",\n  "type"."code" AS "nested_6.code", "type"."side_code" AS "nested_6.side_code", "type"."position" AS "nested_6.position", "type"."name" AS "nested_6.name", "type"."is_subtype" AS "nested_6.is_subtype",\n  "subtype"."code" AS "nested_7.code", "subtype"."side_code" AS "nested_7.side_code", "subtype"."position" AS "nested_7.position", "subtype"."name" AS "nested_7.name", "subtype"."is_subtype" AS "nested_7.is_subtype",\n  "mwl_card"."mwl_code" AS "nested_8.mwl_code", "mwl_card"."card_code" AS "nested_8.card_code", "mwl_card"."is_restricted" AS "nested_8.is_restricted", "mwl_card"."global_penalty" AS "nested_8.global_penalty", "mwl_card"."universal_faction_cost" AS "nested_8.universal_faction_cost", "mwl_card"."deck_limit" AS "nested_8.deck_limit"\nFROM deck_card\n\nINNER JOIN card\n  ON card.code = deck_card.card_code\n\nINNER JOIN pack\n  ON pack.code = card.pack_code\n\nINNER JOIN cycle\n  ON cycle.code = pack.cycle_code\n\nINNER JOIN faction\n  ON faction.code = card.faction_code\n\nINNER JOIN side\n  ON side.code = faction.side_code\n\nINNER JOIN type\n  ON type.code = card.type_code\n\nLEFT JOIN type as subtype\n  ON subtype.is_subtype\n  AND (\n    subtype.name = card.keywords\n    OR card.keywords LIKE (subtype.name || \' - %\')\n  )\n\nLEFT JOIN mwl_card\n  ON mwl_card.mwl_code = :mwlCode\n  AND mwl_card.card_code = card.code\n\nWHERE ${generatedwhere.sql}',
+        'SELECT"deck_card"."deck_id" AS "nested_0.deck_id", "deck_card"."card_code" AS "nested_0.card_code", "deck_card"."quantity" AS "nested_0.quantity","card"."code" AS "nested_1.code", "card"."pack_code" AS "nested_1.pack_code", "card"."faction_code" AS "nested_1.faction_code", "card"."type_code" AS "nested_1.type_code", "card"."position" AS "nested_1.position", "card"."title" AS "nested_1.title", "card"."stripped_title" AS "nested_1.stripped_title", "card"."body" AS "nested_1.body", "card"."stripped_body" AS "nested_1.stripped_body", "card"."keywords" AS "nested_1.keywords", "card"."quantity" AS "nested_1.quantity", "card"."cost" AS "nested_1.cost", "card"."deck_limit" AS "nested_1.deck_limit", "card"."faction_cost" AS "nested_1.faction_cost", "card"."uniqueness" AS "nested_1.uniqueness", "card"."strength" AS "nested_1.strength", "card"."agenda_points" AS "nested_1.agenda_points", "card"."memory_cost" AS "nested_1.memory_cost", "card"."advancement_cost" AS "nested_1.advancement_cost", "card"."trash_cost" AS "nested_1.trash_cost", "card"."base_link" AS "nested_1.base_link", "card"."influence_limit" AS "nested_1.influence_limit", "card"."minimum_deck_size" AS "nested_1.minimum_deck_size", "card"."flavor" AS "nested_1.flavor", "card"."illustrator" AS "nested_1.illustrator","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated","faction"."code" AS "nested_4.code", "faction"."side_code" AS "nested_4.side_code", "faction"."name" AS "nested_4.name", "faction"."color" AS "nested_4.color", "faction"."is_mini" AS "nested_4.is_mini","side"."code" AS "nested_5.code", "side"."name" AS "nested_5.name","type"."code" AS "nested_6.code", "type"."side_code" AS "nested_6.side_code", "type"."position" AS "nested_6.position", "type"."name" AS "nested_6.name", "type"."is_subtype" AS "nested_6.is_subtype","subtype"."code" AS "nested_7.code", "subtype"."side_code" AS "nested_7.side_code", "subtype"."position" AS "nested_7.position", "subtype"."name" AS "nested_7.name", "subtype"."is_subtype" AS "nested_7.is_subtype","mwl_card"."mwl_code" AS "nested_8.mwl_code", "mwl_card"."card_code" AS "nested_8.card_code", "mwl_card"."is_restricted" AS "nested_8.is_restricted", "mwl_card"."global_penalty" AS "nested_8.global_penalty", "mwl_card"."universal_faction_cost" AS "nested_8.universal_faction_cost", "mwl_card"."deck_limit" AS "nested_8.deck_limit" FROM deck_card INNER JOIN card ON card.code = deck_card.card_code INNER JOIN pack ON pack.code = card.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = card.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = card.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = card.keywords OR card.keywords LIKE(subtype.name || \' - %\'))LEFT JOIN mwl_card ON mwl_card.mwl_code = ?1 AND mwl_card.card_code = card.code WHERE ${generatedwhere.sql}',
         variables: [
           Variable<String?>(mwlCode),
           ...generatedwhere.introducedVariables
@@ -6728,7 +6847,7 @@ abstract class _$Database extends GeneratedDatabase {
     final expandeddeckIds = $expandVar($arrayStartIndex, deckIds.length);
     $arrayStartIndex += deckIds.length;
     return customUpdate(
-      'DELETE FROM deck_card\nWHERE deck_id IN ($expandeddeckIds)',
+      'DELETE FROM deck_card WHERE deck_id IN ($expandeddeckIds)',
       variables: [for (var $ in deckIds) Variable<String>($)],
       updates: {deckCard},
       updateKind: UpdateKind.delete,
@@ -6738,14 +6857,14 @@ abstract class _$Database extends GeneratedDatabase {
   Future<int> copyDeckCards(
       {required String newDeckId, required String oldDeckId}) {
     return customInsert(
-      'INSERT INTO deck_card\nSELECT\n  :newDeckId,\n  card_code,\n  quantity\nFROM deck_card\nWHERE deck_id = :oldDeckId',
+      'INSERT INTO deck_card SELECT ?1, card_code, quantity FROM deck_card WHERE deck_id = ?2',
       variables: [Variable<String>(newDeckId), Variable<String>(oldDeckId)],
       updates: {deckCard},
     );
   }
 
   Selectable<CycleData> listCycles() {
-    return customSelect('SELECT *\nFROM cycle\nORDER BY position DESC',
+    return customSelect('SELECT * FROM cycle ORDER BY position DESC',
         variables: [],
         readsFrom: {
           cycle,
@@ -6754,7 +6873,7 @@ abstract class _$Database extends GeneratedDatabase {
 
   Selectable<CollectionResult> listCollection({required bool inCollection}) {
     return customSelect(
-        'SELECT\n  "pack"."code" AS "nested_0.code", "pack"."cycle_code" AS "nested_0.cycle_code", "pack"."position" AS "nested_0.position", "pack"."name" AS "nested_0.name", "pack"."date_release" AS "nested_0.date_release", "pack"."size" AS "nested_0.size",\n  "cycle"."code" AS "nested_1.code", "cycle"."position" AS "nested_1.position", "cycle"."name" AS "nested_1.name", "cycle"."size" AS "nested_1.size", "cycle"."rotated" AS "nested_1.rotated",\n  (collection.pack_code IS NOT NULL) AS in_collection\nFROM pack\n\nINNER JOIN cycle\n  ON cycle.code = pack.cycle_code\n\nLEFT JOIN collection\n  ON collection.pack_code = pack.code\n\nWHERE (\n  NOT :inCollection\n  OR (collection.pack_code IS NOT NULL)\n)\n\nORDER BY cycle.position DESC, pack.position',
+        'SELECT"pack"."code" AS "nested_0.code", "pack"."cycle_code" AS "nested_0.cycle_code", "pack"."position" AS "nested_0.position", "pack"."name" AS "nested_0.name", "pack"."date_release" AS "nested_0.date_release", "pack"."size" AS "nested_0.size","cycle"."code" AS "nested_1.code", "cycle"."position" AS "nested_1.position", "cycle"."name" AS "nested_1.name", "cycle"."size" AS "nested_1.size", "cycle"."rotated" AS "nested_1.rotated",(collection.pack_code IS NOT NULL)AS in_collection FROM pack INNER JOIN cycle ON cycle.code = pack.cycle_code LEFT JOIN collection ON collection.pack_code = pack.code WHERE(NOT ?1 OR(collection.pack_code IS NOT NULL))ORDER BY cycle.position DESC, pack.position',
         variables: [
           Variable<bool>(inCollection)
         ],
@@ -6783,9 +6902,12 @@ abstract class _$Database extends GeneratedDatabase {
   Selectable<CardResult> listCards(
       {String? mwlCode,
       Expression<bool?> where = const CustomExpression('(TRUE)')}) {
-    final generatedwhere = $write(where, hasMultipleTables: true);
+    var $arrayStartIndex = 2;
+    final generatedwhere =
+        $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT\n  "card"."code" AS "nested_0.code", "card"."pack_code" AS "nested_0.pack_code", "card"."faction_code" AS "nested_0.faction_code", "card"."type_code" AS "nested_0.type_code", "card"."position" AS "nested_0.position", "card"."title" AS "nested_0.title", "card"."stripped_title" AS "nested_0.stripped_title", "card"."body" AS "nested_0.body", "card"."stripped_body" AS "nested_0.stripped_body", "card"."keywords" AS "nested_0.keywords", "card"."quantity" AS "nested_0.quantity", "card"."cost" AS "nested_0.cost", "card"."deck_limit" AS "nested_0.deck_limit", "card"."faction_cost" AS "nested_0.faction_cost", "card"."uniqueness" AS "nested_0.uniqueness", "card"."strength" AS "nested_0.strength", "card"."agenda_points" AS "nested_0.agenda_points", "card"."memory_cost" AS "nested_0.memory_cost", "card"."advancement_cost" AS "nested_0.advancement_cost", "card"."trash_cost" AS "nested_0.trash_cost", "card"."base_link" AS "nested_0.base_link", "card"."influence_limit" AS "nested_0.influence_limit", "card"."minimum_deck_size" AS "nested_0.minimum_deck_size", "card"."flavor" AS "nested_0.flavor", "card"."illustrator" AS "nested_0.illustrator",\n  "pack"."code" AS "nested_1.code", "pack"."cycle_code" AS "nested_1.cycle_code", "pack"."position" AS "nested_1.position", "pack"."name" AS "nested_1.name", "pack"."date_release" AS "nested_1.date_release", "pack"."size" AS "nested_1.size",\n  "cycle"."code" AS "nested_2.code", "cycle"."position" AS "nested_2.position", "cycle"."name" AS "nested_2.name", "cycle"."size" AS "nested_2.size", "cycle"."rotated" AS "nested_2.rotated",\n  "faction"."code" AS "nested_3.code", "faction"."side_code" AS "nested_3.side_code", "faction"."name" AS "nested_3.name", "faction"."color" AS "nested_3.color", "faction"."is_mini" AS "nested_3.is_mini",\n  "side"."code" AS "nested_4.code", "side"."name" AS "nested_4.name",\n  "type"."code" AS "nested_5.code", "type"."side_code" AS "nested_5.side_code", "type"."position" AS "nested_5.position", "type"."name" AS "nested_5.name", "type"."is_subtype" AS "nested_5.is_subtype",\n  "subtype"."code" AS "nested_6.code", "subtype"."side_code" AS "nested_6.side_code", "subtype"."position" AS "nested_6.position", "subtype"."name" AS "nested_6.name", "subtype"."is_subtype" AS "nested_6.is_subtype",\n  "mwl_card"."mwl_code" AS "nested_7.mwl_code", "mwl_card"."card_code" AS "nested_7.card_code", "mwl_card"."is_restricted" AS "nested_7.is_restricted", "mwl_card"."global_penalty" AS "nested_7.global_penalty", "mwl_card"."universal_faction_cost" AS "nested_7.universal_faction_cost", "mwl_card"."deck_limit" AS "nested_7.deck_limit"\nFROM card\n\nINNER JOIN pack\n  ON pack.code = card.pack_code\n\nINNER JOIN cycle\n  ON cycle.code = pack.cycle_code\n\nINNER JOIN faction\n  ON faction.code = card.faction_code\n\nINNER JOIN side\n  ON side.code = faction.side_code\n\nINNER JOIN type\n  ON type.code = card.type_code\n\nLEFT JOIN type as subtype\n  ON subtype.is_subtype\n  AND (\n    subtype.name = card.keywords\n    OR card.keywords LIKE (subtype.name || \' - %\')\n  )\n\nLEFT JOIN mwl_card\n  ON mwl_card.mwl_code = :mwlCode\n  AND mwl_card.card_code = card.code\n\nWHERE ${generatedwhere.sql}',
+        'SELECT"card"."code" AS "nested_0.code", "card"."pack_code" AS "nested_0.pack_code", "card"."faction_code" AS "nested_0.faction_code", "card"."type_code" AS "nested_0.type_code", "card"."position" AS "nested_0.position", "card"."title" AS "nested_0.title", "card"."stripped_title" AS "nested_0.stripped_title", "card"."body" AS "nested_0.body", "card"."stripped_body" AS "nested_0.stripped_body", "card"."keywords" AS "nested_0.keywords", "card"."quantity" AS "nested_0.quantity", "card"."cost" AS "nested_0.cost", "card"."deck_limit" AS "nested_0.deck_limit", "card"."faction_cost" AS "nested_0.faction_cost", "card"."uniqueness" AS "nested_0.uniqueness", "card"."strength" AS "nested_0.strength", "card"."agenda_points" AS "nested_0.agenda_points", "card"."memory_cost" AS "nested_0.memory_cost", "card"."advancement_cost" AS "nested_0.advancement_cost", "card"."trash_cost" AS "nested_0.trash_cost", "card"."base_link" AS "nested_0.base_link", "card"."influence_limit" AS "nested_0.influence_limit", "card"."minimum_deck_size" AS "nested_0.minimum_deck_size", "card"."flavor" AS "nested_0.flavor", "card"."illustrator" AS "nested_0.illustrator","pack"."code" AS "nested_1.code", "pack"."cycle_code" AS "nested_1.cycle_code", "pack"."position" AS "nested_1.position", "pack"."name" AS "nested_1.name", "pack"."date_release" AS "nested_1.date_release", "pack"."size" AS "nested_1.size","cycle"."code" AS "nested_2.code", "cycle"."position" AS "nested_2.position", "cycle"."name" AS "nested_2.name", "cycle"."size" AS "nested_2.size", "cycle"."rotated" AS "nested_2.rotated","faction"."code" AS "nested_3.code", "faction"."side_code" AS "nested_3.side_code", "faction"."name" AS "nested_3.name", "faction"."color" AS "nested_3.color", "faction"."is_mini" AS "nested_3.is_mini","side"."code" AS "nested_4.code", "side"."name" AS "nested_4.name","type"."code" AS "nested_5.code", "type"."side_code" AS "nested_5.side_code", "type"."position" AS "nested_5.position", "type"."name" AS "nested_5.name", "type"."is_subtype" AS "nested_5.is_subtype","subtype"."code" AS "nested_6.code", "subtype"."side_code" AS "nested_6.side_code", "subtype"."position" AS "nested_6.position", "subtype"."name" AS "nested_6.name", "subtype"."is_subtype" AS "nested_6.is_subtype","mwl_card"."mwl_code" AS "nested_7.mwl_code", "mwl_card"."card_code" AS "nested_7.card_code", "mwl_card"."is_restricted" AS "nested_7.is_restricted", "mwl_card"."global_penalty" AS "nested_7.global_penalty", "mwl_card"."universal_faction_cost" AS "nested_7.universal_faction_cost", "mwl_card"."deck_limit" AS "nested_7.deck_limit" FROM card INNER JOIN pack ON pack.code = card.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = card.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = card.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = card.keywords OR card.keywords LIKE(subtype.name || \' - %\'))LEFT JOIN mwl_card ON mwl_card.mwl_code = ?1 AND mwl_card.card_code = card.code WHERE ${generatedwhere.sql}',
         variables: [
           Variable<String?>(mwlCode),
           ...generatedwhere.introducedVariables
@@ -6818,7 +6940,7 @@ abstract class _$Database extends GeneratedDatabase {
     final expandedcodeList = $expandVar($arrayStartIndex, codeList.length);
     $arrayStartIndex += codeList.length;
     return customSelect(
-        'SELECT code\nFROM card\n\nWHERE type_code = \'identity\'\nAND code in ($expandedcodeList)',
+        'SELECT code FROM card WHERE type_code = \'identity\' AND code IN ($expandedcodeList)',
         variables: [
           for (var $ in codeList) Variable<String>($)
         ],
@@ -6832,7 +6954,7 @@ abstract class _$Database extends GeneratedDatabase {
     final expandedcodeList = $expandVar($arrayStartIndex, codeList.length);
     $arrayStartIndex += codeList.length;
     return customSelect(
-        'SELECT code\nFROM card\n\nWHERE type_code = \'identity\'\nAND code in ($expandedcodeList)\n\nLIMIT 1',
+        'SELECT code FROM card WHERE type_code = \'identity\' AND code IN ($expandedcodeList) LIMIT 1',
         variables: [
           for (var $ in codeList) Variable<String>($)
         ],
@@ -6848,7 +6970,7 @@ abstract class _$Database extends GeneratedDatabase {
         type,
         side,
         settings,
-        OnCreateQuery('INSERT INTO settings\nDEFAULT VALUES'),
+        OnCreateQuery('INSERT INTO settings DEFAULT VALUES'),
         rotation,
         rotationCycle,
         pack,

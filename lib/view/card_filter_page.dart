@@ -3,9 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kotlin_flavor/scope_functions.dart';
 import 'package:query/query.dart';
 
-import '../util/filter_type.dart';
 import '/db/database.dart';
 import '/providers.dart';
+import '/util/filter_type.dart';
 import 'factions_page.dart';
 import 'format_dropdown.dart';
 import 'mwl_dropdown.dart';
