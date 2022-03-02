@@ -259,7 +259,14 @@ Future<void> upload(BuildContext context, WidgetRef ref) async {
     }
 
     await db.batch((batch) async {
-      await onlineAuthState!.syncWithLocalDeck(db, batch, uploadedDeck!);
+      await onlineAuthState!.syncWithLocalDeck(
+        db,
+        batch,
+        uploadedDeck!,
+        formatCode: drift.Value(deckResult.deck.formatCode),
+        rotationCode: drift.Value(deckResult.deck.rotationCode),
+        mwlCode: drift.Value(deckResult.deck.mwlCode),
+      );
     });
     return await db.listDecks2(where: db.deck.id.equals(uploadedDeck.id)).map((e) => e.first).first;
   });
@@ -322,7 +329,14 @@ Future<void> download(BuildContext context, WidgetRef ref) async {
     }
 
     await db.batch((batch) async {
-      await onlineAuthState!.syncWithLocalDeck(db, batch, downloadedDeck!);
+      await onlineAuthState!.syncWithLocalDeck(
+        db,
+        batch,
+        downloadedDeck!,
+        formatCode: drift.Value(deckResult.deck.formatCode),
+        rotationCode: drift.Value(deckResult.deck.rotationCode),
+        mwlCode: drift.Value(deckResult.deck.mwlCode),
+      );
     });
     return await db.listDecks2(where: db.deck.id.equals(downloadedDeck.id)).map((e) => e.first).first;
   });

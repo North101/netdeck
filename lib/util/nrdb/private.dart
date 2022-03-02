@@ -356,7 +356,14 @@ extension OnlineAuthStateEx on OnlineAuthState {
     });
   }
 
-  Future<void> syncWithLocalDeck(Database db, drift.Batch batch, NrdbDeck deck) async {
+  Future<void> syncWithLocalDeck(
+    Database db,
+    drift.Batch batch,
+    NrdbDeck deck, {
+    drift.Value<String?> formatCode = const drift.Value.absent(),
+    drift.Value<String?> rotationCode = const drift.Value.absent(),
+    drift.Value<String?> mwlCode = const drift.Value.absent(),
+  }) async {
     final identityCodes = await db.listIdentityCards(codeList: deck.cards.keys.toList()).get();
     print('syncLocalDeck: ${deck.name}');
     final identityCode = identityCodes.firstOrNull;
@@ -373,6 +380,9 @@ extension OnlineAuthStateEx on OnlineAuthState {
         updated: deck.updated,
         synced: drift.Value(deck.updated),
         remoteUpdated: drift.Value(deck.updated),
+        formatCode: formatCode,
+        rotationCode: rotationCode,
+        mwlCode: mwlCode,
         deleted: false,
       ),
       mode: drift.InsertMode.insertOrReplace,
