@@ -10,5 +10,12 @@ confirm delete
 DeckPage:
 confirm delete
 
+CardGalleryPage:
+details without internet connection
+
+Settings:
+Backup/Restore
+About
+
 BackupRestorePage:
 everything
