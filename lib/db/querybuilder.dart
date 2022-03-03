@@ -388,8 +388,8 @@ class DateTimeQueryBuilder extends ColumnQueryBuilder<drift.GeneratedColumnWithT
   }
 }
 
-class TagQueryBuilder extends QueryBuilder {
-  TagQueryBuilder(
+class DeckTagsQueryBuilder extends QueryBuilder {
+  DeckTagsQueryBuilder(
     this.db, {
     FieldMap fields = const {},
     FieldMap extraFields = const {},
@@ -408,6 +408,34 @@ class TagQueryBuilder extends QueryBuilder {
       db.selectOnly(db.deckTag).also((e) {
         e.addColumns([db.deckTag.deckId]);
         e.where(db.deckTag.tag.lower().equals(query.text.toLowerCase()));
+      }),
+    );
+  }
+}
+
+class DeckCardsQueryBuilder extends QueryBuilder {
+  DeckCardsQueryBuilder(
+    this.db, {
+    FieldMap fields = const {},
+    FieldMap extraFields = const {},
+    required String help,
+  }) : super(
+          fields: fields,
+          extraFields: extraFields,
+          help: help,
+        );
+
+  final Database db;
+
+  @override
+  drift.Expression<bool?> equal(TextQuery query) {
+    return db.deck.id.isInQuery(
+      db.selectOnly(db.deckCard, includeJoinedTableColumns: false).join([
+        drift.innerJoin(db.card, db.deckCard.cardCode.equalsExp(db.card.code)),
+      ]).also((e) {
+        e.addColumns([db.deckCard.deckId]);
+        e.where(db.card.code.lower().equals(query.text.toLowerCase()) |
+            db.card.title.lower().contains(query.text.toLowerCase()));
       }),
     );
   }
@@ -484,14 +512,14 @@ class DeckQueryBuilder extends ContainsStringQueryBuilder {
     final FieldMap extraFields = {};
     extraFields.addAll({
       'deck': DeckQueryBuilder._(db, db.deck, extraFields: extraFields, help: 'deck name'),
-      'tag': TagQueryBuilder(db, extraFields: extraFields, help: 'deck tag'),
+      'tag': DeckTagsQueryBuilder(db, extraFields: extraFields, help: 'deck tag'),
+      'card': DeckCardsQueryBuilder(db, extraFields: extraFields, help: 'deck card'),
       'identity':
           CardQueryBuilder._(db, db.card.createAlias('identity'), extraFields: extraFields, help: 'identity name'),
       'cycle': CycleQueryBuilder(db, extraFields: extraFields, help: 'cycle code or name'),
       'pack': PackQueryBuilder(db, extraFields: extraFields, help: 'pack code or name'),
       'side': SideQueryBuilder(db, extraFields: extraFields, help: 'side code or name'),
       'faction': FactionQueryBuilder(db, extraFields: extraFields, help: 'faction code or name'),
-      'type': TypeQueryBuilder(db, extraFields: extraFields, help: 'type code or name'),
     });
     return DeckQueryBuilder._(db, db.deck, extraFields: extraFields, help: 'deck name');
   }
