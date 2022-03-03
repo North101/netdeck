@@ -111,7 +111,7 @@ abstract class QueryBuilder {
   drift.Expression<bool?> moreThanEqual(TextQuery query) => falseExpression;
 }
 
-abstract class ColumnQueryBuilder<T> extends QueryBuilder {
+abstract class ColumnQueryBuilder<T extends drift.GeneratedColumn> extends QueryBuilder {
   const ColumnQueryBuilder(
     this.column, {
     FieldMap fields = const {},
@@ -123,10 +123,10 @@ abstract class ColumnQueryBuilder<T> extends QueryBuilder {
           help: help,
         );
 
-  final drift.GeneratedColumn<T?> column;
+  final T column;
 }
 
-class StringQueryBuilder extends ColumnQueryBuilder<String?> {
+class StringQueryBuilder extends ColumnQueryBuilder<drift.GeneratedColumn<String?>> {
   const StringQueryBuilder(
     drift.GeneratedColumn<String?> column, {
     FieldMap fields = const {},
@@ -145,7 +145,7 @@ class StringQueryBuilder extends ColumnQueryBuilder<String?> {
   }
 }
 
-class ContainsStringQueryBuilder extends ColumnQueryBuilder<String?> {
+class ContainsStringQueryBuilder extends ColumnQueryBuilder<drift.GeneratedColumn<String?>> {
   const ContainsStringQueryBuilder(
     drift.GeneratedColumn<String?> column, {
     FieldMap fields = const {},
@@ -186,7 +186,7 @@ class CodeNameQueryBuilder extends QueryBuilder {
   }
 }
 
-class IntQueryBuilder extends ColumnQueryBuilder<int?> {
+class IntQueryBuilder extends ColumnQueryBuilder<drift.GeneratedColumn<int?>> {
   const IntQueryBuilder(
     drift.GeneratedColumn<int?> column, {
     FieldMap fields = const {},
@@ -227,7 +227,7 @@ class IntQueryBuilder extends ColumnQueryBuilder<int?> {
   int? parse(TextQuery query) => int.tryParse(query.text);
 }
 
-class BoolQueryBuilder extends ColumnQueryBuilder<bool?> {
+class BoolQueryBuilder extends ColumnQueryBuilder<drift.GeneratedColumn<bool?>> {
   const BoolQueryBuilder(
     drift.GeneratedColumn<bool?> column, {
     FieldMap fields = const {},
@@ -256,6 +256,135 @@ class BoolQueryBuilder extends ColumnQueryBuilder<bool?> {
 
   bool? parse(TextQuery query) {
     return lookup[query.text];
+  }
+}
+
+class DateTimeQueryBuilder extends ColumnQueryBuilder<drift.GeneratedColumnWithTypeConverter<DateTime?, int?>> {
+  const DateTimeQueryBuilder(
+    drift.GeneratedColumnWithTypeConverter<DateTime?, int?> column, {
+    FieldMap fields = const {},
+    FieldMap extraFields = const {},
+    required String help,
+  }) : super(
+          column,
+          fields: fields,
+          extraFields: extraFields,
+          help: help,
+        );
+
+  @override
+  drift.Expression<bool?> equal(TextQuery query) {
+    if (query.text == 'today') {
+      final start = startOfToday;
+      final end = endOfToday;
+      return column.isBetweenValues(convert(start), convert(end));
+    } else if (query.text == 'yesterday') {
+      final start = startOfYesterday;
+      final end = endOfYesterday;
+      return column.isBetweenValues(convert(start), convert(end));
+    } else if (query.text == 'month') {
+      final start = startOfMonth;
+      final end = endOfMonth;
+      return column.isBetweenValues(convert(start), convert(end));
+    } else if (query.text == 'year') {
+      final start = startOfYear;
+      final end = endOfYear;
+      return column.isBetweenValues(convert(start), convert(end));
+    }
+    return column.equals(convert(DateTime.tryParse(query.text)));
+  }
+
+  @override
+  drift.Expression<bool?> lessThan(TextQuery query) {
+    print(convert(parseStart(query)));
+    return column.isSmallerThanValue(convert(parseStart(query)));
+  }
+
+  @override
+  drift.Expression<bool?> lessThanEqual(TextQuery query) {
+    return column.isSmallerOrEqualValue(convert(parseEnd(query)));
+  }
+
+  @override
+  drift.Expression<bool?> moreThan(TextQuery query) {
+    return column.isBiggerThanValue(convert(parseEnd(query)));
+  }
+
+  @override
+  drift.Expression<bool?> moreThanEqual(TextQuery query) {
+    return column.isBiggerOrEqualValue(convert(parseStart(query)));
+  }
+
+  int? convert(DateTime? value) {
+    return const DateTimeUtcConverter().mapToSql(value);
+  }
+
+  DateTime? parseStart(TextQuery query) {
+    if (query.text == 'today') {
+      return startOfToday;
+    } else if (query.text == 'yesterday') {
+      return startOfYesterday;
+    } else if (query.text == 'month') {
+      return startOfMonth;
+    } else if (query.text == 'year') {
+      return startOfYear;
+    } else {
+      return DateTime.tryParse(query.text);
+    }
+  }
+
+  DateTime? parseEnd(TextQuery query) {
+    if (query.text == 'today') {
+      return endOfToday;
+    } else if (query.text == 'yesterday') {
+      return endOfYesterday;
+    } else if (query.text == 'month') {
+      return endOfMonth;
+    } else if (query.text == 'year') {
+      return endOfYear;
+    } else {
+      return DateTime.tryParse(query.text);
+    }
+  }
+
+  DateTime get startOfToday {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day, 1);
+  }
+
+  DateTime get endOfToday {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day + 1, 0);
+  }
+
+  DateTime get startOfYesterday {
+    final today = startOfToday;
+    return DateTime(today.year, today.month, today.day - 1, 1);
+  }
+
+  DateTime get endOfYesterday {
+    final today = endOfToday;
+    return DateTime(today.year, today.month, today.day - 1, 0);
+  }
+
+  DateTime get startOfMonth {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, 1);
+  }
+
+  DateTime get endOfMonth {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month + 1, 0);
+  }
+
+  DateTime get startOfYear {
+    final now = DateTime.now();
+    return DateTime(now.year, 1);
+  }
+
+  DateTime get endOfYear {
+    final now = DateTime.now();
+    return DateTime(now.year + 1, 0);
   }
 }
 
@@ -342,6 +471,10 @@ class DeckQueryBuilder extends ContainsStringQueryBuilder {
           fields: {
             'name': ContainsStringQueryBuilder(db.deck.name, help: 'deck name'),
             'description': ContainsStringQueryBuilder(db.deck.description, help: 'deck description'),
+            'created': DateTimeQueryBuilder(db.deck.created, help: 'deck created date'),
+            'updated': DateTimeQueryBuilder(db.deck.updated, help: 'deck updated date'),
+            'synced': DateTimeQueryBuilder(db.deck.synced, help: 'deck synced date'),
+            'remote_updated': DateTimeQueryBuilder(db.deck.remoteUpdated, help: 'deck remote updated date'),
           },
           extraFields: extraFields,
           help: help,
@@ -352,7 +485,8 @@ class DeckQueryBuilder extends ContainsStringQueryBuilder {
     extraFields.addAll({
       'deck': DeckQueryBuilder._(db, db.deck, extraFields: extraFields, help: 'deck name'),
       'tag': TagQueryBuilder(db, extraFields: extraFields, help: 'deck tag'),
-      'identity': CardQueryBuilder._(db, db.card.createAlias('identity'), extraFields: extraFields, help: 'identity name'),
+      'identity':
+          CardQueryBuilder._(db, db.card.createAlias('identity'), extraFields: extraFields, help: 'identity name'),
       'cycle': CycleQueryBuilder(db, extraFields: extraFields, help: 'cycle code or name'),
       'pack': PackQueryBuilder(db, extraFields: extraFields, help: 'pack code or name'),
       'side': SideQueryBuilder(db, extraFields: extraFields, help: 'side code or name'),
@@ -446,6 +580,7 @@ class TypeQueryBuilder extends CodeNameQueryBuilder {
             'code': StringQueryBuilder(db.type.code, help: 'type code'),
             'name': ContainsStringQueryBuilder(db.type.name, help: 'type name'),
             'position': IntQueryBuilder(db.type.position, help: 'type position'),
+            'subtype': BoolQueryBuilder(db.type.isSubtype, help: 'type is subtype'),
           },
           extraFields: extraFields,
           help: help,
@@ -480,6 +615,9 @@ class RotationQueryBuilder extends CodeNameQueryBuilder {
           fields: {
             'code': StringQueryBuilder(db.rotation.code, help: 'rotation code'),
             'name': ContainsStringQueryBuilder(db.rotation.name, help: 'rotation name'),
+            'current': BoolQueryBuilder(db.rotation.current, help: 'rotation current'),
+            'latest': BoolQueryBuilder(db.rotation.latest, help: 'rotation latest'),
+            'start': DateTimeQueryBuilder(db.rotation.dateStart, help: 'rotation start date'),
           },
           extraFields: extraFields,
           help: help,
@@ -497,6 +635,9 @@ class MwlQueryBuilder extends CodeNameQueryBuilder {
           fields: {
             'code': StringQueryBuilder(db.mwl.code, help: 'mwl code'),
             'name': ContainsStringQueryBuilder(db.mwl.name, help: 'mwl name'),
+            'active': BoolQueryBuilder(db.mwl.active, help: 'mwl active'),
+            'latest': BoolQueryBuilder(db.mwl.latest, help: 'mwl latest'),
+            'start': DateTimeQueryBuilder(db.mwl.dateStart, help: 'mwl start date'),
           },
           extraFields: extraFields,
           help: help,
