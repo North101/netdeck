@@ -21,18 +21,8 @@ class CardStandardAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final Size preferredSize;
 
   void _startSearch(BuildContext context, WidgetRef ref) {
-    ModalRoute.of(context)?.addLocalHistoryEntry(LocalHistoryEntry(onRemove: () => _stopSearch(context, ref)));
-
     final isSearching = ref.read(filterSearchingProvider.state);
     isSearching.state = true;
-  }
-
-  void _stopSearch(BuildContext context, WidgetRef ref) {
-    final isSearching = ref.read(filterSearchingProvider.state);
-    isSearching.state = false;
-
-    final cardQuery = ref.read(filterQueryProvider.state);
-    cardQuery.state = null;
   }
 
   @override

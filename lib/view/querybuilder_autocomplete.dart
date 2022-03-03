@@ -5,17 +5,23 @@ import '/db/querybuilder.dart';
 
 class QueryBuilderAutocomplete extends StatelessWidget {
   const QueryBuilderAutocomplete({
+    required this.focusNode,
+    required this.textEditingController,
     required this.fieldViewBuilder,
     required this.queryBuilder,
     Key? key,
   }) : super(key: key);
 
+  final FocusNode? focusNode;
+  final TextEditingController textEditingController;
   final AutocompleteFieldViewBuilder fieldViewBuilder;
   final QueryBuilder queryBuilder;
 
   @override
   Widget build(BuildContext context) {
-    return Autocomplete<MapEntry<String, QueryBuilder>>(
+    return RawAutocomplete<MapEntry<String, QueryBuilder>>(
+      focusNode: focusNode,
+      textEditingController: textEditingController,
       displayStringForOption: (option) => '${option.key}:',
       fieldViewBuilder: fieldViewBuilder,
       optionsBuilder: (TextEditingValue textEditingValue) {

@@ -15,6 +15,7 @@ class DeckSearchAppBar extends ConsumerWidget implements PreferredSizeWidget {
   @override
   final Size preferredSize;
 
+  final focusNode = FocusNode();
   final controller = TextEditingController();
 
   void _clearSearchQuery(BuildContext context, WidgetRef ref) {
@@ -45,6 +46,8 @@ class DeckSearchAppBar extends ConsumerWidget implements PreferredSizeWidget {
         child: AppBar(
           leading: const BackButton(),
           title: QueryBuilderAutocomplete(
+            focusNode: focusNode,
+            textEditingController: controller,
             queryBuilder: queryBuilder,
             fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
               return TextField(
@@ -63,7 +66,11 @@ class DeckSearchAppBar extends ConsumerWidget implements PreferredSizeWidget {
               icon: const Icon(Icons.clear),
               onPressed: () {
                 if (controller.text.isEmpty) {
-                  Navigator.pop(context);
+                  final isSearching = ref.read(filterSearchingProvider.state);
+                  isSearching.state = false;
+
+                  final cardQuery = ref.read(filterQueryProvider.state);
+                  cardQuery.state = null;
                   return;
                 }
                 _clearSearchQuery(context, ref);
