@@ -4,40 +4,62 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '/db/database.dart';
 import '/providers.dart';
 import '/util/assets.gen.dart';
+import '/util/filter_type.dart';
 import '/util/nrdb/private.dart';
+import '/view/card_list/appbar.dart';
+import '/view/card_list/body.dart';
 import 'card_gallery_page.dart';
-import 'card_list/page.dart';
 import 'card_tile.dart';
 import 'deck/page.dart';
+import 'deck_list/appbar.dart';
+import 'deck_list/body.dart';
 import 'deck_list/fab.dart';
-import 'deck_list/page.dart';
 import 'deck_tile.dart';
-import 'settings/page.dart';
+import 'settings/appbar.dart';
+import 'settings/body.dart';
 
 class BottomNavigationItem {
   const BottomNavigationItem({
+    required this.appBar,
     required this.body,
     required this.item,
     this.floatingActionButton,
   });
 
+  final Widget appBar;
   final Widget body;
   final BottomNavigationBarItem item;
   final Widget? floatingActionButton;
 }
 
-final itemsProvider = Provider<List<BottomNavigationItem>>((ref) {
-  final settings = ref.watch(settingResultProvider);
-  return [
-    BottomNavigationItem(
-      body: CardListPage.withOverrides(
-        automaticallyImplyLeading: false,
-        title: 'Cards',
-        filterCollection: settings.settings.filterCollection,
-        filterFormat: settings.filterFormat,
-        filterRotation: settings.filterRotation,
-        filterMwl: settings.filterMwl,
-        cardTile: (context, ref, index, card) => CardTile(
+class CardListBottomNavigationItem extends BottomNavigationItem {
+  CardListBottomNavigationItem({
+    required Widget appBar,
+    required Widget body,
+    required BottomNavigationBarItem item,
+    Widget? floatingActionButton,
+  }) : super(
+          appBar: appBar,
+          body: body,
+          item: item,
+          floatingActionButton: floatingActionButton,
+        );
+
+  factory CardListBottomNavigationItem.fromSettings(SettingResult settings) {
+    final cardListOverrides = [
+      filterSearchingProvider.overrideWithValue(StateController(false)),
+      filterQueryProvider.overrideWithValue(StateController(null)),
+      filterCollectionProvider.overrideWithValue(StateController(settings.settings.filterCollection)),
+      filterFormatProvider.overrideWithValue(StateController(settings.filterFormat)),
+      filterRotationProvider.overrideWithValue(StateController(settings.filterRotation)),
+      filterMwlProvider.overrideWithValue(StateController(settings.filterMwl)),
+      filterPacksProvider.overrideWithValue(StateController(FilterType())),
+      filterSidesProvider.overrideWithValue(StateController(FilterType())),
+      filterFactionsProvider.overrideWithValue(StateController(FilterType())),
+      filterTypesProvider.overrideWithValue(StateController(FilterType())),
+      deckCardListProvider.overrideWithValue(const {}),
+      cardTileProvider.overrideWithValue((context, ref, index, card) {
+        return CardTile(
           card,
           onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) {
             return CardGalleryPage.withOverrides(
@@ -45,70 +67,131 @@ final itemsProvider = Provider<List<BottomNavigationItem>>((ref) {
               currentIndex: index,
             );
           })),
+        );
+      }),
+    ];
+
+    return CardListBottomNavigationItem(
+      appBar: ProviderScope(
+        overrides: cardListOverrides,
+        child: const CardListAppBar(
+          title: 'Cards',
+          automaticallyImplyLeading: false,
         ),
+      ),
+      body: ProviderScope(
+        overrides: cardListOverrides,
+        child: const CardListBody(),
       ),
       item: BottomNavigationBarItem(
         icon: Assets.icons.cards.image(height: 24, color: Colors.grey[600]),
         activeIcon: Assets.icons.cards.image(height: 24, color: Colors.blueAccent),
         label: 'Cards',
       ),
-    ),
-    BottomNavigationItem(
-      body: DeckListPage.withOverrides(
-        title: 'Decks',
-        filterFormat: settings.filterFormat,
-        filterRotation: settings.filterRotation,
-        filterMwl: settings.filterMwl,
-        deckTile: (context, ref, index, deck) {
-          final tags = ref.watch(filterTagsProvider.state);
-          final selectedDecks = ref.watch(selectedDecksProvider.state);
-          final selected = selectedDecks.state.contains(deck);
-          return DeckTile(
-            deck: deck,
-            selected: selected,
-            selectedTags: tags.state,
-            onTap: () {
-              if (selectedDecks.state.isEmpty) {
-                Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                  return DeckPage.withOverrides(deck: deck);
-                }));
-              } else {
-                selectedDecks.state = {
-                  ...selectedDecks.state.where((e) => e != deck),
-                  if (!selected) deck,
-                };
-              }
-            },
-            onLongPress: () {
+    );
+  }
+}
+
+class DeckListBottomNavigationItem extends BottomNavigationItem {
+  DeckListBottomNavigationItem({
+    required Widget appBar,
+    required Widget body,
+    required BottomNavigationBarItem item,
+    Widget? floatingActionButton,
+  }) : super(
+          appBar: appBar,
+          body: body,
+          item: item,
+          floatingActionButton: floatingActionButton,
+        );
+
+  factory DeckListBottomNavigationItem.fromSettings(SettingResult settings) {
+    final deckListOverrides = [
+      filterSearchingProvider.overrideWithValue(StateController(false)),
+      filterQueryProvider.overrideWithValue(StateController(null)),
+      filterFormatProvider.overrideWithValue(StateController(settings.filterFormat)),
+      filterRotationProvider.overrideWithValue(StateController(settings.filterRotation)),
+      filterMwlProvider.overrideWithValue(StateController(settings.filterMwl)),
+      filterPacksProvider.overrideWithValue(StateController(FilterType())),
+      filterSidesProvider.overrideWithValue(StateController(FilterType())),
+      filterFactionsProvider.overrideWithValue(StateController(FilterType())),
+      filterTypesProvider.overrideWithValue(StateController(FilterType())),
+      filterTagsProvider.overrideWithValue(StateController(const {})),
+      deckTileProvider.overrideWithValue((context, ref, index, deck) {
+        final tags = ref.watch(filterTagsProvider.state);
+        final selectedDecks = ref.watch(selectedDecksProvider.state);
+        final selected = selectedDecks.state.contains(deck);
+        return DeckTile(
+          deck: deck,
+          selected: selected,
+          selectedTags: tags.state,
+          onTap: () {
+            if (selectedDecks.state.isEmpty) {
+              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                return DeckPage.withOverrides(deck: deck);
+              }));
+            } else {
               selectedDecks.state = {
-                ...selectedDecks.state,
-                deck,
+                ...selectedDecks.state.where((e) => e != deck),
+                if (!selected) deck,
               };
-            },
-            onTagTap: (tag, value) {
-              tags.state = {
-                ...tags.state.where((e) => e != tag),
-                if (value) tag,
-              };
-            },
-          );
-        },
+            }
+          },
+          onLongPress: () {
+            selectedDecks.state = {
+              ...selectedDecks.state,
+              deck,
+            };
+          },
+          onTagTap: (tag, value) {
+            tags.state = {
+              ...tags.state.where((e) => e != tag),
+              if (value) tag,
+            };
+          },
+        );
+      }),
+      deckFabProvider.overrideWithValue(null),
+    ];
+
+    return DeckListBottomNavigationItem(
+      appBar: ProviderScope(
+        overrides: deckListOverrides,
+        child: const DeckListAppBar(
+          title: 'Decks',
+          automaticallyImplyLeading: false,
+        ),
       ),
+      body: ProviderScope(overrides: deckListOverrides, child: const DeckListBody()),
       floatingActionButton: const DeckListFloatingActionBar(),
       item: BottomNavigationBarItem(
         icon: Assets.icons.decks.image(height: 24, color: Colors.grey[600]),
         activeIcon: Assets.icons.decks.image(height: 24, color: Colors.blueAccent),
         label: 'Decks',
       ),
-    ),
-    const BottomNavigationItem(
-      body: SettingsPage(),
-      item: BottomNavigationBarItem(
-        icon: Icon(Icons.settings),
-        activeIcon: Icon(Icons.settings, color: Colors.blueAccent),
-        label: 'Settings',
-      ),
-    ),
+    );
+  }
+}
+
+class SettingsBottomNavigationItem extends BottomNavigationItem {
+  const SettingsBottomNavigationItem()
+      : super(
+          appBar: const SettingsAppBar(automaticallyImplyLeading: false),
+          body: const SettingsBody(),
+          item: const BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            activeIcon: Icon(Icons.settings, color: Colors.blueAccent),
+            label: 'Settings',
+          ),
+        );
+}
+
+final itemsProvider = Provider<List<BottomNavigationItem>>((ref) {
+  final settings = ref.watch(settingResultProvider);
+  return [
+    CardListBottomNavigationItem.fromSettings(settings),
+    DeckListBottomNavigationItem.fromSettings(settings),
+    const SettingsBottomNavigationItem(),
   ];
 }, dependencies: [settingResultProvider]);
 
@@ -129,19 +212,17 @@ class MainPage extends ConsumerWidget {
     ref.listen<AsyncValue<bool>>(hasInternetProvider, (prev, next) {
       next.whenData((hasInternet) {
         final nrdbAuthState = ref.read(nrdbAuthStateProvider);
-        if (nrdbAuthState is OfflineAuthState) {
+        if (hasInternet && nrdbAuthState is OfflineAuthState) {
           nrdbAuthState.refreshToken();
-        } else if (nrdbAuthState is OnlineAuthState) {
-          nrdbAuthState.refreshToken();
+        } else if (!hasInternet && nrdbAuthState is OnlineAuthState) {
+          nrdbAuthState.offline();
         }
       });
     });
 
     ref.listen<Object?>(shouldSyncProvider, (previous, next) async {
-      print(next);
       if (next is OnlineAuthState) {
         final decks = await next.listDecks();
-        print(decks);
         if (decks is SuccessHttpResult<List<NrdbDeck>>) {
           final db = ref.read(dbProvider);
           await next.syncDecks(db, decks.value);
@@ -185,6 +266,13 @@ class _MainPage extends ConsumerWidget {
     final selected = items[index.state];
 
     return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: IndexedStack(
+          index: index.state,
+          children: items.map((e) => e.appBar).toList(),
+        ),
+      ),
       body: IndexedStack(
         index: index.state,
         children: items.map((e) => e.body).toList(),
