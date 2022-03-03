@@ -23,10 +23,12 @@ abstract class QueryBuilder {
   const QueryBuilder({
     this.fields = const {},
     this.extraFields = const {},
+    required this.help,
   });
 
   final FieldMap fields;
   final FieldMap extraFields;
+  final String help;
 
   drift.Expression<bool?> build(Query? query) {
     if (query == null) {
@@ -114,9 +116,11 @@ abstract class ColumnQueryBuilder<T> extends QueryBuilder {
     this.column, {
     FieldMap fields = const {},
     FieldMap extraFields = const {},
+    required String help,
   }) : super(
           fields: fields,
           extraFields: extraFields,
+          help: help,
         );
 
   final drift.GeneratedColumn<T?> column;
@@ -127,10 +131,12 @@ class StringQueryBuilder extends ColumnQueryBuilder<String?> {
     drift.GeneratedColumn<String?> column, {
     FieldMap fields = const {},
     FieldMap extraFields = const {},
+    required String help,
   }) : super(
           column,
           fields: fields,
           extraFields: extraFields,
+          help: help,
         );
 
   @override
@@ -144,10 +150,12 @@ class ContainsStringQueryBuilder extends ColumnQueryBuilder<String?> {
     drift.GeneratedColumn<String?> column, {
     FieldMap fields = const {},
     FieldMap extraFields = const {},
+    required String help,
   }) : super(
           column,
           fields: fields,
           extraFields: extraFields,
+          help: help,
         );
 
   @override
@@ -162,9 +170,11 @@ class CodeNameQueryBuilder extends QueryBuilder {
     this.name, {
     FieldMap fields = const {},
     FieldMap extraFields = const {},
+    required String help,
   }) : super(
           fields: fields,
           extraFields: extraFields,
+          help: help,
         );
 
   final drift.GeneratedColumn<String?> code;
@@ -181,10 +191,12 @@ class IntQueryBuilder extends ColumnQueryBuilder<int?> {
     drift.GeneratedColumn<int?> column, {
     FieldMap fields = const {},
     FieldMap extraFields = const {},
+    required String help,
   }) : super(
           column,
           fields: fields,
           extraFields: extraFields,
+          help: help,
         );
 
   @override
@@ -220,10 +232,12 @@ class BoolQueryBuilder extends ColumnQueryBuilder<bool?> {
     drift.GeneratedColumn<bool?> column, {
     FieldMap fields = const {},
     FieldMap extraFields = const {},
+    required String help,
   }) : super(
           column,
           fields: fields,
           extraFields: extraFields,
+          help: help,
         );
 
   static Map<String, bool> lookup = {
@@ -250,9 +264,11 @@ class TagQueryBuilder extends QueryBuilder {
     this.db, {
     FieldMap fields = const {},
     FieldMap extraFields = const {},
+    required String help,
   }) : super(
           fields: fields,
           extraFields: extraFields,
+          help: help,
         );
 
   final Database db;
@@ -273,43 +289,45 @@ class CardQueryBuilder extends CodeNameQueryBuilder {
     Database db,
     Card table, {
     FieldMap extraFields = const {},
+    required String help,
   }) : super(
           table.code,
           table.title,
           fields: {
-            'code': StringQueryBuilder(table.code),
-            'title': ContainsStringQueryBuilder(table.title),
-            'body': ContainsStringQueryBuilder(table.body),
-            'keyword': ContainsStringQueryBuilder(table.keywords),
-            'flavor': ContainsStringQueryBuilder(table.flavor),
-            'quantity': IntQueryBuilder(table.quantity),
-            'cost': IntQueryBuilder(table.cost),
-            'limit': IntQueryBuilder(table.deckLimit),
-            'influence': IntQueryBuilder(table.factionCost),
-            'unique': BoolQueryBuilder(table.uniqueness),
-            'advancement': IntQueryBuilder(table.advancementCost),
-            'mu': IntQueryBuilder(table.memoryCost),
-            'strength': IntQueryBuilder(table.strength),
-            'agenda': IntQueryBuilder(table.agendaPoints),
-            'trash': IntQueryBuilder(table.trashCost),
-            'link': IntQueryBuilder(table.baseLink),
-            'influence_limit': IntQueryBuilder(table.influenceLimit),
-            'min_deck': IntQueryBuilder(table.minimumDeckSize),
+            'code': StringQueryBuilder(table.code, help: 'card code'),
+            'title': ContainsStringQueryBuilder(table.title, help: 'card title'),
+            'body': ContainsStringQueryBuilder(table.body, help: 'card body'),
+            'keyword': ContainsStringQueryBuilder(table.keywords, help: 'card keyword'),
+            'flavor': ContainsStringQueryBuilder(table.flavor, help: 'card flavor'),
+            'quantity': IntQueryBuilder(table.quantity, help: 'card quantity'),
+            'cost': IntQueryBuilder(table.cost, help: 'card cost'),
+            'limit': IntQueryBuilder(table.deckLimit, help: 'card deck limit'),
+            'influence': IntQueryBuilder(table.factionCost, help: 'card influence cost'),
+            'unique': BoolQueryBuilder(table.uniqueness, help: 'card uniqeness'),
+            'advancement': IntQueryBuilder(table.advancementCost, help: 'card advancement cost'),
+            'mu': IntQueryBuilder(table.memoryCost, help: 'card mu'),
+            'strength': IntQueryBuilder(table.strength, help: 'card strength'),
+            'agenda': IntQueryBuilder(table.agendaPoints, help: 'card agenda points'),
+            'trash': IntQueryBuilder(table.trashCost, help: 'card trash cost'),
+            'link': IntQueryBuilder(table.baseLink, help: 'identity base link'),
+            'influence_limit': IntQueryBuilder(table.influenceLimit, help: 'identity influence limit'),
+            'min_deck': IntQueryBuilder(table.minimumDeckSize, help: 'identity min deck size'),
           },
           extraFields: extraFields,
+          help: help,
         );
 
   factory CardQueryBuilder(Database db) {
     final FieldMap extraFields = {};
     extraFields.addAll({
-      'card': CardQueryBuilder._(db, db.card, extraFields: extraFields),
-      'cycle': CycleQueryBuilder(db, extraFields: extraFields),
-      'pack': PackQueryBuilder(db, extraFields: extraFields),
-      'side': SideQueryBuilder(db, extraFields: extraFields),
-      'faction': FactionQueryBuilder(db, extraFields: extraFields),
-      'type': TypeQueryBuilder(db, extraFields: extraFields),
+      'card': CardQueryBuilder._(db, db.card, extraFields: extraFields, help: 'card title'),
+      'cycle': CycleQueryBuilder(db, extraFields: extraFields, help: 'cycle code or name'),
+      'pack': PackQueryBuilder(db, extraFields: extraFields, help: 'pack code or name'),
+      'side': SideQueryBuilder(db, extraFields: extraFields, help: 'side code or name'),
+      'faction': FactionQueryBuilder(db, extraFields: extraFields, help: 'faction code or name'),
+      'type': TypeQueryBuilder(db, extraFields: extraFields, help: 'type code or name'),
     });
-    return CardQueryBuilder._(db, db.card, extraFields: extraFields);
+    return CardQueryBuilder._(db, db.card, extraFields: extraFields, help: 'card title');
   }
 }
 
@@ -318,28 +336,30 @@ class DeckQueryBuilder extends ContainsStringQueryBuilder {
     Database db,
     Deck table, {
     FieldMap extraFields = const {},
+    required String help,
   }) : super(
           table.name,
           fields: {
-            'name': ContainsStringQueryBuilder(db.deck.name),
-            'description': ContainsStringQueryBuilder(db.deck.description),
+            'name': ContainsStringQueryBuilder(db.deck.name, help: 'deck name'),
+            'description': ContainsStringQueryBuilder(db.deck.description, help: 'deck description'),
           },
           extraFields: extraFields,
+          help: help,
         );
 
   factory DeckQueryBuilder(Database db) {
     final FieldMap extraFields = {};
     extraFields.addAll({
-      'deck': DeckQueryBuilder._(db, db.deck, extraFields: extraFields),
-      'tag': TagQueryBuilder(db, extraFields: extraFields),
-      'identity': CardQueryBuilder._(db, db.card.createAlias('identity'), extraFields: extraFields),
-      'cycle': CycleQueryBuilder(db, extraFields: extraFields),
-      'pack': PackQueryBuilder(db, extraFields: extraFields),
-      'side': SideQueryBuilder(db, extraFields: extraFields),
-      'faction': FactionQueryBuilder(db, extraFields: extraFields),
-      'type': TypeQueryBuilder(db, extraFields: extraFields),
+      'deck': DeckQueryBuilder._(db, db.deck, extraFields: extraFields, help: 'deck name'),
+      'tag': TagQueryBuilder(db, extraFields: extraFields, help: 'deck tag'),
+      'identity': CardQueryBuilder._(db, db.card.createAlias('identity'), extraFields: extraFields, help: 'identity name'),
+      'cycle': CycleQueryBuilder(db, extraFields: extraFields, help: 'cycle code or name'),
+      'pack': PackQueryBuilder(db, extraFields: extraFields, help: 'pack code or name'),
+      'side': SideQueryBuilder(db, extraFields: extraFields, help: 'side code or name'),
+      'faction': FactionQueryBuilder(db, extraFields: extraFields, help: 'faction code or name'),
+      'type': TypeQueryBuilder(db, extraFields: extraFields, help: 'type code or name'),
     });
-    return DeckQueryBuilder._(db, db.deck, extraFields: extraFields);
+    return DeckQueryBuilder._(db, db.deck, extraFields: extraFields, help: 'deck name');
   }
 }
 
@@ -347,15 +367,17 @@ class CycleQueryBuilder extends CodeNameQueryBuilder {
   CycleQueryBuilder(
     Database db, {
     FieldMap extraFields = const {},
+    required String help,
   }) : super(
           db.cycle.code,
           db.cycle.name,
           fields: {
-            'code': StringQueryBuilder(db.cycle.code),
-            'name': ContainsStringQueryBuilder(db.cycle.name),
-            'position': IntQueryBuilder(db.cycle.position),
+            'code': StringQueryBuilder(db.cycle.code, help: 'cycle code'),
+            'name': ContainsStringQueryBuilder(db.cycle.name, help: 'cycle name'),
+            'position': IntQueryBuilder(db.cycle.position, help: 'cycle position'),
           },
           extraFields: extraFields,
+          help: help,
         );
 }
 
@@ -363,15 +385,17 @@ class PackQueryBuilder extends CodeNameQueryBuilder {
   PackQueryBuilder(
     Database db, {
     FieldMap extraFields = const {},
+    required String help,
   }) : super(
           db.pack.code,
           db.pack.name,
           fields: {
-            'code': StringQueryBuilder(db.pack.code),
-            'name': ContainsStringQueryBuilder(db.pack.name),
-            'position': IntQueryBuilder(db.pack.position),
+            'code': StringQueryBuilder(db.pack.code, help: 'pack code'),
+            'name': ContainsStringQueryBuilder(db.pack.name, help: 'pack name'),
+            'position': IntQueryBuilder(db.pack.position, help: 'pack position'),
           },
           extraFields: extraFields,
+          help: help,
         );
 }
 
@@ -379,14 +403,16 @@ class SideQueryBuilder extends CodeNameQueryBuilder {
   SideQueryBuilder(
     Database db, {
     FieldMap extraFields = const {},
+    required String help,
   }) : super(
           db.side.code,
           db.side.name,
           fields: {
-            'code': StringQueryBuilder(db.side.code),
-            'name': ContainsStringQueryBuilder(db.side.name),
+            'code': StringQueryBuilder(db.side.code, help: 'side code'),
+            'name': ContainsStringQueryBuilder(db.side.name, help: 'side name'),
           },
           extraFields: extraFields,
+          help: help,
         );
 }
 
@@ -394,15 +420,17 @@ class FactionQueryBuilder extends CodeNameQueryBuilder {
   FactionQueryBuilder(
     Database db, {
     FieldMap extraFields = const {},
+    required String help,
   }) : super(
           db.faction.code,
           db.faction.name,
           fields: {
-            'code': StringQueryBuilder(db.faction.code),
-            'name': ContainsStringQueryBuilder(db.faction.name),
-            'mini': BoolQueryBuilder(db.faction.isMini),
+            'code': StringQueryBuilder(db.faction.code, help: 'faction code'),
+            'name': ContainsStringQueryBuilder(db.faction.name, help: 'faction name'),
+            'mini': BoolQueryBuilder(db.faction.isMini, help: 'is mini faction'),
           },
           extraFields: extraFields,
+          help: help,
         );
 }
 
@@ -410,15 +438,17 @@ class TypeQueryBuilder extends CodeNameQueryBuilder {
   TypeQueryBuilder(
     Database db, {
     FieldMap extraFields = const {},
+    required String help,
   }) : super(
           db.type.code,
           db.type.name,
           fields: {
-            'code': StringQueryBuilder(db.type.code),
-            'name': ContainsStringQueryBuilder(db.type.name),
-            'position': IntQueryBuilder(db.type.position),
+            'code': StringQueryBuilder(db.type.code, help: 'type code'),
+            'name': ContainsStringQueryBuilder(db.type.name, help: 'type name'),
+            'position': IntQueryBuilder(db.type.position, help: 'type position'),
           },
           extraFields: extraFields,
+          help: help,
         );
 }
 
@@ -426,14 +456,16 @@ class FormatQueryBuilder extends CodeNameQueryBuilder {
   FormatQueryBuilder(
     Database db, {
     FieldMap extraFields = const {},
+    required String help,
   }) : super(
           db.format.code,
           db.format.name,
           fields: {
-            'code': StringQueryBuilder(db.format.code),
-            'name': ContainsStringQueryBuilder(db.format.name),
+            'code': StringQueryBuilder(db.format.code, help: 'format code'),
+            'name': ContainsStringQueryBuilder(db.format.name, help: 'format name'),
           },
           extraFields: extraFields,
+          help: help,
         );
 }
 
@@ -441,14 +473,16 @@ class RotationQueryBuilder extends CodeNameQueryBuilder {
   RotationQueryBuilder(
     Database db, {
     FieldMap extraFields = const {},
+    required String help,
   }) : super(
           db.rotation.code,
           db.rotation.name,
           fields: {
-            'code': StringQueryBuilder(db.rotation.code),
-            'name': ContainsStringQueryBuilder(db.rotation.name),
+            'code': StringQueryBuilder(db.rotation.code, help: 'rotation code'),
+            'name': ContainsStringQueryBuilder(db.rotation.name, help: 'rotation name'),
           },
           extraFields: extraFields,
+          help: help,
         );
 }
 
@@ -456,13 +490,15 @@ class MwlQueryBuilder extends CodeNameQueryBuilder {
   MwlQueryBuilder(
     Database db, {
     FieldMap extraFields = const {},
+    required String help,
   }) : super(
           db.mwl.code,
           db.mwl.name,
           fields: {
-            'code': StringQueryBuilder(db.mwl.code),
-            'name': ContainsStringQueryBuilder(db.mwl.name),
+            'code': StringQueryBuilder(db.mwl.code, help: 'mwl code'),
+            'name': ContainsStringQueryBuilder(db.mwl.name, help: 'mwl name'),
           },
           extraFields: extraFields,
+          help: help,
         );
 }

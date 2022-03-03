@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/db/querybuilder.dart';
 import '/providers.dart';
+import '/view/querybuilder_autocomplete.dart';
 import '/view/search_theme.dart';
 import 'actions.dart';
 
@@ -29,6 +30,7 @@ class CardSearchAppBar extends ConsumerWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = SearchTheme.of(context);
+    final queryBuilder = ref.watch(cardQueryBuilderProvider);
     return WillPopScope(
       onWillPop: () async {
         final isSearching = ref.read(filterSearchingProvider.state);
@@ -42,13 +44,19 @@ class CardSearchAppBar extends ConsumerWidget implements PreferredSizeWidget {
         data: theme,
         child: AppBar(
           leading: const BackButton(),
-          title: TextField(
-            autofocus: true,
-            controller: controller,
-            style: theme.textTheme.headline6,
-            textInputAction: TextInputAction.search,
-            decoration: const InputDecoration(hintText: 'Search'),
-            onChanged: (newQuery) => _updateSearchQuery(context, ref, newQuery),
+          title: QueryBuilderAutocomplete(
+            queryBuilder: queryBuilder,
+            fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+              return TextField(
+                autofocus: true,
+                focusNode: focusNode,
+                controller: controller,
+                style: theme.textTheme.headline6,
+                textInputAction: TextInputAction.search,
+                decoration: const InputDecoration(hintText: 'Search'),
+                onChanged: (newQuery) => _updateSearchQuery(context, ref, newQuery),
+              );
+            },
           ),
           actions: [
             IconButton(
