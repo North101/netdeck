@@ -23,9 +23,12 @@ class DeckPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return const Scaffold(
-      body: DeckBody(),
-      floatingActionButton: DeckFloatingActionBar(),
+    return GestureDetector(
+      onTapDown: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+      child: const Scaffold(
+        body: DeckBody(),
+        floatingActionButton: DeckFloatingActionBar(),
+      ),
     );
   }
 }

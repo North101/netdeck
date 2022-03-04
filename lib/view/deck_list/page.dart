@@ -58,13 +58,16 @@ class DeckListPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final fab = ref.watch(deckFabProvider);
-    return Scaffold(
-      appBar: DeckListAppBar(
-        automaticallyImplyLeading: automaticallyImplyLeading,
-        title: title,
+    return GestureDetector(
+      onTapDown: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+      child: Scaffold(
+        appBar: DeckListAppBar(
+          automaticallyImplyLeading: automaticallyImplyLeading,
+          title: title,
+        ),
+        body: const DeckListBody(),
+        floatingActionButton: fab,
       ),
-      body: const DeckListBody(),
-      floatingActionButton: fab,
     );
   }
 }

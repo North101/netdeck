@@ -19,3 +19,10 @@ About
 
 BackupRestorePage:
 everything
+
+- The filter does not remember what you last used. I want to jump back and forth to see my current deck size or agenda/influence points while still adding cards.
+- When the app is killed in the background, if I haven't already saved my deck, it's lost. Normally I'd expect an app to cache data in case it gets killed.
+- I'd like to be able to swipe the page to move to different tabs; cards, deck, settings.
+- When I preview a card (say, then I'm searching for one for my deck), I'd like to see the NRDB rules text with it, since sometimes they have been re-worded to be clearer.
+- I won an alt art for a card I don't otherwise have the set for. I'd like to have a way to mark individual cards. Maybe even mark that I have an alt-art version, and/or only a proxy. (I wish NetrunnerDB did all this, too, tbf.)
+- Dark mode plz?
