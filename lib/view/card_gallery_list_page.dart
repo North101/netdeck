@@ -58,6 +58,8 @@ class CardHeader extends ConsumerWidget {
                 child: CachedNetworkImage(
                   fit: BoxFit.contain,
                   imageUrl: card.card.imageUrl,
+                  placeholder: (context, imageUrl) => card.faction.icon?.image() ?? const SizedBox.shrink(),
+                  errorWidget: (context, imageUrl, error) => card.faction.icon?.image() ?? const SizedBox.shrink(),
                 ),
               ),
             );
@@ -68,4 +70,3 @@ class CardHeader extends ConsumerWidget {
     );
   }
 }
-
