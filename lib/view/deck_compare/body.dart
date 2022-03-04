@@ -35,12 +35,12 @@ class DeckCompareBody extends ConsumerWidget {
                         card.key,
                         trailing: Text('${card.value} / ${maxCardList[card.key]}'),
                         onTap: () {
-                          final groupedCardList = HeaderList(compareCardList.map((e) {
+                          final groupedCardList = AsyncData(HeaderList(compareCardList.map((e) {
                             return HeaderItems<CardResult>(e.header, e.items.map((e) => e.key).toList());
-                          }).toList());
+                          }).toList()));
                           Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                             return CardGalleryPage.withOverrides(
-                              groupedCardList: AsyncData(groupedCardList),
+                              groupedCardList: groupedCardList,
                               currentIndex: compareCardList.sumUntilItem(headerList) + realIndex,
                             );
                           }));

@@ -494,6 +494,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
   final CardGroup deckCardGroup;
   final CardSort compareCardSort;
   final bool apexResources;
+  final CardGalleryView cardGalleryView;
   SettingsData(
       {required this.id,
       this.filterFormatCode,
@@ -507,7 +508,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       required this.deckCardSort,
       required this.deckCardGroup,
       required this.compareCardSort,
-      required this.apexResources});
+      required this.apexResources,
+      required this.cardGalleryView});
   factory SettingsData.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return SettingsData(
@@ -538,6 +540,9 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
               data['${effectivePrefix}compare_card_sort']))!,
       apexResources: const BoolType()
           .mapFromDatabaseResponse(data['${effectivePrefix}apex_resources'])!,
+      cardGalleryView: Settings.$converter7.mapToDart(const StringType()
+          .mapFromDatabaseResponse(
+              data['${effectivePrefix}card_gallery_view']))!,
     );
   }
   @override
@@ -586,6 +591,11 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           Variable<String>(converter.mapToSql(compareCardSort)!);
     }
     map['apex_resources'] = Variable<bool>(apexResources);
+    {
+      final converter = Settings.$converter7;
+      map['card_gallery_view'] =
+          Variable<String>(converter.mapToSql(cardGalleryView)!);
+    }
     return map;
   }
 
@@ -610,6 +620,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       deckCardGroup: Value(deckCardGroup),
       compareCardSort: Value(compareCardSort),
       apexResources: Value(apexResources),
+      cardGalleryView: Value(cardGalleryView),
     );
   }
 
@@ -632,6 +643,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       deckCardGroup: serializer.fromJson<CardGroup>(json['deck_card_group']),
       compareCardSort: serializer.fromJson<CardSort>(json['compare_card_sort']),
       apexResources: serializer.fromJson<bool>(json['apex_resources']),
+      cardGalleryView:
+          serializer.fromJson<CardGalleryView>(json['card_gallery_view']),
     );
   }
   @override
@@ -651,6 +664,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       'deck_card_group': serializer.toJson<CardGroup>(deckCardGroup),
       'compare_card_sort': serializer.toJson<CardSort>(compareCardSort),
       'apex_resources': serializer.toJson<bool>(apexResources),
+      'card_gallery_view': serializer.toJson<CardGalleryView>(cardGalleryView),
     };
   }
 
@@ -667,7 +681,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           CardSort? deckCardSort,
           CardGroup? deckCardGroup,
           CardSort? compareCardSort,
-          bool? apexResources}) =>
+          bool? apexResources,
+          CardGalleryView? cardGalleryView}) =>
       SettingsData(
         id: id ?? this.id,
         filterFormatCode: filterFormatCode.present
@@ -687,6 +702,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
         deckCardGroup: deckCardGroup ?? this.deckCardGroup,
         compareCardSort: compareCardSort ?? this.compareCardSort,
         apexResources: apexResources ?? this.apexResources,
+        cardGalleryView: cardGalleryView ?? this.cardGalleryView,
       );
   @override
   String toString() {
@@ -703,7 +719,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           ..write('deckCardSort: $deckCardSort, ')
           ..write('deckCardGroup: $deckCardGroup, ')
           ..write('compareCardSort: $compareCardSort, ')
-          ..write('apexResources: $apexResources')
+          ..write('apexResources: $apexResources, ')
+          ..write('cardGalleryView: $cardGalleryView')
           ..write(')'))
         .toString();
   }
@@ -722,7 +739,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       deckCardSort,
       deckCardGroup,
       compareCardSort,
-      apexResources);
+      apexResources,
+      cardGalleryView);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -739,7 +757,8 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           other.deckCardSort == this.deckCardSort &&
           other.deckCardGroup == this.deckCardGroup &&
           other.compareCardSort == this.compareCardSort &&
-          other.apexResources == this.apexResources);
+          other.apexResources == this.apexResources &&
+          other.cardGalleryView == this.cardGalleryView);
 }
 
 class SettingsCompanion extends UpdateCompanion<SettingsData> {
@@ -756,6 +775,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
   final Value<CardGroup> deckCardGroup;
   final Value<CardSort> compareCardSort;
   final Value<bool> apexResources;
+  final Value<CardGalleryView> cardGalleryView;
   const SettingsCompanion({
     this.id = const Value.absent(),
     this.filterFormatCode = const Value.absent(),
@@ -770,6 +790,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     this.deckCardGroup = const Value.absent(),
     this.compareCardSort = const Value.absent(),
     this.apexResources = const Value.absent(),
+    this.cardGalleryView = const Value.absent(),
   });
   SettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -785,6 +806,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     this.deckCardGroup = const Value.absent(),
     this.compareCardSort = const Value.absent(),
     this.apexResources = const Value.absent(),
+    this.cardGalleryView = const Value.absent(),
   });
   static Insertable<SettingsData> custom({
     Expression<bool>? id,
@@ -800,6 +822,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Expression<CardGroup>? deckCardGroup,
     Expression<CardSort>? compareCardSort,
     Expression<bool>? apexResources,
+    Expression<CardGalleryView>? cardGalleryView,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -816,6 +839,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       if (deckCardGroup != null) 'deck_card_group': deckCardGroup,
       if (compareCardSort != null) 'compare_card_sort': compareCardSort,
       if (apexResources != null) 'apex_resources': apexResources,
+      if (cardGalleryView != null) 'card_gallery_view': cardGalleryView,
     });
   }
 
@@ -832,7 +856,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       Value<CardSort>? deckCardSort,
       Value<CardGroup>? deckCardGroup,
       Value<CardSort>? compareCardSort,
-      Value<bool>? apexResources}) {
+      Value<bool>? apexResources,
+      Value<CardGalleryView>? cardGalleryView}) {
     return SettingsCompanion(
       id: id ?? this.id,
       filterFormatCode: filterFormatCode ?? this.filterFormatCode,
@@ -847,6 +872,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       deckCardGroup: deckCardGroup ?? this.deckCardGroup,
       compareCardSort: compareCardSort ?? this.compareCardSort,
       apexResources: apexResources ?? this.apexResources,
+      cardGalleryView: cardGalleryView ?? this.cardGalleryView,
     );
   }
 
@@ -904,6 +930,11 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     if (apexResources.present) {
       map['apex_resources'] = Variable<bool>(apexResources.value);
     }
+    if (cardGalleryView.present) {
+      final converter = Settings.$converter7;
+      map['card_gallery_view'] =
+          Variable<String>(converter.mapToSql(cardGalleryView.value)!);
+    }
     return map;
   }
 
@@ -922,7 +953,8 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
           ..write('deckCardSort: $deckCardSort, ')
           ..write('deckCardGroup: $deckCardGroup, ')
           ..write('compareCardSort: $compareCardSort, ')
-          ..write('apexResources: $apexResources')
+          ..write('apexResources: $apexResources, ')
+          ..write('cardGalleryView: $cardGalleryView')
           ..write(')'))
         .toString();
   }
@@ -1041,6 +1073,16 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL DEFAULT FALSE',
       defaultValue: const CustomExpression<bool>('FALSE'));
+  final VerificationMeta _cardGalleryViewMeta =
+      const VerificationMeta('cardGalleryView');
+  late final GeneratedColumnWithTypeConverter<CardGalleryView, String?>
+      cardGalleryView = GeneratedColumn<String?>(
+              'card_gallery_view', aliasedName, false,
+              type: const StringType(),
+              requiredDuringInsert: false,
+              $customConstraints: 'NOT NULL DEFAULT \'\'',
+              defaultValue: const CustomExpression<String>('\'\''))
+          .withConverter<CardGalleryView>(Settings.$converter7);
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -1055,7 +1097,8 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
         deckCardSort,
         deckCardGroup,
         compareCardSort,
-        apexResources
+        apexResources,
+        cardGalleryView
       ];
   @override
   String get aliasedName => _alias ?? 'settings';
@@ -1106,6 +1149,7 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
           apexResources.isAcceptableOrUnknown(
               data['apex_resources']!, _apexResourcesMeta));
     }
+    context.handle(_cardGalleryViewMeta, const VerificationResult.success());
     return context;
   }
 
@@ -1136,6 +1180,8 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
       const CardGroupConverter(CardGroup.type);
   static TypeConverter<CardSort, String> $converter6 =
       const CardSortConverter(CardSort.set);
+  static TypeConverter<CardGalleryView, String> $converter7 =
+      const CardGalleryViewConverter(CardGalleryView.image);
   @override
   List<String> get customConstraints =>
       const ['CONSTRAINT settings_id CHECK (id = TRUE)'];
@@ -6414,7 +6460,7 @@ abstract class _$Database extends GeneratedDatabase {
 
   Selectable<SettingResult> getSettings() {
     return customSelect(
-        'SELECT"settings"."id" AS "nested_0.id", "settings"."filter_format_code" AS "nested_0.filter_format_code", "settings"."filter_rotation_code" AS "nested_0.filter_rotation_code", "settings"."filter_mwl_code" AS "nested_0.filter_mwl_code", "settings"."filter_collection" AS "nested_0.filter_collection", "settings"."card_sort" AS "nested_0.card_sort", "settings"."card_group" AS "nested_0.card_group", "settings"."deck_sort" AS "nested_0.deck_sort", "settings"."deck_group" AS "nested_0.deck_group", "settings"."deck_card_sort" AS "nested_0.deck_card_sort", "settings"."deck_card_group" AS "nested_0.deck_card_group", "settings"."compare_card_sort" AS "nested_0.compare_card_sort", "settings"."apex_resources" AS "nested_0.apex_resources","filter_format"."id" AS "nested_1.id", "filter_format"."code" AS "nested_1.code", "filter_format"."name" AS "nested_1.name","filter_rotation"."code" AS "nested_2.code", "filter_rotation"."format_code" AS "nested_2.format_code", "filter_rotation"."name" AS "nested_2.name", "filter_rotation"."date_start" AS "nested_2.date_start", "filter_rotation"."current" AS "nested_2.current", "filter_rotation"."latest" AS "nested_2.latest","filter_mwl"."code" AS "nested_3.code", "filter_mwl"."format_code" AS "nested_3.format_code", "filter_mwl"."name" AS "nested_3.name", "filter_mwl"."date_start" AS "nested_3.date_start", "filter_mwl"."active" AS "nested_3.active", "filter_mwl"."latest" AS "nested_3.latest" FROM settings LEFT JOIN format AS filter_format ON filter_format.code = settings.filter_format_code LEFT JOIN rotation AS filter_rotation ON filter_rotation.code = settings.filter_rotation_code LEFT JOIN mwl AS filter_mwl ON filter_mwl.code = settings.filter_mwl_code LIMIT 1',
+        'SELECT"settings"."id" AS "nested_0.id", "settings"."filter_format_code" AS "nested_0.filter_format_code", "settings"."filter_rotation_code" AS "nested_0.filter_rotation_code", "settings"."filter_mwl_code" AS "nested_0.filter_mwl_code", "settings"."filter_collection" AS "nested_0.filter_collection", "settings"."card_sort" AS "nested_0.card_sort", "settings"."card_group" AS "nested_0.card_group", "settings"."deck_sort" AS "nested_0.deck_sort", "settings"."deck_group" AS "nested_0.deck_group", "settings"."deck_card_sort" AS "nested_0.deck_card_sort", "settings"."deck_card_group" AS "nested_0.deck_card_group", "settings"."compare_card_sort" AS "nested_0.compare_card_sort", "settings"."apex_resources" AS "nested_0.apex_resources", "settings"."card_gallery_view" AS "nested_0.card_gallery_view","filter_format"."id" AS "nested_1.id", "filter_format"."code" AS "nested_1.code", "filter_format"."name" AS "nested_1.name","filter_rotation"."code" AS "nested_2.code", "filter_rotation"."format_code" AS "nested_2.format_code", "filter_rotation"."name" AS "nested_2.name", "filter_rotation"."date_start" AS "nested_2.date_start", "filter_rotation"."current" AS "nested_2.current", "filter_rotation"."latest" AS "nested_2.latest","filter_mwl"."code" AS "nested_3.code", "filter_mwl"."format_code" AS "nested_3.format_code", "filter_mwl"."name" AS "nested_3.name", "filter_mwl"."date_start" AS "nested_3.date_start", "filter_mwl"."active" AS "nested_3.active", "filter_mwl"."latest" AS "nested_3.latest" FROM settings LEFT JOIN format AS filter_format ON filter_format.code = settings.filter_format_code LEFT JOIN rotation AS filter_rotation ON filter_rotation.code = settings.filter_rotation_code LEFT JOIN mwl AS filter_mwl ON filter_mwl.code = settings.filter_mwl_code LIMIT 1',
         variables: [],
         readsFrom: {
           settings,

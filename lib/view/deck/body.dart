@@ -187,8 +187,8 @@ class DeckIdentity extends ConsumerWidget {
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
           final groupedCardList = ref.read(groupedCardListProvider);
           return CardGalleryPage.withOverrides(
-            currentIndex: 0,
             groupedCardList: groupedCardList,
+            currentIndex: 0,
           );
         }));
       },
@@ -249,8 +249,8 @@ class DeckCardHeader extends ConsumerWidget {
                   Navigator.of(context).push(MaterialPageRoute(builder: (context) {
                     final groupedCardList = ref.watch(groupedCardListProvider);
                     return CardGalleryPage.withOverrides(
-                      currentIndex: indexOffset + realIndex,
                       groupedCardList: groupedCardList,
+                      currentIndex: indexOffset + realIndex,
                     );
                   }));
                 },

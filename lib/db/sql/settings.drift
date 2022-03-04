@@ -15,6 +15,7 @@ CREATE TABLE settings(
   deck_card_group TEXT NOT NULL MAPPED BY `const CardGroupConverter(CardGroup.type)` DEFAULT '',
   compare_card_sort TEXT NOT NULL MAPPED BY `const CardSortConverter(CardSort.set)` DEFAULT '',
   apex_resources BOOLEAN NOT NULL DEFAULT FALSE,
+  card_gallery_view TEXT NOT NULL MAPPED BY `const CardGalleryViewConverter(CardGalleryView.image)` DEFAULT '',
   CONSTRAINT settings_id CHECK (id = TRUE)
 ) AS SettingsData;
 

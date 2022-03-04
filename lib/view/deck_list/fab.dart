@@ -53,12 +53,15 @@ class DeckListFloatingActionBar extends ConsumerWidget {
                     );
                   })),
                 ),
-                onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                  return CardGalleryPage.withOverrides(
-                    groupedCardList: ref.read(groupedCardListProvider),
-                    currentIndex: index,
-                  );
-                })),
+                onTap: () {
+                  final groupedCardList = ref.read(groupedCardListProvider);
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+                    return CardGalleryPage.withOverrides(
+                      groupedCardList: groupedCardList,
+                      currentIndex: index,
+                    );
+                  }));
+                },
               ),
             );
           }));

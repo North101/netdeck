@@ -17,7 +17,7 @@ class CardGalleryPage extends ConsumerWidget {
     return ProviderScope(
       overrides: [
         groupedCardListProvider.overrideWithValue(groupedCardList),
-        galleryCardIndexProvider.overrideWithValue(StateController(currentIndex)),
+        cardGalleryIndexProvider.overrideWithValue(StateController(currentIndex)),
       ],
       child: const CardGalleryPage(),
     );
@@ -25,7 +25,7 @@ class CardGalleryPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentIndex = ref.watch(galleryCardIndexProvider);
+    final currentIndex = ref.watch(cardGalleryIndexProvider);
     if (currentIndex == null) {
       return const CardGalleryListPage();
     } else {

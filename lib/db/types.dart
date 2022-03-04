@@ -1,5 +1,6 @@
 import 'package:timeago/timeago.dart' as timeago;
 
+export 'types/card_gallery_view.dart';
 export 'types/card_group.dart';
 export 'types/card_sort.dart';
 export 'types/color.dart';

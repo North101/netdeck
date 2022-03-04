@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' as drift;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,32 +11,43 @@ import 'card_tile.dart';
 class CardGallerySwipePage extends ConsumerWidget {
   const CardGallerySwipePage({Key? key}) : super(key: key);
 
+  Future<void> onSelected(BuildContext context, WidgetRef ref, CardGalleryView value) async {
+    final db = ref.read(dbProvider);
+    await db.update(db.settings).write(SettingsCompanion(
+          cardGalleryView: drift.Value(value),
+        ));
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final cardGalleryView = ref.watch(settingProvider.select((value) {
+      return value.whenOrNull(data: (data) => data.settings.cardGalleryView);
+    }));
+
     final groupedCardList = ref.watch(groupedCardListProvider);
-    final index = ref.watch(galleryCardIndexProvider) ?? 0;
-    final view = ref.watch(cardGalleryViewProvider.state);
+    final index = ref.watch(cardGalleryIndexProvider) ?? 0;
     return Scaffold(
       appBar: groupedCardList.whenOrNull(
         data: (data) => AppBar(
           title: Text(data.allItems[index].card.title),
           actions: [
-            IconButton(
-                icon: view.state == GalleryViewState.image ? const Icon(Icons.text_fields) : const Icon(Icons.image),
-                onPressed: () {
-                  switch (view.state) {
-                    case GalleryViewState.image:
-                      view.state = GalleryViewState.text;
-                      return;
-                    case GalleryViewState.text:
-                      view.state = GalleryViewState.image;
-                      return;
-                  }
-                }),
+            if (cardGalleryView != null)
+              IconButton(
+                  icon: cardGalleryView == CardGalleryView.image
+                      ? const Icon(Icons.text_fields)
+                      : const Icon(Icons.image),
+                  onPressed: () async {
+                    switch (cardGalleryView) {
+                      case CardGalleryView.image:
+                        return onSelected(context, ref, CardGalleryView.text);
+                      case CardGalleryView.text:
+                        return onSelected(context, ref, CardGalleryView.image);
+                    }
+                  }),
             IconButton(
               icon: const Icon(Icons.list),
               onPressed: () {
-                final index = ref.read(galleryCardIndexProvider.state);
+                final index = ref.read(cardGalleryIndexProvider.state);
                 index.state = null;
               },
             ),
@@ -51,8 +63,8 @@ class CardGallerySwipePage extends ConsumerWidget {
           itemCount: data.allItems.length,
           itemBuilder: (context, index) {
             final card = data.allItems[index];
-            switch (view.state) {
-              case GalleryViewState.image:
+            switch (cardGalleryView) {
+              case CardGalleryView.image:
                 return Padding(
                   padding: const EdgeInsets.all(8),
                   child: CachedNetworkImage(
@@ -72,15 +84,17 @@ class CardGallerySwipePage extends ConsumerWidget {
                     },
                   ),
                 );
-              case GalleryViewState.text:
+              case CardGalleryView.text:
                 return Padding(
                   padding: const EdgeInsets.all(8),
                   child: CardTile(card, logo: false, body: true),
                 );
+              case null:
+                return const Center(child: CircularProgressIndicator());
             }
           },
           onPageChanged: (value) {
-            final index = ref.read(galleryCardIndexProvider.state);
+            final index = ref.read(cardGalleryIndexProvider.state);
             index.state = value;
           },
         ),

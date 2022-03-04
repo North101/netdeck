@@ -60,12 +60,14 @@ class CardListBottomNavigationItem extends BottomNavigationItem {
       cardTileProvider.overrideWithValue((context, ref, index, card) {
         return CardTile(
           card,
-          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-            return CardGalleryPage.withOverrides(
-              groupedCardList: ref.read(groupedCardListProvider),
-              currentIndex: index,
-            );
-          })),
+          onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+              return CardGalleryPage.withOverrides(
+                groupedCardList: ref.read(groupedCardListProvider),
+                currentIndex: index,
+              );
+            }));
+          },
         );
       }),
     ];

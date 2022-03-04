@@ -49,11 +49,8 @@ LazyDatabase _openConnection(Future<File> filename) {
 })
 class Database extends _$Database {
   Database() : super(_openConnection(dbFilename()));
-  
-  Database.connect(DatabaseConnection connection) : super.connect(connection);
 
-  @override
-  int schemaVersion = 1;
+  Database.connect(DatabaseConnection connection) : super.connect(connection);
 
   static Future<File> dbFilename() async {
     final dbFolder = await getApplicationDocumentsDirectory();
@@ -64,6 +61,18 @@ class Database extends _$Database {
     final filename = await dbFilename();
     return filename.delete();
   }
+
+  @override
+  int schemaVersion = 2;
+
+  @override
+  MigrationStrategy get migration => MigrationStrategy(
+    onUpgrade: (m, from, to) async {
+      if (to < 2) {
+        m.addColumn(settings, settings.cardGalleryView);
+      }
+    },
+  );
 
   Future<DeckData> copyDeck(DeckData deck, {String? newDeckId, DateTime? now}) async {
     newDeckId ??= const Uuid().v4();

@@ -35,7 +35,7 @@ class CardHeader extends ConsumerWidget {
   final HeaderItems<CardResult> headerList;
 
   void onTap(BuildContext context, WidgetRef ref, int index) {
-    final currentIndex = ref.read(galleryCardIndexProvider.state);
+    final currentIndex = ref.read(cardGalleryIndexProvider.state);
     currentIndex.state = index;
   }
 
