@@ -245,7 +245,7 @@ class MainPage extends ConsumerWidget {
 }
 
 class _MainPage extends ConsumerWidget {
-  const _MainPage({Key? key}) : super(key: key);
+  _MainPage({Key? key}) : super(key: key);
 
   static withOverrides({
     required SettingResult settings,
@@ -254,9 +254,11 @@ class _MainPage extends ConsumerWidget {
       overrides: [
         settingResultProvider.overrideWithValue(settings),
       ],
-      child: const _MainPage(),
+      child: _MainPage(),
     );
   }
+
+  final pageController = PageController();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -274,9 +276,12 @@ class _MainPage extends ConsumerWidget {
             children: items.map((e) => e.appBar).toList(),
           ),
         ),
-        body: IndexedStack(
-          index: index.state,
+        body: PageView(
+          controller: pageController,
           children: items.map((e) => e.body).toList(),
+          onPageChanged: (value) {
+            index.state = value;
+          },
         ),
         floatingActionButton: selected.floatingActionButton,
         bottomNavigationBar: BottomNavigationBar(
