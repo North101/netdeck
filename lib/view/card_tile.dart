@@ -32,6 +32,7 @@ class CardTile extends ConsumerWidget {
       leading: logo ? card.faction.icon?.image(width: 36) : null,
       title: CardTitleWidget(card),
       subtitle: Column(
+        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           RichText(

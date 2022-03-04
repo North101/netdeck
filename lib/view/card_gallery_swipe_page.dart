@@ -82,10 +82,7 @@ class CardGallerySwipePage extends ConsumerWidget {
               case GalleryViewState.text:
                 return Padding(
                   padding: const EdgeInsets.all(8),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [CardTile(card, logo: false, body: true)],
-                  ),
+                  child: CardTile(card, logo: false, body: true),
                 );
             }
           },
