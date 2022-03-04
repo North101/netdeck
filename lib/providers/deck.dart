@@ -5,7 +5,6 @@ import 'package:rxdart/rxdart.dart';
 
 import '/db/database.dart';
 import '/util/deck_validator.dart';
-import '/util/extensions.dart';
 import '/util/header_list.dart';
 import 'db.dart';
 
@@ -83,11 +82,8 @@ final deckValidatorProvider = StreamProvider((ref) {
       cardList,
       rotationCardsList,
     ) {
-      final deckCardMap = cardList.map((e) {
-        return MapEntry(e, deck.cards[e] ?? 0);
-      }).toMap();
       final formatCardSet = deck.rotation != null ? rotationCardsList.map((e) => e.card.code).toSet() : null;
-      return DeckValidator(settings, deck, deckCardMap, [], formatCardSet);
+      return DeckValidator(settings, deck, formatCardSet);
     },
   );
 }, dependencies: [dbProvider, deckProvider, deckProvider]);

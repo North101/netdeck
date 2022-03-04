@@ -15,10 +15,10 @@ class DeckFloatingActionBar extends ConsumerWidget {
     return FloatingActionButton(
         child: const Icon(Icons.add),
         onPressed: () async {
-          final db = ref.read(dbProvider);
           final deckNotifier = ref.read(deckProvider.notifier);
           final deck = deckNotifier.value;
-          final settings = await db.getSettings().getSingle();
+          final deckValidator = await ref.read(deckValidatorProvider.future);
+          final settings = deckValidator.settings;
 
           Navigator.of(context).push(MaterialPageRoute(builder: (context) {
             return CardListPage.withOverrides(
@@ -30,7 +30,7 @@ class DeckFloatingActionBar extends ConsumerWidget {
               filterMwl: deck.mwl,
               filterSides: FilterType(always: {deck.side.code}),
               filterTypes: FilterType(never: {deck.identity.typeCode}),
-              deckCardList: deck.cards.keys.toSet(),
+              deckValidator: deckValidator,
               cardTile: (context, ref, index, card) {
                 final count = deckNotifier.getCard(card);
                 return CardTile(

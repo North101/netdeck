@@ -9,40 +9,34 @@ import 'card_influence.dart';
 class DeckValidator {
   factory DeckValidator(
     SettingResult settings,
-    DeckResult deck,
-    Map<CardResult, int> cardList,
-    List<String> tagList,
+    DeckResult2 deck,
     Set<String>? formatCardSet,
   ) {
     if (deck.identity.code == TheProfessorDeckValidator.identityCode) {
-      return TheProfessorDeckValidator(settings, deck, cardList, tagList, formatCardSet);
+      return TheProfessorDeckValidator(settings, deck, formatCardSet);
     } else if (deck.identity.code == ApexDeckValidator.identityCode) {
-      return ApexDeckValidator(settings, deck, cardList, tagList, formatCardSet);
+      return ApexDeckValidator(settings, deck, formatCardSet);
     } else if (deck.identity.code == CustomBioticsDeckValidator.identityCode) {
-      return CustomBioticsDeckValidator(settings, deck, cardList, tagList, formatCardSet);
+      return CustomBioticsDeckValidator(settings, deck, formatCardSet);
     }
 
     if (deck.side.code == RunnerDeckValidator.sideCode) {
-      return RunnerDeckValidator(settings, deck, cardList, tagList, formatCardSet);
+      return RunnerDeckValidator(settings, deck, formatCardSet);
     } else if (deck.side.code == CorpDeckValidator.sideCode) {
-      return CorpDeckValidator(settings, deck, cardList, tagList, formatCardSet);
+      return CorpDeckValidator(settings, deck, formatCardSet);
     }
-    return DeckValidator._(settings, deck, cardList, tagList, formatCardSet);
+    return DeckValidator._(settings, deck, formatCardSet);
   }
 
   DeckValidator._(
     this.settings,
     this.deck,
-    this.cardList,
-    this.tagList,
     this.formatCardSet,
   );
 
   String? agendaError;
   final SettingResult settings;
-  final Map<CardResult, int> cardList;
-  final DeckResult deck;
-  final List<String> tagList;
+  final DeckResult2 deck;
   final Set<String>? formatCardSet;
 
   int? _agendaPoints;
@@ -53,6 +47,9 @@ class DeckValidator {
   int? _maxInfluence;
   int? _minAgendaPoints;
   int? _restrictedCount;
+
+  Map<CardResult, int> get cardList => deck.cards;
+  List<String> get tagList => deck.tags;
 
   int get deckSize => _deckSize ??= cardList.values.sum;
 
@@ -148,15 +145,11 @@ class DeckValidator {
 class RunnerDeckValidator extends DeckValidator {
   RunnerDeckValidator(
     SettingResult settings,
-    DeckResult deck,
-    Map<CardResult, int> cardList,
-    List<String> tagList,
+    DeckResult2 deck,
     Set<String>? formatCardSet,
   ) : super._(
           settings,
           deck,
-          cardList,
-          tagList,
           formatCardSet,
         );
 
@@ -175,15 +168,11 @@ class RunnerDeckValidator extends DeckValidator {
 class TheProfessorDeckValidator extends RunnerDeckValidator {
   TheProfessorDeckValidator(
     SettingResult settings,
-    DeckResult deck,
-    Map<CardResult, int> cardList,
-    List<String> tagList,
+    DeckResult2 deck,
     Set<String>? formatCardSet,
   ) : super(
           settings,
           deck,
-          cardList,
-          tagList,
           formatCardSet,
         );
 
@@ -202,15 +191,11 @@ class TheProfessorDeckValidator extends RunnerDeckValidator {
 class ApexDeckValidator extends RunnerDeckValidator {
   ApexDeckValidator(
     SettingResult settings,
-    DeckResult deck,
-    Map<CardResult, int> cardList,
-    List<String> tagList,
+    DeckResult2 deck,
     Set<String>? formatCardSet,
   ) : super(
           settings,
           deck,
-          cardList,
-          tagList,
           formatCardSet,
         );
 
@@ -233,15 +218,11 @@ class ApexDeckValidator extends RunnerDeckValidator {
 class CorpDeckValidator extends DeckValidator {
   CorpDeckValidator(
     SettingResult settings,
-    DeckResult deck,
-    Map<CardResult, int> cardList,
-    List<String> tagList,
+    DeckResult2 deck,
     Set<String>? formatCardSet,
   ) : super._(
           settings,
           deck,
-          cardList,
-          tagList,
           formatCardSet,
         );
 
@@ -281,15 +262,11 @@ class CorpDeckValidator extends DeckValidator {
 class CustomBioticsDeckValidator extends CorpDeckValidator {
   CustomBioticsDeckValidator(
     SettingResult settings,
-    DeckResult deck,
-    Map<CardResult, int> cardList,
-    List<String> tagList,
+    DeckResult2 deck,
     Set<String>? formatCardSet,
   ) : super(
           settings,
           deck,
-          cardList,
-          tagList,
           formatCardSet,
         );
 

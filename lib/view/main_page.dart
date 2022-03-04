@@ -57,7 +57,6 @@ class CardListBottomNavigationItem extends BottomNavigationItem {
       filterSidesProvider.overrideWithValue(StateController(FilterType())),
       filterFactionsProvider.overrideWithValue(StateController(FilterType())),
       filterTypesProvider.overrideWithValue(StateController(FilterType())),
-      deckCardListProvider.overrideWithValue(const {}),
       cardTileProvider.overrideWithValue((context, ref, index, card) {
         return CardTile(
           card,
