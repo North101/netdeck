@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/db/database.dart';
 import '/providers.dart';
+import '/util/assets.gen.dart';
 import '/util/filter_type.dart';
 import '/view/deck_compare/page.dart';
 import '/view/deck_list/page.dart';
@@ -183,30 +184,24 @@ class DeckAppBar extends ConsumerWidget {
     final width = constraints.maxWidth;
     final height = aspectRatio * width;
     final heightRatio = height / imageHeight;
-    final topOffset = 0 * heightRatio;
     final bottomOffset = 168 * heightRatio;
     return SliverAppBar(
       pinned: true,
-      expandedHeight: min((height - topOffset - bottomOffset), constraints.maxHeight * 0.8),
+      expandedHeight: min((height - bottomOffset), constraints.maxHeight * 0.8),
       backgroundColor: deck.faction.color,
       flexibleSpace: FlexibleSpaceBar(
         titlePadding: const EdgeInsetsDirectional.only(start: 48, bottom: 16, end: 48),
         title: Text(deck.deck.name, overflow: TextOverflow.fade, softWrap: false, maxLines: 1),
-        background: Stack(
-          children: [
-            Positioned(
-              top: -topOffset,
-              child: SizedBox(
-                height: height,
-                width: width,
-                child: CachedNetworkImage(
-                  imageUrl: deck.identity.imageUrl,
-                  alignment: Alignment.topCenter,
-                  fit: BoxFit.fitWidth,
-                ),
-              ),
-            ),
-          ],
+        background: CachedNetworkImage(
+          imageUrl: deck.identity.imageUrl,
+          alignment: Alignment.topCenter,
+          fit: BoxFit.fitWidth,
+          placeholder: (context, imageUrl) {
+            return deck.faction.icon?.image(height: 419) ?? Assets.images.click.image();
+          },
+          errorWidget: (context, imageUrl, error) {
+            return deck.faction.icon?.image(height: 419) ?? Assets.images.interrupt.image();
+          },
         ),
       ),
       actions: [
