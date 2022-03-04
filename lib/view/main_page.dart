@@ -258,8 +258,6 @@ class _MainPage extends ConsumerWidget {
     );
   }
 
-  final pageController = PageController();
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final index = ref.watch(selectedIndexProvider.state);
@@ -276,12 +274,9 @@ class _MainPage extends ConsumerWidget {
             children: items.map((e) => e.appBar).toList(),
           ),
         ),
-        body: PageView(
-          controller: pageController,
+        body: IndexedStack(
+          index: index.state,
           children: items.map((e) => e.body).toList(),
-          onPageChanged: (value) {
-            index.state = value;
-          },
         ),
         floatingActionButton: selected.floatingActionButton,
         bottomNavigationBar: BottomNavigationBar(
