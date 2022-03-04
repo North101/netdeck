@@ -245,7 +245,7 @@ class MainPage extends ConsumerWidget {
 }
 
 class _MainPage extends ConsumerWidget {
-  _MainPage({Key? key}) : super(key: key);
+  const _MainPage({Key? key}) : super(key: key);
 
   static withOverrides({
     required SettingResult settings,
@@ -254,7 +254,7 @@ class _MainPage extends ConsumerWidget {
       overrides: [
         settingResultProvider.overrideWithValue(settings),
       ],
-      child: _MainPage(),
+      child: const _MainPage(),
     );
   }
 

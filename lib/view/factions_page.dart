@@ -88,7 +88,7 @@ class FilterFactionsPage extends ConsumerWidget {
   const FilterFactionsPage({Key? key}) : super(key: key);
 
   static withOverrides({
-    required StateController<FilterType<String?>> sides,
+    required StateController<FilterType<String>> sides,
     required StateController<FilterType<String>> factions,
   }) {
     return ProviderScope(

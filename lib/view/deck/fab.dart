@@ -1,20 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:query/query.dart';
 
 import '/providers.dart';
-import '/util/filter_type.dart';
 import '/view/card_gallery_page.dart';
 import '/view/card_list/page.dart';
 import '/view/card_tile.dart';
-
-final deckFilterSearchingProvider = StateProvider<bool>((ref) => throw UnimplementedError());
-final deckFilterQueryProvider = StateProvider<Query?>((ref) => throw UnimplementedError());
-final deckFilterCollectionProvider = StateProvider<bool>((ref) => throw UnimplementedError());
-final deckFilterPacksProvider = StateProvider<FilterType<String>>((ref) => throw UnimplementedError());
-final deckFilterSidesProvider = StateProvider<FilterType<String>>((ref) => throw UnimplementedError());
-final deckFilterFactionsProvider = StateProvider<FilterType<String>>((ref) => throw UnimplementedError());
-final deckFilterTypesProvider = StateProvider<FilterType<String>>((ref) => throw UnimplementedError());
 
 class DeckFloatingActionBar extends ConsumerWidget {
   const DeckFloatingActionBar({Key? key}) : super(key: key);
@@ -32,15 +22,15 @@ class DeckFloatingActionBar extends ConsumerWidget {
           return CardListPage.withOverrides(
             color: deck.faction.color,
             title: 'Edit Deck',
-            filterSearching: ref.read(deckFilterSearchingProvider.state),
-            filterQuery: ref.read(deckFilterQueryProvider.state),
-            filterCollection: ref.read(deckFilterSearchingProvider.state),
+            filterSearching: ref.read(filterSearchingProvider.state),
+            filterQuery: ref.read(filterQueryProvider.state),
+            filterCollection: ref.read(filterSearchingProvider.state),
             filterFormat: StateController(deck.format),
             filterRotation: StateController(deck.rotation),
             filterMwl: StateController(deck.mwl),
-            filterPacks: ref.read(deckFilterPacksProvider.state),
-            filterSides: ref.read(deckFilterSidesProvider.state),
-            filterTypes: ref.read(deckFilterTypesProvider.state),
+            filterPacks: ref.read(filterPacksProvider.state),
+            filterSides: ref.read(filterSidesProvider.state),
+            filterTypes: ref.read(filterTypesProvider.state),
             deckValidator: deckValidator,
             cardTile: (context, ref, index, card) {
               final count = deckNotifier.getCard(card);

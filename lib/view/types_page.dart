@@ -107,7 +107,7 @@ class FilterTypesPage extends ConsumerWidget {
   const FilterTypesPage({Key? key}) : super(key: key);
 
   static withOverrides({
-    required StateController<FilterType<String?>> sides,
+    required StateController<FilterType<String>> sides,
     required StateController<FilterType<String>> types,
   }) {
     return ProviderScope(

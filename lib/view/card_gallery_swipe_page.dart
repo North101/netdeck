@@ -7,13 +7,6 @@ import '/db/database.dart';
 import '/providers.dart';
 import 'card_tile.dart';
 
-final viewProvider = StateProvider((ref) => GalleryViewState.image);
-
-enum GalleryViewState {
-  image,
-  text,
-}
-
 class CardGallerySwipePage extends ConsumerWidget {
   const CardGallerySwipePage({Key? key}) : super(key: key);
 
@@ -21,7 +14,7 @@ class CardGallerySwipePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final groupedCardList = ref.watch(groupedCardListProvider);
     final index = ref.watch(galleryCardIndexProvider) ?? 0;
-    final view = ref.watch(viewProvider.state);
+    final view = ref.watch(cardGalleryViewProvider.state);
     return Scaffold(
       appBar: groupedCardList.whenOrNull(
         data: (data) => AppBar(

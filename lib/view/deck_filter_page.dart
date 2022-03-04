@@ -24,7 +24,7 @@ class DeckFilterPage extends ConsumerWidget {
     required StateController<RotationData?> rotation,
     required StateController<MwlData?> mwl,
     required StateController<FilterType<String>> packs,
-    required StateController<FilterType<String?>> sides,
+    required StateController<FilterType<String>> sides,
     required StateController<FilterType<String>> factions,
     required StateController<FilterType<String>> types,
     required StateController<Set<String>> tags,

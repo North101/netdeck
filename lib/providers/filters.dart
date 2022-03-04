@@ -15,7 +15,7 @@ final filterRotationProvider = StateProvider<RotationData?>((_) => throw Unimple
 final filterMwlProvider = StateProvider<MwlData?>((_) => throw UnimplementedError());
 final filterCollectionProvider = StateProvider<bool>((_) => throw UnimplementedError());
 final filterPacksProvider = StateProvider<FilterType<String>>((_) => throw UnimplementedError());
-final filterSidesProvider = StateProvider<FilterType<String?>>((_) => throw UnimplementedError());
+final filterSidesProvider = StateProvider<FilterType<String>>((_) => throw UnimplementedError());
 final filterFactionsProvider = StateProvider<FilterType<String>>((_) => throw UnimplementedError());
 final filterTypesProvider = StateProvider<FilterType<String>>((_) => throw UnimplementedError());
 final filterTagsProvider = StateProvider<Set<String>>((_) => throw UnimplementedError());

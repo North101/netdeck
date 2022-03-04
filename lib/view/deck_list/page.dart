@@ -24,7 +24,7 @@ class DeckListPage extends ConsumerWidget {
     RotationData? filterRotation,
     MwlData? filterMwl,
     FilterType<String>? filterPacks,
-    FilterType<String?>? filterSides,
+    FilterType<String>? filterSides,
     FilterType<String>? filterFactions,
     FilterType<String>? filterTypes,
     required Widget Function(BuildContext context, WidgetRef ref, int index, DeckResult2 deck) deckTile,

@@ -10,6 +10,7 @@ class MyCollectionChip extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final collection = ref.watch(filterCollectionProvider.state);
+    print(collection.state);
     if (!collection.state) return const SizedBox.shrink();
 
     return Padding(
