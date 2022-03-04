@@ -210,14 +210,18 @@ Future<void> upload(BuildContext context, WidgetRef ref) async {
   final nrdbAuthState = ref.read(nrdbAuthStateProvider);
   OnlineAuthState? onlineAuthState;
   while (onlineAuthState == null) {
-    onlineAuthState = await nrdbAuthState
-        .maybeMap(
-          connecting: (state) => state.future.then((value) => value.mapOrNull(online: (state) => state)),
-          offline: (state) => state.refreshToken().then((value) => value.mapOrNull(online: (state) => state)),
-          online: (state) => Future.value(state),
-          orElse: () => Future.value(null),
-        )
-        .catchError((e) => Future.value(null));
+    onlineAuthState = await nrdbAuthState.maybeMap(
+      connecting: (state) async {
+        final value = await state.future;
+        return value.mapOrNull(online: (state) => state);
+      },
+      offline: (state) async {
+        final value = await state.refreshToken();
+        return value.mapOrNull(online: (state) => state);
+      },
+      online: (state) async => state,
+      orElse: () async => null,
+    );
     if (onlineAuthState == null) {
       final saveLocation = await warnNotUploaded(context);
       if (saveLocation == null) {
@@ -235,7 +239,9 @@ Future<void> upload(BuildContext context, WidgetRef ref) async {
       ..showSnackBar(const SnackBar(
         content: Text('Uploading deck...'),
       ));
-    final result = await onlineAuthState.saveDeck(deckResult).catchError((e) => const UnknownHttpResult<NrdbDeck>());
+    final result = await onlineAuthState
+        .saveDeck(deckResult) //
+        .catchError((e) => const UnknownHttpResult<NrdbDeck>());
     if (result is SuccessHttpResult<NrdbDeck>) {
       uploadedDeck = result.value;
     } else {
@@ -284,19 +290,21 @@ Future<void> download(BuildContext context, WidgetRef ref) async {
   final nrdbAuthState = ref.read(nrdbAuthStateProvider);
   OnlineAuthState? onlineAuthState;
   while (onlineAuthState == null) {
-    onlineAuthState = await nrdbAuthState
-        .maybeMap(
-          connecting: (state) => state.future.then((value) => value.mapOrNull(online: (state) => state)),
-          offline: (state) => state.refreshToken().then((value) => value.mapOrNull(online: (state) => state)),
-          online: (state) => Future.value(state),
-          orElse: () => Future.value(null),
-        )
-        .catchError((e) => Future.value(null));
+    onlineAuthState = await nrdbAuthState.maybeMap(
+      connecting: (state) async {
+        final value = await state.future;
+        return value.mapOrNull(online: (state) => state);
+      },
+      offline: (state) async {
+        final value = await state.refreshToken();
+        return value.mapOrNull(online: (state) => state);
+      },
+      online: (state) async => state,
+      orElse: () async => null,
+    );
     if (onlineAuthState == null) {
       final saveLocation = await warnNotDownloaded(context);
-      if (saveLocation == null) {
-        return;
-      }
+      if (saveLocation == null) return;
     }
   }
 
@@ -307,7 +315,9 @@ Future<void> download(BuildContext context, WidgetRef ref) async {
       ..showSnackBar(const SnackBar(
         content: Text('Downloading deck...'),
       ));
-    final result = await onlineAuthState.getDeck(deckResult.deck.id);
+    final result = await onlineAuthState
+        .getDeck(deckResult.deck.id) //
+        .catchError((e) => const UnknownHttpResult<NrdbDeck>());
     if (result is SuccessHttpResult<NrdbDeck>) {
       downloadedDeck = result.value;
     } else {
@@ -315,9 +325,7 @@ Future<void> download(BuildContext context, WidgetRef ref) async {
     }
     if (downloadedDeck == null) {
       final saveLocation = await warnNotDownloaded(context);
-      if (saveLocation == null) {
-        return;
-      }
+      if (saveLocation == null) return;
     }
   }
 
