@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/db/database.dart';
 import '/providers.dart';
+import '/util/filter_type.dart';
 import 'body.dart';
 import 'fab.dart';
 
@@ -16,6 +17,13 @@ class DeckPage extends ConsumerWidget {
       overrides: [
         deckProvider.overrideWithValue(DeckNotifier(deck)),
         groupedCardListProvider.overrideWithProvider(groupedDeckCardListProvider),
+        deckFilterSearchingProvider.overrideWithValue(StateController(false)),
+        deckFilterQueryProvider.overrideWithValue(StateController(null)),
+        deckFilterCollectionProvider.overrideWithValue(StateController(false)),
+        deckFilterPacksProvider.overrideWithValue(StateController(FilterType())),
+        deckFilterSidesProvider.overrideWithValue(StateController(FilterType(always: {deck.side.code}))),
+        deckFilterFactionsProvider.overrideWithValue(StateController(FilterType())),
+        deckFilterTypesProvider.overrideWithValue(StateController(FilterType(never: {deck.identity.typeCode}))),
       ],
       child: const DeckPage(),
     );

@@ -23,14 +23,14 @@ class DeckListFloatingActionBar extends ConsumerWidget {
           Navigator.of(context).push(MaterialPageRoute(builder: (context) {
             return CardListPage.withOverrides(
               title: 'Identity',
-              filterCollection: settings.settings.filterCollection,
-              filterFormat: settings.filterFormat,
-              filterRotation: settings.filterRotation,
-              filterMwl: settings.filterMwl,
-              filterTypes: FilterType(
+              filterCollection: StateController(settings.settings.filterCollection),
+              filterFormat: StateController(settings.filterFormat),
+              filterRotation: StateController(settings.filterRotation),
+              filterMwl: StateController(settings.filterMwl),
+              filterTypes: StateController(FilterType(
                 visible: false,
                 always: {'identity'},
-              ),
+              )),
               cardTile: (context, ref, index, card) => CardTile(
                 card,
                 trailing: IconButton(
