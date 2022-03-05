@@ -7,9 +7,7 @@ import '/providers.dart';
 import '/view/card_filter_page.dart';
 
 class CardListGroupMenu extends ConsumerWidget {
-  const CardListGroupMenu(this.settings, {Key? key}) : super(key: key);
-
-  final SettingResult settings;
+  const CardListGroupMenu({Key? key}) : super(key: key);
 
   Future<void> onSelected(BuildContext context, WidgetRef ref, CardGroup value) async {
     final db = ref.read(dbProvider);
@@ -20,7 +18,9 @@ class CardListGroupMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final cardGroup = settings.settings.cardGroup;
+    final cardGroup = ref.watch(settingProvider.select((value) {
+      return value.whenOrNull(data: (data) => data.settings.cardGroup);
+    }));
     return PopupMenuButton<CardGroup>(
       child: const ListTile(
         title: Text('Group By'),
@@ -45,9 +45,7 @@ class CardListGroupMenu extends ConsumerWidget {
 }
 
 class CardListSortMenu extends ConsumerWidget {
-  const CardListSortMenu(this.settings, {Key? key}) : super(key: key);
-
-  final SettingResult settings;
+  const CardListSortMenu({Key? key}) : super(key: key);
 
   Future<void> onSelected(BuildContext context, WidgetRef ref, CardSort value) async {
     final db = ref.read(dbProvider);
@@ -58,7 +56,9 @@ class CardListSortMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final cardSort = settings.settings.cardSort;
+    final cardSort = ref.watch(settingProvider.select((value) {
+      return value.whenOrNull(data: (data) => data.settings.cardSort);
+    }));
     return PopupMenuButton<CardSort>(
       child: const ListTile(
         title: Text('Sort By'),
@@ -115,20 +115,15 @@ class CardListMoreActions extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settings = ref.watch(settingProvider);
-    return settings.when(
-      loading: () => const SizedBox.shrink(),
-      error: (error, stacktrace) => const SizedBox.shrink(),
-      data: (settings) => PopupMenuButton(
-        itemBuilder: (context) => [
-          PopupMenuItem(
-            child: const ListTile(title: Text('Filter By')),
-            onTap: () => Future(() => _openFilterDialog(context, ref)),
-          ),
-          PopupMenuItem(child: CardListGroupMenu(settings)),
-          PopupMenuItem(child: CardListSortMenu(settings)),
-        ],
-      ),
+    return PopupMenuButton(
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          child: const ListTile(title: Text('Filter By')),
+          onTap: () => Future(() => _openFilterDialog(context, ref)),
+        ),
+        const PopupMenuItem(child: CardListGroupMenu()),
+        const PopupMenuItem(child: CardListSortMenu()),
+      ],
     );
   }
 }

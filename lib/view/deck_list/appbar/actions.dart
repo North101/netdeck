@@ -7,9 +7,7 @@ import '/providers.dart';
 import '/view/deck_filter_page.dart';
 
 class DeckListGroupMenu extends ConsumerWidget {
-  const DeckListGroupMenu(this.settings, {Key? key}) : super(key: key);
-
-  final SettingResult settings;
+  const DeckListGroupMenu({Key? key}) : super(key: key);
 
   Future<void> onSelected(BuildContext context, WidgetRef ref, DeckGroup value) async {
     final db = ref.read(dbProvider);
@@ -20,7 +18,9 @@ class DeckListGroupMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final deckGroup = settings.settings.deckGroup;
+    final deckGroup = ref.watch(settingProvider.select((value) {
+      return value.whenOrNull(data: (data) => data.settings.deckGroup);
+    }));
     return PopupMenuButton<DeckGroup>(
       child: const ListTile(
         title: Text('Group By'),
@@ -45,9 +45,7 @@ class DeckListGroupMenu extends ConsumerWidget {
 }
 
 class DeckListSortMenu extends ConsumerWidget {
-  const DeckListSortMenu(this.settings, {Key? key}) : super(key: key);
-
-  final SettingResult settings;
+  const DeckListSortMenu({Key? key}) : super(key: key);
 
   Future<void> onSelected(BuildContext context, WidgetRef ref, DeckSort value) async {
     final db = ref.read(dbProvider);
@@ -58,7 +56,9 @@ class DeckListSortMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final deckSort = settings.settings.deckSort;
+    final deckSort = ref.watch(settingProvider.select((value) {
+      return value.whenOrNull(data: (data) => data.settings.deckSort);
+    }));
     return PopupMenuButton<DeckSort>(
       child: const ListTile(
         title: Text('Sort By'),
@@ -125,8 +125,8 @@ class DeckListMoreActions extends ConsumerWidget {
             child: const ListTile(title: Text('Filter By')),
             onTap: () => Future(() => _openFilterDialog(context, ref)),
           ),
-          PopupMenuItem(child: DeckListGroupMenu(settings)),
-          PopupMenuItem(child: DeckListSortMenu(settings)),
+          const PopupMenuItem(child: DeckListGroupMenu()),
+          const PopupMenuItem(child: DeckListSortMenu()),
         ],
       ),
     );

@@ -15,9 +15,7 @@ import '/view/deck_tile.dart';
 import 'util.dart';
 
 class DeckGroupMenu extends ConsumerWidget {
-  const DeckGroupMenu(this.settings, {Key? key}) : super(key: key);
-
-  final SettingResult settings;
+  const DeckGroupMenu({Key? key}) : super(key: key);
 
   Future<void> onSelected(BuildContext context, WidgetRef ref, CardGroup value) async {
     final db = ref.read(dbProvider);
@@ -28,7 +26,9 @@ class DeckGroupMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final deckCardGroup = settings.settings.deckCardGroup;
+    final deckCardGroup = ref.watch(settingProvider.select((value) {
+      return value.whenOrNull(data: (data) => data.settings.deckCardGroup);
+    }));
     return PopupMenuButton<CardGroup>(
       child: const ListTile(
         title: Text('Group By'),
@@ -53,9 +53,7 @@ class DeckGroupMenu extends ConsumerWidget {
 }
 
 class DeckSortMenu extends ConsumerWidget {
-  const DeckSortMenu(this.settings, {Key? key}) : super(key: key);
-
-  final SettingResult settings;
+  const DeckSortMenu({Key? key}) : super(key: key);
 
   Future<void> onSelected(BuildContext context, WidgetRef ref, CardSort value) async {
     final db = ref.read(dbProvider);
@@ -66,7 +64,9 @@ class DeckSortMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final deckCardSort = settings.settings.deckCardSort;
+    final deckCardSort = ref.watch(settingProvider.select((value) {
+      return value.whenOrNull(data: (data) => data.settings.deckCardSort);
+    }));
     return PopupMenuButton<CardSort>(
       child: const ListTile(
         title: Text('Sort By'),
@@ -156,8 +156,8 @@ class DeckMoreActions extends ConsumerWidget {
             onTap: () => Future(() => compareTo(context, ref)),
           ),
           const PopupMenuDivider(),
-          PopupMenuItem(child: DeckGroupMenu(settings)),
-          PopupMenuItem(child: DeckSortMenu(settings)),
+          const PopupMenuItem(child: DeckGroupMenu()),
+          const PopupMenuItem(child: DeckSortMenu()),
           const PopupMenuDivider(),
           PopupMenuItem(
             child: const ListTile(title: Text('Delete')),
