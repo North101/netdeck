@@ -3,14 +3,13 @@ import 'package:flutter/scheduler.dart';
 
 import '/db/querybuilder.dart';
 
-final key = GlobalKey();
-
 class QueryBuilderAutocomplete extends StatelessWidget {
-  QueryBuilderAutocomplete({
+  const QueryBuilderAutocomplete({
     required this.focusNode,
     required this.textEditingController,
     required this.fieldViewBuilder,
     required this.queryBuilder,
+    Key? key,
   }) : super(key: key);
 
   final FocusNode? focusNode;
@@ -45,8 +44,8 @@ class QueryBuilderAutocomplete extends StatelessWidget {
             if (option.isEmpty || entry.key.contains(option)) entry,
         ];
       },
-      optionsViewBuilder: (context, onSelected, options) {
-        final box = key.currentContext?.findRenderObject() as RenderBox?;
+      optionsViewBuilder: (_, onSelected, options) {
+        final box = context.findRenderObject() as RenderBox?;
         final position = box?.globalToLocal(Offset.zero) ?? Offset.zero;
         return _AutocompleteOptions(
           onSelected: onSelected,
