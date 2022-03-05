@@ -20,6 +20,7 @@ class CardBodyWidget extends StatelessWidget {
       child: CardHtmlWidget([
         if (card.card.body != null) card.card.body,
         if (card.card.flavor != null) '<i>${card.card.flavor}</i>',
+        if (card.card.illustrator != null) 'Illustrated by ${card.card.illustrator}',
       ].join('<br><br>')),
     );
   }
