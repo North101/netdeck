@@ -279,7 +279,7 @@ packages:
     description:
       path: drift
       ref: develop
-      resolved-ref: "61dc1f17b8ab364a7149b70cfb0e02e00d2ce0d4"
+      resolved-ref: "3c504378216ad555e211349e2728d24e3a5557a5"
       url: "https://github.com/simolus3/moor.git"
     source: git
     version: "1.5.0-dev"
@@ -288,7 +288,7 @@ packages:
     description:
       path: drift_dev
       ref: develop
-      resolved-ref: "61dc1f17b8ab364a7149b70cfb0e02e00d2ce0d4"
+      resolved-ref: "3c504378216ad555e211349e2728d24e3a5557a5"
       url: "https://github.com/simolus3/moor.git"
     source: git
     version: "1.5.0-dev"
@@ -335,10 +335,10 @@ packages:
   flutter_appauth:
     dependency: "direct main"
     description:
-      path: "../flutter_appauth/flutter_appauth"
-      relative: true
-    source: path
-    version: "2.4.0"
+      name: flutter_appauth
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.4.1"
   flutter_appauth_platform_interface:
     dependency: transitive
     description:
@@ -837,7 +837,7 @@ packages:
     description:
       path: sqlparser
       ref: develop
-      resolved-ref: "61dc1f17b8ab364a7149b70cfb0e02e00d2ce0d4"
+      resolved-ref: "3c504378216ad555e211349e2728d24e3a5557a5"
       url: "https://github.com/simolus3/moor.git"
     source: git
     version: "0.21.0-dev"
@@ -918,6 +918,62 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.3.0"
+  url_launcher:
+    dependency: "direct main"
+    description:
+      name: url_launcher
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "6.0.20"
+  url_launcher_android:
+    dependency: transitive
+    description:
+      name: url_launcher_android
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "6.0.15"
+  url_launcher_ios:
+    dependency: transitive
+    description:
+      name: url_launcher_ios
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "6.0.15"
+  url_launcher_linux:
+    dependency: transitive
+    description:
+      name: url_launcher_linux
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.0"
+  url_launcher_macos:
+    dependency: transitive
+    description:
+      name: url_launcher_macos
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.0"
+  url_launcher_platform_interface:
+    dependency: transitive
+    description:
+      name: url_launcher_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.5"
+  url_launcher_web:
+    dependency: transitive
+    description:
+      name: url_launcher_web
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.9"
+  url_launcher_windows:
+    dependency: transitive
+    description:
+      name: url_launcher_windows
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "3.0.0"
   uuid:
     dependency: "direct main"
     description:
@@ -983,4 +1039,4 @@ packages:
     version: "3.1.0"
 sdks:
   dart: ">=2.16.0 <3.0.0"
-  flutter: ">=2.8.0"
+  flutter: ">=2.10.0"

@@ -1,11 +1,12 @@
-import 'package:drift/drift.dart' as drift;
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:netrunner_deckbuilder/util/assets.gen.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '/db/database.dart';
 import '/providers.dart';
+import '/util/assets.gen.dart';
 import 'card_tile.dart';
 
 class CardGallerySwipePage extends ConsumerWidget {
@@ -28,31 +29,38 @@ class CardGallerySwipePage extends ConsumerWidget {
     final index = ref.watch(cardGalleryIndexProvider) ?? 0;
     return Scaffold(
       appBar: groupedCardList.whenOrNull(
-        data: (data) => AppBar(
-          title: Text(data.allItems[index].card.title),
-          actions: [
-            if (cardGalleryView != null)
+        data: (data) {
+          final card = data.allItems[index];
+          return AppBar(
+            title: Text(card.card.title),
+            actions: [
               IconButton(
-                  icon: cardGalleryView == CardGalleryView.image
-                      ? const Icon(Icons.text_fields)
-                      : const Icon(Icons.image),
-                  onPressed: () async {
-                    switch (cardGalleryView) {
-                      case CardGalleryView.image:
-                        return onSelected(context, ref, CardGalleryView.text);
-                      case CardGalleryView.text:
-                        return onSelected(context, ref, CardGalleryView.image);
-                    }
-                  }),
-            IconButton(
-              icon: const Icon(Icons.list),
-              onPressed: () {
-                final index = ref.read(cardGalleryIndexProvider.state);
-                index.state = null;
-              },
-            ),
-          ],
-        ),
+                icon: const Icon(Icons.public),
+                onPressed: () => launch('https://netrunnerdb.com/en/card/${card.card.code}'),
+              ),
+              if (cardGalleryView != null)
+                IconButton(
+                    icon: cardGalleryView == CardGalleryView.image
+                        ? const Icon(Icons.text_fields)
+                        : const Icon(Icons.image),
+                    onPressed: () async {
+                      switch (cardGalleryView) {
+                        case CardGalleryView.image:
+                          return onSelected(context, ref, CardGalleryView.text);
+                        case CardGalleryView.text:
+                          return onSelected(context, ref, CardGalleryView.image);
+                      }
+                    }),
+              IconButton(
+                icon: const Icon(Icons.view_comfortable),
+                onPressed: () {
+                  final index = ref.read(cardGalleryIndexProvider.state);
+                  index.state = null;
+                },
+              ),
+            ],
+          );
+        },
       ),
       body: groupedCardList.when(
         loading: () => const Center(child: CircularProgressIndicator()),
