@@ -60,7 +60,7 @@ class CardListBottomNavigationItem extends BottomNavigationItem {
       cardTileProvider.overrideWithValue((context, ref, index, card) {
         return CardTile(
           card,
-          onTap: () {
+          onTap: () async {
             Navigator.of(context).push(MaterialPageRoute(builder: (context) {
               return CardGalleryPage.withOverrides(
                 groupedCardList: ref.read(groupedCardListProvider),
@@ -266,28 +266,25 @@ class _MainPage extends ConsumerWidget {
     final items = ref.watch(itemsProvider);
     final selected = items[index.state];
 
-    return GestureDetector(
-      onTapDown: (_) => FocusManager.instance.primaryFocus?.unfocus(),
-      child: Scaffold(
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(kToolbarHeight),
-          child: IndexedStack(
-            index: index.state,
-            children: items.map((e) => e.appBar).toList(),
-          ),
-        ),
-        body: IndexedStack(
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight),
+        child: IndexedStack(
           index: index.state,
-          children: items.map((e) => e.body).toList(),
+          children: items.map((e) => e.appBar).toList(),
         ),
-        floatingActionButton: selected.floatingActionButton,
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: index.state,
-          items: items.map((e) => e.item).toList(),
-          onTap: (value) {
-            index.state = value;
-          },
-        ),
+      ),
+      body: IndexedStack(
+        index: index.state,
+        children: items.map((e) => e.body).toList(),
+      ),
+      floatingActionButton: selected.floatingActionButton,
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: index.state,
+        items: items.map((e) => e.item).toList(),
+        onTap: (value) {
+          index.state = value;
+        },
       ),
     );
   }

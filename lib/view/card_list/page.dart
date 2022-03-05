@@ -64,16 +64,13 @@ class CardListPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return GestureDetector(
-      onTapDown: (_) => FocusManager.instance.primaryFocus?.unfocus(),
-      child: Scaffold(
-        appBar: CardListAppBar(
-          automaticallyImplyLeading: automaticallyImplyLeading,
-          color: color,
-          title: title,
-        ),
-        body: const CardListBody(),
+    return Scaffold(
+      appBar: CardListAppBar(
+        automaticallyImplyLeading: automaticallyImplyLeading,
+        color: color,
+        title: title,
       ),
+      body: const CardListBody(),
     );
   }
 }
