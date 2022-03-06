@@ -209,6 +209,9 @@ class DeckCardHeader extends ConsumerWidget {
     final deck = ref.watch(deckProvider);
     final deckCardList = ref.watch(deckProvider.select((value) => value.cards));
     final count = headerList.fold<int>(0, (value, entry) => value += (deckCardList[entry] ?? 0));
+    final deckValidator = ref.watch(deckValidatorProvider.select((value) {
+      return value.whenOrNull(data: (data) => data);
+    }));
     return SliverStickyHeader(
       header: HeaderListTile.titleCount(title: headerList.header, count: count),
       sliver: SliverList(
@@ -218,9 +221,11 @@ class DeckCardHeader extends ConsumerWidget {
               final realIndex = index ~/ 2;
               final card = headerList[realIndex];
               final count = deckCardList[card] ?? 0;
+              final cardError = deckValidator?.cardErrorList[card];
               return CardTile(
                 card,
                 faction: deck.faction,
+                error: cardError,
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [

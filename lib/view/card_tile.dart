@@ -15,6 +15,7 @@ class CardTile extends ConsumerWidget {
     this.faction,
     this.trailing,
     this.onTap,
+    this.error,
     Key? key,
   }) : super(key: key ?? ValueKey(card));
 
@@ -23,6 +24,7 @@ class CardTile extends ConsumerWidget {
   final bool body;
   final FactionData? faction;
   final Widget? trailing;
+  final String? error;
   final void Function()? onTap;
 
   @override
@@ -49,6 +51,7 @@ class CardTile extends ConsumerWidget {
             RichText(text: CardInfluenceSpan(card, faction: faction, style: DefaultTextStyle.of(context).style)),
           if (body) CardBodyWidget(card),
           CardCycleWidget(card),
+          if (error != null) Text(error!, style: TextStyle(color: Theme.of(context).errorColor))
         ],
       ),
       onTap: onTap,
