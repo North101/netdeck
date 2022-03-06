@@ -279,8 +279,8 @@ packages:
     description:
       path: drift
       ref: develop
-      resolved-ref: "3c504378216ad555e211349e2728d24e3a5557a5"
-      url: "https://github.com/simolus3/moor.git"
+      resolved-ref: "4ddbed5ccad989386647e82b04a1254f68df3a53"
+      url: "https://github.com/simolus3/drift.git"
     source: git
     version: "1.5.0-dev"
   drift_dev:
@@ -288,8 +288,8 @@ packages:
     description:
       path: drift_dev
       ref: develop
-      resolved-ref: "3c504378216ad555e211349e2728d24e3a5557a5"
-      url: "https://github.com/simolus3/moor.git"
+      resolved-ref: "4ddbed5ccad989386647e82b04a1254f68df3a53"
+      url: "https://github.com/simolus3/drift.git"
     source: git
     version: "1.5.0-dev"
   envify:
@@ -837,8 +837,8 @@ packages:
     description:
       path: sqlparser
       ref: develop
-      resolved-ref: "3c504378216ad555e211349e2728d24e3a5557a5"
-      url: "https://github.com/simolus3/moor.git"
+      resolved-ref: "4ddbed5ccad989386647e82b04a1254f68df3a53"
+      url: "https://github.com/simolus3/drift.git"
     source: git
     version: "0.21.0-dev"
   stack_trace:

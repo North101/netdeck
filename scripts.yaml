@@ -6,7 +6,7 @@ build_runner:
 
 migrations:
   - $build_runner
-  - dart run drift_dev schema dump lib/db/database.dart db/schemas/
+  - flutter pub run drift_dev schema dump lib/db/database.dart db/schemas/
 
 build:
   apk:

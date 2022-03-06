@@ -3,7 +3,7 @@ description: 'An Android: Netrunner Deckbuilder'
 
 publish_to: 'none'
 
-version: 1.0.0+5
+version: 1.0.0+6
 
 environment:
   sdk: ">=2.16.0 <3.0.0"
@@ -52,17 +52,17 @@ flutter_icons:
 dependency_overrides:
   sqlparser:
     git:
-      url: https://github.com/simolus3/moor.git
+      url: https://github.com/simolus3/drift.git
       ref: develop
       path: sqlparser
   drift:
     git:
-      url: https://github.com/simolus3/moor.git
+      url: https://github.com/simolus3/drift.git
       ref: develop
       path: drift
   drift_dev:
     git:
-      url: https://github.com/simolus3/moor.git
+      url: https://github.com/simolus3/drift.git
       ref: develop
       path: drift_dev
 
