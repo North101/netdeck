@@ -100,9 +100,10 @@ class NonFactionKeywordInfluence extends CardInfluence {
 
   @override
   int call(Map<database.CardResult, int> cardList, database.CardResult card, int quantity, int factionCost) {
+    final keywordMatch = RegExp('(?:^|\\W)${keyword.toLowerCase()}(?:\$|\\W)');
     final count = cardList.entries
         .where((e) {
-          return e.key.faction.code != factionCode && e.key.card.keywords == keyword;
+          return e.key.faction.code == factionCode && !keywordMatch.hasMatch(e.key.card.keywords?.toLowerCase() ?? '');
         })
         .map((e) => e.value)
         .sum;
