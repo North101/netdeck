@@ -68,7 +68,7 @@ class Database extends _$Database {
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onUpgrade: (m, from, to) async {
-      if (to < 2) {
+      if (from < 2) {
         m.addColumn(settings, settings.cardGalleryView);
       }
     },
