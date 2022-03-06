@@ -8,7 +8,9 @@ CREATE TABLE mwl(
   name TEXT NOT NULL,
   date_start INT MAPPED BY `const DateTimeUtcConverter()` NOT NULL,
   active BOOLEAN NOT NULL,
-  latest BOOLEAN NOT NULL
+  latest BOOLEAN NOT NULL,
+  runner_points INT,
+  corp_points INT
 );
 
 listMwl($where = TRUE):

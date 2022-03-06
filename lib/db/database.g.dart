@@ -2657,13 +2657,17 @@ class MwlData extends DataClass implements Insertable<MwlData> {
   final DateTime dateStart;
   final bool active;
   final bool latest;
+  final int? runnerPoints;
+  final int? corpPoints;
   MwlData(
       {required this.code,
       required this.formatCode,
       required this.name,
       required this.dateStart,
       required this.active,
-      required this.latest});
+      required this.latest,
+      this.runnerPoints,
+      this.corpPoints});
   factory MwlData.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return MwlData(
@@ -2679,6 +2683,10 @@ class MwlData extends DataClass implements Insertable<MwlData> {
           .mapFromDatabaseResponse(data['${effectivePrefix}active'])!,
       latest: const BoolType()
           .mapFromDatabaseResponse(data['${effectivePrefix}latest'])!,
+      runnerPoints: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}runner_points']),
+      corpPoints: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}corp_points']),
     );
   }
   @override
@@ -2693,6 +2701,12 @@ class MwlData extends DataClass implements Insertable<MwlData> {
     }
     map['active'] = Variable<bool>(active);
     map['latest'] = Variable<bool>(latest);
+    if (!nullToAbsent || runnerPoints != null) {
+      map['runner_points'] = Variable<int?>(runnerPoints);
+    }
+    if (!nullToAbsent || corpPoints != null) {
+      map['corp_points'] = Variable<int?>(corpPoints);
+    }
     return map;
   }
 
@@ -2704,6 +2718,12 @@ class MwlData extends DataClass implements Insertable<MwlData> {
       dateStart: Value(dateStart),
       active: Value(active),
       latest: Value(latest),
+      runnerPoints: runnerPoints == null && nullToAbsent
+          ? const Value.absent()
+          : Value(runnerPoints),
+      corpPoints: corpPoints == null && nullToAbsent
+          ? const Value.absent()
+          : Value(corpPoints),
     );
   }
 
@@ -2717,6 +2737,8 @@ class MwlData extends DataClass implements Insertable<MwlData> {
       dateStart: serializer.fromJson<DateTime>(json['date_start']),
       active: serializer.fromJson<bool>(json['active']),
       latest: serializer.fromJson<bool>(json['latest']),
+      runnerPoints: serializer.fromJson<int?>(json['runner_points']),
+      corpPoints: serializer.fromJson<int?>(json['corp_points']),
     );
   }
   @override
@@ -2729,6 +2751,8 @@ class MwlData extends DataClass implements Insertable<MwlData> {
       'date_start': serializer.toJson<DateTime>(dateStart),
       'active': serializer.toJson<bool>(active),
       'latest': serializer.toJson<bool>(latest),
+      'runner_points': serializer.toJson<int?>(runnerPoints),
+      'corp_points': serializer.toJson<int?>(corpPoints),
     };
   }
 
@@ -2738,7 +2762,9 @@ class MwlData extends DataClass implements Insertable<MwlData> {
           String? name,
           DateTime? dateStart,
           bool? active,
-          bool? latest}) =>
+          bool? latest,
+          Value<int?> runnerPoints = const Value.absent(),
+          Value<int?> corpPoints = const Value.absent()}) =>
       MwlData(
         code: code ?? this.code,
         formatCode: formatCode ?? this.formatCode,
@@ -2746,6 +2772,9 @@ class MwlData extends DataClass implements Insertable<MwlData> {
         dateStart: dateStart ?? this.dateStart,
         active: active ?? this.active,
         latest: latest ?? this.latest,
+        runnerPoints:
+            runnerPoints.present ? runnerPoints.value : this.runnerPoints,
+        corpPoints: corpPoints.present ? corpPoints.value : this.corpPoints,
       );
   @override
   String toString() {
@@ -2755,14 +2784,16 @@ class MwlData extends DataClass implements Insertable<MwlData> {
           ..write('name: $name, ')
           ..write('dateStart: $dateStart, ')
           ..write('active: $active, ')
-          ..write('latest: $latest')
+          ..write('latest: $latest, ')
+          ..write('runnerPoints: $runnerPoints, ')
+          ..write('corpPoints: $corpPoints')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(code, formatCode, name, dateStart, active, latest);
+  int get hashCode => Object.hash(code, formatCode, name, dateStart, active,
+      latest, runnerPoints, corpPoints);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2772,7 +2803,9 @@ class MwlData extends DataClass implements Insertable<MwlData> {
           other.name == this.name &&
           other.dateStart == this.dateStart &&
           other.active == this.active &&
-          other.latest == this.latest);
+          other.latest == this.latest &&
+          other.runnerPoints == this.runnerPoints &&
+          other.corpPoints == this.corpPoints);
 }
 
 class MwlCompanion extends UpdateCompanion<MwlData> {
@@ -2782,6 +2815,8 @@ class MwlCompanion extends UpdateCompanion<MwlData> {
   final Value<DateTime> dateStart;
   final Value<bool> active;
   final Value<bool> latest;
+  final Value<int?> runnerPoints;
+  final Value<int?> corpPoints;
   const MwlCompanion({
     this.code = const Value.absent(),
     this.formatCode = const Value.absent(),
@@ -2789,6 +2824,8 @@ class MwlCompanion extends UpdateCompanion<MwlData> {
     this.dateStart = const Value.absent(),
     this.active = const Value.absent(),
     this.latest = const Value.absent(),
+    this.runnerPoints = const Value.absent(),
+    this.corpPoints = const Value.absent(),
   });
   MwlCompanion.insert({
     required String code,
@@ -2797,6 +2834,8 @@ class MwlCompanion extends UpdateCompanion<MwlData> {
     required DateTime dateStart,
     required bool active,
     required bool latest,
+    this.runnerPoints = const Value.absent(),
+    this.corpPoints = const Value.absent(),
   })  : code = Value(code),
         formatCode = Value(formatCode),
         name = Value(name),
@@ -2810,6 +2849,8 @@ class MwlCompanion extends UpdateCompanion<MwlData> {
     Expression<DateTime>? dateStart,
     Expression<bool>? active,
     Expression<bool>? latest,
+    Expression<int?>? runnerPoints,
+    Expression<int?>? corpPoints,
   }) {
     return RawValuesInsertable({
       if (code != null) 'code': code,
@@ -2818,6 +2859,8 @@ class MwlCompanion extends UpdateCompanion<MwlData> {
       if (dateStart != null) 'date_start': dateStart,
       if (active != null) 'active': active,
       if (latest != null) 'latest': latest,
+      if (runnerPoints != null) 'runner_points': runnerPoints,
+      if (corpPoints != null) 'corp_points': corpPoints,
     });
   }
 
@@ -2827,7 +2870,9 @@ class MwlCompanion extends UpdateCompanion<MwlData> {
       Value<String>? name,
       Value<DateTime>? dateStart,
       Value<bool>? active,
-      Value<bool>? latest}) {
+      Value<bool>? latest,
+      Value<int?>? runnerPoints,
+      Value<int?>? corpPoints}) {
     return MwlCompanion(
       code: code ?? this.code,
       formatCode: formatCode ?? this.formatCode,
@@ -2835,6 +2880,8 @@ class MwlCompanion extends UpdateCompanion<MwlData> {
       dateStart: dateStart ?? this.dateStart,
       active: active ?? this.active,
       latest: latest ?? this.latest,
+      runnerPoints: runnerPoints ?? this.runnerPoints,
+      corpPoints: corpPoints ?? this.corpPoints,
     );
   }
 
@@ -2860,6 +2907,12 @@ class MwlCompanion extends UpdateCompanion<MwlData> {
     if (latest.present) {
       map['latest'] = Variable<bool>(latest.value);
     }
+    if (runnerPoints.present) {
+      map['runner_points'] = Variable<int?>(runnerPoints.value);
+    }
+    if (corpPoints.present) {
+      map['corp_points'] = Variable<int?>(corpPoints.value);
+    }
     return map;
   }
 
@@ -2871,7 +2924,9 @@ class MwlCompanion extends UpdateCompanion<MwlData> {
           ..write('name: $name, ')
           ..write('dateStart: $dateStart, ')
           ..write('active: $active, ')
-          ..write('latest: $latest')
+          ..write('latest: $latest, ')
+          ..write('runnerPoints: $runnerPoints, ')
+          ..write('corpPoints: $corpPoints')
           ..write(')'))
         .toString();
   }
@@ -2919,9 +2974,30 @@ class Mwl extends Table with TableInfo<Mwl, MwlData> {
       type: const BoolType(),
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
+  final VerificationMeta _runnerPointsMeta =
+      const VerificationMeta('runnerPoints');
+  late final GeneratedColumn<int?> runnerPoints = GeneratedColumn<int?>(
+      'runner_points', aliasedName, true,
+      type: const IntType(),
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  final VerificationMeta _corpPointsMeta = const VerificationMeta('corpPoints');
+  late final GeneratedColumn<int?> corpPoints = GeneratedColumn<int?>(
+      'corp_points', aliasedName, true,
+      type: const IntType(),
+      requiredDuringInsert: false,
+      $customConstraints: '');
   @override
-  List<GeneratedColumn> get $columns =>
-      [code, formatCode, name, dateStart, active, latest];
+  List<GeneratedColumn> get $columns => [
+        code,
+        formatCode,
+        name,
+        dateStart,
+        active,
+        latest,
+        runnerPoints,
+        corpPoints
+      ];
   @override
   String get aliasedName => _alias ?? 'mwl';
   @override
@@ -2964,6 +3040,18 @@ class Mwl extends Table with TableInfo<Mwl, MwlData> {
     } else if (isInserting) {
       context.missing(_latestMeta);
     }
+    if (data.containsKey('runner_points')) {
+      context.handle(
+          _runnerPointsMeta,
+          runnerPoints.isAcceptableOrUnknown(
+              data['runner_points']!, _runnerPointsMeta));
+    }
+    if (data.containsKey('corp_points')) {
+      context.handle(
+          _corpPointsMeta,
+          corpPoints.isAcceptableOrUnknown(
+              data['corp_points']!, _corpPointsMeta));
+    }
     return context;
   }
 
@@ -2993,13 +3081,15 @@ class MwlCardData extends DataClass implements Insertable<MwlCardData> {
   final int? globalPenalty;
   final int? universalFactionCost;
   final int? deckLimit;
+  final int? points;
   MwlCardData(
       {required this.mwlCode,
       required this.cardCode,
       required this.isRestricted,
       this.globalPenalty,
       this.universalFactionCost,
-      this.deckLimit});
+      this.deckLimit,
+      this.points});
   factory MwlCardData.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return MwlCardData(
@@ -3015,6 +3105,8 @@ class MwlCardData extends DataClass implements Insertable<MwlCardData> {
           data['${effectivePrefix}universal_faction_cost']),
       deckLimit: const IntType()
           .mapFromDatabaseResponse(data['${effectivePrefix}deck_limit']),
+      points: const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}points']),
     );
   }
   @override
@@ -3031,6 +3123,9 @@ class MwlCardData extends DataClass implements Insertable<MwlCardData> {
     }
     if (!nullToAbsent || deckLimit != null) {
       map['deck_limit'] = Variable<int?>(deckLimit);
+    }
+    if (!nullToAbsent || points != null) {
+      map['points'] = Variable<int?>(points);
     }
     return map;
   }
@@ -3049,6 +3144,8 @@ class MwlCardData extends DataClass implements Insertable<MwlCardData> {
       deckLimit: deckLimit == null && nullToAbsent
           ? const Value.absent()
           : Value(deckLimit),
+      points:
+          points == null && nullToAbsent ? const Value.absent() : Value(points),
     );
   }
 
@@ -3063,6 +3160,7 @@ class MwlCardData extends DataClass implements Insertable<MwlCardData> {
       universalFactionCost:
           serializer.fromJson<int?>(json['universal_faction_cost']),
       deckLimit: serializer.fromJson<int?>(json['deck_limit']),
+      points: serializer.fromJson<int?>(json['points']),
     );
   }
   @override
@@ -3075,6 +3173,7 @@ class MwlCardData extends DataClass implements Insertable<MwlCardData> {
       'global_penalty': serializer.toJson<int?>(globalPenalty),
       'universal_faction_cost': serializer.toJson<int?>(universalFactionCost),
       'deck_limit': serializer.toJson<int?>(deckLimit),
+      'points': serializer.toJson<int?>(points),
     };
   }
 
@@ -3084,7 +3183,8 @@ class MwlCardData extends DataClass implements Insertable<MwlCardData> {
           bool? isRestricted,
           Value<int?> globalPenalty = const Value.absent(),
           Value<int?> universalFactionCost = const Value.absent(),
-          Value<int?> deckLimit = const Value.absent()}) =>
+          Value<int?> deckLimit = const Value.absent(),
+          Value<int?> points = const Value.absent()}) =>
       MwlCardData(
         mwlCode: mwlCode ?? this.mwlCode,
         cardCode: cardCode ?? this.cardCode,
@@ -3095,6 +3195,7 @@ class MwlCardData extends DataClass implements Insertable<MwlCardData> {
             ? universalFactionCost.value
             : this.universalFactionCost,
         deckLimit: deckLimit.present ? deckLimit.value : this.deckLimit,
+        points: points.present ? points.value : this.points,
       );
   @override
   String toString() {
@@ -3104,14 +3205,15 @@ class MwlCardData extends DataClass implements Insertable<MwlCardData> {
           ..write('isRestricted: $isRestricted, ')
           ..write('globalPenalty: $globalPenalty, ')
           ..write('universalFactionCost: $universalFactionCost, ')
-          ..write('deckLimit: $deckLimit')
+          ..write('deckLimit: $deckLimit, ')
+          ..write('points: $points')
           ..write(')'))
         .toString();
   }
 
   @override
   int get hashCode => Object.hash(mwlCode, cardCode, isRestricted,
-      globalPenalty, universalFactionCost, deckLimit);
+      globalPenalty, universalFactionCost, deckLimit, points);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -3121,7 +3223,8 @@ class MwlCardData extends DataClass implements Insertable<MwlCardData> {
           other.isRestricted == this.isRestricted &&
           other.globalPenalty == this.globalPenalty &&
           other.universalFactionCost == this.universalFactionCost &&
-          other.deckLimit == this.deckLimit);
+          other.deckLimit == this.deckLimit &&
+          other.points == this.points);
 }
 
 class MwlCardCompanion extends UpdateCompanion<MwlCardData> {
@@ -3131,6 +3234,7 @@ class MwlCardCompanion extends UpdateCompanion<MwlCardData> {
   final Value<int?> globalPenalty;
   final Value<int?> universalFactionCost;
   final Value<int?> deckLimit;
+  final Value<int?> points;
   const MwlCardCompanion({
     this.mwlCode = const Value.absent(),
     this.cardCode = const Value.absent(),
@@ -3138,6 +3242,7 @@ class MwlCardCompanion extends UpdateCompanion<MwlCardData> {
     this.globalPenalty = const Value.absent(),
     this.universalFactionCost = const Value.absent(),
     this.deckLimit = const Value.absent(),
+    this.points = const Value.absent(),
   });
   MwlCardCompanion.insert({
     required String mwlCode,
@@ -3146,6 +3251,7 @@ class MwlCardCompanion extends UpdateCompanion<MwlCardData> {
     this.globalPenalty = const Value.absent(),
     this.universalFactionCost = const Value.absent(),
     this.deckLimit = const Value.absent(),
+    this.points = const Value.absent(),
   })  : mwlCode = Value(mwlCode),
         cardCode = Value(cardCode),
         isRestricted = Value(isRestricted);
@@ -3156,6 +3262,7 @@ class MwlCardCompanion extends UpdateCompanion<MwlCardData> {
     Expression<int?>? globalPenalty,
     Expression<int?>? universalFactionCost,
     Expression<int?>? deckLimit,
+    Expression<int?>? points,
   }) {
     return RawValuesInsertable({
       if (mwlCode != null) 'mwl_code': mwlCode,
@@ -3165,6 +3272,7 @@ class MwlCardCompanion extends UpdateCompanion<MwlCardData> {
       if (universalFactionCost != null)
         'universal_faction_cost': universalFactionCost,
       if (deckLimit != null) 'deck_limit': deckLimit,
+      if (points != null) 'points': points,
     });
   }
 
@@ -3174,7 +3282,8 @@ class MwlCardCompanion extends UpdateCompanion<MwlCardData> {
       Value<bool>? isRestricted,
       Value<int?>? globalPenalty,
       Value<int?>? universalFactionCost,
-      Value<int?>? deckLimit}) {
+      Value<int?>? deckLimit,
+      Value<int?>? points}) {
     return MwlCardCompanion(
       mwlCode: mwlCode ?? this.mwlCode,
       cardCode: cardCode ?? this.cardCode,
@@ -3182,6 +3291,7 @@ class MwlCardCompanion extends UpdateCompanion<MwlCardData> {
       globalPenalty: globalPenalty ?? this.globalPenalty,
       universalFactionCost: universalFactionCost ?? this.universalFactionCost,
       deckLimit: deckLimit ?? this.deckLimit,
+      points: points ?? this.points,
     );
   }
 
@@ -3207,6 +3317,9 @@ class MwlCardCompanion extends UpdateCompanion<MwlCardData> {
     if (deckLimit.present) {
       map['deck_limit'] = Variable<int?>(deckLimit.value);
     }
+    if (points.present) {
+      map['points'] = Variable<int?>(points.value);
+    }
     return map;
   }
 
@@ -3218,7 +3331,8 @@ class MwlCardCompanion extends UpdateCompanion<MwlCardData> {
           ..write('isRestricted: $isRestricted, ')
           ..write('globalPenalty: $globalPenalty, ')
           ..write('universalFactionCost: $universalFactionCost, ')
-          ..write('deckLimit: $deckLimit')
+          ..write('deckLimit: $deckLimit, ')
+          ..write('points: $points')
           ..write(')'))
         .toString();
   }
@@ -3268,6 +3382,12 @@ class MwlCard extends Table with TableInfo<MwlCard, MwlCardData> {
       type: const IntType(),
       requiredDuringInsert: false,
       $customConstraints: '');
+  final VerificationMeta _pointsMeta = const VerificationMeta('points');
+  late final GeneratedColumn<int?> points = GeneratedColumn<int?>(
+      'points', aliasedName, true,
+      type: const IntType(),
+      requiredDuringInsert: false,
+      $customConstraints: '');
   @override
   List<GeneratedColumn> get $columns => [
         mwlCode,
@@ -3275,7 +3395,8 @@ class MwlCard extends Table with TableInfo<MwlCard, MwlCardData> {
         isRestricted,
         globalPenalty,
         universalFactionCost,
-        deckLimit
+        deckLimit,
+        points
       ];
   @override
   String get aliasedName => _alias ?? 'mwl_card';
@@ -3321,6 +3442,10 @@ class MwlCard extends Table with TableInfo<MwlCard, MwlCardData> {
     if (data.containsKey('deck_limit')) {
       context.handle(_deckLimitMeta,
           deckLimit.isAcceptableOrUnknown(data['deck_limit']!, _deckLimitMeta));
+    }
+    if (data.containsKey('points')) {
+      context.handle(_pointsMeta,
+          points.isAcceptableOrUnknown(data['points']!, _pointsMeta));
     }
     return context;
   }
@@ -6460,7 +6585,7 @@ abstract class _$Database extends GeneratedDatabase {
 
   Selectable<SettingResult> getSettings() {
     return customSelect(
-        'SELECT"settings"."id" AS "nested_0.id", "settings"."filter_format_code" AS "nested_0.filter_format_code", "settings"."filter_rotation_code" AS "nested_0.filter_rotation_code", "settings"."filter_mwl_code" AS "nested_0.filter_mwl_code", "settings"."filter_collection" AS "nested_0.filter_collection", "settings"."card_sort" AS "nested_0.card_sort", "settings"."card_group" AS "nested_0.card_group", "settings"."deck_sort" AS "nested_0.deck_sort", "settings"."deck_group" AS "nested_0.deck_group", "settings"."deck_card_sort" AS "nested_0.deck_card_sort", "settings"."deck_card_group" AS "nested_0.deck_card_group", "settings"."compare_card_sort" AS "nested_0.compare_card_sort", "settings"."apex_resources" AS "nested_0.apex_resources", "settings"."card_gallery_view" AS "nested_0.card_gallery_view","filter_format"."id" AS "nested_1.id", "filter_format"."code" AS "nested_1.code", "filter_format"."name" AS "nested_1.name","filter_rotation"."code" AS "nested_2.code", "filter_rotation"."format_code" AS "nested_2.format_code", "filter_rotation"."name" AS "nested_2.name", "filter_rotation"."date_start" AS "nested_2.date_start", "filter_rotation"."current" AS "nested_2.current", "filter_rotation"."latest" AS "nested_2.latest","filter_mwl"."code" AS "nested_3.code", "filter_mwl"."format_code" AS "nested_3.format_code", "filter_mwl"."name" AS "nested_3.name", "filter_mwl"."date_start" AS "nested_3.date_start", "filter_mwl"."active" AS "nested_3.active", "filter_mwl"."latest" AS "nested_3.latest" FROM settings LEFT JOIN format AS filter_format ON filter_format.code = settings.filter_format_code LEFT JOIN rotation AS filter_rotation ON filter_rotation.code = settings.filter_rotation_code LEFT JOIN mwl AS filter_mwl ON filter_mwl.code = settings.filter_mwl_code LIMIT 1',
+        'SELECT"settings"."id" AS "nested_0.id", "settings"."filter_format_code" AS "nested_0.filter_format_code", "settings"."filter_rotation_code" AS "nested_0.filter_rotation_code", "settings"."filter_mwl_code" AS "nested_0.filter_mwl_code", "settings"."filter_collection" AS "nested_0.filter_collection", "settings"."card_sort" AS "nested_0.card_sort", "settings"."card_group" AS "nested_0.card_group", "settings"."deck_sort" AS "nested_0.deck_sort", "settings"."deck_group" AS "nested_0.deck_group", "settings"."deck_card_sort" AS "nested_0.deck_card_sort", "settings"."deck_card_group" AS "nested_0.deck_card_group", "settings"."compare_card_sort" AS "nested_0.compare_card_sort", "settings"."apex_resources" AS "nested_0.apex_resources", "settings"."card_gallery_view" AS "nested_0.card_gallery_view","filter_format"."id" AS "nested_1.id", "filter_format"."code" AS "nested_1.code", "filter_format"."name" AS "nested_1.name","filter_rotation"."code" AS "nested_2.code", "filter_rotation"."format_code" AS "nested_2.format_code", "filter_rotation"."name" AS "nested_2.name", "filter_rotation"."date_start" AS "nested_2.date_start", "filter_rotation"."current" AS "nested_2.current", "filter_rotation"."latest" AS "nested_2.latest","filter_mwl"."code" AS "nested_3.code", "filter_mwl"."format_code" AS "nested_3.format_code", "filter_mwl"."name" AS "nested_3.name", "filter_mwl"."date_start" AS "nested_3.date_start", "filter_mwl"."active" AS "nested_3.active", "filter_mwl"."latest" AS "nested_3.latest", "filter_mwl"."runner_points" AS "nested_3.runner_points", "filter_mwl"."corp_points" AS "nested_3.corp_points" FROM settings LEFT JOIN format AS filter_format ON filter_format.code = settings.filter_format_code LEFT JOIN rotation AS filter_rotation ON filter_rotation.code = settings.filter_rotation_code LEFT JOIN mwl AS filter_mwl ON filter_mwl.code = settings.filter_mwl_code LIMIT 1',
         variables: [],
         readsFrom: {
           settings,
@@ -6689,7 +6814,7 @@ abstract class _$Database extends GeneratedDatabase {
         $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT"format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name","current_rotation"."code" AS "nested_1.code", "current_rotation"."format_code" AS "nested_1.format_code", "current_rotation"."name" AS "nested_1.name", "current_rotation"."date_start" AS "nested_1.date_start", "current_rotation"."current" AS "nested_1.current", "current_rotation"."latest" AS "nested_1.latest","latest_rotation"."code" AS "nested_2.code", "latest_rotation"."format_code" AS "nested_2.format_code", "latest_rotation"."name" AS "nested_2.name", "latest_rotation"."date_start" AS "nested_2.date_start", "latest_rotation"."current" AS "nested_2.current", "latest_rotation"."latest" AS "nested_2.latest","active_mwl"."code" AS "nested_3.code", "active_mwl"."format_code" AS "nested_3.format_code", "active_mwl"."name" AS "nested_3.name", "active_mwl"."date_start" AS "nested_3.date_start", "active_mwl"."active" AS "nested_3.active", "active_mwl"."latest" AS "nested_3.latest","latest_mwl"."code" AS "nested_4.code", "latest_mwl"."format_code" AS "nested_4.format_code", "latest_mwl"."name" AS "nested_4.name", "latest_mwl"."date_start" AS "nested_4.date_start", "latest_mwl"."active" AS "nested_4.active", "latest_mwl"."latest" AS "nested_4.latest" FROM format LEFT JOIN rotation AS current_rotation ON current_rotation.format_code = format.code AND current_rotation."current" LEFT JOIN rotation AS latest_rotation ON latest_rotation.format_code = format.code AND latest_rotation.latest LEFT JOIN mwl AS active_mwl ON active_mwl.format_code = format.code AND active_mwl.active LEFT JOIN mwl AS latest_mwl ON latest_mwl.format_code = format.code AND latest_mwl.latest WHERE ${generatedwhere.sql} ORDER BY format.id',
+        'SELECT"format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name","current_rotation"."code" AS "nested_1.code", "current_rotation"."format_code" AS "nested_1.format_code", "current_rotation"."name" AS "nested_1.name", "current_rotation"."date_start" AS "nested_1.date_start", "current_rotation"."current" AS "nested_1.current", "current_rotation"."latest" AS "nested_1.latest","latest_rotation"."code" AS "nested_2.code", "latest_rotation"."format_code" AS "nested_2.format_code", "latest_rotation"."name" AS "nested_2.name", "latest_rotation"."date_start" AS "nested_2.date_start", "latest_rotation"."current" AS "nested_2.current", "latest_rotation"."latest" AS "nested_2.latest","active_mwl"."code" AS "nested_3.code", "active_mwl"."format_code" AS "nested_3.format_code", "active_mwl"."name" AS "nested_3.name", "active_mwl"."date_start" AS "nested_3.date_start", "active_mwl"."active" AS "nested_3.active", "active_mwl"."latest" AS "nested_3.latest", "active_mwl"."runner_points" AS "nested_3.runner_points", "active_mwl"."corp_points" AS "nested_3.corp_points","latest_mwl"."code" AS "nested_4.code", "latest_mwl"."format_code" AS "nested_4.format_code", "latest_mwl"."name" AS "nested_4.name", "latest_mwl"."date_start" AS "nested_4.date_start", "latest_mwl"."active" AS "nested_4.active", "latest_mwl"."latest" AS "nested_4.latest", "latest_mwl"."runner_points" AS "nested_4.runner_points", "latest_mwl"."corp_points" AS "nested_4.corp_points" FROM format LEFT JOIN rotation AS current_rotation ON current_rotation.format_code = format.code AND current_rotation."current" LEFT JOIN rotation AS latest_rotation ON latest_rotation.format_code = format.code AND latest_rotation.latest LEFT JOIN mwl AS active_mwl ON active_mwl.format_code = format.code AND active_mwl.active LEFT JOIN mwl AS latest_mwl ON latest_mwl.format_code = format.code AND latest_mwl.latest WHERE ${generatedwhere.sql} ORDER BY format.id',
         variables: [
           ...generatedwhere.introducedVariables
         ],
@@ -6740,7 +6865,7 @@ abstract class _$Database extends GeneratedDatabase {
         $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT"deck"."id" AS "nested_0.id", "deck"."identity_code" AS "nested_0.identity_code", "deck"."format_code" AS "nested_0.format_code", "deck"."rotation_code" AS "nested_0.rotation_code", "deck"."mwl_code" AS "nested_0.mwl_code", "deck"."name" AS "nested_0.name", "deck"."description" AS "nested_0.description", "deck"."created" AS "nested_0.created", "deck"."updated" AS "nested_0.updated", "deck"."deleted" AS "nested_0.deleted", "deck"."remote_updated" AS "nested_0.remote_updated", "deck"."synced" AS "nested_0.synced","identity"."code" AS "nested_1.code", "identity"."pack_code" AS "nested_1.pack_code", "identity"."faction_code" AS "nested_1.faction_code", "identity"."type_code" AS "nested_1.type_code", "identity"."position" AS "nested_1.position", "identity"."title" AS "nested_1.title", "identity"."stripped_title" AS "nested_1.stripped_title", "identity"."body" AS "nested_1.body", "identity"."stripped_body" AS "nested_1.stripped_body", "identity"."keywords" AS "nested_1.keywords", "identity"."quantity" AS "nested_1.quantity", "identity"."cost" AS "nested_1.cost", "identity"."deck_limit" AS "nested_1.deck_limit", "identity"."faction_cost" AS "nested_1.faction_cost", "identity"."uniqueness" AS "nested_1.uniqueness", "identity"."strength" AS "nested_1.strength", "identity"."agenda_points" AS "nested_1.agenda_points", "identity"."memory_cost" AS "nested_1.memory_cost", "identity"."advancement_cost" AS "nested_1.advancement_cost", "identity"."trash_cost" AS "nested_1.trash_cost", "identity"."base_link" AS "nested_1.base_link", "identity"."influence_limit" AS "nested_1.influence_limit", "identity"."minimum_deck_size" AS "nested_1.minimum_deck_size", "identity"."flavor" AS "nested_1.flavor", "identity"."illustrator" AS "nested_1.illustrator","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated","faction"."code" AS "nested_4.code", "faction"."side_code" AS "nested_4.side_code", "faction"."name" AS "nested_4.name", "faction"."color" AS "nested_4.color", "faction"."is_mini" AS "nested_4.is_mini","side"."code" AS "nested_5.code", "side"."name" AS "nested_5.name","type"."code" AS "nested_6.code", "type"."side_code" AS "nested_6.side_code", "type"."position" AS "nested_6.position", "type"."name" AS "nested_6.name", "type"."is_subtype" AS "nested_6.is_subtype","subtype"."code" AS "nested_7.code", "subtype"."side_code" AS "nested_7.side_code", "subtype"."position" AS "nested_7.position", "subtype"."name" AS "nested_7.name", "subtype"."is_subtype" AS "nested_7.is_subtype","format"."id" AS "nested_8.id", "format"."code" AS "nested_8.code", "format"."name" AS "nested_8.name","rotation"."code" AS "nested_9.code", "rotation"."format_code" AS "nested_9.format_code", "rotation"."name" AS "nested_9.name", "rotation"."date_start" AS "nested_9.date_start", "rotation"."current" AS "nested_9.current", "rotation"."latest" AS "nested_9.latest","mwl"."code" AS "nested_10.code", "mwl"."format_code" AS "nested_10.format_code", "mwl"."name" AS "nested_10.name", "mwl"."date_start" AS "nested_10.date_start", "mwl"."active" AS "nested_10.active", "mwl"."latest" AS "nested_10.latest" FROM deck INNER JOIN card AS identity ON identity.code = deck.identity_code INNER JOIN pack ON pack.code = identity.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = identity.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = identity.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = identity.keywords OR identity.keywords LIKE(subtype.name || \' - %\'))LEFT JOIN format ON format.code = deck.format_code LEFT JOIN rotation ON rotation.code = deck.rotation_code LEFT JOIN mwl ON mwl.code = deck.mwl_code WHERE ${generatedwhere.sql}',
+        'SELECT"deck"."id" AS "nested_0.id", "deck"."identity_code" AS "nested_0.identity_code", "deck"."format_code" AS "nested_0.format_code", "deck"."rotation_code" AS "nested_0.rotation_code", "deck"."mwl_code" AS "nested_0.mwl_code", "deck"."name" AS "nested_0.name", "deck"."description" AS "nested_0.description", "deck"."created" AS "nested_0.created", "deck"."updated" AS "nested_0.updated", "deck"."deleted" AS "nested_0.deleted", "deck"."remote_updated" AS "nested_0.remote_updated", "deck"."synced" AS "nested_0.synced","identity"."code" AS "nested_1.code", "identity"."pack_code" AS "nested_1.pack_code", "identity"."faction_code" AS "nested_1.faction_code", "identity"."type_code" AS "nested_1.type_code", "identity"."position" AS "nested_1.position", "identity"."title" AS "nested_1.title", "identity"."stripped_title" AS "nested_1.stripped_title", "identity"."body" AS "nested_1.body", "identity"."stripped_body" AS "nested_1.stripped_body", "identity"."keywords" AS "nested_1.keywords", "identity"."quantity" AS "nested_1.quantity", "identity"."cost" AS "nested_1.cost", "identity"."deck_limit" AS "nested_1.deck_limit", "identity"."faction_cost" AS "nested_1.faction_cost", "identity"."uniqueness" AS "nested_1.uniqueness", "identity"."strength" AS "nested_1.strength", "identity"."agenda_points" AS "nested_1.agenda_points", "identity"."memory_cost" AS "nested_1.memory_cost", "identity"."advancement_cost" AS "nested_1.advancement_cost", "identity"."trash_cost" AS "nested_1.trash_cost", "identity"."base_link" AS "nested_1.base_link", "identity"."influence_limit" AS "nested_1.influence_limit", "identity"."minimum_deck_size" AS "nested_1.minimum_deck_size", "identity"."flavor" AS "nested_1.flavor", "identity"."illustrator" AS "nested_1.illustrator","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated","faction"."code" AS "nested_4.code", "faction"."side_code" AS "nested_4.side_code", "faction"."name" AS "nested_4.name", "faction"."color" AS "nested_4.color", "faction"."is_mini" AS "nested_4.is_mini","side"."code" AS "nested_5.code", "side"."name" AS "nested_5.name","type"."code" AS "nested_6.code", "type"."side_code" AS "nested_6.side_code", "type"."position" AS "nested_6.position", "type"."name" AS "nested_6.name", "type"."is_subtype" AS "nested_6.is_subtype","subtype"."code" AS "nested_7.code", "subtype"."side_code" AS "nested_7.side_code", "subtype"."position" AS "nested_7.position", "subtype"."name" AS "nested_7.name", "subtype"."is_subtype" AS "nested_7.is_subtype","format"."id" AS "nested_8.id", "format"."code" AS "nested_8.code", "format"."name" AS "nested_8.name","rotation"."code" AS "nested_9.code", "rotation"."format_code" AS "nested_9.format_code", "rotation"."name" AS "nested_9.name", "rotation"."date_start" AS "nested_9.date_start", "rotation"."current" AS "nested_9.current", "rotation"."latest" AS "nested_9.latest","mwl"."code" AS "nested_10.code", "mwl"."format_code" AS "nested_10.format_code", "mwl"."name" AS "nested_10.name", "mwl"."date_start" AS "nested_10.date_start", "mwl"."active" AS "nested_10.active", "mwl"."latest" AS "nested_10.latest", "mwl"."runner_points" AS "nested_10.runner_points", "mwl"."corp_points" AS "nested_10.corp_points","mwl_card"."mwl_code" AS "nested_11.mwl_code", "mwl_card"."card_code" AS "nested_11.card_code", "mwl_card"."is_restricted" AS "nested_11.is_restricted", "mwl_card"."global_penalty" AS "nested_11.global_penalty", "mwl_card"."universal_faction_cost" AS "nested_11.universal_faction_cost", "mwl_card"."deck_limit" AS "nested_11.deck_limit", "mwl_card"."points" AS "nested_11.points" FROM deck INNER JOIN card AS identity ON identity.code = deck.identity_code INNER JOIN pack ON pack.code = identity.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = identity.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = identity.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = identity.keywords OR identity.keywords LIKE(subtype.name || \' - %\'))LEFT JOIN format ON format.code = deck.format_code LEFT JOIN rotation ON rotation.code = deck.rotation_code LEFT JOIN mwl ON mwl.code = deck.mwl_code LEFT JOIN mwl_card ON mwl_card.mwl_code = mwl.code AND mwl_card.card_code = identity.code WHERE ${generatedwhere.sql}',
         variables: [
           ...generatedwhere.introducedVariables
         ],
@@ -6755,6 +6880,7 @@ abstract class _$Database extends GeneratedDatabase {
           format,
           rotation,
           mwl,
+          mwlCard,
           ...generatedwhere.watchedTables,
         }).map((QueryRow row) {
       return DeckResult(
@@ -6769,6 +6895,7 @@ abstract class _$Database extends GeneratedDatabase {
         format: format.mapFromRowOrNull(row, tablePrefix: 'nested_8'),
         rotation: rotation.mapFromRowOrNull(row, tablePrefix: 'nested_9'),
         mwl: mwl.mapFromRowOrNull(row, tablePrefix: 'nested_10'),
+        mwlCard: mwlCard.mapFromRowOrNull(row, tablePrefix: 'nested_11'),
       );
     });
   }
@@ -6858,7 +6985,7 @@ abstract class _$Database extends GeneratedDatabase {
         $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT"deck_card"."deck_id" AS "nested_0.deck_id", "deck_card"."card_code" AS "nested_0.card_code", "deck_card"."quantity" AS "nested_0.quantity","card"."code" AS "nested_1.code", "card"."pack_code" AS "nested_1.pack_code", "card"."faction_code" AS "nested_1.faction_code", "card"."type_code" AS "nested_1.type_code", "card"."position" AS "nested_1.position", "card"."title" AS "nested_1.title", "card"."stripped_title" AS "nested_1.stripped_title", "card"."body" AS "nested_1.body", "card"."stripped_body" AS "nested_1.stripped_body", "card"."keywords" AS "nested_1.keywords", "card"."quantity" AS "nested_1.quantity", "card"."cost" AS "nested_1.cost", "card"."deck_limit" AS "nested_1.deck_limit", "card"."faction_cost" AS "nested_1.faction_cost", "card"."uniqueness" AS "nested_1.uniqueness", "card"."strength" AS "nested_1.strength", "card"."agenda_points" AS "nested_1.agenda_points", "card"."memory_cost" AS "nested_1.memory_cost", "card"."advancement_cost" AS "nested_1.advancement_cost", "card"."trash_cost" AS "nested_1.trash_cost", "card"."base_link" AS "nested_1.base_link", "card"."influence_limit" AS "nested_1.influence_limit", "card"."minimum_deck_size" AS "nested_1.minimum_deck_size", "card"."flavor" AS "nested_1.flavor", "card"."illustrator" AS "nested_1.illustrator","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated","faction"."code" AS "nested_4.code", "faction"."side_code" AS "nested_4.side_code", "faction"."name" AS "nested_4.name", "faction"."color" AS "nested_4.color", "faction"."is_mini" AS "nested_4.is_mini","side"."code" AS "nested_5.code", "side"."name" AS "nested_5.name","type"."code" AS "nested_6.code", "type"."side_code" AS "nested_6.side_code", "type"."position" AS "nested_6.position", "type"."name" AS "nested_6.name", "type"."is_subtype" AS "nested_6.is_subtype","subtype"."code" AS "nested_7.code", "subtype"."side_code" AS "nested_7.side_code", "subtype"."position" AS "nested_7.position", "subtype"."name" AS "nested_7.name", "subtype"."is_subtype" AS "nested_7.is_subtype","mwl_card"."mwl_code" AS "nested_8.mwl_code", "mwl_card"."card_code" AS "nested_8.card_code", "mwl_card"."is_restricted" AS "nested_8.is_restricted", "mwl_card"."global_penalty" AS "nested_8.global_penalty", "mwl_card"."universal_faction_cost" AS "nested_8.universal_faction_cost", "mwl_card"."deck_limit" AS "nested_8.deck_limit" FROM deck_card INNER JOIN card ON card.code = deck_card.card_code INNER JOIN pack ON pack.code = card.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = card.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = card.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = card.keywords OR card.keywords LIKE(subtype.name || \' - %\'))LEFT JOIN mwl_card ON mwl_card.mwl_code = ?1 AND mwl_card.card_code = card.code WHERE ${generatedwhere.sql}',
+        'SELECT"deck_card"."deck_id" AS "nested_0.deck_id", "deck_card"."card_code" AS "nested_0.card_code", "deck_card"."quantity" AS "nested_0.quantity","card"."code" AS "nested_1.code", "card"."pack_code" AS "nested_1.pack_code", "card"."faction_code" AS "nested_1.faction_code", "card"."type_code" AS "nested_1.type_code", "card"."position" AS "nested_1.position", "card"."title" AS "nested_1.title", "card"."stripped_title" AS "nested_1.stripped_title", "card"."body" AS "nested_1.body", "card"."stripped_body" AS "nested_1.stripped_body", "card"."keywords" AS "nested_1.keywords", "card"."quantity" AS "nested_1.quantity", "card"."cost" AS "nested_1.cost", "card"."deck_limit" AS "nested_1.deck_limit", "card"."faction_cost" AS "nested_1.faction_cost", "card"."uniqueness" AS "nested_1.uniqueness", "card"."strength" AS "nested_1.strength", "card"."agenda_points" AS "nested_1.agenda_points", "card"."memory_cost" AS "nested_1.memory_cost", "card"."advancement_cost" AS "nested_1.advancement_cost", "card"."trash_cost" AS "nested_1.trash_cost", "card"."base_link" AS "nested_1.base_link", "card"."influence_limit" AS "nested_1.influence_limit", "card"."minimum_deck_size" AS "nested_1.minimum_deck_size", "card"."flavor" AS "nested_1.flavor", "card"."illustrator" AS "nested_1.illustrator","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated","faction"."code" AS "nested_4.code", "faction"."side_code" AS "nested_4.side_code", "faction"."name" AS "nested_4.name", "faction"."color" AS "nested_4.color", "faction"."is_mini" AS "nested_4.is_mini","side"."code" AS "nested_5.code", "side"."name" AS "nested_5.name","type"."code" AS "nested_6.code", "type"."side_code" AS "nested_6.side_code", "type"."position" AS "nested_6.position", "type"."name" AS "nested_6.name", "type"."is_subtype" AS "nested_6.is_subtype","subtype"."code" AS "nested_7.code", "subtype"."side_code" AS "nested_7.side_code", "subtype"."position" AS "nested_7.position", "subtype"."name" AS "nested_7.name", "subtype"."is_subtype" AS "nested_7.is_subtype","mwl_card"."mwl_code" AS "nested_8.mwl_code", "mwl_card"."card_code" AS "nested_8.card_code", "mwl_card"."is_restricted" AS "nested_8.is_restricted", "mwl_card"."global_penalty" AS "nested_8.global_penalty", "mwl_card"."universal_faction_cost" AS "nested_8.universal_faction_cost", "mwl_card"."deck_limit" AS "nested_8.deck_limit", "mwl_card"."points" AS "nested_8.points" FROM deck_card INNER JOIN card ON card.code = deck_card.card_code INNER JOIN pack ON pack.code = card.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = card.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = card.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = card.keywords OR card.keywords LIKE(subtype.name || \' - %\'))LEFT JOIN mwl_card ON mwl_card.mwl_code = ?1 AND mwl_card.card_code = card.code WHERE ${generatedwhere.sql}',
         variables: [
           Variable<String?>(mwlCode),
           ...generatedwhere.introducedVariables
@@ -6953,7 +7080,7 @@ abstract class _$Database extends GeneratedDatabase {
         $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT"card"."code" AS "nested_0.code", "card"."pack_code" AS "nested_0.pack_code", "card"."faction_code" AS "nested_0.faction_code", "card"."type_code" AS "nested_0.type_code", "card"."position" AS "nested_0.position", "card"."title" AS "nested_0.title", "card"."stripped_title" AS "nested_0.stripped_title", "card"."body" AS "nested_0.body", "card"."stripped_body" AS "nested_0.stripped_body", "card"."keywords" AS "nested_0.keywords", "card"."quantity" AS "nested_0.quantity", "card"."cost" AS "nested_0.cost", "card"."deck_limit" AS "nested_0.deck_limit", "card"."faction_cost" AS "nested_0.faction_cost", "card"."uniqueness" AS "nested_0.uniqueness", "card"."strength" AS "nested_0.strength", "card"."agenda_points" AS "nested_0.agenda_points", "card"."memory_cost" AS "nested_0.memory_cost", "card"."advancement_cost" AS "nested_0.advancement_cost", "card"."trash_cost" AS "nested_0.trash_cost", "card"."base_link" AS "nested_0.base_link", "card"."influence_limit" AS "nested_0.influence_limit", "card"."minimum_deck_size" AS "nested_0.minimum_deck_size", "card"."flavor" AS "nested_0.flavor", "card"."illustrator" AS "nested_0.illustrator","pack"."code" AS "nested_1.code", "pack"."cycle_code" AS "nested_1.cycle_code", "pack"."position" AS "nested_1.position", "pack"."name" AS "nested_1.name", "pack"."date_release" AS "nested_1.date_release", "pack"."size" AS "nested_1.size","cycle"."code" AS "nested_2.code", "cycle"."position" AS "nested_2.position", "cycle"."name" AS "nested_2.name", "cycle"."size" AS "nested_2.size", "cycle"."rotated" AS "nested_2.rotated","faction"."code" AS "nested_3.code", "faction"."side_code" AS "nested_3.side_code", "faction"."name" AS "nested_3.name", "faction"."color" AS "nested_3.color", "faction"."is_mini" AS "nested_3.is_mini","side"."code" AS "nested_4.code", "side"."name" AS "nested_4.name","type"."code" AS "nested_5.code", "type"."side_code" AS "nested_5.side_code", "type"."position" AS "nested_5.position", "type"."name" AS "nested_5.name", "type"."is_subtype" AS "nested_5.is_subtype","subtype"."code" AS "nested_6.code", "subtype"."side_code" AS "nested_6.side_code", "subtype"."position" AS "nested_6.position", "subtype"."name" AS "nested_6.name", "subtype"."is_subtype" AS "nested_6.is_subtype","mwl_card"."mwl_code" AS "nested_7.mwl_code", "mwl_card"."card_code" AS "nested_7.card_code", "mwl_card"."is_restricted" AS "nested_7.is_restricted", "mwl_card"."global_penalty" AS "nested_7.global_penalty", "mwl_card"."universal_faction_cost" AS "nested_7.universal_faction_cost", "mwl_card"."deck_limit" AS "nested_7.deck_limit" FROM card INNER JOIN pack ON pack.code = card.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = card.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = card.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = card.keywords OR card.keywords LIKE(subtype.name || \' - %\'))LEFT JOIN mwl_card ON mwl_card.mwl_code = ?1 AND mwl_card.card_code = card.code WHERE ${generatedwhere.sql}',
+        'SELECT"card"."code" AS "nested_0.code", "card"."pack_code" AS "nested_0.pack_code", "card"."faction_code" AS "nested_0.faction_code", "card"."type_code" AS "nested_0.type_code", "card"."position" AS "nested_0.position", "card"."title" AS "nested_0.title", "card"."stripped_title" AS "nested_0.stripped_title", "card"."body" AS "nested_0.body", "card"."stripped_body" AS "nested_0.stripped_body", "card"."keywords" AS "nested_0.keywords", "card"."quantity" AS "nested_0.quantity", "card"."cost" AS "nested_0.cost", "card"."deck_limit" AS "nested_0.deck_limit", "card"."faction_cost" AS "nested_0.faction_cost", "card"."uniqueness" AS "nested_0.uniqueness", "card"."strength" AS "nested_0.strength", "card"."agenda_points" AS "nested_0.agenda_points", "card"."memory_cost" AS "nested_0.memory_cost", "card"."advancement_cost" AS "nested_0.advancement_cost", "card"."trash_cost" AS "nested_0.trash_cost", "card"."base_link" AS "nested_0.base_link", "card"."influence_limit" AS "nested_0.influence_limit", "card"."minimum_deck_size" AS "nested_0.minimum_deck_size", "card"."flavor" AS "nested_0.flavor", "card"."illustrator" AS "nested_0.illustrator","pack"."code" AS "nested_1.code", "pack"."cycle_code" AS "nested_1.cycle_code", "pack"."position" AS "nested_1.position", "pack"."name" AS "nested_1.name", "pack"."date_release" AS "nested_1.date_release", "pack"."size" AS "nested_1.size","cycle"."code" AS "nested_2.code", "cycle"."position" AS "nested_2.position", "cycle"."name" AS "nested_2.name", "cycle"."size" AS "nested_2.size", "cycle"."rotated" AS "nested_2.rotated","faction"."code" AS "nested_3.code", "faction"."side_code" AS "nested_3.side_code", "faction"."name" AS "nested_3.name", "faction"."color" AS "nested_3.color", "faction"."is_mini" AS "nested_3.is_mini","side"."code" AS "nested_4.code", "side"."name" AS "nested_4.name","type"."code" AS "nested_5.code", "type"."side_code" AS "nested_5.side_code", "type"."position" AS "nested_5.position", "type"."name" AS "nested_5.name", "type"."is_subtype" AS "nested_5.is_subtype","subtype"."code" AS "nested_6.code", "subtype"."side_code" AS "nested_6.side_code", "subtype"."position" AS "nested_6.position", "subtype"."name" AS "nested_6.name", "subtype"."is_subtype" AS "nested_6.is_subtype","mwl_card"."mwl_code" AS "nested_7.mwl_code", "mwl_card"."card_code" AS "nested_7.card_code", "mwl_card"."is_restricted" AS "nested_7.is_restricted", "mwl_card"."global_penalty" AS "nested_7.global_penalty", "mwl_card"."universal_faction_cost" AS "nested_7.universal_faction_cost", "mwl_card"."deck_limit" AS "nested_7.deck_limit", "mwl_card"."points" AS "nested_7.points" FROM card INNER JOIN pack ON pack.code = card.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = card.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = card.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = card.keywords OR card.keywords LIKE(subtype.name || \' - %\'))LEFT JOIN mwl_card ON mwl_card.mwl_code = ?1 AND mwl_card.card_code = card.code WHERE ${generatedwhere.sql}',
         variables: [
           Variable<String?>(mwlCode),
           ...generatedwhere.introducedVariables
@@ -7338,6 +7465,7 @@ class DeckResult {
   final FormatData? format;
   final RotationData? rotation;
   final MwlData? mwl;
+  final MwlCardData? mwlCard;
   DeckResult({
     required this.deck,
     required this.identity,
@@ -7350,10 +7478,11 @@ class DeckResult {
     this.format,
     this.rotation,
     this.mwl,
+    this.mwlCard,
   });
   @override
   int get hashCode => Object.hash(deck, identity, pack, cycle, faction, side,
-      type, subtype, format, rotation, mwl);
+      type, subtype, format, rotation, mwl, mwlCard);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -7368,7 +7497,8 @@ class DeckResult {
           other.subtype == this.subtype &&
           other.format == this.format &&
           other.rotation == this.rotation &&
-          other.mwl == this.mwl);
+          other.mwl == this.mwl &&
+          other.mwlCard == this.mwlCard);
   @override
   String toString() {
     return (StringBuffer('DeckResult(')
@@ -7382,7 +7512,8 @@ class DeckResult {
           ..write('subtype: $subtype, ')
           ..write('format: $format, ')
           ..write('rotation: $rotation, ')
-          ..write('mwl: $mwl')
+          ..write('mwl: $mwl, ')
+          ..write('mwlCard: $mwlCard')
           ..write(')'))
         .toString();
   }

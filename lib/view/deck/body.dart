@@ -380,6 +380,42 @@ class DeckSizeStat extends ConsumerWidget {
   }
 }
 
+class DeckMwlPointsStat extends ConsumerWidget {
+  const DeckMwlPointsStat({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final deckValidator = ref.watch(deckValidatorProvider);
+    return deckValidator.when(
+      loading: () => const SizedBox.shrink(),
+      error: (error, strackTrace) => const SizedBox.shrink(),
+      data: (deckValidator) {
+        final theme = Theme.of(context);
+        final points = deckValidator.mwlPoints;
+        final maxPoints = deckValidator.maxMwlPoints;
+        final hasError = deckValidator.deckError != null;
+        return Column(children: [
+          RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: '$points',
+                  style: TextStyle(color: hasError ? theme.errorColor : null),
+                ),
+                const TextSpan(text: ' / '),
+                TextSpan(text: '$maxPoints'),
+              ],
+              style: DefaultTextStyle.of(context).style.copyWith(fontWeight: FontWeight.bold),
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const Text('MWL Points'),
+        ]);
+      },
+    );
+  }
+}
+
 class DeckStats extends ConsumerWidget {
   const DeckStats({Key? key}) : super(key: key);
 
@@ -395,6 +431,7 @@ class DeckStats extends ConsumerWidget {
             const DeckSizeStat(),
             if (deck.side.code == 'corp') const DeckAgendaStat(),
             const DeckInfluenceStat(),
+            if (deck.mwl?.points(deck.side) != null) const DeckMwlPointsStat(),
           ].seperatedBy(const VerticalDivider(color: Colors.black, width: 16)).toList(),
         ),
       ),

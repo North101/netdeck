@@ -7,6 +7,7 @@ CREATE TABLE mwl_card(
   global_penalty INT,
   universal_faction_cost INT,
   deck_limit INT,
+  points INT,
 
   PRIMARY KEY (mwl_code, card_code)
 );

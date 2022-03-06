@@ -43,10 +43,12 @@ class DeckValidator {
   Map<CardResult, String?>? _cardErrorList;
   int? _deckSize;
   int? _influence;
+  int? _minAgendaPoints;
   int? _maxAgendaPoints;
   int? _maxInfluence;
-  int? _minAgendaPoints;
   int? _restrictedCount;
+  int? _mwlPoints;
+  int? _maxMwlPoints;
 
   Map<CardResult, int> get cardList => deck.cards;
   List<String> get tagList => deck.tags;
@@ -73,6 +75,14 @@ class DeckValidator {
   int get minAgendaPoints => _minAgendaPoints ??= (deckSize / 5).floor() * 2 + 2;
 
   int get maxAgendaPoints => _maxAgendaPoints ??= minAgendaPoints + 1;
+
+  int get mwlPoints {
+    return _mwlPoints ??= (deck.mwlCard?.points ?? 0) + cardList.entries.map((e) {
+      return (e.key.mwlCard?.points ?? 0) * e.value;
+    }).sum;
+  }
+
+  int? get maxMwlPoints => _maxMwlPoints ??= deck.mwl?.points(deck.side);
 
   int get influence => _influence ??= cardList.entries.map((e) => cardInfluence(e.key, e.value)).sum;
 

@@ -63,13 +63,18 @@ class Database extends _$Database {
   }
 
   @override
-  int schemaVersion = 2;
+  int schemaVersion = 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onUpgrade: (m, from, to) async {
       if (from < 2) {
-        m.addColumn(settings, settings.cardGalleryView);
+        await m.addColumn(settings, settings.cardGalleryView);
+      }
+      if (from < 3) {
+        await m.addColumn(mwl, mwl.runnerPoints);
+        await m.addColumn(mwl, mwl.corpPoints);
+        await m.addColumn(mwlCard, mwlCard.points);
       }
     },
   );
@@ -119,6 +124,7 @@ class Database extends _$Database {
             format: deck.format,
             rotation: deck.rotation,
             mwl: deck.mwl,
+            mwlCard: deck.mwlCard,
             cards: cardList
                 .where((e) => e.deckCard.deckId == deck.deck.id)
                 .map((e) => MapEntry(e.toCard(), e.deckCard.quantity))
@@ -144,6 +150,7 @@ class DeckResult2 extends DeckResult {
     FormatData? format,
     RotationData? rotation,
     MwlData? mwl,
+    MwlCardData? mwlCard,
     required this.cards,
     required this.tags,
   }) : super(
@@ -158,6 +165,7 @@ class DeckResult2 extends DeckResult {
           format: format,
           rotation: rotation,
           mwl: mwl,
+          mwlCard: mwlCard,
         );
 
   final Map<CardResult, int> cards;
@@ -168,6 +176,7 @@ class DeckResult2 extends DeckResult {
     Value<FormatData?> format = const Value.absent(),
     Value<RotationData?> rotation = const Value.absent(),
     Value<MwlData?> mwl = const Value.absent(),
+    Value<MwlCardData?> mwlCard = const Value.absent(),
     Map<CardResult, int>? cards,
     List<String>? tags,
   }) {
@@ -187,6 +196,7 @@ class DeckResult2 extends DeckResult {
       format: format.present ? format.value : this.format,
       rotation: rotation.present ? rotation.value : this.rotation,
       mwl: mwl.present ? mwl.value : this.mwl,
+      mwlCard: mwlCard.present ? mwlCard.value : this.mwlCard,
       cards: cards ?? this.cards,
       tags: tags ?? this.tags,
     );
