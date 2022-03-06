@@ -67,17 +67,17 @@ class Database extends _$Database {
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-    onUpgrade: (m, from, to) async {
-      if (from < 2) {
-        await m.addColumn(settings, settings.cardGalleryView);
-      }
-      if (from < 3) {
-        await m.addColumn(mwl, mwl.runnerPoints);
-        await m.addColumn(mwl, mwl.corpPoints);
-        await m.addColumn(mwlCard, mwlCard.points);
-      }
-    },
-  );
+        onUpgrade: (m, from, to) async {
+          if (from < 2) {
+            await m.addColumn(settings, settings.cardGalleryView);
+          }
+          if (from < 3) {
+            await m.addColumn(mwl, mwl.runnerPoints);
+            await m.addColumn(mwl, mwl.corpPoints);
+            await m.addColumn(mwlCard, mwlCard.points);
+          }
+        },
+      );
 
   Future<DeckData> copyDeck(DeckData deck, {String? newDeckId, DateTime? now}) async {
     newDeckId ??= const Uuid().v4();
@@ -124,7 +124,6 @@ class Database extends _$Database {
             format: deck.format,
             rotation: deck.rotation,
             mwl: deck.mwl,
-            mwlCard: deck.mwlCard,
             cards: cardList
                 .where((e) => e.deckCard.deckId == deck.deck.id)
                 .map((e) => MapEntry(e.toCard(), e.deckCard.quantity))
@@ -150,7 +149,6 @@ class DeckResult2 extends DeckResult {
     FormatData? format,
     RotationData? rotation,
     MwlData? mwl,
-    MwlCardData? mwlCard,
     required this.cards,
     required this.tags,
   }) : super(
@@ -165,7 +163,6 @@ class DeckResult2 extends DeckResult {
           format: format,
           rotation: rotation,
           mwl: mwl,
-          mwlCard: mwlCard,
         );
 
   final Map<CardResult, int> cards;
@@ -173,20 +170,20 @@ class DeckResult2 extends DeckResult {
 
   DeckResult2 copyWith({
     DeckData? deck,
+    CardData? identity,
     Value<FormatData?> format = const Value.absent(),
     Value<RotationData?> rotation = const Value.absent(),
     Value<MwlData?> mwl = const Value.absent(),
-    Value<MwlCardData?> mwlCard = const Value.absent(),
     Map<CardResult, int>? cards,
     List<String>? tags,
   }) {
     return DeckResult2(
       deck: (deck ?? this.deck).copyWith(
-        formatCode: Value(format.present ? format.value?.code : (deck ?? this.deck).formatCode),
-        mwlCode: Value(mwl.present ? mwl.value?.code : (deck ?? this.deck).mwlCode),
-        rotationCode: Value(rotation.present ? rotation.value?.code : (deck ?? this.deck).rotationCode),
+        formatCode: format.present ? Value(format.value?.code) : const Value.absent(),
+        rotationCode: rotation.present ? Value(rotation.value?.code) : const Value.absent(),
+        mwlCode: mwl.present ? Value(mwl.value?.code) : const Value.absent(),
       ),
-      identity: identity,
+      identity: identity ?? this.identity,
       pack: pack,
       cycle: cycle,
       faction: faction,
@@ -196,7 +193,6 @@ class DeckResult2 extends DeckResult {
       format: format.present ? format.value : this.format,
       rotation: rotation.present ? rotation.value : this.rotation,
       mwl: mwl.present ? mwl.value : this.mwl,
-      mwlCard: mwlCard.present ? mwlCard.value : this.mwlCard,
       cards: cards ?? this.cards,
       tags: tags ?? this.tags,
     );

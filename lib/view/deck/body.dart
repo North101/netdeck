@@ -181,6 +181,7 @@ class DeckIdentity extends ConsumerWidget {
     final deck = ref.watch(deckProvider);
     return CardTile(
       deck.toCard(),
+      key: ValueKey(deck),
       logo: false,
       body: true,
       onTap: () {
@@ -224,8 +225,10 @@ class DeckCardHeader extends ConsumerWidget {
               final cardError = deckValidator?.cardErrorList[card];
               return CardTile(
                 card,
+                key: ValueKey(card),
                 faction: deck.faction,
                 error: cardError,
+                mwlCard: deckValidator?.mwlCardMap[card.code],
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -357,7 +360,7 @@ class DeckSizeStat extends ConsumerWidget {
         final theme = Theme.of(context);
         final deckSize = deckValidator.deckSize;
         final minDeckSize = deckValidator.minDeckSize ?? 0;
-        final hasError = deckValidator.deckError != null;
+        final hasError = deckValidator.deckSizeError != null;
         return Column(children: [
           RichText(
             text: TextSpan(
@@ -393,7 +396,7 @@ class DeckMwlPointsStat extends ConsumerWidget {
         final theme = Theme.of(context);
         final points = deckValidator.mwlPoints;
         final maxPoints = deckValidator.maxMwlPoints;
-        final hasError = deckValidator.deckError != null;
+        final hasError = deckValidator.mwlPointsError != null;
         return Column(children: [
           RichText(
             text: TextSpan(

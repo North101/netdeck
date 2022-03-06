@@ -5,7 +5,6 @@ import 'pack.drift';
 import 'faction.drift';
 import 'side.drift';
 import 'type.drift';
-import 'mwl_card.drift';
 
 CREATE TABLE deck_card(
   deck_id TEXT NOT NULL,
@@ -15,7 +14,7 @@ CREATE TABLE deck_card(
   PRIMARY KEY (deck_id, card_code)
 );
 
-listDeckCards($where = TRUE, :mwlCode AS TEXT OR NULL) AS DeckCardResult:
+listDeckCards($where = TRUE) AS DeckCardResult:
 SELECT
   deck_card.**,
   card.**,
@@ -24,8 +23,7 @@ SELECT
   faction.**,
   side.**,
   type.**,
-  subtype.**,
-  mwl_card.**
+  subtype.**
 FROM deck_card
 
 INNER JOIN card
@@ -52,10 +50,6 @@ LEFT JOIN type as subtype
     subtype.name = card.keywords
     OR card.keywords LIKE (subtype.name || ' - %')
   )
-
-LEFT JOIN mwl_card
-  ON mwl_card.mwl_code = :mwlCode
-  AND mwl_card.card_code = card.code
 
 WHERE $where;
 

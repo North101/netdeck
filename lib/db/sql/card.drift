@@ -45,8 +45,7 @@ SELECT
   faction.**,
   side.**,
   type.**,
-  subtype.**,
-  mwl_card.**
+  subtype.**
 FROM card
 
 INNER JOIN pack

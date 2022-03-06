@@ -33,6 +33,7 @@ class DeckCompareBody extends ConsumerWidget {
                       final card = headerList.items[realIndex];
                       return CardTile(
                         card.key,
+                        key: ValueKey(card.key),
                         trailing: Text('${card.value} / ${maxCardList[card.key]}'),
                         onTap: () {
                           final groupedCardList = AsyncData(HeaderList(compareCardList.map((e) {

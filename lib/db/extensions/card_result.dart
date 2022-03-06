@@ -3,8 +3,6 @@ import '../database.dart';
 extension CardResultEx on CardResult {
   String get code => card.code;
 
-  int get factionCost => mwlCard?.universalFactionCost ?? card.factionCost;
-
   DeckResult2 toDeck({
     required DeckData deck,
     FormatData? format,
@@ -42,7 +40,6 @@ extension CardResultEx on CardResult {
       side: side,
       type: type,
       subtype: subtype,
-      mwlCard: mwlCard,
     );
   }
 }

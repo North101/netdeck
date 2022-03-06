@@ -5,6 +5,7 @@ import 'package:rxdart/rxdart.dart';
 
 import '/db/database.dart';
 import '/util/deck_validator.dart';
+import '/util/extensions.dart';
 import '/util/filter_type.dart';
 import '/util/header_list.dart';
 import 'db.dart';
@@ -13,9 +14,15 @@ import 'filters.dart';
 final cardListProvider = StreamProvider<List<CardResult>>((ref) {
   final db = ref.watch(dbProvider);
   final cardFilter = ref.watch(cardFilterProvider(const CardFilterState()));
+  final mwl = ref.watch(filterMwlProvider);
   final deckValidator = ref.watch(cardListDeckValidatorProvider);
-  return db.listCards(where: cardFilter & (deckValidator?.filter(db) ?? trueExpression)).watch();
-}, dependencies: [dbProvider, cardFilterProvider, cardListDeckValidatorProvider]);
+  return db
+      .listCards(
+        mwlCode: mwl?.code,
+        where: cardFilter & (deckValidator?.filter(db) ?? trueExpression),
+      )
+      .watch();
+}, dependencies: [dbProvider, cardFilterProvider, filterMwlProvider, cardListDeckValidatorProvider]);
 
 final cardListDeckValidatorProvider = Provider<DeckValidator?>((ref) => null);
 
@@ -41,3 +48,12 @@ final groupedCardListProvider = StreamProvider<HeaderList<CardResult>>((ref) {
 
 final cardTileProvider = Provider<Widget Function(BuildContext context, WidgetRef ref, int index, CardResult card)>(
     (ref) => throw UnimplementedError());
+
+final mwlCardMapProvider = StreamProvider((ref) {
+  final db = ref.watch(dbProvider);
+  final mwl = ref.watch(filterMwlProvider);
+  final mwlCardList = db.listMwlCard(where: db.mwlCard.mwlCode.equals(mwl?.code)).watch();
+  return mwlCardList.map((event) {
+    return event.map((e) => MapEntry(e.cardCode, e)).toMap();
+  });
+}, dependencies: [dbProvider, filterMwlProvider]);

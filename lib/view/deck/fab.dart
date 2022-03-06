@@ -24,7 +24,7 @@ class DeckFloatingActionBar extends ConsumerWidget {
             title: 'Edit Deck',
             filterSearching: ref.read(filterSearchingProvider.state),
             filterQuery: ref.read(filterQueryProvider.state),
-            filterCollection: ref.read(filterSearchingProvider.state),
+            filterCollection: ref.read(filterCollectionProvider.state),
             filterFormat: StateController(deck.format),
             filterRotation: StateController(deck.rotation),
             filterMwl: StateController(deck.mwl),
@@ -33,10 +33,14 @@ class DeckFloatingActionBar extends ConsumerWidget {
             filterTypes: ref.read(filterTypesProvider.state),
             deckValidator: deckValidator,
             cardTile: (context, ref, index, card) {
+              final mwlCardMap = ref.watch(mwlCardMapProvider.select((value) {
+                return value.whenOrNull(data: (data) => data);
+              }));
               final count = deckNotifier.getCard(card);
               return CardTile(
                 card,
                 key: ValueKey(card),
+                mwlCard: mwlCardMap?[card.card.code],
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [

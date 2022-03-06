@@ -14,7 +14,6 @@ extension DeckCardResultEx on DeckCardResult {
       side: side,
       type: type,
       subtype: subtype,
-      mwlCard: mwlCard,
     );
   }
 }

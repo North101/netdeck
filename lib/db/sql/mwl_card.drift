@@ -11,3 +11,9 @@ CREATE TABLE mwl_card(
 
   PRIMARY KEY (mwl_code, card_code)
 );
+
+listMwlCard($where = TRUE):
+SELECT *
+FROM mwl_card
+
+WHERE $where;

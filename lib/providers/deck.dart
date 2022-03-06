@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:netrunner_deckbuilder/util/extensions.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '/db/database.dart';
@@ -58,35 +59,37 @@ final deckValidatorProvider = StreamProvider((ref) {
   final deck = ref.watch(deckProvider);
 
   final db = ref.watch(dbProvider);
-  final settings = db.getSettings().watchSingle();
-  final cardList = db
-      .listCards(
-        mwlCode: deck.mwl?.code,
-        where: db.card.code.isIn(deck.cards.keys.map((e) => e.code).toList()),
-      )
-      .watch();
-  final rotationCardsList = db
+  final settingsStream = db.getSettings().watchSingle();
+  final formatCardSetStream = db
       .listRotationCards(
         where: buildAnd([
           db.card.code.isIn(deck.cards.keys.map((e) => e.code).toList()),
           db.rotation.code.equals(deck.rotation?.code),
         ]),
       )
-      .watch();
-  return CombineLatestStream.combine3<SettingResult, List<CardResult>, List<RotationCardResult>, DeckValidator>(
-    settings,
-    cardList,
-    rotationCardsList,
+      .watch()
+      .map((event) => event.map((e) => e.card.code).toSet());
+  final mwlCardMapStream = db //
+      .listMwlCard(where: db.mwlCard.mwlCode.equals(deck.mwl?.code)) //
+      .watch() //
+      .map((event) => event.map((e) => MapEntry(e.cardCode, e)).toMap());
+  return CombineLatestStream.combine3<SettingResult, Set<String>, Map<String, MwlCardData>, DeckValidator>(
+    settingsStream,
+    formatCardSetStream,
+    mwlCardMapStream,
     (
       settings,
-      cardList,
-      rotationCardsList,
+      formatCardSet,
+      mwlCardMap,
     ) {
-      final formatCardSet = deck.rotation != null ? rotationCardsList.map((e) => e.card.code).toSet() : null;
-      return DeckValidator(settings, deck, formatCardSet);
+      return DeckValidator(
+        settings,
+        deck,
+        deck.rotation != null ? formatCardSet.toSet() : null,
+        mwlCardMap,
+      );
     },
   );
 }, dependencies: [dbProvider, deckProvider, deckProvider]);
 
 final compareDeckListProvider = StateProvider<Set<DeckResult2>>((ref) => {});
-

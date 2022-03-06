@@ -11,33 +11,36 @@ class DeckValidator {
     SettingResult settings,
     DeckResult2 deck,
     Set<String>? formatCardSet,
+    Map<String, MwlCardData> mwlCardMap,
   ) {
     if (deck.identity.code == TheProfessorDeckValidator.identityCode) {
-      return TheProfessorDeckValidator(settings, deck, formatCardSet);
+      return TheProfessorDeckValidator(settings, deck, formatCardSet, mwlCardMap);
     } else if (deck.identity.code == ApexDeckValidator.identityCode) {
-      return ApexDeckValidator(settings, deck, formatCardSet);
+      return ApexDeckValidator(settings, deck, formatCardSet, mwlCardMap);
     } else if (deck.identity.code == CustomBioticsDeckValidator.identityCode) {
-      return CustomBioticsDeckValidator(settings, deck, formatCardSet);
+      return CustomBioticsDeckValidator(settings, deck, formatCardSet, mwlCardMap);
     }
 
     if (deck.side.code == RunnerDeckValidator.sideCode) {
-      return RunnerDeckValidator(settings, deck, formatCardSet);
+      return RunnerDeckValidator(settings, deck, formatCardSet, mwlCardMap);
     } else if (deck.side.code == CorpDeckValidator.sideCode) {
-      return CorpDeckValidator(settings, deck, formatCardSet);
+      return CorpDeckValidator(settings, deck, formatCardSet, mwlCardMap);
     }
-    return DeckValidator._(settings, deck, formatCardSet);
+    return DeckValidator._(settings, deck, formatCardSet, mwlCardMap);
   }
 
   DeckValidator._(
     this.settings,
     this.deck,
     this.formatCardSet,
+    this.mwlCardMap,
   );
 
   String? agendaError;
   final SettingResult settings;
   final DeckResult2 deck;
   final Set<String>? formatCardSet;
+  final Map<String, MwlCardData> mwlCardMap;
 
   int? _agendaPoints;
   Map<CardResult, String?>? _cardErrorList;
@@ -51,13 +54,12 @@ class DeckValidator {
   int? _maxMwlPoints;
 
   Map<CardResult, int> get cardList => deck.cards;
-  List<String> get tagList => deck.tags;
 
   int get deckSize => _deckSize ??= cardList.values.sum;
 
   int? get minDeckSize => deck.identity.minimumDeckSize;
 
-  String? get deckError {
+  String? get deckSizeError {
     if (minDeckSize != null && deckSize < minDeckSize!) {
       return 'The deck has less cards than the minimum required by the Identity.';
     }
@@ -77,18 +79,26 @@ class DeckValidator {
   int get maxAgendaPoints => _maxAgendaPoints ??= minAgendaPoints + 1;
 
   int get mwlPoints {
-    return _mwlPoints ??= (deck.mwlCard?.points ?? 0) + cardList.entries.map((e) {
-      return (e.key.mwlCard?.points ?? 0) * e.value;
+    return _mwlPoints ??= (mwlCardMap[deck.identity.code]?.points ?? 0) + cardList.entries.map((e) {
+      return (mwlCardMap[e.key.code]?.points ?? 0) * e.value;
     }).sum;
   }
 
   int? get maxMwlPoints => _maxMwlPoints ??= deck.mwl?.points(deck.side);
 
+  String? get mwlPointsError {
+    final maxMwlPoints = this.maxMwlPoints;
+    if (maxMwlPoints != null && mwlPoints > maxMwlPoints) {
+      return 'This deck has spent more points than available.';
+    }
+    return null;
+  }
+
   int get influence => _influence ??= cardList.entries.map((e) => cardInfluence(e.key, e.value)).sum;
 
   int cardInfluence(CardResult card, int quantity) {
     final factionCost =
-        card.mwlCard?.universalFactionCost ?? (card.faction.code != deck.faction.code ? card.card.factionCost : 0);
+        mwlCardMap[card.code]?.universalFactionCost ?? (card.faction.code != deck.faction.code ? card.card.factionCost : 0);
     if (factionCost == 0) {
       return 0;
     }
@@ -104,9 +114,9 @@ class DeckValidator {
     return _maxInfluence ??= max(
         influenceLimit -
             cardList.entries.map((e) {
-              if (e.key.mwlCard == null) return 0;
+              if (mwlCardMap[e.key.code] == null) return 0;
 
-              return (e.key.mwlCard?.globalPenalty ?? 0) * e.value;
+              return (mwlCardMap[e.key.code]?.globalPenalty ?? 0) * e.value;
             }).sum,
         1);
   }
@@ -119,7 +129,7 @@ class DeckValidator {
   }
 
   int get restrictedCount => _restrictedCount ??= cardList.keys.where((card) {
-        return card.mwlCard?.isRestricted ?? false;
+        return mwlCardMap[card.code]?.isRestricted ?? false;
       }).length;
 
   Map<CardResult, String?> get cardErrorList {
@@ -131,9 +141,9 @@ class DeckValidator {
   String? cardError(CardResult card, int quantity) {
     if (card.type.code == 'identity') {
       return 'Cannot include identities in your deck.';
-    } else if ((card.mwlCard?.isRestricted ?? false) && restrictedCount > 1) {
+    } else if ((mwlCardMap[card.code]?.isRestricted ?? false) && restrictedCount > 1) {
       return 'Too many restriced cards.';
-    } else if (quantity > (card.mwlCard?.deckLimit ?? card.card.deckLimit)) {
+    } else if (quantity > (mwlCardMap[card.code]?.deckLimit ?? card.card.deckLimit)) {
       return 'Too many copies.';
     } else if (!(formatCardSet?.contains(card.code) ?? true)) {
       return 'Not valid for format.';
@@ -142,9 +152,10 @@ class DeckValidator {
   }
 
   Iterable<String> get allErrors sync* {
-    if (deckError != null) yield deckError!;
+    if (deckSizeError != null) yield deckSizeError!;
     if (agendaError != null) yield agendaError!;
     if (influenceError != null) yield influenceError!;
+    if (mwlPointsError != null) yield mwlPointsError!;
   }
 
   drift.Expression<bool?> filter(Database db) {
@@ -157,10 +168,12 @@ class RunnerDeckValidator extends DeckValidator {
     SettingResult settings,
     DeckResult2 deck,
     Set<String>? formatCardSet,
+    Map<String, MwlCardData> mwlCardMap,
   ) : super._(
           settings,
           deck,
           formatCardSet,
+          mwlCardMap,
         );
 
   static const sideCode = 'runner';
@@ -180,10 +193,12 @@ class TheProfessorDeckValidator extends RunnerDeckValidator {
     SettingResult settings,
     DeckResult2 deck,
     Set<String>? formatCardSet,
+    Map<String, MwlCardData> mwlCardMap,
   ) : super(
           settings,
           deck,
           formatCardSet,
+          mwlCardMap,
         );
 
   static const identityCode = '03029';
@@ -203,10 +218,12 @@ class ApexDeckValidator extends RunnerDeckValidator {
     SettingResult settings,
     DeckResult2 deck,
     Set<String>? formatCardSet,
+    Map<String, MwlCardData> mwlCardMap,
   ) : super(
           settings,
           deck,
           formatCardSet,
+          mwlCardMap,
         );
 
   static const identityCode = '09029';
@@ -230,10 +247,12 @@ class CorpDeckValidator extends DeckValidator {
     SettingResult settings,
     DeckResult2 deck,
     Set<String>? formatCardSet,
+    Map<String, MwlCardData> mwlCardMap,
   ) : super._(
           settings,
           deck,
           formatCardSet,
+          mwlCardMap,
         );
 
   static const sideCode = 'corp';
@@ -274,10 +293,12 @@ class CustomBioticsDeckValidator extends CorpDeckValidator {
     SettingResult settings,
     DeckResult2 deck,
     Set<String>? formatCardSet,
+    Map<String, MwlCardData> mwlCardMap,
   ) : super(
           settings,
           deck,
           formatCardSet,
+          mwlCardMap,
         );
 
   static const identityCode = '03002';

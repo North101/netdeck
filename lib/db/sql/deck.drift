@@ -5,7 +5,6 @@ import 'side.drift';
 import 'format.drift';
 import 'rotation.drift';
 import 'mwl.drift';
-import 'mwl_card.drift';
 
 CREATE TABLE deck(
   id TEXT PRIMARY KEY NOT NULL,
@@ -35,8 +34,7 @@ SELECT
   subtype.**,
   format.**,
   rotation.**,
-  mwl.**,
-  mwl_card.**
+  mwl.**
 FROM deck
 
 INNER JOIN card AS identity
@@ -72,10 +70,6 @@ LEFT JOIN rotation
 
 LEFT JOIN mwl
   ON mwl.code = deck.mwl_code
-
-LEFT JOIN mwl_card
-  ON mwl_card.mwl_code = mwl.code
-  AND mwl_card.card_code = identity.code
 
 WHERE $where;
 

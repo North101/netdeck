@@ -296,7 +296,6 @@ class DateTimeQueryBuilder extends ColumnQueryBuilder<drift.GeneratedColumnWithT
 
   @override
   drift.Expression<bool?> lessThan(TextQuery query) {
-    print(convert(parseStart(query)));
     return column.isSmallerThanValue(convert(parseStart(query)));
   }
 

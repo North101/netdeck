@@ -58,8 +58,13 @@ class CardListBottomNavigationItem extends BottomNavigationItem {
       filterFactionsProvider.overrideWithValue(StateController(FilterType())),
       filterTypesProvider.overrideWithValue(StateController(FilterType())),
       cardTileProvider.overrideWithValue((context, ref, index, card) {
+        final mwlCardMap = ref.watch(mwlCardMapProvider.select((value) {
+          return value.whenOrNull(data: (data) => data);
+        }));
         return CardTile(
           card,
+          key: ValueKey(card),
+          mwlCard: mwlCardMap?[card.code],
           onTap: () async {
             Navigator.of(context).push(MaterialPageRoute(builder: (context) {
               return CardGalleryPage.withOverrides(
