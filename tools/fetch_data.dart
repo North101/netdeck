@@ -12,9 +12,12 @@ final endpoints = {
   File('./assets/nrdb/factions.json'): Uri.parse('https://netrunnerdb.com/api/2.0/public/factions'),
   File('./assets/nrdb/types.json'): Uri.parse('https://netrunnerdb.com/api/2.0/public/types'),
   File('./assets/nrdb/cards.json'): Uri.parse('https://netrunnerdb.com/api/2.0/public/cards'),
-  File('./assets/nrdb/formats.json'): Uri.parse('https://raw.githubusercontent.com/North101/netdeck/master/assets/nrdb/formats.json'),
-  File('./assets/nrdb/mwl.json'): Uri.parse('https://raw.githubusercontent.com/North101/netdeck/master/assets/nrdb/mwl.json'),
-  File('./assets/nrdb/rotations.json'): Uri.parse('https://raw.githubusercontent.com/North101/netdeck/master/assets/nrdb/rotations.json'),
+  File('./assets/nrdb/formats.json'):
+      Uri.parse('https://raw.githubusercontent.com/North101/netdeck/master/assets/nrdb/formats.json'),
+  File('./assets/nrdb/mwl.json'):
+      Uri.parse('https://raw.githubusercontent.com/North101/netdeck/master/assets/nrdb/mwl.json'),
+  File('./assets/nrdb/rotations.json'):
+      Uri.parse('https://raw.githubusercontent.com/North101/netdeck/master/assets/nrdb/rotations.json'),
 };
 
 Future<DateTime?> fetchLastModified(File file) async {
@@ -41,6 +44,14 @@ Future<void> updateData(File file, Uri endpoint) async {
   } else if (response.statusCode != 200) {
     print('> Unknown Error: ${response.statusCode}');
     return;
+  }
+  if (lastModified != null) {
+    final data = json.decode(response.body);
+    final lastUpdated = DateTime.parse(data['last_updated']);
+    if (!lastUpdated.isAfter(lastModified)) {
+      print('> Unchanged');
+      return;
+    }
   }
 
   print('> Updated');
