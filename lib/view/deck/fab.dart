@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../db/database.dart';
+import '/db/database.dart';
 import '/providers.dart';
 import '/view/card_gallery_page.dart';
 import '/view/card_list/page.dart';

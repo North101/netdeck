@@ -1,8 +1,8 @@
 import 'package:collection/collection.dart';
 import 'package:drift/drift.dart';
 
+import '/db/database.dart';
 import '/util.dart';
-import '../database.dart';
 
 enum CardSort {
   name,

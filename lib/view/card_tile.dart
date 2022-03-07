@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/db/database.dart';
 import '/util/card_text.dart';
+import '/util/extensions.dart';
 import 'card_body.dart';
 import 'card_cycle.dart';
 import 'card_title.dart';
@@ -31,6 +32,16 @@ class CardTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final influence = [
+      if (card.type.code != 'identity')
+        CardInfluenceSpan(
+          card,
+          faction: faction,
+          mwlCard: mwlCard,
+        ),
+      if (mwlCard != null) CardPointsSpan(mwlCard!),
+    ].seperatedBy(const TextSpan(text: ' ')).toList();
+
     return ListTile(
       visualDensity: VisualDensity.compact,
       leading: logo ? card.faction.icon?.image(width: 36) : null,
@@ -49,12 +60,10 @@ class CardTile extends ConsumerWidget {
               ]),
             ], style: DefaultTextStyle.of(context).style),
           ),
-          if (card.type.code != 'identity')
+          if (influence.isNotEmpty)
             RichText(
-              text: CardInfluenceSpan(
-                card,
-                faction: faction,
-                mwlCard: mwlCard,
+              text: TextSpan(
+                children: influence,
                 style: DefaultTextStyle.of(context).style,
               ),
             ),

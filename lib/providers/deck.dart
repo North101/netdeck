@@ -1,11 +1,11 @@
 import 'dart:math';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:netrunner_deckbuilder/util/extensions.dart';
 import 'package:rxdart/rxdart.dart';
 
 import '/db/database.dart';
 import '/util/deck_validator.dart';
+import '/util/extensions.dart';
 import '/util/header_list.dart';
 import 'db.dart';
 
