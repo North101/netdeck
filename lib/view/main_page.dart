@@ -118,9 +118,9 @@ class DeckListBottomNavigationItem extends BottomNavigationItem {
     final deckListOverrides = [
       filterSearchingProvider.overrideWithValue(StateController(false)),
       filterQueryProvider.overrideWithValue(StateController(null)),
-      filterFormatProvider.overrideWithValue(StateController(settings.filterFormat)),
-      filterRotationProvider.overrideWithValue(StateController(settings.filterRotation)),
-      filterMwlProvider.overrideWithValue(StateController(settings.filterMwl)),
+      filterFormatProvider.overrideWithValue(StateController(null)),
+      filterRotationProvider.overrideWithValue(StateController(null)),
+      filterMwlProvider.overrideWithValue(StateController(null)),
       filterPacksProvider.overrideWithValue(StateController(FilterType())),
       filterSidesProvider.overrideWithValue(StateController(FilterType())),
       filterFactionsProvider.overrideWithValue(StateController(FilterType())),
