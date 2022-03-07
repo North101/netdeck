@@ -58,7 +58,7 @@ class DeckHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final deckTile = ref.watch(deckTileProvider);
+    final deckItemBuilder = ref.watch(deckItemBuilderProvider);
     return SliverStickyHeader(
       header: HeaderListTile.titleCount(title: headerList.header, count: headerList.length),
       sliver: SliverList(
@@ -66,7 +66,7 @@ class DeckHeader extends ConsumerWidget {
           (context, index) {
             if (index.isEven) {
               final realIndex = index ~/ 2;
-              return deckTile(context, ref, realIndex, headerList[realIndex]);
+              return deckItemBuilder(context, ref, realIndex, headerList[realIndex]);
             } else {
               return const Divider();
             }

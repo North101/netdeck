@@ -32,7 +32,7 @@ class CardListPage extends ConsumerWidget {
     StateController<FilterType<String>>? filterFactions,
     StateController<FilterType<String>>? filterTypes,
     DeckValidator? deckValidator,
-    required Widget Function(BuildContext context, WidgetRef ref, int index, CardResult card) cardTile,
+    required Widget Function(BuildContext context, WidgetRef ref, int index, CardResult card) itemBuilder,
     Key? key,
   }) {
     return ProviderScope(
@@ -48,7 +48,7 @@ class CardListPage extends ConsumerWidget {
         filterFactionsProvider.overrideWithValue(filterFactions ?? StateController(FilterType())),
         filterTypesProvider.overrideWithValue(filterTypes ?? StateController(FilterType())),
         cardListDeckValidatorProvider.overrideWithValue(deckValidator),
-        cardTileProvider.overrideWithValue(cardTile),
+        cardItemBuilderProvider.overrideWithValue(itemBuilder),
       ],
       child: CardListPage(
         automaticallyImplyLeading: automaticallyImplyLeading,

@@ -27,7 +27,7 @@ class DeckListPage extends ConsumerWidget {
     FilterType<String>? filterSides,
     FilterType<String>? filterFactions,
     FilterType<String>? filterTypes,
-    required Widget Function(BuildContext context, WidgetRef ref, int index, DeckResult2 deck) deckTile,
+    required Widget Function(BuildContext context, WidgetRef ref, int index, DeckResult2 deck) itemBuilder,
     Widget? fab,
   }) {
     return ProviderScope(
@@ -42,7 +42,7 @@ class DeckListPage extends ConsumerWidget {
         filterFactionsProvider.overrideWithValue(StateController(filterFactions ?? FilterType())),
         filterTypesProvider.overrideWithValue(StateController(filterTypes ?? FilterType())),
         filterTagsProvider.overrideWithValue(StateController(const {})),
-        deckTileProvider.overrideWithValue(deckTile),
+        deckItemBuilderProvider.overrideWithValue(itemBuilder),
         deckFabProvider.overrideWithValue(fab),
       ],
       child: DeckListPage(

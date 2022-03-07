@@ -54,7 +54,7 @@ class CardHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final cardTile = ref.watch(cardTileProvider);
+    final cardItemBuilder = ref.watch(cardItemBuilderProvider);
     return SliverStickyHeader(
       header: HeaderListTile.titleCount(title: headerList.header, count: headerList.length),
       sliver: SliverList(
@@ -62,7 +62,7 @@ class CardHeader extends ConsumerWidget {
           (context, index) {
             if (index.isEven) {
               final realIndex = index ~/ 2;
-              return cardTile(context, ref, indexOffset + realIndex, headerList[realIndex]);
+              return cardItemBuilder(context, ref, indexOffset + realIndex, headerList[realIndex]);
             } else {
               return const Divider();
             }

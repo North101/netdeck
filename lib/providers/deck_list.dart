@@ -12,7 +12,7 @@ import 'filters.dart';
 
 final selectedDecksProvider = StateProvider<Set<DeckResult2>>((ref) => {});
 
-final deckTileProvider = Provider<Widget Function(BuildContext context, WidgetRef ref, int index, DeckResult2 deck)>(
+final deckItemBuilderProvider = Provider<Widget Function(BuildContext context, WidgetRef ref, int index, DeckResult2 deck)>(
     (ref) => throw UnimplementedError());
 
 final deckFabProvider = Provider<Widget?>((ref) => throw UnimplementedError());

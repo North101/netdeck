@@ -13,6 +13,46 @@ import '/view/deck/page.dart';
 class DeckListFloatingActionBar extends ConsumerWidget {
   const DeckListFloatingActionBar({Key? key}) : super(key: key);
 
+  Widget cardItemBuilder(BuildContext context, WidgetRef ref, int index, CardResult card) {
+    final mwlCardMap = ref.watch(mwlCardMapProvider.select((value) {
+      return value.whenOrNull(data: (data) => data);
+    }));
+    return CardTile(
+      card,
+      key: ValueKey(card),
+      mwlCard: mwlCardMap?[card.code],
+      trailing: IconButton(
+        icon: const Icon(Icons.add),
+        onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+          return DeckPage.withOverrides(
+            deck: card.toDeck(
+              deck: DeckData(
+                id: const Uuid().v4(),
+                identityCode: card.code,
+                name: card.card.title,
+                description: '',
+                created: DateTime.now(),
+                updated: DateTime.now(),
+                deleted: false,
+              ),
+              cards: {},
+              tags: [],
+            ),
+          );
+        })),
+      ),
+      onTap: () {
+        final groupedCardList = ref.read(groupedCardListProvider);
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+          return CardGalleryPage.withOverrides(
+            groupedCardList: groupedCardList,
+            currentIndex: index,
+          );
+        }));
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingProvider);
@@ -31,45 +71,7 @@ class DeckListFloatingActionBar extends ConsumerWidget {
                 visible: false,
                 always: {'identity'},
               )),
-              cardTile: (context, ref, index, card) {
-                final mwlCardMap = ref.watch(mwlCardMapProvider.select((value) {
-                  return value.whenOrNull(data: (data) => data);
-                }));
-                return CardTile(
-                  card,
-                  key: ValueKey(card),
-                  mwlCard: mwlCardMap?[card.code],
-                  trailing: IconButton(
-                    icon: const Icon(Icons.add),
-                    onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                      return DeckPage.withOverrides(
-                        deck: card.toDeck(
-                          deck: DeckData(
-                            id: const Uuid().v4(),
-                            identityCode: card.code,
-                            name: card.card.title,
-                            description: '',
-                            created: DateTime.now(),
-                            updated: DateTime.now(),
-                            deleted: false,
-                          ),
-                          cards: {},
-                          tags: [],
-                        ),
-                      );
-                    })),
-                  ),
-                  onTap: () {
-                    final groupedCardList = ref.read(groupedCardListProvider);
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                      return CardGalleryPage.withOverrides(
-                        groupedCardList: groupedCardList,
-                        currentIndex: index,
-                      );
-                    }));
-                  },
-                );
-              },
+              itemBuilder: cardItemBuilder,
             );
           }));
         },

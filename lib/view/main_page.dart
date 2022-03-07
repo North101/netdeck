@@ -57,24 +57,7 @@ class CardListBottomNavigationItem extends BottomNavigationItem {
       filterSidesProvider.overrideWithValue(StateController(FilterType())),
       filterFactionsProvider.overrideWithValue(StateController(FilterType())),
       filterTypesProvider.overrideWithValue(StateController(FilterType())),
-      cardTileProvider.overrideWithValue((context, ref, index, card) {
-        final mwlCardMap = ref.watch(mwlCardMapProvider.select((value) {
-          return value.whenOrNull(data: (data) => data);
-        }));
-        return CardTile(
-          card,
-          key: ValueKey(card),
-          mwlCard: mwlCardMap?[card.code],
-          onTap: () async {
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-              return CardGalleryPage.withOverrides(
-                groupedCardList: ref.read(groupedCardListProvider),
-                currentIndex: index,
-              );
-            }));
-          },
-        );
-      }),
+      cardItemBuilderProvider.overrideWithValue(cardItemBuilder),
     ];
 
     return CardListBottomNavigationItem(
@@ -94,6 +77,25 @@ class CardListBottomNavigationItem extends BottomNavigationItem {
         activeIcon: Assets.icons.cards.image(height: 24, color: Colors.blueAccent),
         label: 'Cards',
       ),
+    );
+  }
+
+  static Widget cardItemBuilder(BuildContext context, WidgetRef ref, int index, CardResult card) {
+    final mwlCardMap = ref.watch(mwlCardMapProvider.select((value) {
+      return value.whenOrNull(data: (data) => data);
+    }));
+    return CardTile(
+      card,
+      key: ValueKey(card),
+      mwlCard: mwlCardMap?[card.code],
+      onTap: () async {
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+          return CardGalleryPage.withOverrides(
+            groupedCardList: ref.read(groupedCardListProvider),
+            currentIndex: index,
+          );
+        }));
+      },
     );
   }
 }
@@ -123,40 +125,7 @@ class DeckListBottomNavigationItem extends BottomNavigationItem {
       filterFactionsProvider.overrideWithValue(StateController(FilterType())),
       filterTypesProvider.overrideWithValue(StateController(FilterType())),
       filterTagsProvider.overrideWithValue(StateController(const {})),
-      deckTileProvider.overrideWithValue((context, ref, index, deck) {
-        final tags = ref.watch(filterTagsProvider.state);
-        final selectedDecks = ref.watch(selectedDecksProvider.state);
-        final selected = selectedDecks.state.contains(deck);
-        return DeckTile(
-          deck: deck,
-          selected: selected,
-          selectedTags: tags.state,
-          onTap: () {
-            if (selectedDecks.state.isEmpty) {
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                return DeckPage.withOverrides(deck: deck);
-              }));
-            } else {
-              selectedDecks.state = {
-                ...selectedDecks.state.where((e) => e != deck),
-                if (!selected) deck,
-              };
-            }
-          },
-          onLongPress: () {
-            selectedDecks.state = {
-              ...selectedDecks.state,
-              deck,
-            };
-          },
-          onTagTap: (tag, value) {
-            tags.state = {
-              ...tags.state.where((e) => e != tag),
-              if (value) tag,
-            };
-          },
-        );
-      }),
+      deckItemBuilderProvider.overrideWithValue(deckItemBuilder),
       deckFabProvider.overrideWithValue(null),
     ];
 
@@ -175,6 +144,41 @@ class DeckListBottomNavigationItem extends BottomNavigationItem {
         activeIcon: Assets.icons.decks.image(height: 24, color: Colors.blueAccent),
         label: 'Decks',
       ),
+    );
+  }
+
+  static Widget deckItemBuilder(BuildContext context, WidgetRef ref, int index, DeckResult2 deck) {
+    final tags = ref.watch(filterTagsProvider.state);
+    final selectedDecks = ref.watch(selectedDecksProvider.state);
+    final selected = selectedDecks.state.contains(deck);
+    return DeckTile(
+      deck: deck,
+      selected: selected,
+      selectedTags: tags.state,
+      onTap: () {
+        if (selectedDecks.state.isEmpty) {
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+            return DeckPage.withOverrides(deck: deck);
+          }));
+        } else {
+          selectedDecks.state = {
+            ...selectedDecks.state.where((e) => e != deck),
+            if (!selected) deck,
+          };
+        }
+      },
+      onLongPress: () {
+        selectedDecks.state = {
+          ...selectedDecks.state,
+          deck,
+        };
+      },
+      onTagTap: (tag, value) {
+        tags.state = {
+          ...tags.state.where((e) => e != tag),
+          if (value) tag,
+        };
+      },
     );
   }
 }

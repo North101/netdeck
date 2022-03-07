@@ -93,6 +93,21 @@ class DeckSortMenu extends ConsumerWidget {
 class DeckMoreActions extends ConsumerWidget {
   const DeckMoreActions({Key? key}) : super(key: key);
 
+  Widget deckItemBuilder(BuildContext context, WidgetRef ref, int index, DeckResult2 deck) {
+    final compareDeckList = ref.watch(compareDeckListProvider.state);
+    final selected = compareDeckList.state.contains(deck);
+    return DeckTile(
+      deck: deck,
+      selected: selected,
+      onTap: () {
+        compareDeckList.state = {
+          ...compareDeckList.state.where((e) => e != deck),
+          if (!selected) deck,
+        };
+      },
+    );
+  }
+
   Future<void> compareTo(BuildContext context, WidgetRef ref) async {
     final deck = ref.read(deckProvider);
     await Navigator.of(context).push(MaterialPageRoute(builder: (context) {
@@ -103,20 +118,7 @@ class DeckMoreActions extends ConsumerWidget {
         filterRotation: deck.rotation,
         filterMwl: deck.mwl,
         filterSides: FilterType(always: {deck.side.code}),
-        deckTile: (context, ref, index, deck) {
-          final compareDeckList = ref.watch(compareDeckListProvider.state);
-          final selected = compareDeckList.state.contains(deck);
-          return DeckTile(
-            deck: deck,
-            selected: selected,
-            onTap: () {
-              compareDeckList.state = {
-                ...compareDeckList.state.where((e) => e != deck),
-                if (!selected) deck,
-              };
-            },
-          );
-        },
+        itemBuilder: deckItemBuilder,
         fab: FloatingActionButton(
           child: const Icon(Icons.compare),
           onPressed: () {

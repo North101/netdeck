@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../db/database.dart';
 import '/providers.dart';
 import '/view/card_gallery_page.dart';
 import '/view/card_list/page.dart';
@@ -8,6 +9,52 @@ import '/view/card_tile.dart';
 
 class DeckFloatingActionBar extends ConsumerWidget {
   const DeckFloatingActionBar({Key? key}) : super(key: key);
+
+  Widget cardItemBuilder(BuildContext context, WidgetRef ref, int index, CardResult card, DeckNotifier deckNotifier) {
+    final mwlCardMap = ref.watch(mwlCardMapProvider.select((value) {
+      return value.whenOrNull(data: (data) => data);
+    }));
+    final count = deckNotifier.getCard(card);
+    return CardTile(
+      card,
+      key: ValueKey(card),
+      mwlCard: mwlCardMap?[card.card.code],
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (count > 0)
+            IconButton(
+              constraints: const BoxConstraints(),
+              visualDensity: VisualDensity.compact,
+              icon: const Icon(Icons.remove_outlined),
+              onPressed: () {
+                deckNotifier.decCard(card);
+                ref.refresh(cardListProvider);
+              },
+            ),
+          if (count > 0) Text('${deckNotifier.getCard(card)}'),
+          IconButton(
+            constraints: const BoxConstraints(),
+            visualDensity: VisualDensity.compact,
+            icon: const Icon(Icons.add_outlined),
+            onPressed: () {
+              deckNotifier.incCard(card);
+              ref.refresh(cardListProvider);
+            },
+          ),
+        ],
+      ),
+      onTap: () {
+        final groupedCardList = ref.read(groupedCardListProvider);
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+          return CardGalleryPage.withOverrides(
+            groupedCardList: groupedCardList,
+            currentIndex: index,
+          );
+        }));
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -32,51 +79,7 @@ class DeckFloatingActionBar extends ConsumerWidget {
             filterSides: ref.read(filterSidesProvider.state),
             filterTypes: ref.read(filterTypesProvider.state),
             deckValidator: deckValidator,
-            cardTile: (context, ref, index, card) {
-              final mwlCardMap = ref.watch(mwlCardMapProvider.select((value) {
-                return value.whenOrNull(data: (data) => data);
-              }));
-              final count = deckNotifier.getCard(card);
-              return CardTile(
-                card,
-                key: ValueKey(card),
-                mwlCard: mwlCardMap?[card.card.code],
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (count > 0)
-                      IconButton(
-                        constraints: const BoxConstraints(),
-                        visualDensity: VisualDensity.compact,
-                        icon: const Icon(Icons.remove_outlined),
-                        onPressed: () {
-                          deckNotifier.decCard(card);
-                          ref.refresh(cardListProvider);
-                        },
-                      ),
-                    if (count > 0) Text('${deckNotifier.getCard(card)}'),
-                    IconButton(
-                      constraints: const BoxConstraints(),
-                      visualDensity: VisualDensity.compact,
-                      icon: const Icon(Icons.add_outlined),
-                      onPressed: () {
-                        deckNotifier.incCard(card);
-                        ref.refresh(cardListProvider);
-                      },
-                    ),
-                  ],
-                ),
-                onTap: () {
-                  final groupedCardList = ref.read(groupedCardListProvider);
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                    return CardGalleryPage.withOverrides(
-                      groupedCardList: groupedCardList,
-                      currentIndex: index,
-                    );
-                  }));
-                },
-              );
-            },
+            itemBuilder: (context, ref, index, card) => cardItemBuilder(context, ref, index, card, deckNotifier),
           );
         }));
       },

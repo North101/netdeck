@@ -205,14 +205,61 @@ class DeckCardHeader extends ConsumerWidget {
 
   void onTap(BuildContext context, WidgetRef ref, int index) {}
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget cardItemBuilder(BuildContext context, WidgetRef ref, int index, CardResult card) {
     final deck = ref.watch(deckProvider);
     final deckCardList = ref.watch(deckProvider.select((value) => value.cards));
-    final count = headerList.fold<int>(0, (value, entry) => value += (deckCardList[entry] ?? 0));
+    final count = deckCardList[card] ?? 0;
     final deckValidator = ref.watch(deckValidatorProvider.select((value) {
       return value.whenOrNull(data: (data) => data);
     }));
+    final cardError = deckValidator?.cardErrorList[card];
+    return CardTile(
+      card,
+      key: ValueKey(card),
+      faction: deck.faction,
+      error: cardError,
+      mwlCard: deckValidator?.mwlCardMap[card.code],
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (count > 0)
+            IconButton(
+              constraints: const BoxConstraints(),
+              visualDensity: VisualDensity.compact,
+              icon: const Icon(Icons.remove_outlined),
+              onPressed: () {
+                final deck = ref.read(deckProvider.notifier);
+                deck.decCard(card);
+              },
+            ),
+          if (count > 0) Text('${deckCardList[card] ?? 0}'),
+          IconButton(
+            constraints: const BoxConstraints(),
+            visualDensity: VisualDensity.compact,
+            icon: const Icon(Icons.add_outlined),
+            onPressed: () {
+              final deck = ref.read(deckProvider.notifier);
+              deck.incCard(card);
+            },
+          ),
+        ],
+      ),
+      onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
+          final groupedCardList = ref.watch(groupedCardListProvider);
+          return CardGalleryPage.withOverrides(
+            groupedCardList: groupedCardList,
+            currentIndex: indexOffset + index,
+          );
+        }));
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final deckCardList = ref.watch(deckProvider.select((value) => value.cards));
+    final count = headerList.fold<int>(0, (value, entry) => value += (deckCardList[entry] ?? 0));
     return SliverStickyHeader(
       header: HeaderListTile.titleCount(title: headerList.header, count: count),
       sliver: SliverList(
@@ -220,49 +267,8 @@ class DeckCardHeader extends ConsumerWidget {
           (context, index) {
             if (index.isEven) {
               final realIndex = index ~/ 2;
-              final card = headerList[realIndex];
-              final count = deckCardList[card] ?? 0;
-              final cardError = deckValidator?.cardErrorList[card];
-              return CardTile(
-                card,
-                key: ValueKey(card),
-                faction: deck.faction,
-                error: cardError,
-                mwlCard: deckValidator?.mwlCardMap[card.code],
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (count > 0)
-                      IconButton(
-                        constraints: const BoxConstraints(),
-                        visualDensity: VisualDensity.compact,
-                        icon: const Icon(Icons.remove_outlined),
-                        onPressed: () {
-                          final deck = ref.read(deckProvider.notifier);
-                          deck.decCard(card);
-                        },
-                      ),
-                    if (count > 0) Text('${deckCardList[card] ?? 0}'),
-                    IconButton(
-                        constraints: const BoxConstraints(),
-                        visualDensity: VisualDensity.compact,
-                        icon: const Icon(Icons.add_outlined),
-                        onPressed: () {
-                          final deck = ref.read(deckProvider.notifier);
-                          deck.incCard(card);
-                        }),
-                  ],
-                ),
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-                    final groupedCardList = ref.watch(groupedCardListProvider);
-                    return CardGalleryPage.withOverrides(
-                      groupedCardList: groupedCardList,
-                      currentIndex: indexOffset + realIndex,
-                    );
-                  }));
-                },
-              );
+              final card = headerList[indexOffset + realIndex];
+              return cardItemBuilder(context, ref, indexOffset + realIndex, card);
             } else {
               return const Divider();
             }
