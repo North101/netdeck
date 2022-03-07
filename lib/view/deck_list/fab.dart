@@ -41,8 +41,8 @@ class DeckListFloatingActionBar extends ConsumerWidget {
           );
         })),
       ),
-      onTap: () {
-        final groupedCardList = ref.read(groupedCardListProvider);
+      onTap: () async {
+        final groupedCardList = await ref.read(groupedCardListProvider.future);
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
           return CardGalleryPage.withOverrides(
             groupedCardList: groupedCardList,

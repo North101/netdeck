@@ -42,14 +42,10 @@ class DeckCardHeader extends ConsumerWidget {
       key: ValueKey(card),
       trailing: Text('$count / ${maxCardList[card]}'),
       onTap: () async {
-        final compareCardList = ref.read(compareGroupedCardListProvider);
-        final groupedCardList = compareCardList.map<AsyncValue<HeaderList<CardResult>>>(
-          loading: (loading) => const AsyncLoading(),
-          error: (error) => AsyncError(error.error, stackTrace: error.stackTrace),
-          data: (data) => AsyncData(HeaderList(data.value.map((e) {
-            return HeaderItems<CardResult>(e.header, e.items.map((e) => e.key).toList());
-          }).toList())),
-        );
+        final compareCardList = await ref.read(compareGroupedCardListProvider.future);
+        final groupedCardList = HeaderList(compareCardList.map((e) {
+          return HeaderItems<CardResult>(e.header, e.items.map((e) => e.key).toList());
+        }).toList());
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
           return CardGalleryPage.withOverrides(
             groupedCardList: groupedCardList,

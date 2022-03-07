@@ -13,16 +13,12 @@ class CardGalleryListPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final groupedCardList = ref.watch(groupedCardListProvider);
+    final groupedCardList = ref.watch(cardGalleryGroupedCardListProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Card Gallery')),
-      body: groupedCardList.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stacktrace) => Text(error.toString()),
-        data: (data) => CustomScrollView(
-          controller: ScrollController(),
-          slivers: data.map((e) => CardHeader(data.sumUntilItem(e), e)).toList(),
-        ),
+      body: CustomScrollView(
+        controller: ScrollController(),
+        slivers: groupedCardList.map((e) => CardHeader(groupedCardList.sumUntilItem(e), e)).toList(),
       ),
     );
   }

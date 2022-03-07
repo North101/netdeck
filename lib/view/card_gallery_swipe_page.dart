@@ -25,87 +25,77 @@ class CardGallerySwipePage extends ConsumerWidget {
       return value.whenOrNull(data: (data) => data.settings.cardGalleryView);
     }));
 
-    final groupedCardList = ref.watch(groupedCardListProvider);
+    final groupedCardList = ref.watch(cardGalleryGroupedCardListProvider);
     final index = ref.watch(cardGalleryIndexProvider) ?? 0;
+    final card = groupedCardList.allItems[index];
     return Scaffold(
-      appBar: groupedCardList.whenOrNull(
-        data: (data) {
-          final card = data.allItems[index];
-          return AppBar(
-            title: Text(card.card.title),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.public),
-                onPressed: () => launch('https://netrunnerdb.com/en/card/${card.card.code}'),
-              ),
-              if (cardGalleryView != null)
-                IconButton(
-                    icon: cardGalleryView == CardGalleryView.image
-                        ? const Icon(Icons.text_fields)
-                        : const Icon(Icons.image),
-                    onPressed: () async {
-                      switch (cardGalleryView) {
-                        case CardGalleryView.image:
-                          return onSelected(context, ref, CardGalleryView.text);
-                        case CardGalleryView.text:
-                          return onSelected(context, ref, CardGalleryView.image);
-                      }
-                    }),
-              IconButton(
-                icon: const Icon(Icons.view_comfortable),
-                onPressed: () {
-                  final index = ref.read(cardGalleryIndexProvider.state);
-                  index.state = null;
-                },
-              ),
-            ],
-          );
-        },
+      appBar: AppBar(
+        title: Text(card.card.title),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.public),
+            onPressed: () => launch('https://netrunnerdb.com/en/card/${card.card.code}'),
+          ),
+          if (cardGalleryView != null)
+            IconButton(
+                icon:
+                    cardGalleryView == CardGalleryView.image ? const Icon(Icons.text_fields) : const Icon(Icons.image),
+                onPressed: () async {
+                  switch (cardGalleryView) {
+                    case CardGalleryView.image:
+                      return onSelected(context, ref, CardGalleryView.text);
+                    case CardGalleryView.text:
+                      return onSelected(context, ref, CardGalleryView.image);
+                  }
+                }),
+          IconButton(
+            icon: const Icon(Icons.view_comfortable),
+            onPressed: () {
+              final index = ref.read(cardGalleryIndexProvider.state);
+              index.state = null;
+            },
+          ),
+        ],
       ),
-      body: groupedCardList.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stacktrace) => Text(error.toString()),
-        data: (data) => PageView.builder(
-          controller: PageController(initialPage: index),
-          scrollDirection: Axis.horizontal,
-          itemCount: data.allItems.length,
-          itemBuilder: (context, index) {
-            final card = data.allItems[index];
-            switch (cardGalleryView) {
-              case CardGalleryView.image:
-                return Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: CachedNetworkImage(
-                    fit: BoxFit.contain,
-                    imageUrl: card.card.imageUrl,
-                    placeholder: (context, imageUrl) {
-                      return const Center(child: CircularProgressIndicator());
-                    },
-                    errorWidget: (context, imageUrl, error) {
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Assets.images.interrupt.image(),
-                          const Text('Error loading image'),
-                        ],
-                      );
-                    },
-                  ),
-                );
-              case CardGalleryView.text:
-                return Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: CardTile(card, logo: false, body: true),
-                );
-              case null:
-                return const Center(child: CircularProgressIndicator());
-            }
-          },
-          onPageChanged: (value) {
-            final index = ref.read(cardGalleryIndexProvider.state);
-            index.state = value;
-          },
-        ),
+      body: PageView.builder(
+        controller: PageController(initialPage: index),
+        scrollDirection: Axis.horizontal,
+        itemCount: groupedCardList.allItems.length,
+        itemBuilder: (context, index) {
+          switch (cardGalleryView) {
+            case CardGalleryView.image:
+              return Padding(
+                padding: const EdgeInsets.all(8),
+                child: CachedNetworkImage(
+                  fit: BoxFit.contain,
+                  imageUrl: card.card.imageUrl,
+                  placeholder: (context, imageUrl) {
+                    return const Center(child: CircularProgressIndicator());
+                  },
+                  errorWidget: (context, imageUrl, error) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Assets.images.interrupt.image(),
+                        const Text('Error loading image'),
+                      ],
+                    );
+                  },
+                ),
+              );
+            case CardGalleryView.text:
+              return Padding(
+                padding: const EdgeInsets.all(8),
+                child: CardTile(card, logo: false, body: true),
+              );
+            case null:
+              return const Center(child: CircularProgressIndicator());
+          }
+        },
+        onPageChanged: (value) {
+          final index = ref.read(cardGalleryIndexProvider.state);
+          index.state = value;
+        },
       ),
     );
   }

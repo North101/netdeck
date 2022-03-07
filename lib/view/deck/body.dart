@@ -184,9 +184,9 @@ class DeckIdentity extends ConsumerWidget {
       key: ValueKey(deck),
       logo: false,
       body: true,
-      onTap: () {
+      onTap: () async {
+        final groupedCardList = await ref.read(groupedCardListProvider.future);
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-          final groupedCardList = ref.read(groupedCardListProvider);
           return CardGalleryPage.withOverrides(
             groupedCardList: groupedCardList,
             currentIndex: 0,
@@ -244,12 +244,12 @@ class DeckCardHeader extends ConsumerWidget {
           ),
         ],
       ),
-      onTap: () {
+      onTap: () async {
+        final groupedCardList = await ref.read(groupedCardListProvider.future);
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-          final groupedCardList = ref.watch(groupedCardListProvider);
           return CardGalleryPage.withOverrides(
             groupedCardList: groupedCardList,
-            currentIndex: indexOffset + index,
+            currentIndex: index,
           );
         }));
       },

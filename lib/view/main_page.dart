@@ -89,9 +89,10 @@ class CardListBottomNavigationItem extends BottomNavigationItem {
       key: ValueKey(card),
       mwlCard: mwlCardMap?[card.code],
       onTap: () async {
+        final groupedCardList = await ref.read(groupedCardListProvider.future);
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
           return CardGalleryPage.withOverrides(
-            groupedCardList: ref.read(groupedCardListProvider),
+            groupedCardList: groupedCardList,
             currentIndex: index,
           );
         }));

@@ -5,4 +5,4 @@ import '/util/header_list.dart';
 
 final cardGalleryIndexProvider = StateProvider<int?>((ref) => throw UnimplementedError());
 
-final cardGalleryGroupedCardListProvider = Provider<Stream<HeaderList<CardResult>>>((ref) => throw UnimplementedError());
+final cardGalleryGroupedCardListProvider = Provider<HeaderList<CardResult>>((ref) => throw UnimplementedError());

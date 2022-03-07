@@ -11,12 +11,12 @@ class CardGalleryPage extends ConsumerWidget {
   const CardGalleryPage({Key? key}) : super(key: key);
 
   static withOverrides({
-    required AsyncValue<HeaderList<CardResult>> groupedCardList,
+    required HeaderList<CardResult> groupedCardList,
     required int? currentIndex,
   }) {
     return ProviderScope(
       overrides: [
-        groupedCardListProvider.overrideWithValue(groupedCardList),
+        cardGalleryGroupedCardListProvider.overrideWithValue(groupedCardList),
         cardGalleryIndexProvider.overrideWithValue(StateController(currentIndex)),
       ],
       child: const CardGalleryPage(),
