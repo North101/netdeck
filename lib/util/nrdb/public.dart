@@ -69,9 +69,10 @@ class NrdbPublicApi {
   static final fetchCardsEndpoint = Uri.parse('https://netrunnerdb.com/api/2.0/public/cards');
   static final fetchCyclesEndpoint = Uri.parse('https://netrunnerdb.com/api/2.0/public/cycles');
   static final fetchFactionsEndpoint = Uri.parse('https://netrunnerdb.com/api/2.0/public/factions');
-  //static final fetchMwlEndpoint = Uri.parse('https://netrunnerdb.com/api/2.0/public/mwl');
+  static final fetchFormatsEndpoint = Uri.parse('https://raw.githubusercontent.com/North101/netdeck/master/assets/nrdb/formats.json');
+  static final fetchRotationsEndpoint = Uri.parse('https://raw.githubusercontent.com/North101/netdeck/master/assets/nrdb/rotations.json');
+  static final fetchMwlEndpoint = Uri.parse('https://raw.githubusercontent.com/North101/netdeck/master/assets/nrdb/mwl.json');
   static final fetchPacksEndpoint = Uri.parse('https://netrunnerdb.com/api/2.0/public/packs');
-
   static final fetchSidesEndpoint = Uri.parse('https://netrunnerdb.com/api/2.0/public/sides');
   static final fetchTypesEndpoint = Uri.parse('https://netrunnerdb.com/api/2.0/public/types');
 
@@ -92,8 +93,16 @@ class NrdbPublicApi {
         lastModified,
       );
     }
+    final data = json.decode(response.body);
+    final lastUpdated = DateTime.parse(data['last_updated']);
+    if (!lastUpdated.isAfter(lastModified)) {
+      return ApiResults(
+        null,
+        lastModified,
+      );
+    }
 
-    return ApiResults.fromJson(json.decode(response.body));
+    return ApiResults.fromJson(data);
   }
 
   Future<DateTime> initCycles() async {
@@ -257,21 +266,21 @@ class NrdbPublicApi {
     });
   }
 
-  Future<DateTime> initFormat() async {
+  Future<DateTime> initFormats() async {
     final data = await loadData(Assets.nrdb.formats);
-    await updateFormat(data.results!);
+    await updateFormats(data.results!);
     return data.modified;
   }
 
-  // Future<DateTime> fetchFormat(DateTime lastUpdated) async {
-  //   final data = await fetchData(fetchFormatEndpoint, lastUpdated);
-  //   if (data.results == null) return lastUpdated;
+  Future<DateTime> fetchFormats(DateTime lastUpdated) async {
+    final data = await fetchData(fetchFormatsEndpoint, lastUpdated);
+    if (data.results == null) return lastUpdated;
 
-  //   await updateFormat(data.results!);
-  //   return data.modified;
-  // }
+    await updateFormats(data.results!);
+    return data.modified;
+  }
 
-  Future<void> updateFormat(List results) async {
+  Future<void> updateFormats(List results) async {
     await _db.batch((b) {
       b.deleteAll<Format, FormatData>(_db.format);
       b.insertAll<Format, FormatData>(
@@ -286,21 +295,21 @@ class NrdbPublicApi {
     });
   }
 
-  Future<DateTime> initRotation() async {
+  Future<DateTime> initRotations() async {
     final data = await loadData(Assets.nrdb.rotations);
-    await updateRotation(data.results!);
+    await updateRotations(data.results!);
     return data.modified;
   }
 
-  // Future<DateTime> fetchRotation(DateTime lastUpdated) async {
-  //   final data = await fetchData(fetchRotationEndpoint, lastUpdated);
-  //   if (data.results == null) return lastUpdated;
+  Future<DateTime> fetchRotations(DateTime lastUpdated) async {
+    final data = await fetchData(fetchRotationsEndpoint, lastUpdated);
+    if (data.results == null) return lastUpdated;
 
-  //   await updateRotation(data.results!);
-  //   return data.modified;
-  // }
+    await updateRotations(data.results!);
+    return data.modified;
+  }
 
-  Future<void> updateRotation(List results) async {
+  Future<void> updateRotations(List results) async {
     final rotations = [
       ...results.where((e) => e['current']).map((e) => {
             ...e,
@@ -361,13 +370,13 @@ class NrdbPublicApi {
     return data.modified;
   }
 
-  // Future<DateTime> fetchMwl(DateTime lastUpdated) async {
-  //   final data = await fetchData(fetchMwlEndpoint, lastUpdated);
-  //   if (data.results == null) return lastUpdated;
+  Future<DateTime> fetchMwl(DateTime lastUpdated) async {
+    final data = await fetchData(fetchMwlEndpoint, lastUpdated);
+    if (data.results == null) return lastUpdated;
 
-  //   await updateMwl(data.results!);
-  //   return data.modified;
-  // }
+    await updateMwl(data.results!);
+    return data.modified;
+  }
 
   Future<void> updateMwl(List<Map> results) async {
     final mwl = [
@@ -441,8 +450,8 @@ class NrdbPublicApi {
         final factionLastUpdated = await initFactions();
         final typeLastUpdated = await initTypes();
         final cardLastUpdated = await initCards();
-        final formatLastUpdated = await initFormat();
-        final rotationLastUpdated = await initRotation();
+        final formatLastUpdated = await initFormats();
+        final rotationLastUpdated = await initRotations();
         final mwlLastUpdated = await initMwl();
 
         nrdb = NrdbData(
@@ -467,9 +476,9 @@ class NrdbPublicApi {
           await fetchFactions(nrdb.factionLastUpdated).catchError((e) => nrdb!.factionLastUpdated);
       final typeLastUpdated = await fetchTypes(nrdb.typeLastUpdated).catchError((e) => nrdb!.typeLastUpdated);
       final cardLastUpdated = await fetchCards(nrdb.cardLastUpdated).catchError((e) => nrdb!.cardLastUpdated);
-      //final formatLastUpdated = await fetchMwl(nrdb.formatLastUpdated);
-      //final rotationLastUpdated = await fetchMwl(nrdb.rotationLastUpdated);
-      //final mwlLastUpdated = await fetchMwl(nrdb.mwlLastUpdated);
+      final formatLastUpdated = await fetchFormats(nrdb.formatLastUpdated).catchError((e) => nrdb!.formatLastUpdated);
+      final rotationLastUpdated = await fetchRotations(nrdb.rotationLastUpdated).catchError((e) => nrdb!.rotationLastUpdated);
+      final mwlLastUpdated = await fetchMwl(nrdb.mwlLastUpdated).catchError((e) => nrdb!.mwlLastUpdated);
 
       await _db.delete(_db.nrdb).go();
       await _db.into(_db.nrdb).insert(NrdbData(
@@ -481,9 +490,9 @@ class NrdbPublicApi {
             factionLastUpdated: factionLastUpdated,
             typeLastUpdated: typeLastUpdated,
             cardLastUpdated: cardLastUpdated,
-            formatLastUpdated: nrdb.formatLastUpdated,
-            rotationLastUpdated: nrdb.rotationLastUpdated,
-            mwlLastUpdated: nrdb.mwlLastUpdated,
+            formatLastUpdated: formatLastUpdated,
+            rotationLastUpdated: rotationLastUpdated,
+            mwlLastUpdated: mwlLastUpdated,
           ));
       return now;
     });
