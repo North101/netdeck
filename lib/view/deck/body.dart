@@ -267,8 +267,7 @@ class DeckCardHeader extends ConsumerWidget {
           (context, index) {
             if (index.isEven) {
               final realIndex = index ~/ 2;
-              final card = headerList[indexOffset + realIndex];
-              return cardItemBuilder(context, ref, indexOffset + realIndex, card);
+              return cardItemBuilder(context, ref, indexOffset + realIndex, headerList[realIndex]);
             } else {
               return const Divider();
             }
