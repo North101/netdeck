@@ -98,7 +98,7 @@ TextSpan cardInfo(CardResult card) {
       if (card.card.strength != null)
         TextSpan(children: [
           TextSpan(text: '${card.card.strength}'),
-          TextScaledSpan((context, height) => Assets.images.signal.image(height: height)),
+          TextScaledSpan((context, height) => Assets.images.strength.image(height: height)),
         ]),
       if (card.card.advancementCost != null)
         TextSpan(children: [
@@ -253,8 +253,8 @@ class SquareBracketParser extends TextParser {
         return TextScaledSpan((context, height) => Assets.images.rez.image(height: height));
       case 'shaper':
         return TextScaledSpan((context, height) => Assets.images.shaper.image(height: height));
-      case 'signal':
-        return TextScaledSpan((context, height) => Assets.images.signal.image(height: height));
+      case 'strength':
+        return TextScaledSpan((context, height) => Assets.images.strength.image(height: height));
       case 'subroutine':
         return TextScaledSpan((context, height) => Assets.images.subroutine.image(height: height));
       case 'sunny-lebeau':

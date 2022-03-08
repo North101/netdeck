@@ -87,8 +87,9 @@ class $AssetsImagesGen {
   /// File path: assets/images/shaper.png
   AssetGenImage get shaper => const AssetGenImage('assets/images/shaper.png');
 
-  /// File path: assets/images/signal.png
-  AssetGenImage get signal => const AssetGenImage('assets/images/signal.png');
+  /// File path: assets/images/strength.png
+  AssetGenImage get strength =>
+      const AssetGenImage('assets/images/strength.png');
 
   /// File path: assets/images/subroutine.png
   AssetGenImage get subroutine =>
