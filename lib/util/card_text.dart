@@ -95,7 +95,11 @@ TextSpan cardInfo(CardResult card) {
           TextSpan(text: '${card.card.memoryCost}'),
           TextScaledSpan((context, height) => Assets.images.mu.image(height: height)),
         ]),
-      if (card.card.strength != null) TextSpan(text: '${card.card.strength} Strength'),
+      if (card.card.strength != null)
+        TextSpan(children: [
+          TextSpan(text: '${card.card.strength}'),
+          TextScaledSpan((context, height) => Assets.images.signal.image(height: height)),
+        ]),
       if (card.card.advancementCost != null)
         TextSpan(children: [
           TextSpan(text: '${card.card.advancementCost}'),
@@ -108,15 +112,6 @@ TextSpan cardInfo(CardResult card) {
         ]),
     ].seperatedBy(const TextSpan(text: ', ')).toList(),
   );
-}
-
-String cardCycle(CardResult card) {
-  final buffer = <String>[
-    card.faction.name,
-    card.cycle.name,
-    if (card.pack.name != card.cycle.name) card.pack.name,
-  ];
-  return '${buffer.join(" / ")} #${card.card.position}';
 }
 
 class CloseAngleBracketParser extends TextParser {
