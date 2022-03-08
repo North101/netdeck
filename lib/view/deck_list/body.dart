@@ -127,10 +127,12 @@ class DeckListBody extends ConsumerWidget {
             final decks = await online.listDecks();
             if (decks is SuccessHttpResult<List<NrdbDeck>>) {
               final db = ref.read(dbProvider);
-              await online.syncDecks(db, decks.value);
+              await db.transaction(() async {
+                await online.syncDecks(db, decks.value);
+              });
             } else {
               ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text('Fail to refresh decks'),
+                content: Text('Failed to refresh decks'),
               ));
             }
           },

@@ -667,12 +667,12 @@ packages:
     source: hosted
     version: "1.11.1"
   petitparser:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: petitparser
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.4.0"
+    version: "4.1.0"
   platform:
     dependency: transitive
     description:

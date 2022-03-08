@@ -232,13 +232,15 @@ class MainPage extends ConsumerWidget {
     });
 
     ref.listen<Object?>(shouldSyncProvider, (previous, next) async {
-      if (next is OnlineAuthState) {
-        final decks = await next.listDecks();
-        if (decks is SuccessHttpResult<List<NrdbDeck>>) {
-          final db = ref.read(dbProvider);
-          await next.syncDecks(db, decks.value);
-        }
-      }
+      if (next is! OnlineAuthState) return;
+
+      final decks = await next.listDecks();
+      if (decks is! SuccessHttpResult<List<NrdbDeck>>) return;
+
+      final db = ref.read(dbProvider);
+      await db.transaction(() async {
+        await next.syncDecks(db, decks.value);
+      });
     });
 
     final settings = ref.watch(initSettingsProvider);

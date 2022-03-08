@@ -13,13 +13,7 @@ enum SaveLocation {
 
 Future<SaveLocation?> whereToSave(BuildContext context, WidgetRef ref) async {
   final deck = ref.read(deckProvider);
-  final isConnected = ref.read(nrdbAuthStateProvider).map(
-        init: (state) => false,
-        connecting: (state) => true,
-        offline: (state) => true,
-        online: (state) => true,
-        unauthenticated: (state) => false,
-      );
+  final isConnected = ref.read(nrdbAuthStateProvider).isConnected;
   if (isConnected) {
     final db = ref.read(dbProvider);
     final isNewDeck = await db.listDecks(where: db.deck.id.equals(deck.deck.id)).getSingleOrNull() == null;
@@ -210,18 +204,7 @@ Future<void> upload(BuildContext context, WidgetRef ref) async {
   final nrdbAuthState = ref.read(nrdbAuthStateProvider);
   OnlineAuthState? onlineAuthState;
   while (onlineAuthState == null) {
-    onlineAuthState = await nrdbAuthState.maybeMap(
-      connecting: (state) async {
-        final value = await state.future;
-        return value.mapOrNull(online: (state) => state);
-      },
-      offline: (state) async {
-        final value = await state.refreshToken();
-        return value.mapOrNull(online: (state) => state);
-      },
-      online: (state) async => state,
-      orElse: () async => null,
-    );
+    onlineAuthState = await nrdbAuthState.online();
     if (onlineAuthState == null) {
       final saveLocation = await warnNotUploaded(context);
       if (saveLocation == null) {
@@ -290,18 +273,7 @@ Future<void> download(BuildContext context, WidgetRef ref) async {
   final nrdbAuthState = ref.read(nrdbAuthStateProvider);
   OnlineAuthState? onlineAuthState;
   while (onlineAuthState == null) {
-    onlineAuthState = await nrdbAuthState.maybeMap(
-      connecting: (state) async {
-        final value = await state.future;
-        return value.mapOrNull(online: (state) => state);
-      },
-      offline: (state) async {
-        final value = await state.refreshToken();
-        return value.mapOrNull(online: (state) => state);
-      },
-      online: (state) async => state,
-      orElse: () async => null,
-    );
+    onlineAuthState = await nrdbAuthState.online();
     if (onlineAuthState == null) {
       final saveLocation = await warnNotDownloaded(context);
       if (saveLocation == null) return;

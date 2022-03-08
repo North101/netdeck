@@ -64,6 +64,7 @@ dependency_overrides:
       url: https://github.com/simolus3/drift.git
       ref: develop
       path: drift_dev
+  petitparser: 4.1.0
 
 flutter:
   uses-material-design: true

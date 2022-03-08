@@ -230,6 +230,32 @@ class AuthState with _$AuthState {
   static Future<void> deleteRefreshToken() => AuthState.secureStorage.delete(key: AuthState.refreshTokenKey);
 }
 
+extension AuthStateEx on AuthState {
+  Future<OnlineAuthState?> online() {
+    return map(
+      init: (state) async => null,
+      connecting: (state) async {
+        final value = await state.future;
+        return value.mapOrNull(online: (state) => state);
+      },
+      offline: (state) async {
+        final value = await state.refreshToken();
+        return value.mapOrNull(online: (state) => state);
+      },
+      online: (state) async => state,
+      unauthenticated: (state) async => null,
+    );
+  }
+
+  bool get isConnected => map(
+        init: (state) => false,
+        connecting: (state) => false,
+        offline: (state) => true,
+        online: (state) => true,
+        unauthenticated: (state) => false,
+      );
+}
+
 extension UnauthenticatedAuthStateEx on UnauthenticatedAuthState {
   Future<AuthState> login() => AuthState.login(ref);
 }
@@ -308,17 +334,16 @@ extension OnlineAuthStateEx on OnlineAuthState {
 
   Future<void> syncDecks(Database db, List<NrdbDeck> decks) async {
     final lastSync = ref.read(lastSyncProvider.state);
-    print(lastSync.state);
     lastSync.state = DateTime.now();
 
     final deckList = await db.listDecks2(where: db.deck.id.isIn(decks.map((e) => e.id))).first;
-    final updateLocalDecks = <NrdbDeck>[];
+    final updateLocalDecks = <NrdbDeck, DeckResult2?>{};
     final updateRemoteDecks = <DeckResult2>[];
     final updateRemoteDecksStatus = <NrdbDeck>[];
     for (final remoteDeck in decks) {
       final localDeck = deckList.firstWhereOrNull((e) => e.deck.id == remoteDeck.id);
       if (localDeck == null) {
-        updateLocalDecks.add(remoteDeck);
+        updateLocalDecks[remoteDeck] = null;
       } else {
         final syncIssues = localDeck.syncIssues(remoteDeck.updated);
         if (syncIssues == SyncIssues.both) {
@@ -326,33 +351,82 @@ extension OnlineAuthStateEx on OnlineAuthState {
         } else if (syncIssues == SyncIssues.local) {
           updateRemoteDecks.add(localDeck);
         } else if (syncIssues == SyncIssues.remote) {
-          updateLocalDecks.add(remoteDeck);
+          updateLocalDecks[remoteDeck] = localDeck;
         }
       }
     }
 
+    for (final localDeck in updateRemoteDecks) {
+      final result = await saveDeck(localDeck);
+      if (result is SuccessHttpResult<NrdbDeck>) {
+        updateLocalDecks[result.value] = localDeck;
+      }
+    }
+    await syncWithLocalDecks(db, updateLocalDecks);
+    await db.batch((batch) async {
+      for (final remoteDeck in updateRemoteDecksStatus) {
+        print('updateRemoteDeckStatus: ${remoteDeck.name}');
+        batch.update<Deck, DeckData>(
+          db.deck,
+          DeckCompanion(
+            remoteUpdated: drift.Value(remoteDeck.updated),
+          ),
+          where: (tbl) => tbl.id.equals(remoteDeck.id),
+        );
+      }
+    });
+  }
+
+  Future<void> forceUpload(Database db, Iterable<DeckResult2> localDecks) async {
+    final decks = <NrdbDeck, DeckResult2>{};
+    for (final localDeck in localDecks) {
+      final saveDeckResult = await saveDeck(localDeck);
+      if (saveDeckResult is SuccessHttpResult<NrdbDeck>) {
+        decks[saveDeckResult.value] = localDeck;
+      }
+    }
     await db.transaction(() async {
-      await db.batch((batch) async {
-        for (final localDeck in updateRemoteDecks) {
-          final result = await saveDeck(localDeck);
-          if (result is SuccessHttpResult<NrdbDeck>) {
-            updateLocalDecks.add(result.value);
-          }
+      await syncWithLocalDecks(db, decks);
+    });
+  }
+
+  Future<void> forceDownload(Database db, Iterable<DeckResult2> localDecks) async {
+    final listDecksResult = await listDecks();
+    if (listDecksResult is! SuccessHttpResult<List<NrdbDeck>>) return;
+
+    final decks = <NrdbDeck, DeckResult2>{};
+    for (final remoteDeck in listDecksResult.value) {
+      final localDeck = localDecks.firstWhereOrNull((e) => e.deck.id == remoteDeck.id);
+      if (localDeck != null) {
+        decks[remoteDeck] = localDeck;
+      }
+    }
+    await db.transaction(() async {
+      await syncWithLocalDecks(db, decks);
+    });
+  }
+
+  Future<void> syncWithLocalDecks(Database db, Map<NrdbDeck, DeckResult2?> decks) async {
+    await db.batch((batch) async {
+      final deleteDeckIds = <String>[];
+      for (final deck in decks.entries) {
+        final remoteDeck = deck.key;
+        final localDeck = deck.value;
+        await syncWithLocalDeck(
+          db,
+          batch,
+          remoteDeck,
+          formatCode: drift.Value(localDeck?.format?.code),
+          rotationCode: drift.Value(localDeck?.rotation?.code),
+          mwlCode: drift.Value(localDeck?.mwl?.code),
+        );
+        if (localDeck != null && remoteDeck.id != localDeck.deck.id) {
+          deleteDeckIds.add(localDeck.deck.id);
         }
-        for (final remoteDeck in updateLocalDecks) {
-          await syncWithLocalDeck(db, batch, remoteDeck);
-        }
-        for (final remoteDeck in updateRemoteDecksStatus) {
-          print('updateRemoteDeckStatus: ${remoteDeck.name}');
-          batch.update<Deck, DeckData>(
-            db.deck,
-            DeckCompanion(
-              remoteUpdated: drift.Value(remoteDeck.updated),
-            ),
-            where: (tbl) => tbl.id.equals(remoteDeck.id),
-          );
-        }
-      });
+      }
+      await db.deleteDecks(deckIds: deleteDeckIds);
+      await db.deleteDeckCards(deckIds: deleteDeckIds);
+      await db.deleteDeckTags(deckIds: deleteDeckIds);
     });
   }
 

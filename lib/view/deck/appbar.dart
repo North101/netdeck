@@ -9,6 +9,7 @@ import '/db/database.dart';
 import '/providers.dart';
 import '/util/assets.gen.dart';
 import '/util/filter_type.dart';
+import '/util/nrdb/private.dart';
 import '/view/deck_compare/page.dart';
 import '/view/deck_list/page.dart';
 import '/view/deck_tile.dart';
@@ -138,6 +139,25 @@ class DeckMoreActions extends ConsumerWidget {
   }
 
   Future<void> delete(BuildContext context, WidgetRef ref) async {
+    final result = await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete deck?'),
+        content: const Text('Are you sure you want to delete this deck?'),
+        actions: [
+          MaterialButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          MaterialButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (result != true) return;
+
     final db = ref.read(dbProvider);
     final deck = ref.read(deckProvider);
     await db.deleteDecks(deckIds: [deck.deck.id]);
@@ -147,6 +167,8 @@ class DeckMoreActions extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isSynced = ref.watch(deckProvider.select((value) => value.deck.synced != null));
+    final isConnected = ref.watch(nrdbAuthStateProvider.select((value) => value.isConnected));
     final settings = ref.watch(settingProvider);
     return settings.when(
       loading: () => const SizedBox.shrink(),
@@ -160,6 +182,17 @@ class DeckMoreActions extends ConsumerWidget {
           const PopupMenuDivider(),
           const PopupMenuItem(child: DeckGroupMenu()),
           const PopupMenuItem(child: DeckSortMenu()),
+          const PopupMenuDivider(),
+          PopupMenuItem(
+            enabled: isConnected,
+            child: ListTile(enabled: isConnected, title: const Text('Upload')),
+            onTap: () => Future(() => upload(context, ref)),
+          ),
+          PopupMenuItem(
+            enabled: isConnected && isSynced,
+            child: ListTile(enabled: isConnected && isSynced, title: const Text('Download')),
+            onTap: () => Future(() => download(context, ref)),
+          ),
           const PopupMenuDivider(),
           PopupMenuItem(
             child: const ListTile(title: Text('Delete')),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/providers.dart';
+import '/util/nrdb/private.dart';
 import '/view/deck_compare/page.dart';
 import '/view/search_theme.dart';
 
@@ -15,6 +16,81 @@ class DeckSelectedActions extends ConsumerWidget {
         deckList: selectedDecks,
       );
     }));
+  }
+
+  Future<void> upload(BuildContext context, WidgetRef ref) async {
+    final authState = await ref.read(nrdbAuthStateProvider).online();
+    if (authState == null) {
+      await showDialog(
+        context: context,
+        builder: (context) => const SimpleDialog(
+          title: Text('Not online'),
+        ),
+      );
+      return;
+    }
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Upload selected decks?'),
+        content: const Text(
+            'This will replace the selected decks with the linked deck on netrunnerdb. Any decks that haven\'t yet been uploaded will be.'),
+        actions: [
+          MaterialButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          MaterialButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Upload'),
+          ),
+        ],
+      ),
+    );
+    if (result != true) return;
+
+    final db = ref.read(dbProvider);
+    final selectedDecksState = ref.read(selectedDecksProvider.state);
+    await authState.forceUpload(db, selectedDecksState.state);
+    selectedDecksState.state = {};
+  }
+
+  Future<void> download(BuildContext context, WidgetRef ref) async {
+    final authState = await ref.read(nrdbAuthStateProvider).online();
+    if (authState == null) {
+      await showDialog(
+        context: context,
+        builder: (context) => const SimpleDialog(
+          title: Text('Not online'),
+        ),
+      );
+      return;
+    }
+
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Download selected decks?'),
+        content: const Text('This will replace the selected decks with the linked deck on netrunnerdb.'),
+        actions: [
+          MaterialButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          MaterialButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Download'),
+          ),
+        ],
+      ),
+    );
+    if (result != true) return;
+
+    final db = ref.read(dbProvider);
+    final selectedDecksState = ref.read(selectedDecksProvider.state);
+    await authState.forceDownload(db, selectedDecksState.state);
+    selectedDecksState.state = {};
   }
 
   Future<void> copy(BuildContext context, WidgetRef ref) async {
@@ -32,6 +108,25 @@ class DeckSelectedActions extends ConsumerWidget {
   }
 
   Future<void> delete(BuildContext context, WidgetRef ref) async {
+    final result = await showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete selected decks?'),
+        content: const Text('Are you sure you want to delete the selected decks?'),
+        actions: [
+          MaterialButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          MaterialButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (result != true) return;
+
     final db = ref.read(dbProvider);
     final selectedDecksState = ref.read(selectedDecksProvider.state);
     final selectedDecks = selectedDecksState.state.map((e) => e.deck.id).toList();
@@ -45,15 +140,7 @@ class DeckSelectedActions extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isConnected = ref.watch(nrdbAuthStateProvider.select(
-      (value) => value.map(
-        init: (state) => false,
-        connecting: (state) => false,
-        offline: (state) => true,
-        online: (state) => true,
-        unauthenticated: (state) => false,
-      ),
-    ));
+    final isConnected = ref.watch(nrdbAuthStateProvider.select((value) => value.isConnected));
     final settings = ref.watch(settingProvider);
     return settings.when(
       loading: () => const SizedBox.shrink(),
@@ -68,21 +155,21 @@ class DeckSelectedActions extends ConsumerWidget {
           PopupMenuItem(
             enabled: isConnected,
             child: ListTile(enabled: isConnected, title: const Text('Upload')),
-            onTap: () {},
+            onTap: () => Future(() => upload(context, ref)),
           ),
           PopupMenuItem(
             enabled: isConnected,
             child: ListTile(enabled: isConnected, title: const Text('Download')),
-            onTap: () {},
+            onTap: () => Future(() => download(context, ref)),
           ),
           const PopupMenuDivider(),
           PopupMenuItem(
             child: const ListTile(title: Text('Copy')),
-            onTap: () => copy(context, ref),
+            onTap: () => Future(() => copy(context, ref)),
           ),
           PopupMenuItem(
             child: const ListTile(title: Text('Delete')),
-            onTap: () => delete(context, ref),
+            onTap: () => Future(() => delete(context, ref)),
           ),
         ],
       ),

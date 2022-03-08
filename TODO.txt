@@ -3,14 +3,6 @@ TODO:
 localization
 keep state
 
-DeckListPage:
-upload
-download
-confirm delete
-
-DeckPage:
-confirm delete
-
 Settings:
 Backup/Restore
 About
