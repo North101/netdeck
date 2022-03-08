@@ -48,7 +48,7 @@ class CardTile extends ConsumerWidget {
       title: CardTitleWidget(card),
       subtitle: Column(
         mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           RichText(
             text: TextSpan(children: [
