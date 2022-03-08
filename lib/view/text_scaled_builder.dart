@@ -12,3 +12,8 @@ class TextScaledBuilder extends StatelessWidget {
     return builder(context, textScaleFactor * fontSize);
   }
 }
+
+class TextScaledSpan extends WidgetSpan {
+  TextScaledSpan(Widget Function(BuildContext context, double height) builder)
+      : super(child: TextScaledBuilder(builder: builder));
+}

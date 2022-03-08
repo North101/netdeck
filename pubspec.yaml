@@ -20,7 +20,6 @@ dependencies:
   flutter_appauth: any
   flutter_cache_manager: any
   flutter_dotenv: any
-  flutter_html: 3.0.0-alpha.2
   flutter_riverpod: 2.0.0-dev.4
   flutter_secure_storage: any
   flutter_sticky_header: any

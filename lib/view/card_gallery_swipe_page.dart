@@ -27,14 +27,14 @@ class CardGallerySwipePage extends ConsumerWidget {
 
     final groupedCardList = ref.watch(cardGalleryGroupedCardListProvider);
     final index = ref.watch(cardGalleryIndexProvider) ?? 0;
-    final card = groupedCardList.allItems[index];
+    final currentCard = groupedCardList.allItems[index];
     return Scaffold(
       appBar: AppBar(
-        title: Text(card.card.title),
+        title: Text(currentCard.card.title),
         actions: [
           IconButton(
             icon: const Icon(Icons.public),
-            onPressed: () => launch('https://netrunnerdb.com/en/card/${card.card.code}'),
+            onPressed: () => launch('https://netrunnerdb.com/en/card/${currentCard.card.code}'),
           ),
           if (cardGalleryView != null)
             IconButton(
@@ -62,6 +62,7 @@ class CardGallerySwipePage extends ConsumerWidget {
         scrollDirection: Axis.horizontal,
         itemCount: groupedCardList.allItems.length,
         itemBuilder: (context, index) {
+          final card = groupedCardList.allItems[index];
           switch (cardGalleryView) {
             case CardGalleryView.image:
               return Padding(
