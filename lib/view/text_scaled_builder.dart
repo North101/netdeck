@@ -15,5 +15,8 @@ class TextScaledBuilder extends StatelessWidget {
 
 class TextScaledSpan extends WidgetSpan {
   TextScaledSpan(Widget Function(BuildContext context, double height) builder)
-      : super(child: TextScaledBuilder(builder: builder));
+      : super(
+          child: TextScaledBuilder(builder: builder),
+          alignment: PlaceholderAlignment.middle,
+        );
 }
