@@ -21,23 +21,27 @@ final nrdbPublicApiProvider = StateNotifierProvider<NrdbPublicApiNotifier, Async
   return NrdbPublicApiNotifier(NrdbPublicApi(db));
 });
 
-final lastSyncProvider = StateProvider<DateTime>((ref) => DateTime(0));
+final lastSyncProvider = StateProvider<DateTime?>((ref) => null);
 
-final periodicLastSyncProvider = StreamProvider<Duration>((ref) {
+final periodicLastSyncProvider = StreamProvider<Duration?>((ref) {
   final lastSync = ref.watch(lastSyncProvider);
   return MergeStream([
-    Stream.value(DateTime.now().difference(lastSync)),
-    Stream.periodic(const Duration(minutes: 1), (x) => DateTime.now().difference(lastSync)),
+    Stream.value(null),
+    Stream.periodic(const Duration(minutes: 1), (x) {
+      return lastSync != null ? DateTime.now().difference(lastSync) : null;
+    }),
   ]);
 });
 
-final shouldSyncProvider = Provider((ref) {
-  final hasInternet = ref.watch(hasInternetProvider).whenOrNull(data: (value) => value);
-  if (hasInternet != true) return null;
-
-  final lastSync = ref.watch(periodicLastSyncProvider.select((value) => value.whenOrNull(data: (data) => data)));
-  if (lastSync == null) return null;
-
+final shouldSyncProvider = Provider<OnlineAuthState?>((ref) {
   final nrdbAuthState = ref.watch(nrdbAuthStateProvider);
-  return nrdbAuthState is OnlineAuthState && lastSync >= const Duration(minutes: 30) ? nrdbAuthState : null;
+  if (nrdbAuthState is! OnlineAuthState) return null;
+
+  final periodicShouldSync = ref.watch(periodicLastSyncProvider.select((value) {
+    return value.maybeWhen(
+      data: (data) => data == null || data > const Duration(minutes: 30),
+      orElse: () => false,
+    );
+  }));
+  return periodicShouldSync ? nrdbAuthState : null;
 });

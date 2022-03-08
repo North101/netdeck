@@ -110,7 +110,7 @@ class SettingsNrdbAuth extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('Online: ${state.user.username}'),
-            Text('Last Synced: ${timeago.format(lastSync)}'),
+            Text('Last Synced: ${lastSync != null ? timeago.format(lastSync) : 'Never'}'),
           ],
         ),
         offline: (state) => const Text('Offline'),
