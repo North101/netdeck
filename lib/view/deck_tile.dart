@@ -38,6 +38,7 @@ class DeckTile extends StatelessWidget {
           Text(deck.identity.title),
           RichText(
             text: TextSpan(children: [
+              if (deck.deck.synced != null)
                 if (deck.syncIssues() == SyncIssues.both)
                   WidgetSpan(child: TextScaledBuilder(builder: (context, height) {
                     return Icon(Icons.error, size: height, color: Colors.red);
