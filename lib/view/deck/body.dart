@@ -68,7 +68,7 @@ class DeckNameField extends ConsumerWidget {
         decoration: const InputDecoration(labelText: 'Name'),
         onChanged: (value) {
           final deck = ref.read(deckProvider.notifier);
-          deck.value = deck.value.copyWith(
+          deck.unsaved = deck.value.copyWith(
             deck: deck.value.deck.copyWith(name: value),
           );
         },
@@ -118,7 +118,7 @@ class DeckFormatDropdown extends ConsumerWidget {
         format: deck.format,
         onChanged: (value) {
           final deck = ref.read(deckProvider.notifier);
-          deck.value = deck.value.copyWith(
+          deck.unsaved = deck.value.copyWith(
             format: drift.Value(value?.format),
             rotation: drift.Value(value?.let((e) => e.currentRotation) ?? deck.value.rotation),
             mwl: drift.Value(value?.let((e) => e.activeMwl) ?? deck.value.mwl),
@@ -142,7 +142,7 @@ class DeckRotationDropdown extends ConsumerWidget {
         rotation: deck.rotation,
         onChanged: (value) {
           final deck = ref.read(deckProvider.notifier);
-          deck.value = deck.value.copyWith(
+          deck.unsaved = deck.value.copyWith(
             rotation: drift.Value(value),
           );
         },
@@ -164,7 +164,7 @@ class DeckMwlDropdown extends ConsumerWidget {
         mwl: deck.mwl,
         onChanged: (value) {
           final deck = ref.read(deckProvider.notifier);
-          deck.value = deck.value.copyWith(
+          deck.unsaved = deck.value.copyWith(
             mwl: drift.Value(value),
           );
         },
@@ -505,7 +505,7 @@ class DeckTags extends ConsumerWidget {
         },
         onChanged: (data) {
           final deck = ref.read(deckProvider.notifier);
-          deck.value = deck.value.copyWith(
+          deck.unsaved = deck.value.copyWith(
             tags: data,
           );
         },

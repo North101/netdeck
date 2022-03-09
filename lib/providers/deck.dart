@@ -14,9 +14,17 @@ final deckProvider = StateNotifierProvider<DeckNotifier, DeckResult2>((ref) => t
 class DeckNotifier extends StateNotifier<DeckResult2> {
   DeckNotifier(DeckResult2 state) : super(state);
 
+  bool changed = false;
+
   DeckResult2 get value => state;
 
-  set value(DeckResult2 value) {
+  set unsaved(DeckResult2 value) {
+    changed = true;
+    state = value;
+  }
+
+  set saved(DeckResult2 value) {
+    changed = false;
     state = value;
   }
 
@@ -31,7 +39,7 @@ class DeckNotifier extends StateNotifier<DeckResult2> {
   }
 
   void setCard(CardResult key, int value) {
-    state = state.copyWith(cards: {
+    unsaved = state.copyWith(cards: {
       for (final entry in state.cards.entries.where((e) => e.key != key)) entry.key: entry.value,
       if (value > 0) key: value,
     });

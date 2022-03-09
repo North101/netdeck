@@ -75,7 +75,7 @@ class DeckDescriptionPage extends ConsumerWidget {
             autofocus: true,
             onChanged: (value) {
               final deck = ref.watch(deckProvider.notifier);
-              deck.value = deck.value.copyWith(
+              deck.unsaved = deck.value.copyWith(
                 deck: deck.value.deck.copyWith(description: value),
               );
             },

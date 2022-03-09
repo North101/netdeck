@@ -40,12 +40,12 @@ Future<SaveLocation?> askToUpload(BuildContext context) async {
         content: const Text('Would you like to upload your deck to netrunnerdb.com?'),
         actions: [
           MaterialButton(
-            child: const Text('Yes'),
-            onPressed: () => Navigator.of(context).pop(SaveLocation.remote),
-          ),
-          MaterialButton(
             child: const Text('No'),
             onPressed: () => Navigator.of(context).pop(SaveLocation.local),
+          ),
+          MaterialButton(
+            child: const Text('Yes'),
+            onPressed: () => Navigator.of(context).pop(SaveLocation.remote),
           ),
         ],
       );
@@ -62,16 +62,16 @@ Future<SaveLocation?> warnOverwriteRemote(BuildContext context) async {
         content: const Text('This deck on netrunnerdb has unsynced changes. Are you sure you want to overwrite?'),
         actions: [
           MaterialButton(
+            child: const Text('Cancel'),
+            onPressed: () => Navigator.of(context).pop(null),
+          ),
+          MaterialButton(
             child: const Text('Overwrite'),
             onPressed: () => Navigator.of(context).pop(SaveLocation.remote),
           ),
           MaterialButton(
             child: const Text('Save offline'),
             onPressed: () => Navigator.of(context).pop(SaveLocation.local),
-          ),
-          MaterialButton(
-            child: const Text('Cancel'),
-            onPressed: () => Navigator.of(context).pop(null),
           ),
         ],
       );
@@ -88,12 +88,12 @@ Future<SaveLocation?> warnNotConnectedUpload(BuildContext context) async {
         content: const Text('This deck has been uploaded to netrunnerdb but you are not currently online.'),
         actions: [
           MaterialButton(
-            child: const Text('Save offline'),
-            onPressed: () => Navigator.of(context).pop(SaveLocation.local),
-          ),
-          MaterialButton(
             child: const Text('Cancel'),
             onPressed: () => Navigator.of(context).pop(null),
+          ),
+          MaterialButton(
+            child: const Text('Save offline'),
+            onPressed: () => Navigator.of(context).pop(SaveLocation.local),
           ),
         ],
       );
@@ -110,12 +110,12 @@ Future<SaveLocation?> warnNotDownloaded(BuildContext context) async {
         content: const Text('This deck failed to download.'),
         actions: [
           MaterialButton(
-            child: const Text('Try again'),
-            onPressed: () => Navigator.of(context).pop(SaveLocation.remote),
-          ),
-          MaterialButton(
             child: const Text('Cancel'),
             onPressed: () => Navigator.of(context).pop(null),
+          ),
+          MaterialButton(
+            child: const Text('Try again'),
+            onPressed: () => Navigator.of(context).pop(SaveLocation.remote),
           ),
         ],
       );
@@ -132,6 +132,10 @@ Future<SaveLocation?> warnNotUploaded(BuildContext context) async {
         content: const Text('This deck failed to upload.'),
         actions: [
           MaterialButton(
+            child: const Text('Cancel'),
+            onPressed: () => Navigator.of(context).pop(null),
+          ),
+          MaterialButton(
             child: const Text('Try again'),
             onPressed: () => Navigator.of(context).pop(SaveLocation.remote),
           ),
@@ -139,17 +143,13 @@ Future<SaveLocation?> warnNotUploaded(BuildContext context) async {
             child: const Text('Save offline'),
             onPressed: () => Navigator.of(context).pop(SaveLocation.local),
           ),
-          MaterialButton(
-            child: const Text('Cancel'),
-            onPressed: () => Navigator.of(context).pop(null),
-          ),
         ],
       );
     },
   );
 }
 
-Future<void> save(BuildContext context, WidgetRef ref) async {
+Future<bool> save(BuildContext context, WidgetRef ref) async {
   final db = ref.read(dbProvider);
   final deckNotifier = ref.read(deckProvider.notifier);
   final deckResult = deckNotifier.value;
@@ -165,7 +165,7 @@ Future<void> save(BuildContext context, WidgetRef ref) async {
     ..showSnackBar(const SnackBar(
       content: Text('Saving deck...'),
     ));
-  deckNotifier.value = await db.transaction(() async {
+  deckNotifier.saved = await db.transaction(() async {
     await db.batch((batch) {
       batch.insert<Deck, DeckData>(db.deck, deck, mode: drift.InsertMode.insertOrReplace);
       batch.deleteWhere<DeckCard, DeckCardData>(db.deckCard, (tbl) => tbl.deckId.equals(deck.id));
@@ -190,14 +190,17 @@ Future<void> save(BuildContext context, WidgetRef ref) async {
     });
     return await db.listDecks2(where: db.deck.id.equals(deck.id)).map((e) => e.first).first;
   });
+  deckNotifier.changed = false;
   ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
     ..showSnackBar(const SnackBar(
       content: Text('Deck saved.'),
     ));
+  
+  return true;
 }
 
-Future<void> upload(BuildContext context, WidgetRef ref) async {
+Future<bool> upload(BuildContext context, WidgetRef ref) async {
   final db = ref.read(dbProvider);
   final deckNotifier = ref.read(deckProvider.notifier);
   final deckResult = deckNotifier.value;
@@ -208,7 +211,7 @@ Future<void> upload(BuildContext context, WidgetRef ref) async {
     if (onlineAuthState == null) {
       final saveLocation = await warnNotUploaded(context);
       if (saveLocation == null) {
-        return;
+        return false;
       } else if (saveLocation == SaveLocation.local) {
         return save(context, ref);
       }
@@ -233,14 +236,14 @@ Future<void> upload(BuildContext context, WidgetRef ref) async {
     if (uploadedDeck == null) {
       final saveLocation = await warnNotUploaded(context);
       if (saveLocation == null) {
-        return;
+        return false;
       } else if (saveLocation == SaveLocation.local) {
         return save(context, ref);
       }
     }
   }
 
-  deckNotifier.value = await db.transaction(() async {
+  deckNotifier.saved = await db.transaction(() async {
     if (deckResult.deck.id != uploadedDeck!.id) {
       await db.deleteDecks(deckIds: [deckResult.deck.id]);
       await db.deleteDeckCards(deckIds: [deckResult.deck.id]);
@@ -264,6 +267,7 @@ Future<void> upload(BuildContext context, WidgetRef ref) async {
     ..showSnackBar(const SnackBar(
       content: Text('Deck uploaded.'),
     ));
+  return true;
 }
 
 Future<void> download(BuildContext context, WidgetRef ref) async {
@@ -301,7 +305,7 @@ Future<void> download(BuildContext context, WidgetRef ref) async {
     }
   }
 
-  deckNotifier.value = await db.transaction(() async {
+  deckNotifier.saved = await db.transaction(() async {
     if (deckResult.deck.id != downloadedDeck!.id) {
       await db.deleteDecks(deckIds: [deckResult.deck.id]);
       await db.deleteDeckCards(deckIds: [deckResult.deck.id]);
@@ -320,6 +324,7 @@ Future<void> download(BuildContext context, WidgetRef ref) async {
     });
     return await db.listDecks2(where: db.deck.id.equals(downloadedDeck.id)).map((e) => e.first).first;
   });
+  deckNotifier.changed = false;
   ScaffoldMessenger.of(context)
     ..hideCurrentSnackBar()
     ..showSnackBar(const SnackBar(
