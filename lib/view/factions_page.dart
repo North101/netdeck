@@ -6,9 +6,10 @@ import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import '/db/database.dart';
 import '/providers.dart';
 import '/util/filter_type.dart';
+import 'async_value_builder.dart';
 import 'header_list_tile.dart';
 
-final factionListProvider = StreamProvider((ref) {
+final filteredFactionListProvider = StreamProvider((ref) {
   final db = ref.watch(dbProvider);
   final where = buildAnd([
     ref.watch(filterSideFilterProvider(const FilterState(values: false))),
@@ -105,12 +106,11 @@ class FilterFactionsPage extends ConsumerWidget {
     final visible = ref.watch(filterFactionsProvider.select((value) => value.visible));
     if (!visible) return const SizedBox.shrink();
 
-    final factionList = ref.watch(factionListProvider);
+    final factionList = ref.watch(filteredFactionListProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Filter Factions')),
-      body: factionList.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stacktrace) => Text(error.toString()),
+      body: AsyncValueBuilder<List<MapEntry<SideData, List<FactionResult>>>>(
+        value: factionList,
         data: (items) {
           return CustomScrollView(
             slivers: [

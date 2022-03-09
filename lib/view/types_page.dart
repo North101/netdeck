@@ -6,9 +6,10 @@ import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import '/db/database.dart';
 import '/providers.dart';
 import '/util/filter_type.dart';
+import 'async_value_builder.dart';
 import 'header_list_tile.dart';
 
-final typeListProvider = StreamProvider((ref) {
+final filteredTypeListProvider = StreamProvider((ref) {
   final db = ref.watch(dbProvider);
   final where = buildAnd([
     ref.watch(filterSideFilterProvider(const FilterState(values: false))),
@@ -124,12 +125,11 @@ class FilterTypesPage extends ConsumerWidget {
     final visible = ref.watch(filterTypesProvider.select((value) => value.visible));
     if (!visible) return const SizedBox.shrink();
 
-    final typeList = ref.watch(typeListProvider);
+    final typeList = ref.watch(filteredTypeListProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Filter Types')),
-      body: typeList.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stacktrace) => Text(error.toString()),
+      body: AsyncValueBuilder<Iterable<MapEntry<SideData?, List<TypeResult>>>>(
+        value: typeList,
         data: (items) => CustomScrollView(
           slivers: items.map((e) => FilterTypeCheckbox(side: e.key, typeList: e.value)).toList(),
         ),

@@ -93,3 +93,23 @@ final collectionByCycleProvider =
     return groupBy<CollectionResult, CycleData>(items, (item) => item.cycle);
   });
 });
+
+final packListProvider = StreamProvider((ref) {
+  final db = ref.watch(dbProvider);
+  return db.listPacks().watch();
+});
+
+final factionListProvider = StreamProvider((ref) {
+  final db = ref.watch(dbProvider);
+  return db.listFactions().watch();
+});
+
+final typeListProvider = StreamProvider((ref) {
+  final db = ref.watch(dbProvider);
+  return db.listTypes().watch();
+});
+
+final distinctTagListProvider = StreamProvider((ref) {
+  final db = ref.watch(dbProvider);
+  return db.listDistinctDeckTags().watch();
+});

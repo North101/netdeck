@@ -6,9 +6,10 @@ import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import '/db/database.dart' hide Card;
 import '/providers.dart';
 import '/util/filter_type.dart';
+import 'async_value_builder.dart';
 import 'header_list_tile.dart';
 
-final packListProvider = StreamProvider((ref) {
+final filteredPackListProvider = StreamProvider((ref) {
   final db = ref.watch(dbProvider);
   final where = ref.watch(filterPackFilterProvider(const TypeFilterState(values: false)));
   return db.listPacks(where: where).watch().map((items) {
@@ -113,12 +114,11 @@ class FilterPacksPage extends ConsumerWidget {
     final visible = ref.watch(filterPacksProvider.select((value) => value.visible));
     if (!visible) return const SizedBox.shrink();
 
-    final packList = ref.watch(packListProvider);
+    final packList = ref.watch(filteredPackListProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Filter Packs')),
-      body: packList.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stacktrace) => Text(error.toString()),
+      body: AsyncValueBuilder<Iterable<MapEntry<CycleData, List<PackResult>>>>(
+        value: packList,
         data: (items) {
           return CustomScrollView(
             slivers: <Widget>[

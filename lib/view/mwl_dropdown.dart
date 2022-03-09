@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/db/database.dart';
 import '/providers.dart';
+import 'async_value_builder.dart';
 
 class MwlDropdown extends ConsumerWidget {
   const MwlDropdown({Key? key, required this.onChanged}) : super(key: key);
@@ -28,9 +29,8 @@ class MwlDropdown extends ConsumerWidget {
     final format = ref.watch(formatProvider);
     final mwl = ref.watch(mwlProvider);
     final mwlList = ref.watch(mwlListProvider(format));
-    return mwlList.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stacktrace) => Text(error.toString()),
+    return AsyncValueBuilder<List<MwlData>>(
+      value: mwlList,
       data: (items) {
         items = [
           if (mwl != null && !items.contains(mwl)) mwl,

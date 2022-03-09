@@ -5,6 +5,7 @@ import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import '/db/database.dart';
 import '/providers.dart';
 import '/util/header_list.dart';
+import '/view/async_value_builder.dart';
 import '/view/filter_chips.dart';
 import '/view/header_list_tile.dart';
 
@@ -21,9 +22,9 @@ class CardListFilters extends ConsumerWidget {
     }
 
     final countStuff = ref.watch(countStuffProvider);
-    return countStuff.when(
+    return AsyncValueBuilder<CountStuffResult>(
+      value: countStuff,
       loading: () => const Center(child: LinearProgressIndicator()),
-      error: (error, stacktrace) => Text(error.toString()),
       data: (data) {
         return SizedBox(
           height: 40,
@@ -80,9 +81,8 @@ class CardListList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final groupedCardList = ref.watch(groupedCardListProvider);
-    return groupedCardList.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stacktrace) => Center(child: Text(error.toString())),
+    return AsyncValueBuilder<HeaderList<CardResult>>(
+      value: groupedCardList,
       data: (data) {
         if (data.isEmpty) {
           return const Center(child: Text('No Cards Found'));

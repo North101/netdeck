@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:netrunner_deckbuilder/view/async_value_builder.dart';
 
 import '/providers.dart';
 import '/util/assets.gen.dart';
@@ -14,9 +15,9 @@ class LoadingPage extends ConsumerWidget {
     if (lastChecked != null) return const MainPage();
 
     final data = ref.watch(nrdbPublicApiProvider);
-    return data.when(
+    return AsyncValueBuilder<DateTime>(
+      value: data,
       loading: () => const LoadingWidget(),
-      error: (error, stacktrace) => Center(child: Text(error.toString())),
       data: (_) => const MainPage(),
     );
   }

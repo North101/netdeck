@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift_dev/api/migrations.dart';
+import 'package:netrunner_deckbuilder/view/async_value_builder.dart';
 
 import '/db/database.dart';
 
@@ -58,9 +59,8 @@ class DebugPage extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Debug'),
       ),
-      body: dbState.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stackTrace) => Text(error.toString()),
+      body: AsyncValueBuilder<DatabaseResult>(
+        value: dbState,
         data: (state) => Stack(
           children: [
             SizedBox.expand(

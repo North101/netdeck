@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/db/database.dart';
 import '/providers.dart';
+import 'async_value_builder.dart';
 
 class RotationDropdown extends ConsumerWidget {
   const RotationDropdown({Key? key, required this.onChanged}) : super(key: key);
@@ -29,9 +30,8 @@ class RotationDropdown extends ConsumerWidget {
     final format = ref.watch(formatProvider);
     final rotation = ref.watch(rotationProvider);
     final rotationList = ref.watch(rotationListProvider(format));
-    return rotationList.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stacktrace) => Text(error.toString()),
+    return AsyncValueBuilder<List<RotationData>>(
+      value: rotationList,
       data: (items) => DropdownButtonFormField<RotationData>(
         isExpanded: true,
         value: items.firstWhereOrNull((e) => e == rotation),

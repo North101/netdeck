@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/providers.dart';
-import 'stream_builder_wrapper.dart';
+import 'async_value_builder.dart';
 
 class FilterTagsPage extends ConsumerWidget {
   const FilterTagsPage({Key? key}) : super(key: key);
@@ -20,14 +20,12 @@ class FilterTagsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final db = ref.watch(dbProvider);
-    final tagList = db.listDistinctDeckTags().watch();
+    final tagList = ref.watch(distinctTagListProvider);
     final tags = ref.watch(filterTagsProvider.state);
     return Scaffold(
       appBar: AppBar(title: const Text('Filter Tags')),
-      body: tagList.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stacktrace) => Text(error.toString()),
+      body: AsyncValueBuilder<List<String>>(
+        value: tagList,
         data: (items) {
           return ListView(
             children: [

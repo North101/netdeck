@@ -6,12 +6,12 @@ import 'package:query/query.dart';
 import '/db/database.dart';
 import '/providers.dart';
 import '/util/filter_type.dart';
+import 'async_value_builder.dart';
 import 'factions_page.dart';
 import 'format_dropdown.dart';
 import 'mwl_dropdown.dart';
 import 'pack_page.dart';
 import 'rotation_dropdown.dart';
-import 'stream_builder_wrapper.dart';
 import 'types_page.dart';
 
 class CardFilterPage extends ConsumerWidget {
@@ -70,9 +70,8 @@ class CardFilterCollection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final filterCollection = ref.watch(filterCollectionProvider.state);
     final collection = ref.watch(collectionProvider(false));
-    return collection.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stracktrace) => Text(error.toString()),
+    return AsyncValueBuilder<List<CollectionResult>>(
+      value: collection,
       data: (data) => CheckboxListTile(
         value: filterCollection.state,
         title: const Text('My Collection'),
@@ -162,14 +161,12 @@ class CardFilterPacks extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final db = ref.watch(dbProvider);
     final packs = ref.watch(filterPacksProvider.state);
     if (!packs.state.visible) return const SizedBox.shrink();
 
-    final packList = db.listPacks().watch();
-    return packList.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stacktrace) => Text(error.toString()),
+    final packList = ref.watch(packListProvider);
+    return AsyncValueBuilder<List<PackResult>>(
+      value: packList,
       data: (items) => ListTile(
         title: const Text('Packs'),
         subtitle: packs.state.isNotEmpty
@@ -192,15 +189,13 @@ class CardFilterFactions extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final db = ref.watch(dbProvider);
     final sides = ref.watch(filterSidesProvider.state);
     final factions = ref.watch(filterFactionsProvider.state);
     if (!factions.state.visible) return const SizedBox.shrink();
 
-    final factionList = db.listFactions().watch();
-    return factionList.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stacktrace) => Text(error.toString()),
+    final factionList = ref.watch(factionListProvider);
+    return AsyncValueBuilder<List<FactionResult>>(
+      value: factionList,
       data: (items) => ListTile(
         title: const Text('Factions'),
         subtitle: factions.state.isNotEmpty
@@ -227,15 +222,13 @@ class CardFilterTypes extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final db = ref.watch(dbProvider);
     final sides = ref.watch(filterSidesProvider.state);
     final types = ref.watch(filterTypesProvider.state);
     if (!types.state.visible) return const SizedBox.shrink();
 
-    final typeList = db.listTypes().watch();
-    return typeList.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stacktrace) => Text(error.toString()),
+    final typeList = ref.watch(typeListProvider);
+    return AsyncValueBuilder<List<TypeResult>>(
+      value: typeList,
       data: (items) => ListTile(
         title: const Text('Types'),
         subtitle: types.state.isNotEmpty

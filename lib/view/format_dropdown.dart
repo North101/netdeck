@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/db/database.dart';
 import '/providers.dart';
+import 'async_value_builder.dart';
 
 class FormatDropdown extends ConsumerWidget {
   const FormatDropdown({Key? key, required this.onChanged}) : super(key: key);
@@ -26,9 +27,8 @@ class FormatDropdown extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final format = ref.watch(formatProvider);
     final formatList = ref.watch(formatListProvider);
-    return formatList.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stacktrace) => Text(error.toString()),
+    return AsyncValueBuilder<List<FormatResult>>(
+      value: formatList,
       data: (items) => DropdownButtonFormField<FormatResult>(
         isExpanded: true,
         value: items.firstWhereOrNull((e) => e.format == format),

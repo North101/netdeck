@@ -46,8 +46,9 @@ final groupedCardListProvider = StreamProvider<HeaderList<CardResult>>((ref) {
   );
 }, dependencies: [dbProvider, cardListProvider.stream, cardListDeckValidatorProvider]);
 
-final cardItemBuilderProvider = Provider<Widget Function(BuildContext context, WidgetRef ref, int index, CardResult card)>(
-    (ref) => throw UnimplementedError());
+final cardItemBuilderProvider =
+    Provider<Widget Function(BuildContext context, WidgetRef ref, int index, CardResult card)>(
+        (ref) => throw UnimplementedError());
 
 final mwlCardMapProvider = StreamProvider((ref) {
   final db = ref.watch(dbProvider);

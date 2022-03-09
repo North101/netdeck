@@ -10,6 +10,7 @@ import '/db/database.dart' hide Card;
 import '/providers.dart';
 import '/util/extensions.dart';
 import '/util/header_list.dart';
+import '/view/async_value_builder.dart';
 import '/view/card_gallery_page.dart';
 import '/view/card_tile.dart';
 import '/view/fab_spacer.dart';
@@ -27,9 +28,8 @@ class DeckBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final groupedCardList = ref.watch(groupedCardListProvider);
-    return groupedCardList.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stacktrace) => Text(error.toString()),
+    return AsyncValueBuilder<HeaderList<CardResult>>(
+      value: groupedCardList,
       data: (groupedCardList) => LayoutBuilder(
         builder: (context, constraints) => CustomScrollView(slivers: [
           DeckAppBar(constraints: constraints),
@@ -452,7 +452,9 @@ class DeckErrors extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final deckValidator = ref.watch(deckValidatorProvider.select((value) => value.whenOrNull(data: (data) => data)));
+    final deckValidator = ref.watch(deckValidatorProvider.select((value) {
+      return value.whenOrNull(data: (data) => data);
+    }));
     if (deckValidator == null) return const SizedBox.shrink();
 
     final allErrors = [

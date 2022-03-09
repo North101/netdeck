@@ -5,6 +5,7 @@ import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import '/db/database.dart';
 import '/providers.dart';
 import '/util/header_list.dart';
+import '/view/async_value_builder.dart';
 import '/view/card_gallery_page.dart';
 import '/view/card_tile.dart';
 import '/view/header_list_tile.dart';
@@ -15,9 +16,8 @@ class DeckCompareBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final compareCardList = ref.watch(compareGroupedCardListProvider);
-    return compareCardList.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stackTrace) => Center(child: Text(error.toString())),
+    return AsyncValueBuilder<HeaderList<MapEntry<CardResult, int>>>(
+      value: compareCardList,
       data: (compareCardList) => CustomScrollView(
         slivers: [
           ...compareCardList.map((headerList) => DeckCardHeader(compareCardList.sumUntilItem(headerList), headerList)),

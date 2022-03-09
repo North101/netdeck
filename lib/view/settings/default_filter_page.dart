@@ -5,6 +5,7 @@ import 'package:kotlin_flavor/scope_functions.dart';
 
 import '/db/database.dart';
 import '/providers.dart';
+import '/view/async_value_builder.dart';
 import '/view/format_dropdown.dart';
 import '/view/mwl_dropdown.dart';
 import '/view/rotation_dropdown.dart';
@@ -34,9 +35,8 @@ class CardFilterCollection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingProvider);
-    return settings.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stracktrace) => Text(error.toString()),
+    return AsyncValueBuilder<SettingResult>(
+      value: settings,
       data: (data) {
         final collection = ref.watch(collectionProvider(false));
         return CheckboxListTile(
@@ -80,9 +80,8 @@ class CardFilterFormat extends ConsumerWidget {
     final settings = ref.watch(settingProvider);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: settings.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stacktrace) => Text(error.toString()),
+      child: AsyncValueBuilder<SettingResult>(
+        value: settings,
         data: (settings) => FormatDropdown.withOverrides(
           format: settings.filterFormat,
           onChanged: (value) => setFormat(ref, settings, value),
@@ -107,9 +106,8 @@ class CardFilterRotation extends ConsumerWidget {
     final settings = ref.watch(settingProvider);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: settings.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stacktrace) => Text(error.toString()),
+      child: AsyncValueBuilder<SettingResult>(
+        value: settings,
         data: (settings) => RotationDropdown.withOverrides(
           format: settings.filterFormat,
           rotation: settings.filterRotation,
@@ -135,9 +133,8 @@ class CardFilterMwl extends ConsumerWidget {
     final settings = ref.watch(settingProvider);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: settings.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stacktrace) => Text(error.toString()),
+      child: AsyncValueBuilder<SettingResult>(
+        value: settings,
         data: (settings) => MwlDropdown.withOverrides(
           format: settings.filterFormat,
           mwl: settings.filterMwl,

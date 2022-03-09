@@ -5,6 +5,7 @@ import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 
 import '/db/database.dart';
 import '/providers.dart';
+import '/view/async_value_builder.dart';
 import '/view/header_list_tile.dart';
 
 class CardFilterCycleCheckbox extends ConsumerWidget {
@@ -96,9 +97,8 @@ class CollectionSettingsPage extends ConsumerWidget {
     final collectionByCycle = ref.watch(collectionByCycleProvider(false));
     return Scaffold(
       appBar: AppBar(title: const Text('My Collection')),
-      body: collectionByCycle.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stacktrace) => Text(error.toString()),
+      body: AsyncValueBuilder<Map<CycleData, List<CollectionResult>>>(
+        value: collectionByCycle,
         data: (items) {
           return CustomScrollView(
             slivers: [

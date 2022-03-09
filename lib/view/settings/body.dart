@@ -5,10 +5,11 @@ import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:kotlin_flavor/scope_functions.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
+import '/db/database.dart';
 import '/providers.dart';
 import '/util/nrdb/private.dart';
+import '/view/async_value_builder.dart';
 import '/view/header_list_tile.dart';
-import '/view/stream_builder_wrapper.dart';
 import 'collection_page.dart';
 import 'default_filter_page.dart';
 
@@ -51,9 +52,8 @@ class SettingsCollection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final collection = ref.watch(collectionProvider(false));
-    return collection.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stracktrace) => Text(error.toString()),
+    return AsyncValueBuilder<List<CollectionResult>>(
+      value: collection,
       data: (data) => ListTile(
         title: const Text('My Collection'),
         subtitle: Text('${data.where((item) => item.inCollection).length} / ${data.length}'),
@@ -72,11 +72,9 @@ class SettingsDefaultCardFilters extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final db = ref.watch(dbProvider);
-    final settings = db.getSettings().watchSingle();
-    return settings.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stacktrace) => Text(error.toString()),
+    final settings = ref.watch(settingProvider);
+    return AsyncValueBuilder<SettingResult>(
+      value: settings,
       data: (data) => ListTile(
         title: const Text('Default Card Filter'),
         subtitle: [
@@ -166,9 +164,9 @@ class SettingsNrdbUpdateDatabase extends ConsumerWidget {
     final nrdbApi = ref.watch(nrdbPublicApiProvider);
     return ListTile(
       title: const Text('Card Data'),
-      subtitle: nrdbApi.when(
+      subtitle: AsyncValueBuilder<DateTime>(
+        value: nrdbApi,
         loading: () => const Text('Loading...'),
-        error: (error, stacktrace) => Text(error.toString()),
         data: (data) => Text('Last Checked: ${timeago.format(data)}'),
       ),
       trailing: Container(

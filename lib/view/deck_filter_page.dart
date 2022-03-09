@@ -7,12 +7,12 @@ import '/db/database.dart';
 import '/providers.dart';
 import '/util/filter_type.dart';
 import '/view/tags_page.dart';
+import 'async_value_builder.dart';
 import 'factions_page.dart';
 import 'format_dropdown.dart';
 import 'mwl_dropdown.dart';
 import 'pack_page.dart';
 import 'rotation_dropdown.dart';
-import 'stream_builder_wrapper.dart';
 import 'types_page.dart';
 
 class DeckFilterPage extends ConsumerWidget {
@@ -141,14 +141,12 @@ class DeckFilterPacks extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final db = ref.watch(dbProvider);
     final packs = ref.watch(filterPacksProvider.state);
     if (!packs.state.visible) return const SizedBox.shrink();
   
-    final packList = db.listPacks().watch();
-    return packList.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stacktrace) => Text(error.toString()),
+    final packList = ref.watch(packListProvider);
+    return AsyncValueBuilder<List<PackResult>>(
+      value: packList,
       data: (items) => ListTile(
         title: const Text('Packs'),
         subtitle: packs.state.isNotEmpty
@@ -171,15 +169,13 @@ class DeckFilterFactions extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final db = ref.watch(dbProvider);
     final sides = ref.watch(filterSidesProvider.state);
     final factions = ref.watch(filterFactionsProvider.state);
     if (!factions.state.visible) return const SizedBox.shrink();
 
-    final factionList = db.listFactions().watch();
-    return factionList.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stacktrace) => Text(error.toString()),
+    final factionList = ref.watch(factionListProvider);
+    return AsyncValueBuilder<List<FactionResult>>(
+      value: factionList,
       data: (items) => ListTile(
         title: const Text('Factions'),
         subtitle: factions.state.isNotEmpty
@@ -210,11 +206,9 @@ class DeckFilterTypes extends ConsumerWidget {
     final types = ref.watch(filterTypesProvider.state);
     if (!types.state.visible) return const SizedBox.shrink();
 
-    final db = ref.watch(dbProvider);
-    final typeList = db.listTypes().watch();
-    return typeList.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stacktrace) => Text(error.toString()),
+    final typeList = ref.watch(typeListProvider);
+    return AsyncValueBuilder<List<TypeResult>>(
+      value: typeList,
       data: (items) => ListTile(
         title: const Text('Types'),
         subtitle: types.state.isNotEmpty
@@ -239,11 +233,9 @@ class DeckFilterTags extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tags = ref.watch(filterTagsProvider.state);
-    final db = ref.watch(dbProvider);
-    final tagList = db.listDistinctDeckTags().watch();
-    return tagList.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
-      error: (error, stacktrace) => Text(error.toString()),
+    final tagList = ref.watch(distinctTagListProvider);
+    return AsyncValueBuilder<List<String>>(
+      value: tagList,
       data: (items) => ListTile(
         title: const Text('Tags'),
         subtitle: tags.state.isNotEmpty
