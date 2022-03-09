@@ -739,12 +739,10 @@ packages:
   query:
     dependency: "direct main"
     description:
-      path: "."
-      ref: HEAD
-      resolved-ref: "02ad1c43fdaf12dfdf1013e510c148db11a94c99"
-      url: "https://github.com/North101/query.git"
-    source: git
-    version: "1.5.0-dev"
+      name: query
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.5.0"
   recase:
     dependency: transitive
     description:
