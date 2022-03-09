@@ -1,3 +1,4 @@
+import 'package:about/about.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
@@ -218,6 +219,29 @@ class SettingsNrdb extends ConsumerWidget {
   }
 }
 
+class AboutTile extends StatelessWidget {
+  const AboutTile({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: const Text('About'),
+      onTap: () => showAboutPage(
+        context: context,
+        values: {
+          'version': '1.0',
+          'year': DateTime.now().year.toString(),
+        },
+        children: const <Widget>[
+          LicensesPageListTile(
+            icon: Icon(Icons.favorite),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class SettingsApp extends ConsumerWidget {
   const SettingsApp({Key? key}) : super(key: key);
 
@@ -235,7 +259,7 @@ class SettingsApp extends ConsumerWidget {
         delegate: SliverChildListDelegate.fixed([
           //_buildBackup(context),
           //_buildRestore(context),
-          //_buildAbout(context),
+          AboutTile(),
         ]),
       ),
     );

@@ -12,6 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
 
+  about: any
   cached_network_image: any
   chips_input: any
   connectivity_plus: any
@@ -64,7 +65,9 @@ dependency_overrides:
       url: https://github.com/simolus3/drift.git
       ref: develop
       path: drift_dev
-  petitparser: 4.1.0
+  query:
+    git:
+      url: https://github.com/North101/query.git
 
 flutter:
   uses-material-design: true

@@ -8,6 +8,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "31.0.0"
+  about:
+    dependency: "direct main"
+    description:
+      name: about
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.1"
   analyzer:
     dependency: transitive
     description:
@@ -272,7 +279,7 @@ packages:
     description:
       path: drift
       ref: develop
-      resolved-ref: "4ddbed5ccad989386647e82b04a1254f68df3a53"
+      resolved-ref: "5def49b1fa871706b436d4afcba4d1e18b0c9249"
       url: "https://github.com/simolus3/drift.git"
     source: git
     version: "1.5.0-dev"
@@ -281,7 +288,7 @@ packages:
     description:
       path: drift_dev
       ref: develop
-      resolved-ref: "4ddbed5ccad989386647e82b04a1254f68df3a53"
+      resolved-ref: "5def49b1fa871706b436d4afcba4d1e18b0c9249"
       url: "https://github.com/simolus3/drift.git"
     source: git
     version: "1.5.0-dev"
@@ -366,14 +373,14 @@ packages:
       name: flutter_gen_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.1.5"
+    version: "4.1.6"
   flutter_gen_runner:
     dependency: "direct dev"
     description:
       name: flutter_gen_runner
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.1.5"
+    version: "4.1.6"
   flutter_launcher_icons:
     dependency: "direct dev"
     description:
@@ -388,6 +395,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.4"
+  flutter_markdown:
+    dependency: transitive
+    description:
+      name: flutter_markdown
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.6.9"
   flutter_riverpod:
     dependency: "direct main"
     description:
@@ -554,6 +568,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.2"
+  markdown:
+    dependency: transitive
+    description:
+      name: markdown
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.0.1"
   matcher:
     dependency: transitive
     description:
@@ -667,12 +688,12 @@ packages:
     source: hosted
     version: "1.11.1"
   petitparser:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       name: petitparser
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.1.0"
+    version: "4.4.0"
   platform:
     dependency: transitive
     description:
@@ -707,7 +728,7 @@ packages:
       name: pub_semver
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.1.0"
+    version: "2.1.1"
   pubspec_parse:
     dependency: transitive
     description:
@@ -718,10 +739,12 @@ packages:
   query:
     dependency: "direct main"
     description:
-      name: query
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.4.0"
+      path: "."
+      ref: HEAD
+      resolved-ref: "02ad1c43fdaf12dfdf1013e510c148db11a94c99"
+      url: "https://github.com/North101/query.git"
+    source: git
+    version: "1.5.0-dev"
   recase:
     dependency: transitive
     description:
@@ -757,6 +780,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
+  simple_mustache:
+    dependency: transitive
+    description:
+      name: simple_mustache
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -809,7 +839,7 @@ packages:
     description:
       path: sqlparser
       ref: develop
-      resolved-ref: "4ddbed5ccad989386647e82b04a1254f68df3a53"
+      resolved-ref: "5def49b1fa871706b436d4afcba4d1e18b0c9249"
       url: "https://github.com/simolus3/drift.git"
     source: git
     version: "0.21.0-dev"
