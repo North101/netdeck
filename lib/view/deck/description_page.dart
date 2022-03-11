@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '/db/database.dart';
 import '/providers.dart';
 import '/view/search_theme.dart';
 
@@ -47,7 +48,7 @@ class DeckDescriptionPage extends ConsumerWidget {
   const DeckDescriptionPage({Key? key}) : super(key: key);
 
   static withOverrides({
-    required DeckNotifier deck,
+    required DeckNotifier<DeckResult2> deck,
   }) {
     return ProviderScope(
       overrides: [

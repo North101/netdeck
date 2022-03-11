@@ -4,7 +4,6 @@ import 'package:query/query.dart';
 
 import '/db/database.dart';
 import '/providers.dart';
-import '/util/deck_validator.dart';
 import '/util/filter_type.dart';
 import 'appbar.dart';
 import 'body.dart';
@@ -31,7 +30,7 @@ class CardListPage extends ConsumerWidget {
     StateController<FilterType<String>>? filterSides,
     StateController<FilterType<String>>? filterFactions,
     StateController<FilterType<String>>? filterTypes,
-    DeckValidator? deckValidator,
+    DeckNotifier<DeckResult2?>? deckNotifier,
     required Widget Function(BuildContext context, WidgetRef ref, int index, CardResult card) itemBuilder,
     Key? key,
   }) {
@@ -47,7 +46,7 @@ class CardListPage extends ConsumerWidget {
         filterSidesProvider.overrideWithValue(filterSides ?? StateController(FilterType())),
         filterFactionsProvider.overrideWithValue(filterFactions ?? StateController(FilterType())),
         filterTypesProvider.overrideWithValue(filterTypes ?? StateController(FilterType())),
-        cardListDeckValidatorProvider.overrideWithValue(deckValidator),
+        cardListDeckProvider.overrideWithValue(deckNotifier ?? DeckNotifier(null)),
         cardItemBuilderProvider.overrideWithValue(itemBuilder),
       ],
       child: CardListPage(

@@ -50,6 +50,7 @@ class DeckFloatingActionBar extends ConsumerWidget {
           return CardGalleryPage.withOverrides(
             groupedCardList: groupedCardList,
             currentIndex: index,
+            deckNotifier: deckNotifier,
           );
         }));
       },
@@ -60,10 +61,9 @@ class DeckFloatingActionBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return FloatingActionButton(
       child: const Icon(Icons.add),
-      onPressed: () async {
+      onPressed: () {
         final deckNotifier = ref.read(deckProvider.notifier);
         final deck = deckNotifier.value;
-        final deckValidator = await ref.read(deckValidatorProvider.future);
 
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
           return CardListPage.withOverrides(
@@ -78,7 +78,7 @@ class DeckFloatingActionBar extends ConsumerWidget {
             filterPacks: ref.read(filterPacksProvider.state),
             filterSides: ref.read(filterSidesProvider.state),
             filterTypes: ref.read(filterTypesProvider.state),
-            deckValidator: deckValidator,
+            deckNotifier: deckNotifier,
             itemBuilder: (context, ref, index, card) => cardItemBuilder(context, ref, index, card, deckNotifier),
           );
         }));

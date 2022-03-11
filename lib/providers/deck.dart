@@ -9,21 +9,21 @@ import '/util/extensions.dart';
 import '/util/header_list.dart';
 import 'db.dart';
 
-final deckProvider = StateNotifierProvider<DeckNotifier, DeckResult2>((ref) => throw UnimplementedError());
+final deckProvider = StateNotifierProvider<DeckNotifier<DeckResult2>, DeckResult2>((ref) => throw UnimplementedError());
 
-class DeckNotifier extends StateNotifier<DeckResult2> {
-  DeckNotifier(DeckResult2 state) : super(state);
+class DeckNotifier<T extends DeckResult2?> extends StateNotifier<T> {
+  DeckNotifier(T state) : super(state);
 
   bool changed = false;
 
-  DeckResult2 get value => state;
+  T get value => state;
 
-  set unsaved(DeckResult2 value) {
+  set unsaved(T value) {
     changed = true;
     state = value;
   }
 
-  set saved(DeckResult2 value) {
+  set saved(T value) {
     changed = false;
     state = value;
   }
@@ -39,33 +39,29 @@ class DeckNotifier extends StateNotifier<DeckResult2> {
   }
 
   void setCard(CardResult key, int value) {
-    unsaved = state.copyWith(cards: {
-      for (final entry in state.cards.entries.where((e) => e.key != key)) entry.key: entry.value,
+    unsaved = state?.copyWith(cards: {
+      for (final entry in state!.cards.entries.where((e) => e.key != key)) entry.key: entry.value,
       if (value > 0) key: value,
-    });
+    }) as T;
   }
 
-  int getCard(CardResult key) => state.cards[key] ?? 0;
+  int getCard(CardResult key) => state?.cards[key] ?? 0;
 }
 
 final groupedDeckCardListProvider = StreamProvider((ref) {
   final db = ref.watch(dbProvider);
   final settings = db.getSettings().watchSingle();
-  final deck = ref.watch(deckProvider);
   final deckCardList = ref.watch(deckProvider.select((value) => value.cards));
   return settings.map((settings) {
     final groupBy = settings.settings.deckCardGroup;
     final sortBy = settings.settings.deckCardSort;
     return HeaderList([
-      HeaderItems(deck.type.name, [deck.toCard()]),
       ...groupBy(sortBy(deckCardList.keys)),
     ]);
   });
 });
 
-final deckValidatorProvider = StreamProvider((ref) {
-  final deck = ref.watch(deckProvider);
-
+final deckValidatorProvider = StreamProvider.family<DeckValidator, DeckResult2>((ref, deck) {
   final db = ref.watch(dbProvider);
   final settingsStream = db.getSettings().watchSingle();
   final formatCardSetStream = db
@@ -98,6 +94,6 @@ final deckValidatorProvider = StreamProvider((ref) {
       );
     },
   );
-}, dependencies: [dbProvider, deckProvider, deckProvider]);
+}, dependencies: [dbProvider, deckProvider]);
 
 final compareDeckListProvider = StateProvider<Set<DeckResult2>>((ref) => {});

@@ -47,7 +47,7 @@ class DeckBody extends ConsumerWidget {
               DeckMwlDropdown(),
             ]),
           ),
-          ...groupedCardList.skip(1).map((e) => DeckCardHeader(groupedCardList.sumUntilItem(e), e)),
+          ...groupedCardList.map((e) => DeckCardHeader(groupedCardList.sumUntilItem(e), e)),
           const SliverList(delegate: SliverChildListDelegate.fixed([FloatingActionButtonSpacer()])),
         ]),
       ),
@@ -181,14 +181,13 @@ class DeckIdentity extends ConsumerWidget {
     final deck = ref.watch(deckProvider);
     return CardTile(
       deck.toCard(),
-      key: ValueKey(deck),
+      key: ValueKey(deck.identity),
       logo: false,
       body: true,
       onTap: () async {
-        final groupedCardList = await ref.read(groupedCardListProvider.future);
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
           return CardGalleryPage.withOverrides(
-            groupedCardList: groupedCardList,
+            groupedCardList: HeaderList([HeaderItems(deck.type.name, [deck.toCard()])]),
             currentIndex: 0,
           );
         }));
@@ -209,7 +208,7 @@ class DeckCardHeader extends ConsumerWidget {
     final deck = ref.watch(deckProvider);
     final deckCardList = ref.watch(deckProvider.select((value) => value.cards));
     final count = deckCardList[card] ?? 0;
-    final deckValidator = ref.watch(deckValidatorProvider.select((value) {
+    final deckValidator = ref.watch(deckValidatorProvider(deck).select((value) {
       return value.whenOrNull(data: (data) => data);
     }));
     final cardError = deckValidator?.cardErrorList[card];
@@ -232,7 +231,7 @@ class DeckCardHeader extends ConsumerWidget {
                 deck.decCard(card);
               },
             ),
-          if (count > 0) Text('${deckCardList[card] ?? 0}'),
+          if (count > 0) Text('$count'),
           IconButton(
             constraints: const BoxConstraints(),
             visualDensity: VisualDensity.compact,
@@ -246,10 +245,12 @@ class DeckCardHeader extends ConsumerWidget {
       ),
       onTap: () async {
         final groupedCardList = await ref.read(groupedCardListProvider.future);
+        final deckNotifier = ref.read(deckProvider.notifier);
         Navigator.of(context).push(MaterialPageRoute(builder: (context) {
           return CardGalleryPage.withOverrides(
             groupedCardList: groupedCardList,
             currentIndex: index,
+            deckNotifier: deckNotifier,
           );
         }));
       },
@@ -284,7 +285,8 @@ class DeckInfluenceStat extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final deckValidator = ref.watch(deckValidatorProvider);
+    final deck = ref.watch(deckProvider);
+    final deckValidator = ref.watch(deckValidatorProvider(deck));
     return deckValidator.when(
       loading: () => const SizedBox.shrink(),
       error: (error, strackTrace) => const SizedBox.shrink(),
@@ -320,7 +322,8 @@ class DeckAgendaStat extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final deckValidator = ref.watch(deckValidatorProvider);
+    final deck = ref.watch(deckProvider);
+    final deckValidator = ref.watch(deckValidatorProvider(deck));
     return deckValidator.when(
       loading: () => const SizedBox.shrink(),
       error: (error, strackTrace) => const SizedBox.shrink(),
@@ -357,7 +360,8 @@ class DeckSizeStat extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final deckValidator = ref.watch(deckValidatorProvider);
+    final deck = ref.watch(deckProvider);
+    final deckValidator = ref.watch(deckValidatorProvider(deck));
     return deckValidator.when(
       loading: () => const SizedBox.shrink(),
       error: (error, strackTrace) => const SizedBox.shrink(),
@@ -393,7 +397,8 @@ class DeckMwlPointsStat extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final deckValidator = ref.watch(deckValidatorProvider);
+    final deck = ref.watch(deckProvider);
+    final deckValidator = ref.watch(deckValidatorProvider(deck));
     return deckValidator.when(
       loading: () => const SizedBox.shrink(),
       error: (error, strackTrace) => const SizedBox.shrink(),
@@ -452,7 +457,8 @@ class DeckErrors extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final deckValidator = ref.watch(deckValidatorProvider.select((value) {
+    final deck = ref.watch(deckProvider);
+    final deckValidator = ref.watch(deckValidatorProvider(deck).select((value) {
       return value.whenOrNull(data: (data) => data);
     }));
     if (deckValidator == null) return const SizedBox.shrink();

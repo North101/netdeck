@@ -9,29 +9,39 @@ import '/util/extensions.dart';
 import '/util/filter_type.dart';
 import '/util/header_list.dart';
 import 'db.dart';
+import 'deck.dart';
 import 'filters.dart';
+
+final cardListDeckProvider =
+    StateNotifierProvider<DeckNotifier<DeckResult2?>, DeckResult2?>((ref) => DeckNotifier(null));
+
+final cardListDeckValidatorProvider = StreamProvider<DeckValidator?>((ref) {
+  final deck = ref.watch(cardListDeckProvider);
+  if (deck == null) return Stream.value(null);
+
+  final deckValidator = ref.watch(deckValidatorProvider(deck).stream);
+  return deckValidator;
+}, dependencies: [dbProvider, cardListDeckProvider, deckValidatorProvider]);
 
 final cardListProvider = StreamProvider<List<CardResult>>((ref) {
   final db = ref.watch(dbProvider);
   final cardFilter = ref.watch(cardFilterProvider(const CardFilterState()));
   final mwl = ref.watch(filterMwlProvider);
-  final deckValidator = ref.watch(cardListDeckValidatorProvider);
-  return db
+  final deckValidatorStream = ref.watch(cardListDeckValidatorProvider.stream);
+  return deckValidatorStream.flatMap((deckValidator) => db
       .listCards(
         mwlCode: mwl?.code,
         where: cardFilter & (deckValidator?.filter(db) ?? trueExpression),
       )
-      .watch();
-}, dependencies: [dbProvider, cardFilterProvider, filterMwlProvider, cardListDeckValidatorProvider]);
-
-final cardListDeckValidatorProvider = Provider<DeckValidator?>((ref) => null);
+      .watch());
+}, dependencies: [dbProvider, cardFilterProvider, filterMwlProvider, cardListDeckValidatorProvider.stream]);
 
 final groupedCardListProvider = StreamProvider<HeaderList<CardResult>>((ref) {
   final db = ref.watch(dbProvider);
   final settingsStream = db.getSettings().watchSingle();
   final cardListStream = ref.watch(cardListProvider.stream);
-  final deckValidator = ref.watch(cardListDeckValidatorProvider);
-  final deckCardList = deckValidator?.cardList.keys.toSet() ?? const {};
+  final deck = ref.watch(cardListDeckProvider);
+  final deckCardList = deck?.cards.keys.toSet() ?? const {};
   return Rx.combineLatest2<SettingResult, List<CardResult>, HeaderList<CardResult>>(
     settingsStream,
     cardListStream,
@@ -44,7 +54,7 @@ final groupedCardListProvider = StreamProvider<HeaderList<CardResult>>((ref) {
       ]);
     },
   );
-}, dependencies: [dbProvider, cardListProvider.stream, cardListDeckValidatorProvider]);
+}, dependencies: [dbProvider, cardListProvider.stream, cardListDeckProvider]);
 
 final cardItemBuilderProvider =
     Provider<Widget Function(BuildContext context, WidgetRef ref, int index, CardResult card)>(

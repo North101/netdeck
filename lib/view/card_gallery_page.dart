@@ -13,11 +13,13 @@ class CardGalleryPage extends ConsumerWidget {
   static withOverrides({
     required HeaderList<CardResult> groupedCardList,
     required int? currentIndex,
+    DeckNotifier<DeckResult2?>? deckNotifier,
   }) {
     return ProviderScope(
       overrides: [
         cardGalleryGroupedCardListProvider.overrideWithValue(groupedCardList),
         cardGalleryIndexProvider.overrideWithValue(StateController(currentIndex)),
+        cardGalleryDeckProvider.overrideWithValue(deckNotifier ?? DeckNotifier(null)),
       ],
       child: const CardGalleryPage(),
     );
