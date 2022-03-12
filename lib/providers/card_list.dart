@@ -27,14 +27,18 @@ final cardListProvider = StreamProvider<List<CardResult>>((ref) {
   final db = ref.watch(dbProvider);
   final cardFilter = ref.watch(cardFilterProvider(const CardFilterState()));
   final mwl = ref.watch(filterMwlProvider);
-  final deckValidatorStream = ref.watch(cardListDeckValidatorProvider.stream);
-  return deckValidatorStream.flatMap((deckValidator) => db
-      .listCards(
-        mwlCode: mwl?.code,
-        where: cardFilter & (deckValidator?.filter(db) ?? trueExpression),
-      )
-      .watch());
-}, dependencies: [dbProvider, cardFilterProvider, filterMwlProvider, cardListDeckValidatorProvider.stream]);
+  final deckValidatorStream = ref.watch(cardListDeckValidatorProvider);
+  return deckValidatorStream.when(
+    loading: () => const Stream.empty(),
+    error: (error, stackTrace) => Stream.error(error, stackTrace),
+    data: (deckValidator) => db
+        .listCards(
+          mwlCode: mwl?.code,
+          where: cardFilter & (deckValidator?.filter(db) ?? trueExpression),
+        )
+        .watch(),
+  );
+}, dependencies: [dbProvider, cardFilterProvider, filterMwlProvider, cardListDeckValidatorProvider]);
 
 final groupedCardListProvider = StreamProvider<HeaderList<CardResult>>((ref) {
   final db = ref.watch(dbProvider);
