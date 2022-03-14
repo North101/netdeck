@@ -1,7 +1,6 @@
 TODO:
 
 localization
-keep state
 
 Settings:
 Backup/Restore

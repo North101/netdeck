@@ -1,5 +1,6 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
 
 part of 'private.dart';
@@ -11,64 +12,12 @@ part of 'private.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more informations: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
-
-/// @nodoc
-class _$AuthStateTearOff {
-  const _$AuthStateTearOff();
-
-  InitAuthState init(
-      StateNotifierProviderRef<AuthStateNotifier, AuthState> ref) {
-    return InitAuthState(
-      ref,
-    );
-  }
-
-  ConnectingAuthState connecting(
-      StateNotifierProviderRef<AuthStateNotifier, AuthState> ref,
-      Future<AuthState> future) {
-    return ConnectingAuthState(
-      ref,
-      future,
-    );
-  }
-
-  OfflineAuthState offline(
-      StateNotifierProviderRef<AuthStateNotifier, AuthState> ref,
-      TokenResponse? token) {
-    return OfflineAuthState(
-      ref,
-      token,
-    );
-  }
-
-  OnlineAuthState online(
-      StateNotifierProviderRef<AuthStateNotifier, AuthState> ref,
-      TokenResponse token,
-      NrdbUser user) {
-    return OnlineAuthState(
-      ref,
-      token,
-      user,
-    );
-  }
-
-  UnauthenticatedAuthState unauthenticated(
-      StateNotifierProviderRef<AuthStateNotifier, AuthState> ref) {
-    return UnauthenticatedAuthState(
-      ref,
-    );
-  }
-}
-
-/// @nodoc
-const $AuthState = _$AuthStateTearOff();
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
 /// @nodoc
 mixin _$AuthState {
   StateNotifierProviderRef<AuthStateNotifier, AuthState> get ref =>
       throw _privateConstructorUsedError;
-
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(
@@ -194,30 +143,30 @@ class _$AuthStateCopyWithImpl<$Res> implements $AuthStateCopyWith<$Res> {
 }
 
 /// @nodoc
-abstract class $InitAuthStateCopyWith<$Res>
+abstract class _$$InitAuthStateCopyWith<$Res>
     implements $AuthStateCopyWith<$Res> {
-  factory $InitAuthStateCopyWith(
-          InitAuthState value, $Res Function(InitAuthState) then) =
-      _$InitAuthStateCopyWithImpl<$Res>;
+  factory _$$InitAuthStateCopyWith(
+          _$InitAuthState value, $Res Function(_$InitAuthState) then) =
+      __$$InitAuthStateCopyWithImpl<$Res>;
   @override
   $Res call({StateNotifierProviderRef<AuthStateNotifier, AuthState> ref});
 }
 
 /// @nodoc
-class _$InitAuthStateCopyWithImpl<$Res> extends _$AuthStateCopyWithImpl<$Res>
-    implements $InitAuthStateCopyWith<$Res> {
-  _$InitAuthStateCopyWithImpl(
-      InitAuthState _value, $Res Function(InitAuthState) _then)
-      : super(_value, (v) => _then(v as InitAuthState));
+class __$$InitAuthStateCopyWithImpl<$Res> extends _$AuthStateCopyWithImpl<$Res>
+    implements _$$InitAuthStateCopyWith<$Res> {
+  __$$InitAuthStateCopyWithImpl(
+      _$InitAuthState _value, $Res Function(_$InitAuthState) _then)
+      : super(_value, (v) => _then(v as _$InitAuthState));
 
   @override
-  InitAuthState get _value => super._value as InitAuthState;
+  _$InitAuthState get _value => super._value as _$InitAuthState;
 
   @override
   $Res call({
     Object? ref = freezed,
   }) {
-    return _then(InitAuthState(
+    return _then(_$InitAuthState(
       ref == freezed
           ? _value.ref
           : ref // ignore: cast_nullable_to_non_nullable
@@ -243,7 +192,7 @@ class _$InitAuthState implements InitAuthState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is InitAuthState &&
+            other is _$InitAuthState &&
             const DeepCollectionEquality().equals(other.ref, ref));
   }
 
@@ -253,8 +202,8 @@ class _$InitAuthState implements InitAuthState {
 
   @JsonKey(ignore: true)
   @override
-  $InitAuthStateCopyWith<InitAuthState> get copyWith =>
-      _$InitAuthStateCopyWithImpl<InitAuthState>(this, _$identity);
+  _$$InitAuthStateCopyWith<_$InitAuthState> get copyWith =>
+      __$$InitAuthStateCopyWithImpl<_$InitAuthState>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -373,23 +322,23 @@ class _$InitAuthState implements InitAuthState {
 
 abstract class InitAuthState implements AuthState {
   const factory InitAuthState(
-          StateNotifierProviderRef<AuthStateNotifier, AuthState> ref) =
+          final StateNotifierProviderRef<AuthStateNotifier, AuthState> ref) =
       _$InitAuthState;
 
   @override
   StateNotifierProviderRef<AuthStateNotifier, AuthState> get ref;
   @override
   @JsonKey(ignore: true)
-  $InitAuthStateCopyWith<InitAuthState> get copyWith =>
+  _$$InitAuthStateCopyWith<_$InitAuthState> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $ConnectingAuthStateCopyWith<$Res>
+abstract class _$$ConnectingAuthStateCopyWith<$Res>
     implements $AuthStateCopyWith<$Res> {
-  factory $ConnectingAuthStateCopyWith(
-          ConnectingAuthState value, $Res Function(ConnectingAuthState) then) =
-      _$ConnectingAuthStateCopyWithImpl<$Res>;
+  factory _$$ConnectingAuthStateCopyWith(_$ConnectingAuthState value,
+          $Res Function(_$ConnectingAuthState) then) =
+      __$$ConnectingAuthStateCopyWithImpl<$Res>;
   @override
   $Res call(
       {StateNotifierProviderRef<AuthStateNotifier, AuthState> ref,
@@ -397,22 +346,22 @@ abstract class $ConnectingAuthStateCopyWith<$Res>
 }
 
 /// @nodoc
-class _$ConnectingAuthStateCopyWithImpl<$Res>
+class __$$ConnectingAuthStateCopyWithImpl<$Res>
     extends _$AuthStateCopyWithImpl<$Res>
-    implements $ConnectingAuthStateCopyWith<$Res> {
-  _$ConnectingAuthStateCopyWithImpl(
-      ConnectingAuthState _value, $Res Function(ConnectingAuthState) _then)
-      : super(_value, (v) => _then(v as ConnectingAuthState));
+    implements _$$ConnectingAuthStateCopyWith<$Res> {
+  __$$ConnectingAuthStateCopyWithImpl(
+      _$ConnectingAuthState _value, $Res Function(_$ConnectingAuthState) _then)
+      : super(_value, (v) => _then(v as _$ConnectingAuthState));
 
   @override
-  ConnectingAuthState get _value => super._value as ConnectingAuthState;
+  _$ConnectingAuthState get _value => super._value as _$ConnectingAuthState;
 
   @override
   $Res call({
     Object? ref = freezed,
     Object? future = freezed,
   }) {
-    return _then(ConnectingAuthState(
+    return _then(_$ConnectingAuthState(
       ref == freezed
           ? _value.ref
           : ref // ignore: cast_nullable_to_non_nullable
@@ -444,7 +393,7 @@ class _$ConnectingAuthState implements ConnectingAuthState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is ConnectingAuthState &&
+            other is _$ConnectingAuthState &&
             const DeepCollectionEquality().equals(other.ref, ref) &&
             const DeepCollectionEquality().equals(other.future, future));
   }
@@ -457,8 +406,9 @@ class _$ConnectingAuthState implements ConnectingAuthState {
 
   @JsonKey(ignore: true)
   @override
-  $ConnectingAuthStateCopyWith<ConnectingAuthState> get copyWith =>
-      _$ConnectingAuthStateCopyWithImpl<ConnectingAuthState>(this, _$identity);
+  _$$ConnectingAuthStateCopyWith<_$ConnectingAuthState> get copyWith =>
+      __$$ConnectingAuthStateCopyWithImpl<_$ConnectingAuthState>(
+          this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -577,24 +527,24 @@ class _$ConnectingAuthState implements ConnectingAuthState {
 
 abstract class ConnectingAuthState implements AuthState {
   const factory ConnectingAuthState(
-      StateNotifierProviderRef<AuthStateNotifier, AuthState> ref,
-      Future<AuthState> future) = _$ConnectingAuthState;
+      final StateNotifierProviderRef<AuthStateNotifier, AuthState> ref,
+      final Future<AuthState> future) = _$ConnectingAuthState;
 
   @override
   StateNotifierProviderRef<AuthStateNotifier, AuthState> get ref;
   Future<AuthState> get future;
   @override
   @JsonKey(ignore: true)
-  $ConnectingAuthStateCopyWith<ConnectingAuthState> get copyWith =>
+  _$$ConnectingAuthStateCopyWith<_$ConnectingAuthState> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $OfflineAuthStateCopyWith<$Res>
+abstract class _$$OfflineAuthStateCopyWith<$Res>
     implements $AuthStateCopyWith<$Res> {
-  factory $OfflineAuthStateCopyWith(
-          OfflineAuthState value, $Res Function(OfflineAuthState) then) =
-      _$OfflineAuthStateCopyWithImpl<$Res>;
+  factory _$$OfflineAuthStateCopyWith(
+          _$OfflineAuthState value, $Res Function(_$OfflineAuthState) then) =
+      __$$OfflineAuthStateCopyWithImpl<$Res>;
   @override
   $Res call(
       {StateNotifierProviderRef<AuthStateNotifier, AuthState> ref,
@@ -602,21 +552,22 @@ abstract class $OfflineAuthStateCopyWith<$Res>
 }
 
 /// @nodoc
-class _$OfflineAuthStateCopyWithImpl<$Res> extends _$AuthStateCopyWithImpl<$Res>
-    implements $OfflineAuthStateCopyWith<$Res> {
-  _$OfflineAuthStateCopyWithImpl(
-      OfflineAuthState _value, $Res Function(OfflineAuthState) _then)
-      : super(_value, (v) => _then(v as OfflineAuthState));
+class __$$OfflineAuthStateCopyWithImpl<$Res>
+    extends _$AuthStateCopyWithImpl<$Res>
+    implements _$$OfflineAuthStateCopyWith<$Res> {
+  __$$OfflineAuthStateCopyWithImpl(
+      _$OfflineAuthState _value, $Res Function(_$OfflineAuthState) _then)
+      : super(_value, (v) => _then(v as _$OfflineAuthState));
 
   @override
-  OfflineAuthState get _value => super._value as OfflineAuthState;
+  _$OfflineAuthState get _value => super._value as _$OfflineAuthState;
 
   @override
   $Res call({
     Object? ref = freezed,
     Object? token = freezed,
   }) {
-    return _then(OfflineAuthState(
+    return _then(_$OfflineAuthState(
       ref == freezed
           ? _value.ref
           : ref // ignore: cast_nullable_to_non_nullable
@@ -648,7 +599,7 @@ class _$OfflineAuthState implements OfflineAuthState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is OfflineAuthState &&
+            other is _$OfflineAuthState &&
             const DeepCollectionEquality().equals(other.ref, ref) &&
             const DeepCollectionEquality().equals(other.token, token));
   }
@@ -661,8 +612,8 @@ class _$OfflineAuthState implements OfflineAuthState {
 
   @JsonKey(ignore: true)
   @override
-  $OfflineAuthStateCopyWith<OfflineAuthState> get copyWith =>
-      _$OfflineAuthStateCopyWithImpl<OfflineAuthState>(this, _$identity);
+  _$$OfflineAuthStateCopyWith<_$OfflineAuthState> get copyWith =>
+      __$$OfflineAuthStateCopyWithImpl<_$OfflineAuthState>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -781,24 +732,24 @@ class _$OfflineAuthState implements OfflineAuthState {
 
 abstract class OfflineAuthState implements AuthState {
   const factory OfflineAuthState(
-      StateNotifierProviderRef<AuthStateNotifier, AuthState> ref,
-      TokenResponse? token) = _$OfflineAuthState;
+      final StateNotifierProviderRef<AuthStateNotifier, AuthState> ref,
+      final TokenResponse? token) = _$OfflineAuthState;
 
   @override
   StateNotifierProviderRef<AuthStateNotifier, AuthState> get ref;
   TokenResponse? get token;
   @override
   @JsonKey(ignore: true)
-  $OfflineAuthStateCopyWith<OfflineAuthState> get copyWith =>
+  _$$OfflineAuthStateCopyWith<_$OfflineAuthState> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $OnlineAuthStateCopyWith<$Res>
+abstract class _$$OnlineAuthStateCopyWith<$Res>
     implements $AuthStateCopyWith<$Res> {
-  factory $OnlineAuthStateCopyWith(
-          OnlineAuthState value, $Res Function(OnlineAuthState) then) =
-      _$OnlineAuthStateCopyWithImpl<$Res>;
+  factory _$$OnlineAuthStateCopyWith(
+          _$OnlineAuthState value, $Res Function(_$OnlineAuthState) then) =
+      __$$OnlineAuthStateCopyWithImpl<$Res>;
   @override
   $Res call(
       {StateNotifierProviderRef<AuthStateNotifier, AuthState> ref,
@@ -807,14 +758,15 @@ abstract class $OnlineAuthStateCopyWith<$Res>
 }
 
 /// @nodoc
-class _$OnlineAuthStateCopyWithImpl<$Res> extends _$AuthStateCopyWithImpl<$Res>
-    implements $OnlineAuthStateCopyWith<$Res> {
-  _$OnlineAuthStateCopyWithImpl(
-      OnlineAuthState _value, $Res Function(OnlineAuthState) _then)
-      : super(_value, (v) => _then(v as OnlineAuthState));
+class __$$OnlineAuthStateCopyWithImpl<$Res>
+    extends _$AuthStateCopyWithImpl<$Res>
+    implements _$$OnlineAuthStateCopyWith<$Res> {
+  __$$OnlineAuthStateCopyWithImpl(
+      _$OnlineAuthState _value, $Res Function(_$OnlineAuthState) _then)
+      : super(_value, (v) => _then(v as _$OnlineAuthState));
 
   @override
-  OnlineAuthState get _value => super._value as OnlineAuthState;
+  _$OnlineAuthState get _value => super._value as _$OnlineAuthState;
 
   @override
   $Res call({
@@ -822,7 +774,7 @@ class _$OnlineAuthStateCopyWithImpl<$Res> extends _$AuthStateCopyWithImpl<$Res>
     Object? token = freezed,
     Object? user = freezed,
   }) {
-    return _then(OnlineAuthState(
+    return _then(_$OnlineAuthState(
       ref == freezed
           ? _value.ref
           : ref // ignore: cast_nullable_to_non_nullable
@@ -860,7 +812,7 @@ class _$OnlineAuthState implements OnlineAuthState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is OnlineAuthState &&
+            other is _$OnlineAuthState &&
             const DeepCollectionEquality().equals(other.ref, ref) &&
             const DeepCollectionEquality().equals(other.token, token) &&
             const DeepCollectionEquality().equals(other.user, user));
@@ -875,8 +827,8 @@ class _$OnlineAuthState implements OnlineAuthState {
 
   @JsonKey(ignore: true)
   @override
-  $OnlineAuthStateCopyWith<OnlineAuthState> get copyWith =>
-      _$OnlineAuthStateCopyWithImpl<OnlineAuthState>(this, _$identity);
+  _$$OnlineAuthStateCopyWith<_$OnlineAuthState> get copyWith =>
+      __$$OnlineAuthStateCopyWithImpl<_$OnlineAuthState>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -995,9 +947,9 @@ class _$OnlineAuthState implements OnlineAuthState {
 
 abstract class OnlineAuthState implements AuthState {
   const factory OnlineAuthState(
-      StateNotifierProviderRef<AuthStateNotifier, AuthState> ref,
-      TokenResponse token,
-      NrdbUser user) = _$OnlineAuthState;
+      final StateNotifierProviderRef<AuthStateNotifier, AuthState> ref,
+      final TokenResponse token,
+      final NrdbUser user) = _$OnlineAuthState;
 
   @override
   StateNotifierProviderRef<AuthStateNotifier, AuthState> get ref;
@@ -1005,37 +957,37 @@ abstract class OnlineAuthState implements AuthState {
   NrdbUser get user;
   @override
   @JsonKey(ignore: true)
-  $OnlineAuthStateCopyWith<OnlineAuthState> get copyWith =>
+  _$$OnlineAuthStateCopyWith<_$OnlineAuthState> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $UnauthenticatedAuthStateCopyWith<$Res>
+abstract class _$$UnauthenticatedAuthStateCopyWith<$Res>
     implements $AuthStateCopyWith<$Res> {
-  factory $UnauthenticatedAuthStateCopyWith(UnauthenticatedAuthState value,
-          $Res Function(UnauthenticatedAuthState) then) =
-      _$UnauthenticatedAuthStateCopyWithImpl<$Res>;
+  factory _$$UnauthenticatedAuthStateCopyWith(_$UnauthenticatedAuthState value,
+          $Res Function(_$UnauthenticatedAuthState) then) =
+      __$$UnauthenticatedAuthStateCopyWithImpl<$Res>;
   @override
   $Res call({StateNotifierProviderRef<AuthStateNotifier, AuthState> ref});
 }
 
 /// @nodoc
-class _$UnauthenticatedAuthStateCopyWithImpl<$Res>
+class __$$UnauthenticatedAuthStateCopyWithImpl<$Res>
     extends _$AuthStateCopyWithImpl<$Res>
-    implements $UnauthenticatedAuthStateCopyWith<$Res> {
-  _$UnauthenticatedAuthStateCopyWithImpl(UnauthenticatedAuthState _value,
-      $Res Function(UnauthenticatedAuthState) _then)
-      : super(_value, (v) => _then(v as UnauthenticatedAuthState));
+    implements _$$UnauthenticatedAuthStateCopyWith<$Res> {
+  __$$UnauthenticatedAuthStateCopyWithImpl(_$UnauthenticatedAuthState _value,
+      $Res Function(_$UnauthenticatedAuthState) _then)
+      : super(_value, (v) => _then(v as _$UnauthenticatedAuthState));
 
   @override
-  UnauthenticatedAuthState get _value =>
-      super._value as UnauthenticatedAuthState;
+  _$UnauthenticatedAuthState get _value =>
+      super._value as _$UnauthenticatedAuthState;
 
   @override
   $Res call({
     Object? ref = freezed,
   }) {
-    return _then(UnauthenticatedAuthState(
+    return _then(_$UnauthenticatedAuthState(
       ref == freezed
           ? _value.ref
           : ref // ignore: cast_nullable_to_non_nullable
@@ -1061,7 +1013,7 @@ class _$UnauthenticatedAuthState implements UnauthenticatedAuthState {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is UnauthenticatedAuthState &&
+            other is _$UnauthenticatedAuthState &&
             const DeepCollectionEquality().equals(other.ref, ref));
   }
 
@@ -1071,9 +1023,10 @@ class _$UnauthenticatedAuthState implements UnauthenticatedAuthState {
 
   @JsonKey(ignore: true)
   @override
-  $UnauthenticatedAuthStateCopyWith<UnauthenticatedAuthState> get copyWith =>
-      _$UnauthenticatedAuthStateCopyWithImpl<UnauthenticatedAuthState>(
-          this, _$identity);
+  _$$UnauthenticatedAuthStateCopyWith<_$UnauthenticatedAuthState>
+      get copyWith =>
+          __$$UnauthenticatedAuthStateCopyWithImpl<_$UnauthenticatedAuthState>(
+              this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -1192,38 +1145,16 @@ class _$UnauthenticatedAuthState implements UnauthenticatedAuthState {
 
 abstract class UnauthenticatedAuthState implements AuthState {
   const factory UnauthenticatedAuthState(
-          StateNotifierProviderRef<AuthStateNotifier, AuthState> ref) =
+          final StateNotifierProviderRef<AuthStateNotifier, AuthState> ref) =
       _$UnauthenticatedAuthState;
 
   @override
   StateNotifierProviderRef<AuthStateNotifier, AuthState> get ref;
   @override
   @JsonKey(ignore: true)
-  $UnauthenticatedAuthStateCopyWith<UnauthenticatedAuthState> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$UnauthenticatedAuthStateCopyWith<_$UnauthenticatedAuthState>
+      get copyWith => throw _privateConstructorUsedError;
 }
-
-/// @nodoc
-class _$HttpResultTearOff {
-  const _$HttpResultTearOff();
-
-  SuccessHttpResult<T> success<T>(T value) {
-    return SuccessHttpResult<T>(
-      value,
-    );
-  }
-
-  NotFoundHttpResult<T> notFound<T>() {
-    return NotFoundHttpResult<T>();
-  }
-
-  UnknownHttpResult<T> unknown<T>() {
-    return UnknownHttpResult<T>();
-  }
-}
-
-/// @nodoc
-const $HttpResult = _$HttpResultTearOff();
 
 /// @nodoc
 mixin _$HttpResult<T> {
@@ -1291,29 +1222,29 @@ class _$HttpResultCopyWithImpl<T, $Res>
 }
 
 /// @nodoc
-abstract class $SuccessHttpResultCopyWith<T, $Res> {
-  factory $SuccessHttpResultCopyWith(SuccessHttpResult<T> value,
-          $Res Function(SuccessHttpResult<T>) then) =
-      _$SuccessHttpResultCopyWithImpl<T, $Res>;
+abstract class _$$SuccessHttpResultCopyWith<T, $Res> {
+  factory _$$SuccessHttpResultCopyWith(_$SuccessHttpResult<T> value,
+          $Res Function(_$SuccessHttpResult<T>) then) =
+      __$$SuccessHttpResultCopyWithImpl<T, $Res>;
   $Res call({T value});
 }
 
 /// @nodoc
-class _$SuccessHttpResultCopyWithImpl<T, $Res>
+class __$$SuccessHttpResultCopyWithImpl<T, $Res>
     extends _$HttpResultCopyWithImpl<T, $Res>
-    implements $SuccessHttpResultCopyWith<T, $Res> {
-  _$SuccessHttpResultCopyWithImpl(
-      SuccessHttpResult<T> _value, $Res Function(SuccessHttpResult<T>) _then)
-      : super(_value, (v) => _then(v as SuccessHttpResult<T>));
+    implements _$$SuccessHttpResultCopyWith<T, $Res> {
+  __$$SuccessHttpResultCopyWithImpl(_$SuccessHttpResult<T> _value,
+      $Res Function(_$SuccessHttpResult<T>) _then)
+      : super(_value, (v) => _then(v as _$SuccessHttpResult<T>));
 
   @override
-  SuccessHttpResult<T> get _value => super._value as SuccessHttpResult<T>;
+  _$SuccessHttpResult<T> get _value => super._value as _$SuccessHttpResult<T>;
 
   @override
   $Res call({
     Object? value = freezed,
   }) {
-    return _then(SuccessHttpResult<T>(
+    return _then(_$SuccessHttpResult<T>(
       value == freezed
           ? _value.value
           : value // ignore: cast_nullable_to_non_nullable
@@ -1339,7 +1270,7 @@ class _$SuccessHttpResult<T> implements SuccessHttpResult<T> {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is SuccessHttpResult<T> &&
+            other is _$SuccessHttpResult<T> &&
             const DeepCollectionEquality().equals(other.value, value));
   }
 
@@ -1349,8 +1280,8 @@ class _$SuccessHttpResult<T> implements SuccessHttpResult<T> {
 
   @JsonKey(ignore: true)
   @override
-  $SuccessHttpResultCopyWith<T, SuccessHttpResult<T>> get copyWith =>
-      _$SuccessHttpResultCopyWithImpl<T, SuccessHttpResult<T>>(
+  _$$SuccessHttpResultCopyWith<T, _$SuccessHttpResult<T>> get copyWith =>
+      __$$SuccessHttpResultCopyWithImpl<T, _$SuccessHttpResult<T>>(
           this, _$identity);
 
   @override
@@ -1423,31 +1354,31 @@ class _$SuccessHttpResult<T> implements SuccessHttpResult<T> {
 }
 
 abstract class SuccessHttpResult<T> implements HttpResult<T> {
-  const factory SuccessHttpResult(T value) = _$SuccessHttpResult<T>;
+  const factory SuccessHttpResult(final T value) = _$SuccessHttpResult<T>;
 
   T get value;
   @JsonKey(ignore: true)
-  $SuccessHttpResultCopyWith<T, SuccessHttpResult<T>> get copyWith =>
+  _$$SuccessHttpResultCopyWith<T, _$SuccessHttpResult<T>> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $NotFoundHttpResultCopyWith<T, $Res> {
-  factory $NotFoundHttpResultCopyWith(NotFoundHttpResult<T> value,
-          $Res Function(NotFoundHttpResult<T>) then) =
-      _$NotFoundHttpResultCopyWithImpl<T, $Res>;
+abstract class _$$NotFoundHttpResultCopyWith<T, $Res> {
+  factory _$$NotFoundHttpResultCopyWith(_$NotFoundHttpResult<T> value,
+          $Res Function(_$NotFoundHttpResult<T>) then) =
+      __$$NotFoundHttpResultCopyWithImpl<T, $Res>;
 }
 
 /// @nodoc
-class _$NotFoundHttpResultCopyWithImpl<T, $Res>
+class __$$NotFoundHttpResultCopyWithImpl<T, $Res>
     extends _$HttpResultCopyWithImpl<T, $Res>
-    implements $NotFoundHttpResultCopyWith<T, $Res> {
-  _$NotFoundHttpResultCopyWithImpl(
-      NotFoundHttpResult<T> _value, $Res Function(NotFoundHttpResult<T>) _then)
-      : super(_value, (v) => _then(v as NotFoundHttpResult<T>));
+    implements _$$NotFoundHttpResultCopyWith<T, $Res> {
+  __$$NotFoundHttpResultCopyWithImpl(_$NotFoundHttpResult<T> _value,
+      $Res Function(_$NotFoundHttpResult<T>) _then)
+      : super(_value, (v) => _then(v as _$NotFoundHttpResult<T>));
 
   @override
-  NotFoundHttpResult<T> get _value => super._value as NotFoundHttpResult<T>;
+  _$NotFoundHttpResult<T> get _value => super._value as _$NotFoundHttpResult<T>;
 }
 
 /// @nodoc
@@ -1463,7 +1394,7 @@ class _$NotFoundHttpResult<T> implements NotFoundHttpResult<T> {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is NotFoundHttpResult<T>);
+        (other.runtimeType == runtimeType && other is _$NotFoundHttpResult<T>);
   }
 
   @override
@@ -1543,22 +1474,22 @@ abstract class NotFoundHttpResult<T> implements HttpResult<T> {
 }
 
 /// @nodoc
-abstract class $UnknownHttpResultCopyWith<T, $Res> {
-  factory $UnknownHttpResultCopyWith(UnknownHttpResult<T> value,
-          $Res Function(UnknownHttpResult<T>) then) =
-      _$UnknownHttpResultCopyWithImpl<T, $Res>;
+abstract class _$$UnknownHttpResultCopyWith<T, $Res> {
+  factory _$$UnknownHttpResultCopyWith(_$UnknownHttpResult<T> value,
+          $Res Function(_$UnknownHttpResult<T>) then) =
+      __$$UnknownHttpResultCopyWithImpl<T, $Res>;
 }
 
 /// @nodoc
-class _$UnknownHttpResultCopyWithImpl<T, $Res>
+class __$$UnknownHttpResultCopyWithImpl<T, $Res>
     extends _$HttpResultCopyWithImpl<T, $Res>
-    implements $UnknownHttpResultCopyWith<T, $Res> {
-  _$UnknownHttpResultCopyWithImpl(
-      UnknownHttpResult<T> _value, $Res Function(UnknownHttpResult<T>) _then)
-      : super(_value, (v) => _then(v as UnknownHttpResult<T>));
+    implements _$$UnknownHttpResultCopyWith<T, $Res> {
+  __$$UnknownHttpResultCopyWithImpl(_$UnknownHttpResult<T> _value,
+      $Res Function(_$UnknownHttpResult<T>) _then)
+      : super(_value, (v) => _then(v as _$UnknownHttpResult<T>));
 
   @override
-  UnknownHttpResult<T> get _value => super._value as UnknownHttpResult<T>;
+  _$UnknownHttpResult<T> get _value => super._value as _$UnknownHttpResult<T>;
 }
 
 /// @nodoc
@@ -1574,7 +1505,7 @@ class _$UnknownHttpResult<T> implements UnknownHttpResult<T> {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is UnknownHttpResult<T>);
+        (other.runtimeType == runtimeType && other is _$UnknownHttpResult<T>);
   }
 
   @override

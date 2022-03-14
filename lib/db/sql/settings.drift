@@ -1,4 +1,5 @@
-import '../types.dart';
+import 'package:drift/drift.dart';
+import '/db/types.dart';
 import 'format.drift';
 
 CREATE TABLE settings(
@@ -15,7 +16,7 @@ CREATE TABLE settings(
   deck_card_group TEXT NOT NULL MAPPED BY `const CardGroupConverter(CardGroup.type)` DEFAULT '',
   compare_card_sort TEXT NOT NULL MAPPED BY `const CardSortConverter(CardSort.set)` DEFAULT '',
   apex_resources BOOLEAN NOT NULL DEFAULT FALSE,
-  card_gallery_view TEXT NOT NULL MAPPED BY `const CardGalleryViewConverter(CardGalleryView.image)` DEFAULT '',
+  card_gallery_view TEXT NOT NULL MAPPED BY `const CardGalleryViewConverter(CardGalleryPageView.image)` DEFAULT '',
   CONSTRAINT settings_id CHECK (id = TRUE)
 ) AS SettingsData;
 

@@ -5,15 +5,90 @@ import 'package:uuid/uuid.dart';
 import '/db/database.dart';
 import '/providers.dart';
 import '/util/filter_type.dart';
+import '/util/grouped_card_code_list.dart';
 import '/view/card_gallery_page.dart';
 import '/view/card_list/page.dart';
 import '/view/card_tile.dart';
 import '/view/deck/page.dart';
 
 class DeckListFloatingActionBar extends ConsumerWidget {
-  const DeckListFloatingActionBar({Key? key}) : super(key: key);
+  const DeckListFloatingActionBar({super.key});
 
-  Widget cardItemBuilder(BuildContext context, WidgetRef ref, int index, CardResult card) {
+  static Route<void> openIdentityRoute(BuildContext context, Object? arguments) {
+    final settings = SettingResultEx.fromJson((arguments as Map).cast());
+    return MaterialPageRoute(builder: (context) {
+      return CardListPage.withOverrides(
+        restorationId: 'idetnity_list_page',
+        title: 'Identity',
+        filterCollection: settings.settings.filterCollection,
+        filterFormat: settings.filterFormat,
+        filterRotation: settings.filterRotation,
+        filterMwl: settings.filterMwl,
+        filterTypes: FilterType(
+          visible: false,
+          always: {'identity'},
+        ),
+        itemBuilder: (context, ref, index, card) => IdentityTile(
+          index: index,
+          card: card,
+        ),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(settingProvider);
+    return settings.maybeWhen(
+      data: (settings) => FloatingActionButton(
+        child: const Icon(Icons.add),
+        onPressed: () => Navigator.of(context).restorablePush(
+          openIdentityRoute,
+          arguments: settings.toJson(),
+        ),
+      ),
+      orElse: () => const SizedBox.shrink(),
+    );
+  }
+}
+
+class IdentityTile extends ConsumerWidget {
+  const IdentityTile({
+    required this.index,
+    required this.card,
+    super.key,
+  });
+
+  final int index;
+  final CardResult card;
+
+  static Route<void> openDeckRoute(BuildContext context, Object? argument) {
+    final card = CardResultEx.fromJson((argument as Map).cast());
+    return MaterialPageRoute(builder: (context) {
+      return DeckPage.withOverrides(
+        deck: DeckNotifierResult(
+          id: const Uuid().v4(),
+          identityCode: card.code,
+          name: card.card.title,
+          description: '',
+          formatCode: null,
+          rotationCode: null,
+          mwlCode: null,
+          created: DateTime.now(),
+          updated: DateTime.now(),
+          remoteUpdated: null,
+          synced: null,
+          deleted: false,
+          cards: {},
+          tags: [],
+          state: DeckSaveState.isNew,
+        ),
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     final mwlCardMap = ref.watch(mwlCardMapProvider.select((value) {
       return value.whenOrNull(data: (data) => data);
     }));
@@ -23,60 +98,22 @@ class DeckListFloatingActionBar extends ConsumerWidget {
       mwlCard: mwlCardMap?[card.code],
       trailing: IconButton(
         icon: const Icon(Icons.add),
-        onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-          return DeckPage.withOverrides(
-            deck: card.toDeck(
-              deck: DeckData(
-                id: const Uuid().v4(),
-                identityCode: card.code,
-                name: card.card.title,
-                description: '',
-                created: DateTime.now(),
-                updated: DateTime.now(),
-                deleted: false,
-              ),
-              cards: {},
-              tags: [],
-            ),
-          );
-        })),
+        onPressed: () => Navigator.of(context).restorablePushReplacement(
+          openDeckRoute,
+          arguments: card.toJson(),
+        ),
       ),
       onTap: () async {
+        final navigator = Navigator.of(context);
         final groupedCardList = await ref.read(groupedCardListProvider.future);
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-          return CardGalleryPage.withOverrides(
-            groupedCardList: groupedCardList,
-            currentIndex: index,
-          );
-        }));
+        navigator.restorablePush(
+          openCardGalleryPage,
+          arguments: CardGalleryArguments(
+            items: GroupedCardCodeList.fromCardResult(groupedCardList),
+            index: index,
+          ).toJson(),
+        );
       },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final settings = ref.watch(settingProvider);
-    return settings.maybeWhen(
-      data: (settings) => FloatingActionButton(
-        child: const Icon(Icons.add),
-        onPressed: () {
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-            return CardListPage.withOverrides(
-              title: 'Identity',
-              filterCollection: StateController(settings.settings.filterCollection),
-              filterFormat: StateController(settings.filterFormat),
-              filterRotation: StateController(settings.filterRotation),
-              filterMwl: StateController(settings.filterMwl),
-              filterTypes: StateController(FilterType(
-                visible: false,
-                always: {'identity'},
-              )),
-              itemBuilder: cardItemBuilder,
-            );
-          }));
-        },
-      ),
-      orElse: () => const SizedBox.shrink(),
     );
   }
 }

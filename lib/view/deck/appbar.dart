@@ -13,10 +13,10 @@ import '/util/nrdb/private.dart';
 import '/view/deck_compare/page.dart';
 import '/view/deck_list/page.dart';
 import '/view/deck_tile.dart';
-import 'util.dart';
+import '/view/save_deck_dialog.dart';
 
 class DeckGroupMenu extends ConsumerWidget {
-  const DeckGroupMenu({Key? key}) : super(key: key);
+  const DeckGroupMenu({super.key});
 
   Future<void> onSelected(BuildContext context, WidgetRef ref, CardGroup value) async {
     final db = ref.read(dbProvider);
@@ -54,7 +54,7 @@ class DeckGroupMenu extends ConsumerWidget {
 }
 
 class DeckSortMenu extends ConsumerWidget {
-  const DeckSortMenu({Key? key}) : super(key: key);
+  const DeckSortMenu({super.key});
 
   Future<void> onSelected(BuildContext context, WidgetRef ref, CardSort value) async {
     final db = ref.read(dbProvider);
@@ -91,54 +91,75 @@ class DeckSortMenu extends ConsumerWidget {
   }
 }
 
-class DeckMoreActions extends ConsumerWidget {
-  const DeckMoreActions({Key? key}) : super(key: key);
+class CompareDeckListFloatingActionButton extends ConsumerWidget {
+  const CompareDeckListFloatingActionButton({
+    required this.deck,
+    super.key,
+  });
 
-  Widget deckItemBuilder(BuildContext context, WidgetRef ref, int index, DeckResult2 deck) {
-    final compareDeckList = ref.watch(compareDeckListProvider.state);
-    final selected = compareDeckList.state.contains(deck);
-    return DeckTile(
-      deck: deck,
-      selected: selected,
-      onTap: () {
-        compareDeckList.state = {
-          ...compareDeckList.state.where((e) => e != deck),
-          if (!selected) deck,
-        };
+  final DeckFullResult deck;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return FloatingActionButton(
+      child: const Icon(Icons.compare),
+      onPressed: () {
+        final deckList = ref.read(selectedCompareDeckListProvider);
+        Navigator.of(context).restorablePush(
+          openDeckComparePage,
+          arguments: DeckCompareArguments({
+            deck.toMicroResult(),
+            ...deckList.value,
+          }).toJson(),
+        );
       },
     );
   }
+}
 
-  Future<void> compareTo(BuildContext context, WidgetRef ref) async {
-    final deck = ref.read(deckProvider);
-    await Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      return DeckListPage.withOverrides(
-        automaticallyImplyLeading: true,
-        title: 'Compare To',
-        filterFormat: deck.format,
-        filterRotation: deck.rotation,
-        filterMwl: deck.mwl,
-        filterSides: FilterType(always: {deck.side.code}),
-        itemBuilder: deckItemBuilder,
-        fab: FloatingActionButton(
-          child: const Icon(Icons.compare),
-          onPressed: () {
-            final compareDeckList = ref.read(compareDeckListProvider);
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-              return DeckComparePage.withOverrides(
-                deckList: {
-                  deck,
-                  ...compareDeckList,
-                },
-              );
-            }));
-          },
+class DeckMoreActions extends ConsumerWidget {
+  const DeckMoreActions({super.key});
+
+  static Route<void> openDeckListPage(BuildContext context, Object? arguments) {
+    final deck = DeckFullResult.fromJson((arguments as Map).cast());
+    return MaterialPageRoute(builder: (context) {
+      return ProviderScope(
+        restorationId: 'compare_deck_list_page_wrapper',
+        overrides: [
+          selectedCompareDeckListProvider.overrideWithValue(
+              RestorableDeckMicroResultSet({}), 'selectedCompareDeckListProvider'),
+        ],
+        child: DeckListPage.withOverrides(
+          restorationId: 'compare_deck_list_page',
+          automaticallyImplyLeading: true,
+          title: 'Compare To',
+          filterFormat: deck.format,
+          filterRotation: deck.rotation,
+          filterMwl: deck.mwl,
+          filterSides: FilterType(always: {deck.side.code}),
+          itemBuilder: (context, ref, index, deck) => CompareDeckTile(
+            index: index,
+            deck: deck,
+          ),
+          fab: CompareDeckListFloatingActionButton(deck: deck),
         ),
       );
-    }));
+    });
+  }
+
+  void compareTo(BuildContext context, WidgetRef ref) {
+    final changed = ref.read(deckProvider).value.state != DeckSaveState.isSaved;
+    final deck = ref.read(deckValidatorResultProvider).deck;
+    Navigator.of(context).restorablePush(
+      openDeckListPage,
+      arguments: changed
+          ? deck.copyWith(deck: deck.deck.copyWith(name: '${deck.deck.name} (Unsaved)')).toJson()
+          : deck.toJson(),
+    );
   }
 
   Future<void> delete(BuildContext context, WidgetRef ref) async {
+    final navigator = Navigator.of(context);
     final result = await showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -146,11 +167,11 @@ class DeckMoreActions extends ConsumerWidget {
         content: const Text('Are you sure you want to delete this deck?'),
         actions: [
           MaterialButton(
-            onPressed: () => Navigator.of(context).pop(false),
+            onPressed: () => navigator.pop(false),
             child: const Text('Cancel'),
           ),
           MaterialButton(
-            onPressed: () => Navigator.of(context).pop(true),
+            onPressed: () => navigator.pop(true),
             child: const Text('Delete'),
           ),
         ],
@@ -159,15 +180,15 @@ class DeckMoreActions extends ConsumerWidget {
     if (result != true) return;
 
     final db = ref.read(dbProvider);
-    final deck = ref.read(deckProvider);
-    await db.deleteDecks(deckIds: [deck.deck.id]);
+    final deck = ref.read(deckProvider).value;
+    await db.deleteDecks(deckIds: [deck.id]);
 
-    Navigator.of(context).pop();
+    navigator.pop();
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isSynced = ref.watch(deckProvider.select((value) => value.deck.synced != null));
+    final isSynced = ref.watch(deckProvider.select((value) => value.value.synced != null));
     final isConnected = ref.watch(nrdbAuthStateProvider.select((value) => value.isConnected));
     final settings = ref.watch(settingProvider);
     return settings.when(
@@ -186,12 +207,32 @@ class DeckMoreActions extends ConsumerWidget {
           PopupMenuItem(
             enabled: isConnected,
             child: ListTile(enabled: isConnected, title: const Text('Upload')),
-            onTap: () => Future(() => upload(context, ref)),
+            onTap: () => Future(() async {
+              final deckNotifier = ref.read(deckProvider);
+              final result = await showDialog<DeckNotifierResult>(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => SaveDeckDialog.withOverrides(deck: deckNotifier.value),
+              );
+              if (result == null) return;
+
+              deckNotifier.saved = result;
+            }),
           ),
           PopupMenuItem(
             enabled: isConnected && isSynced,
             child: ListTile(enabled: isConnected && isSynced, title: const Text('Download')),
-            onTap: () => Future(() => download(context, ref)),
+            onTap: () => Future(() async {
+              final deckNotifier = ref.read(deckProvider);
+              final result = await showDialog<DeckNotifierResult>(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => DownloadDeckDialog.withOverrides(deck: deckNotifier.value),
+              );
+              if (result == null) return;
+
+              deckNotifier.saved = result;
+            }),
           ),
           const PopupMenuDivider(),
           PopupMenuItem(
@@ -205,13 +246,13 @@ class DeckMoreActions extends ConsumerWidget {
 }
 
 class DeckAppBar extends ConsumerWidget {
-  const DeckAppBar({required this.constraints, Key? key}) : super(key: key);
+  const DeckAppBar({required this.constraints, super.key});
 
   final BoxConstraints constraints;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final deck = ref.watch(deckProvider);
+    final deck = ref.watch(deckValidatorResultProvider).deck;
 
     const imageHeight = 419;
     const imageWidth = 300;
@@ -243,18 +284,48 @@ class DeckAppBar extends ConsumerWidget {
         IconButton(
           icon: const Icon(Icons.save),
           onPressed: () async {
-            final saveLocation = await whereToSave(context, ref);
-            if (saveLocation == null) {
-              return;
-            } else if (saveLocation == SaveLocation.local) {
-              await save(context, ref);
-            } else {
-              await upload(context, ref);
-            }
+            final deckNotifier = ref.watch(deckProvider);
+            final result = await showDialog<DeckNotifierResult>(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) => SaveDeckDialog.withOverrides(
+                deck: deckNotifier.value,
+              ),
+            );
+            if (result == null) return;
+
+            deckNotifier.saved = result;
           },
         ),
         const DeckMoreActions(),
       ],
+    );
+  }
+}
+
+class CompareDeckTile extends ConsumerWidget {
+  const CompareDeckTile({
+    required this.index,
+    required this.deck,
+    super.key,
+  });
+
+  final int index;
+  final DeckFullResult deck;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final deckList = ref.watch(selectedCompareDeckListProvider);
+    final selected = deckList.value.any((e) => e.id == deck.deck.id);
+    return DeckTile(
+      deck: deck,
+      selected: selected,
+      onTap: () {
+        deckList.value = {
+          ...deckList.value.where((e) => e.id != deck.deck.id),
+          if (!selected) deck.toMicroResult(),
+        };
+      },
     );
   }
 }

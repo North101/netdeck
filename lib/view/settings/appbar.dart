@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 class SettingsAppBar extends StatelessWidget implements PreferredSizeWidget {
   const SettingsAppBar({
     this.automaticallyImplyLeading = true,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final bool automaticallyImplyLeading;
 

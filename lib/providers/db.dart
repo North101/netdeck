@@ -30,10 +30,10 @@ void _startBackground(_IsolateStartRequest request) {
 }
 
 class _IsolateStartRequest {
+  const _IsolateStartRequest(this.sendDriftIsolate, this.filename);
+
   final SendPort sendDriftIsolate;
   final File filename;
-
-  _IsolateStartRequest(this.sendDriftIsolate, this.filename);
 }
 
 DatabaseConnection _createDriftIsolateAndConnect(Future<File> future) {
@@ -45,7 +45,9 @@ DatabaseConnection _createDriftIsolateAndConnect(Future<File> future) {
 
 final dbProvider = Provider<Database>((ref) {
   final filename = Database.dbFilename();
-  return Database.connect(DatabaseConnection.delayed(_createDriftIsolateAndConnect(filename)));
+  final db = Database.connect(DatabaseConnection.delayed(_createDriftIsolateAndConnect(filename)));
+  ref.onDispose(db.close);
+  return db;
 });
 
 final initSettingsProvider = FutureProvider((ref) {
@@ -57,8 +59,6 @@ final settingProvider = StreamProvider((ref) {
   final db = ref.watch(dbProvider);
   return db.getSettings().watchSingle();
 });
-
-final settingResultProvider = Provider<SettingResult>((ref) => throw UnimplementedError());
 
 final formatProvider = Provider<FormatData?>((ref) => throw UnimplementedError());
 

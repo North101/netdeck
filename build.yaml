@@ -7,5 +7,4 @@ targets:
           generate_values_in_copy_with: true
           named_parameters: true
           override_hash_and_equals_in_result_sets: true
-          new_sql_code_generation: true
           generate_connect_constructor: true

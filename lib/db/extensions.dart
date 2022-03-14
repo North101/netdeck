@@ -6,4 +6,5 @@ export 'extensions/deck_result.dart';
 export 'extensions/faction_data.dart';
 export 'extensions/mwl_data.dart';
 export 'extensions/pack_result.dart';
+export 'extensions/setting_result.dart';
 export 'extensions/side_data.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class TextScaledBuilder extends StatelessWidget {
-  const TextScaledBuilder({Key? key, required this.builder}) : super(key: key);
+  const TextScaledBuilder({super.key, required this.builder});
 
   final Widget Function(BuildContext context, double height) builder;
 

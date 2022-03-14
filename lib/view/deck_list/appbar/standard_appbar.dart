@@ -9,9 +9,8 @@ class DeckStandardAppBar extends ConsumerWidget implements PreferredSizeWidget {
     required this.automaticallyImplyLeading,
     required this.title,
     this.color,
-    Key? key,
-  })  : preferredSize = const Size.fromHeight(kToolbarHeight),
-        super(key: key);
+    super.key,
+  }) : preferredSize = const Size.fromHeight(kToolbarHeight);
 
   final bool automaticallyImplyLeading;
   final String title;
@@ -21,8 +20,8 @@ class DeckStandardAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final Size preferredSize;
 
   void _startSearch(BuildContext context, WidgetRef ref) {
-    final isSearching = ref.read(filterSearchingProvider.state);
-    isSearching.state = true;
+    final isSearching = ref.read(filterSearchingProvider);
+    isSearching.value = true;
   }
 
   @override

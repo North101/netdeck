@@ -23,26 +23,26 @@ class FilterCycleCheckbox extends ConsumerWidget {
   const FilterCycleCheckbox({
     required this.cycle,
     required this.packList,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final CycleData cycle;
   final List<PackResult> packList;
 
   void setPacks(WidgetRef ref, bool? selected, Iterable<String> values) {
-    final packs = ref.read(filterPacksProvider.state);
-    final value = packs.state.toSet();
+    final packs = ref.read(filterPacksProvider);
+    final value = packs.value.toSet();
     if (selected == true) {
       value.addAll(values);
     } else {
       value.removeAll(values);
     }
-    packs.state = packs.state.copyWith(values: value);
+    packs.value = packs.value.copyWith(values: value);
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final packs = ref.watch(filterPacksProvider);
+    final packs = ref.watch(filterPacksProvider).value;
     final bool? selected;
     if (packList.every((e) => packs.contains(e.pack.code))) {
       selected = true;
@@ -96,14 +96,15 @@ class FilterCycleCheckbox extends ConsumerWidget {
 }
 
 class FilterPacksPage extends ConsumerWidget {
-  const FilterPacksPage({Key? key}) : super(key: key);
+  const FilterPacksPage({super.key});
 
-  static withOverrides({
-    required StateController<FilterType<String>> packs,
+  static Widget withOverrides({
+    required FilterType<String> packs,
   }) {
     return ProviderScope(
+      restorationId: 'filter_packs_page',
       overrides: [
-        filterPacksProvider.overrideWithValue(packs),
+        filterPacksProvider.overrideWithValue(RestorableFilterType(packs), 'filterPacksProvider'),
       ],
       child: const FilterPacksPage(),
     );
@@ -111,21 +112,28 @@ class FilterPacksPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final visible = ref.watch(filterPacksProvider.select((value) => value.visible));
+    final visible = ref.watch(filterPacksProvider.select((value) => value.value.visible));
     if (!visible) return const SizedBox.shrink();
 
     final packList = ref.watch(filteredPackListProvider);
-    return Scaffold(
-      appBar: AppBar(title: const Text('Filter Packs')),
-      body: AsyncValueBuilder<Iterable<MapEntry<CycleData, List<PackResult>>>>(
-        value: packList,
-        data: (items) {
-          return CustomScrollView(
-            slivers: <Widget>[
-              ...items.map((e) => FilterCycleCheckbox(cycle: e.key, packList: e.value)),
-            ],
-          );
-        },
+    return WillPopScope(
+      onWillPop: () async {
+        final packs = ref.read(filterPacksProvider);
+        Navigator.of(context).pop(packs.value);
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Filter Packs')),
+        body: AsyncValueBuilder<Iterable<MapEntry<CycleData, List<PackResult>>>>(
+          value: packList,
+          data: (items) {
+            return CustomScrollView(
+              slivers: <Widget>[
+                ...items.map((e) => FilterCycleCheckbox(cycle: e.key, packList: e.value)),
+              ],
+            );
+          },
+        ),
       ),
     );
   }

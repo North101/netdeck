@@ -1,9 +1,12 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 
 import '/db/database.dart';
 import '/providers.dart';
+import '/util.dart';
+import '/util/grouped_card_code_list.dart';
 import '/util/header_list.dart';
 import '/view/async_value_builder.dart';
 import '/view/card_gallery_page.dart';
@@ -11,7 +14,7 @@ import '/view/card_tile.dart';
 import '/view/header_list_tile.dart';
 
 class DeckCompareBody extends ConsumerWidget {
-  const DeckCompareBody({Key? key}) : super(key: key);
+  const DeckCompareBody({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -20,7 +23,7 @@ class DeckCompareBody extends ConsumerWidget {
       value: compareCardList,
       data: (compareCardList) => CustomScrollView(
         slivers: [
-          ...compareCardList.map((headerList) => DeckCardHeader(compareCardList.sumUntilItem(headerList), headerList)),
+          ...compareCardList.mapItems(DeckCardHeader.new),
         ],
       ),
     );
@@ -28,53 +31,66 @@ class DeckCompareBody extends ConsumerWidget {
 }
 
 class DeckCardHeader extends ConsumerWidget {
-  const DeckCardHeader(this.indexOffset, this.headerList, {Key? key}) : super(key: key);
+  const DeckCardHeader(this.indexOffset, this.headerList, {super.key});
 
   final HeaderItems<MapEntry<CardResult, int>> headerList;
   final int indexOffset;
 
-  void onTap(BuildContext context, WidgetRef ref, int index) {}
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final count = headerList.map<int>((e) => e.value).sum;
+    return SliverStickyHeader(
+      header: HeaderListTile.titleCount(title: headerList.header, count: count),
+      sliver: SliverList(
+        delegate: SliverChildSeperatedBuilderDelegate(
+          (context, index) => DeckCardTile(
+            index: indexOffset + index,
+            card: headerList[index].key,
+            count: headerList[index].value,
+          ),
+          (context, index) => const Divider(),
+          childCount: headerList.length,
+        ),
+      ),
+    );
+  }
+}
 
-  Widget cardItemBuilder(BuildContext context, WidgetRef ref, int index, CardResult card, int count) {
-    final maxCardList = ref.watch(compareMaxCardListProvider);
+class DeckCardTile extends ConsumerWidget {
+  const DeckCardTile({
+    required this.index,
+    required this.card,
+    required this.count,
+    super.key,
+  });
+
+  final int index;
+  final CardResult card;
+  final int count;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final maxCardList = ref.watch(compareMaxCardListProvider.select((value) {
+      return value.whenOrNull(data: (data) => data) ?? const {};
+    }));
     return CardTile(
       card,
       key: ValueKey(card),
       trailing: Text('$count / ${maxCardList[card]}'),
       onTap: () async {
+        final navigator = Navigator.of(context);
         final compareCardList = await ref.read(compareGroupedCardListProvider.future);
-        final groupedCardList = HeaderList(compareCardList.map((e) {
-          return HeaderItems<CardResult>(e.header, e.items.map((e) => e.key).toList());
+        final groupedCardList = GroupedCardCodeList(compareCardList.map((e) {
+          return HeaderItems(e.header, e.items.map((e) => e.key.code).toList());
         }).toList());
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-          return CardGalleryPage.withOverrides(
-            groupedCardList: groupedCardList,
-            currentIndex: index,
-          );
-        }));
+        navigator.restorablePush(
+          openCardGalleryPage,
+          arguments: CardGalleryArguments(
+            items: groupedCardList,
+            index: index,
+          ).toJson(),
+        );
       },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final count = headerList.fold<int>(0, (value, entry) => value += entry.value);
-    return SliverStickyHeader(
-      header: HeaderListTile.titleCount(title: headerList.header, count: count),
-      sliver: SliverList(
-        delegate: SliverChildBuilderDelegate(
-          (context, index) {
-            if (index.isEven) {
-              final realIndex = index ~/ 2;
-              final card = headerList[realIndex];
-              return cardItemBuilder(context, ref, indexOffset + realIndex, card.key, card.value);
-            } else {
-              return const Divider();
-            }
-          },
-          childCount: headerList.length * 2,
-        ),
-      ),
     );
   }
 }

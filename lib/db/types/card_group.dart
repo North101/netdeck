@@ -1,5 +1,4 @@
 import 'package:collection/collection.dart';
-import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 
 import '/db/database.dart';
@@ -156,15 +155,14 @@ extension CardGroupEx on CardGroup {
   }
 }
 
-class CardGroupConverter extends NullAwareTypeConverter<CardGroup, String> {
+class CardGroupConverter extends MyTypeConverter<CardGroup, String> {
   const CardGroupConverter(this.defaultValue);
 
   final CardGroup defaultValue;
 
   @override
-  CardGroup requireMapToDart(String fromDb) =>
-      CardGroup.values.firstWhereOrNull((e) => requireMapToSql(e) == fromDb) ?? defaultValue;
+  CardGroup fromSql(String fromDb) => CardGroup.values.firstWhereOrNull((e) => toSql(e) == fromDb) ?? defaultValue;
 
   @override
-  String requireMapToSql(CardGroup value) => value.toString();
+  String toSql(CardGroup value) => value.toString();
 }

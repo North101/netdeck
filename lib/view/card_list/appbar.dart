@@ -10,9 +10,8 @@ class CardListAppBar extends ConsumerWidget implements PreferredSizeWidget {
     this.automaticallyImplyLeading = true,
     required this.title,
     this.color,
-    Key? key,
-  })  : preferredSize = const Size.fromHeight(kToolbarHeight),
-        super(key: key);
+    super.key,
+  }) : preferredSize = const Size.fromHeight(kToolbarHeight);
 
   final bool automaticallyImplyLeading;
   final String title;
@@ -23,7 +22,7 @@ class CardListAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Widget build(context, ref) {
-    final isSearching = ref.watch(filterSearchingProvider);
+    final isSearching = ref.watch(filterSearchingProvider).value;
     if (isSearching) {
       return CardSearchAppBar();
     }

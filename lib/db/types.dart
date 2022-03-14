@@ -6,8 +6,10 @@ export 'types/card_sort.dart';
 export 'types/color.dart';
 export 'types/datetime_utc.dart';
 export 'types/deck_group.dart';
+export 'types/deck_micro_result.dart';
+export 'types/deck_mini_result.dart';
+export 'types/deck_result2.dart';
 export 'types/deck_sort.dart';
-export 'types/deck_state.dart';
 
 String relativeDate(DateTime value) {
   final now = DateTime.now();

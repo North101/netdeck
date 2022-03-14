@@ -6,7 +6,6 @@ import 'text_scaled_builder.dart';
 
 class DeckTile extends StatelessWidget {
   DeckTile({
-    Key? key,
     required this.deck,
     required this.selected,
     this.trailing,
@@ -14,9 +13,10 @@ class DeckTile extends StatelessWidget {
     this.onTap,
     this.onLongPress,
     this.onTagTap,
+    Key? key,
   }) : super(key: key ?? ValueKey(deck));
 
-  final DeckResult2 deck;
+  final DeckFullResult deck;
   final bool selected;
   final Set<String> selectedTags;
   final Widget? trailing;
@@ -36,28 +36,26 @@ class DeckTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(deck.identity.title),
-          RichText(
-            text: TextSpan(children: [
-              if (deck.deck.synced != null)
-                if (deck.syncIssues() == SyncIssues.both)
-                  WidgetSpan(child: TextScaledBuilder(builder: (context, height) {
-                    return Icon(Icons.error, size: height, color: Colors.red);
-                  }))
-                else if (deck.syncIssues() == SyncIssues.remote)
-                  WidgetSpan(child: TextScaledBuilder(builder: (context, height) {
-                    return Icon(Icons.warning, size: height, color: Colors.red);
-                  }))
-                else if (deck.syncIssues() == SyncIssues.local)
-                  WidgetSpan(child: TextScaledBuilder(builder: (context, height) {
-                    return Icon(Icons.sync, size: height, color: Colors.amber);
-                  }))
-                else
-                  WidgetSpan(child: TextScaledBuilder(builder: (context, height) {
-                    return Icon(Icons.sync, size: height, color: Colors.green);
-                  })),
-              TextSpan(text: 'Updated: ${timeago.format(deck.deck.updated)}')
-            ], style: DefaultTextStyle.of(context).style),
-          ),
+          Text.rich(TextSpan(children: [
+            if (deck.deck.synced != null)
+              if (deck.syncIssues() == SyncIssues.both)
+                WidgetSpan(child: TextScaledBuilder(builder: (context, height) {
+                  return Icon(Icons.error, size: height, color: Colors.red);
+                }))
+              else if (deck.syncIssues() == SyncIssues.remote)
+                WidgetSpan(child: TextScaledBuilder(builder: (context, height) {
+                  return Icon(Icons.warning, size: height, color: Colors.red);
+                }))
+              else if (deck.syncIssues() == SyncIssues.local)
+                WidgetSpan(child: TextScaledBuilder(builder: (context, height) {
+                  return Icon(Icons.sync, size: height, color: Colors.amber);
+                }))
+              else
+                WidgetSpan(child: TextScaledBuilder(builder: (context, height) {
+                  return Icon(Icons.sync, size: height, color: Colors.green);
+                })),
+            TextSpan(text: 'Updated: ${timeago.format(deck.deck.updated)}')
+          ])),
           Padding(
             padding: const EdgeInsets.only(top: 4),
             child: Wrap(

@@ -5,19 +5,19 @@ import '/providers.dart';
 import '/util/card_text.dart';
 
 class MyCollectionChip extends ConsumerWidget {
-  const MyCollectionChip({Key? key}) : super(key: key);
+  const MyCollectionChip({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final collection = ref.watch(filterCollectionProvider.state);
-    if (!collection.state) return const SizedBox.shrink();
+    final collection = ref.watch(filterCollectionProvider);
+    if (!collection.value) return const SizedBox.shrink();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Chip(
         label: const Text('My Collection'),
         onDeleted: () {
-          collection.state = false;
+          collection.value = false;
         },
       ),
     );
@@ -25,19 +25,19 @@ class MyCollectionChip extends ConsumerWidget {
 }
 
 class RotationChip extends ConsumerWidget {
-  const RotationChip({Key? key}) : super(key: key);
+  const RotationChip({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final rotation = ref.watch(filterRotationProvider.state);
-    if (rotation.state == null) return const SizedBox.shrink();
+    final rotation = ref.watch(filterRotationProvider);
+    if (rotation.value == null) return const SizedBox.shrink();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Chip(
-        label: Text(rotation.state!.name),
+        label: Text(rotation.value!.name),
         onDeleted: () {
-          rotation.state = null;
+          rotation.value = null;
         },
       ),
     );
@@ -45,19 +45,19 @@ class RotationChip extends ConsumerWidget {
 }
 
 class MwlChip extends ConsumerWidget {
-  const MwlChip({Key? key}) : super(key: key);
+  const MwlChip({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mwl = ref.watch(filterMwlProvider.state);
-    if (mwl.state == null) return const SizedBox.shrink();
+    final mwl = ref.watch(filterMwlProvider);
+    if (mwl.value == null) return const SizedBox.shrink();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Chip(
-        label: Text(mwl.state!.name),
+        label: Text(mwl.value!.name),
         onDeleted: () {
-          mwl.state = null;
+          mwl.value = null;
         },
       ),
     );
@@ -65,21 +65,21 @@ class MwlChip extends ConsumerWidget {
 }
 
 class PacksChip extends ConsumerWidget {
-  const PacksChip({required this.count, Key? key}) : super(key: key);
+  const PacksChip({required this.count, super.key});
 
   final int count;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final packs = ref.watch(filterPacksProvider.state);
-    if (!packs.state.isVisible) return const SizedBox.shrink();
+    final packs = ref.watch(filterPacksProvider);
+    if (!packs.value.isVisible) return const SizedBox.shrink();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Chip(
-        label: Text(formatText('Packs', packs.state.length, count)),
+        label: Text(formatText('Packs', packs.value.length, count)),
         onDeleted: () {
-          packs.state = packs.state.copyWith(values: const {});
+          packs.value = packs.value.copyWith(values: const {});
         },
       ),
     );
@@ -87,21 +87,21 @@ class PacksChip extends ConsumerWidget {
 }
 
 class FactionsChip extends ConsumerWidget {
-  const FactionsChip({required this.count, Key? key}) : super(key: key);
+  const FactionsChip({required this.count, super.key});
 
   final int count;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final factions = ref.watch(filterFactionsProvider.state);
-    if (!factions.state.isVisible) return const SizedBox.shrink();
+    final factions = ref.watch(filterFactionsProvider);
+    if (!factions.value.isVisible) return const SizedBox.shrink();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Chip(
-        label: Text(formatText('Factions', factions.state.length, count)),
+        label: Text(formatText('Factions', factions.value.length, count)),
         onDeleted: () {
-          factions.state = factions.state.copyWith(values: const {});
+          factions.value = factions.value.copyWith(values: const {});
         },
       ),
     );
@@ -109,21 +109,21 @@ class FactionsChip extends ConsumerWidget {
 }
 
 class TypesChip extends ConsumerWidget {
-  const TypesChip({required this.count, Key? key}) : super(key: key);
+  const TypesChip({required this.count, super.key});
 
   final int count;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final types = ref.watch(filterTypesProvider.state);
-    if (!types.state.isVisible) return const SizedBox.shrink();
+    final types = ref.watch(filterTypesProvider);
+    if (!types.value.isVisible) return const SizedBox.shrink();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 4),
       child: Chip(
-        label: Text(formatText('Types', types.state.length, count)),
+        label: Text(formatText('Types', types.value.length, count)),
         onDeleted: () {
-          types.state = types.state.copyWith(values: const {});
+          types.value = types.value.copyWith(values: const {});
         },
       ),
     );

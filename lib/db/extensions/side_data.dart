@@ -1,4 +1,4 @@
-import '../database.dart';
+import '/db/database.dart';
 
 const sideOrder = [
   'runner',

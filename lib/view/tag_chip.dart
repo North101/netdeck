@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '/providers.dart';
 
 class TagChip extends ConsumerWidget {
-  const TagChip(this.tag, {Key? key}) : super(key: key);
+  const TagChip(this.tag, {super.key});
 
   final String tag;
 
@@ -15,9 +15,9 @@ class TagChip extends ConsumerWidget {
       child: Chip(
         label: Text(tag),
         onDeleted: () {
-          final tags = ref.read(filterTagsProvider.state);
-          tags.state = tags.state = {
-            ...tags.state.where((e) => e != tag),
+          final tags = ref.read(filterTagsProvider);
+          tags.value = tags.value = {
+            ...tags.value.where((e) => e != tag),
           };
         },
       ),

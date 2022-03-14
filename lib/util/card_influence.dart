@@ -38,7 +38,7 @@ class CardInfluence {
 }
 
 class TypeCountInfluence extends CardInfluence {
-  const TypeCountInfluence(this.typeCode, this.count) : super();
+  const TypeCountInfluence(this.typeCode, this.count);
 
   final int count;
   final String typeCode;
@@ -58,7 +58,7 @@ class TypeCountInfluence extends CardInfluence {
 }
 
 class CardCountInfluence extends CardInfluence {
-  const CardCountInfluence(this.cardCode, this.count) : super();
+  const CardCountInfluence(this.cardCode, this.count);
 
   final String cardCode;
   final int count;
@@ -78,7 +78,7 @@ class CardCountInfluence extends CardInfluence {
 }
 
 class DeckSizeInfluence extends CardInfluence {
-  const DeckSizeInfluence(this.deckSize) : super();
+  const DeckSizeInfluence(this.deckSize);
 
   final int deckSize;
 
@@ -92,7 +92,7 @@ class DeckSizeInfluence extends CardInfluence {
 }
 
 class NonFactionKeywordInfluence extends CardInfluence {
-  const NonFactionKeywordInfluence(this.factionCode, this.keyword, this.count) : super();
+  const NonFactionKeywordInfluence(this.factionCode, this.keyword, this.count);
 
   final int count;
   final String factionCode;

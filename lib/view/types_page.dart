@@ -9,6 +9,30 @@ import '/util/filter_type.dart';
 import 'async_value_builder.dart';
 import 'header_list_tile.dart';
 
+class FilterTypesResult {
+  const FilterTypesResult({
+    required this.sides,
+    required this.types,
+  });
+
+  factory FilterTypesResult.fromJson(Map<String, dynamic> data) {
+    return FilterTypesResult(
+      sides: FilterType<String>.fromJson((data['sides'] as Map).cast()),
+      types: FilterType<String>.fromJson((data['types'] as Map).cast()),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'sides': sides.toJson(),
+      'types': types.toJson(),
+    };
+  }
+
+  final FilterType<String> sides;
+  final FilterType<String> types;
+}
+
 final filteredTypeListProvider = StreamProvider((ref) {
   final db = ref.watch(dbProvider);
   final where = buildAnd([
@@ -29,26 +53,26 @@ class FilterTypeCheckbox extends ConsumerWidget {
   const FilterTypeCheckbox({
     required this.side,
     required this.typeList,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final SideData? side;
   final List<TypeResult> typeList;
 
   void setFactions(WidgetRef ref, bool? selected, Iterable<String> values) {
-    final types = ref.read(filterTypesProvider.state);
-    final value = types.state.toSet();
+    final types = ref.read(filterTypesProvider);
+    final value = types.value.toSet();
     if (selected == true) {
       value.addAll(values);
     } else {
       value.removeAll(values);
     }
-    types.state = types.state.copyWith(values: value);
+    types.value = types.value.copyWith(values: value);
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final types = ref.watch(filterTypesProvider);
+    final types = ref.watch(filterTypesProvider).value;
     final bool? selected;
     if (typeList.every((e) => types.contains(e.type.code))) {
       selected = true;
@@ -105,16 +129,17 @@ class FilterTypeCheckbox extends ConsumerWidget {
 }
 
 class FilterTypesPage extends ConsumerWidget {
-  const FilterTypesPage({Key? key}) : super(key: key);
+  const FilterTypesPage({super.key});
 
-  static withOverrides({
-    required StateController<FilterType<String>> sides,
-    required StateController<FilterType<String>> types,
+  static Widget withOverrides({
+    required FilterType<String> sides,
+    required FilterType<String> types,
   }) {
     return ProviderScope(
+      restorationId: 'filter_types_page',
       overrides: [
-        filterSidesProvider.overrideWithValue(sides),
-        filterTypesProvider.overrideWithValue(types),
+        filterSidesProvider.overrideWithValue(RestorableFilterType(sides), 'filterSidesProvider'),
+        filterTypesProvider.overrideWithValue(RestorableFilterType(types), 'filterTypesProvider'),
       ],
       child: const FilterTypesPage(),
     );
@@ -122,16 +147,25 @@ class FilterTypesPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final visible = ref.watch(filterTypesProvider.select((value) => value.visible));
+    final visible = ref.watch(filterTypesProvider.select((value) => value.value.visible));
     if (!visible) return const SizedBox.shrink();
 
     final typeList = ref.watch(filteredTypeListProvider);
-    return Scaffold(
-      appBar: AppBar(title: const Text('Filter Types')),
-      body: AsyncValueBuilder<Iterable<MapEntry<SideData?, List<TypeResult>>>>(
-        value: typeList,
-        data: (items) => CustomScrollView(
-          slivers: items.map((e) => FilterTypeCheckbox(side: e.key, typeList: e.value)).toList(),
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.of(context).pop(FilterTypesResult(
+          sides: ref.read(filterSidesProvider).value,
+          types: ref.read(filterTypesProvider).value,
+        ));
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(title: const Text('Filter Types')),
+        body: AsyncValueBuilder<Iterable<MapEntry<SideData?, List<TypeResult>>>>(
+          value: typeList,
+          data: (items) => CustomScrollView(
+            slivers: items.map((e) => FilterTypeCheckbox(side: e.key, typeList: e.value)).toList(),
+          ),
         ),
       ),
     );

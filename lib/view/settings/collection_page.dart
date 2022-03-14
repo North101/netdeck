@@ -12,8 +12,8 @@ class CardFilterCycleCheckbox extends ConsumerWidget {
   const CardFilterCycleCheckbox({
     required this.cycle,
     required this.packList,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   final CycleData cycle;
   final List<CollectionResult> packList;
@@ -90,7 +90,7 @@ class CardFilterCycleCheckbox extends ConsumerWidget {
 }
 
 class CollectionSettingsPage extends ConsumerWidget {
-  const CollectionSettingsPage({Key? key}) : super(key: key);
+  const CollectionSettingsPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

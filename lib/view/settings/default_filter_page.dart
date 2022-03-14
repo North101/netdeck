@@ -5,13 +5,12 @@ import 'package:kotlin_flavor/scope_functions.dart';
 
 import '/db/database.dart';
 import '/providers.dart';
-import '/view/async_value_builder.dart';
 import '/view/format_dropdown.dart';
 import '/view/mwl_dropdown.dart';
 import '/view/rotation_dropdown.dart';
 
 class DefaultCardFilterPage extends ConsumerWidget {
-  const DefaultCardFilterPage({Key? key}) : super(key: key);
+  const DefaultCardFilterPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,38 +29,39 @@ class DefaultCardFilterPage extends ConsumerWidget {
 }
 
 class CardFilterCollection extends ConsumerWidget {
-  const CardFilterCollection({Key? key}) : super(key: key);
+  const CardFilterCollection({super.key});
+
+  void setCollection(WidgetRef ref, bool? value) {
+    final db = ref.read(dbProvider);
+    db.update(db.settings).write(SettingsCompanion(
+          filterCollection: Value(value!),
+        ));
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settings = ref.watch(settingProvider);
-    return AsyncValueBuilder<SettingResult>(
-      value: settings,
-      data: (data) {
-        final collection = ref.watch(collectionProvider(false));
-        return CheckboxListTile(
-          value: data.settings.filterCollection,
-          title: const Text('My Collection'),
-          subtitle: collection.maybeWhen(
-            data: (data) {
-              return Text('${data.where((item) => item.inCollection).length} / ${data.length}');
-            },
-            orElse: () => null,
-          ),
-          onChanged: (value) {
-            final db = ref.read(dbProvider);
-            db.update(db.settings).write(SettingsCompanion(
-                  filterCollection: Value(value!),
-                ));
-          },
-        );
-      },
+    final filterCollection = ref.watch(settingProvider.select((value) {
+      return value.whenData((value) {
+        return value.settings.filterCollection;
+      }).whenOrNull(data: (data) => data);
+    }));
+    final collection = ref.watch(collectionProvider(false));
+    return CheckboxListTile(
+      value: filterCollection ?? false,
+      title: const Text('My Collection'),
+      subtitle: collection.maybeWhen(
+        data: (data) {
+          return Text('${data.where((item) => item.inCollection).length} / ${data.length}');
+        },
+        orElse: () => null,
+      ),
+      onChanged: filterCollection != null ? (value) => setCollection(ref, value) : null,
     );
   }
 }
 
 class CardFilterFormat extends ConsumerWidget {
-  const CardFilterFormat({Key? key}) : super(key: key);
+  const CardFilterFormat({super.key});
 
   void setFormat(WidgetRef ref, SettingResult settings, FormatResult? value) {
     final rotation = settings.filterRotation;
@@ -77,22 +77,21 @@ class CardFilterFormat extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settings = ref.watch(settingProvider);
+    final settings = ref.watch(settingProvider.select((value) {
+      return value.whenOrNull(data: (data) => data);
+    }));
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: AsyncValueBuilder<SettingResult>(
-        value: settings,
-        data: (settings) => FormatDropdown.withOverrides(
-          format: settings.filterFormat,
-          onChanged: (value) => setFormat(ref, settings, value),
-        ),
+      child: FormatDropdown.withOverrides(
+        format: settings?.filterFormat,
+        onChanged: settings != null ? (value) => setFormat(ref, settings, value) : null,
       ),
     );
   }
 }
 
 class CardFilterRotation extends ConsumerWidget {
-  const CardFilterRotation({Key? key}) : super(key: key);
+  const CardFilterRotation({super.key});
 
   void setRotation(WidgetRef ref, RotationData? value) {
     final db = ref.read(dbProvider);
@@ -103,23 +102,22 @@ class CardFilterRotation extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settings = ref.watch(settingProvider);
+    final settings = ref.watch(settingProvider.select((value) {
+      return value.whenOrNull(data: (data) => data);
+    }));
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: AsyncValueBuilder<SettingResult>(
-        value: settings,
-        data: (settings) => RotationDropdown.withOverrides(
-          format: settings.filterFormat,
-          rotation: settings.filterRotation,
-          onChanged: (value) => setRotation(ref, value),
-        ),
+      child: RotationDropdown.withOverrides(
+        format: settings?.filterFormat,
+        rotation: settings?.filterRotation,
+        onChanged: settings != null ? (value) => setRotation(ref, value) : null,
       ),
     );
   }
 }
 
 class CardFilterMwl extends ConsumerWidget {
-  const CardFilterMwl({Key? key}) : super(key: key);
+  const CardFilterMwl({super.key});
 
   void setMwl(WidgetRef ref, MwlData? value) {
     final db = ref.read(dbProvider);
@@ -130,16 +128,15 @@ class CardFilterMwl extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final settings = ref.watch(settingProvider);
+    final settings = ref.watch(settingProvider.select((value) {
+      return value.whenOrNull(data: (data) => data);
+    }));
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: AsyncValueBuilder<SettingResult>(
-        value: settings,
-        data: (settings) => MwlDropdown.withOverrides(
-          format: settings.filterFormat,
-          mwl: settings.filterMwl,
-          onChanged: (MwlData? value) => setMwl(ref, value),
-        ),
+      child: MwlDropdown.withOverrides(
+        format: settings?.filterFormat,
+        mwl: settings?.filterMwl,
+        onChanged: settings != null ? (value) => setMwl(ref, value) : null,
       ),
     );
   }

@@ -1,20 +1,17 @@
-import 'package:about/about.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import 'package:kotlin_flavor/scope_functions.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-import '/db/database.dart';
 import '/providers.dart';
 import '/util/nrdb/private.dart';
-import '/view/async_value_builder.dart';
 import '/view/header_list_tile.dart';
 import 'collection_page.dart';
 import 'default_filter_page.dart';
 
 class SettingsBody extends ConsumerWidget {
-  const SettingsBody({Key? key}) : super(key: key);
+  const SettingsBody({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,7 +27,7 @@ class SettingsBody extends ConsumerWidget {
 }
 
 class SettingsGeneral extends ConsumerWidget {
-  const SettingsGeneral({Key? key}) : super(key: key);
+  const SettingsGeneral({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -47,59 +44,63 @@ class SettingsGeneral extends ConsumerWidget {
 }
 
 class SettingsCollection extends ConsumerWidget {
-  const SettingsCollection({Key? key}) : super(key: key);
+  const SettingsCollection({super.key});
+
+  static Route<void> openCollectionPage(BuildContext context, Object? arguments) {
+    return MaterialPageRoute(builder: (context) {
+      return const CollectionSettingsPage();
+    });
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final collection = ref.watch(collectionProvider(false));
-    return AsyncValueBuilder<List<CollectionResult>>(
-      value: collection,
-      data: (data) => ListTile(
-        title: const Text('My Collection'),
-        subtitle: Text('${data.where((item) => item.inCollection).length} / ${data.length}'),
-        onTap: () async {
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-            return const CollectionSettingsPage();
-          }));
-        },
+    return ListTile(
+      title: const Text('My Collection'),
+      subtitle: collection.whenOrNull<Widget?>(
+        error: (error, stackTrace) => Text(error.toString()),
+        data: (data) => Text('${data.where((item) => item.inCollection).length} / ${data.length}'),
       ),
+      onTap: () => Navigator.of(context).restorablePush(openCollectionPage),
     );
   }
 }
 
 class SettingsDefaultCardFilters extends ConsumerWidget {
-  const SettingsDefaultCardFilters({Key? key}) : super(key: key);
+  const SettingsDefaultCardFilters({super.key});
+
+  static Route<void> openDefaultCardFilterPage(BuildContext context, Object? arguments) {
+    return MaterialPageRoute(builder: (context) {
+      return const DefaultCardFilterPage();
+    });
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingProvider);
-    return AsyncValueBuilder<SettingResult>(
-      value: settings,
-      data: (data) => ListTile(
-        title: const Text('Default Card Filter'),
-        subtitle: [
+    return ListTile(
+      title: const Text('Default Card Filter'),
+      subtitle: settings.whenOrNull<Widget?>(
+        error: (error, strackTrace) => Text(error.toString()),
+        data: (data) => [
           if (data.settings.filterCollection) 'My Collection',
           if (data.filterFormat != null) 'Format: ${data.filterFormat!.name}',
           if (data.filterRotation != null) 'Rotation: ${data.filterRotation!.name}',
           if (data.filterMwl != null) 'Most Wanted List: ${data.filterMwl!.name}',
         ].join('\n').let((e) => e.isNotEmpty ? Text(e) : null),
-        onTap: () {
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-            return const DefaultCardFilterPage();
-          }));
-        },
       ),
+      onTap: () => Navigator.of(context).restorablePush(openDefaultCardFilterPage),
     );
   }
 }
 
 class SettingsNrdbAuth extends ConsumerWidget {
-  const SettingsNrdbAuth({Key? key}) : super(key: key);
+  const SettingsNrdbAuth({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(nrdbAuthStateProvider);
-    final lastSync = ref.watch(lastSyncProvider);
+    final lastSync = ref.watch(lastSyncProvider).value;
     return ListTile(
       title: const Text('Account'),
       subtitle: authState.map<Widget>(
@@ -157,45 +158,40 @@ class SettingsNrdbAuth extends ConsumerWidget {
 }
 
 class SettingsNrdbUpdateDatabase extends ConsumerWidget {
-  const SettingsNrdbUpdateDatabase({Key? key}) : super(key: key);
+  const SettingsNrdbUpdateDatabase({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final nrdbApi = ref.watch(nrdbPublicApiProvider);
+    final nrdbApi = ref.watch(nrdbPublicApiProvider).value;
     return ListTile(
       title: const Text('Card Data'),
-      subtitle: AsyncValueBuilder<DateTime>(
-        value: nrdbApi,
-        loading: () => const Text('Loading...'),
-        data: (data) => Text('Last Checked: ${timeago.format(data)}'),
-      ),
+      subtitle: nrdbApi == null ? const Text('Loading...') : Text('Last Checked: ${timeago.format(nrdbApi)}'),
       trailing: Container(
         width: 96,
         alignment: Alignment.center,
-        child: nrdbApi.maybeWhen(
-          loading: () => const SizedBox(
-            width: 32,
-            height: 32,
-            child: CircularProgressIndicator(),
-          ),
-          orElse: () => SizedBox(
-            width: 96,
-            child: ElevatedButton(
-              onPressed: () {
-                final nrdbApi = ref.read(nrdbPublicApiProvider.notifier);
-                nrdbApi.update(force: true);
-              },
-              child: const Text('Update'),
-            ),
-          ),
-        ),
+        child: nrdbApi == null
+            ? const SizedBox(
+                width: 32,
+                height: 32,
+                child: CircularProgressIndicator(),
+              )
+            : SizedBox(
+                width: 96,
+                child: ElevatedButton(
+                  onPressed: () {
+                    final nrdbApi = ref.read(nrdbPublicApiProvider);
+                    nrdbApi.update(force: true);
+                  },
+                  child: const Text('Update'),
+                ),
+              ),
       ),
     );
   }
 }
 
 class SettingsNrdb extends ConsumerWidget {
-  const SettingsNrdb({Key? key}) : super(key: key);
+  const SettingsNrdb({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -218,30 +214,18 @@ class SettingsNrdb extends ConsumerWidget {
 }
 
 class AboutTile extends StatelessWidget {
-  const AboutTile({Key? key}) : super(key: key);
+  const AboutTile({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      title: const Text('About'),
-      onTap: () => showAboutPage(
-        context: context,
-        values: {
-          'version': '1.0',
-          'year': DateTime.now().year.toString(),
-        },
-        children: const <Widget>[
-          LicensesPageListTile(
-            icon: Icon(Icons.favorite),
-          ),
-        ],
-      ),
+    return const ListTile(
+      title: Text('About'),
     );
   }
 }
 
 class SettingsApp extends ConsumerWidget {
-  const SettingsApp({Key? key}) : super(key: key);
+  const SettingsApp({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

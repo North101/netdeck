@@ -1,11 +1,11 @@
-import 'package:drift/drift.dart';
+import '/db/database.dart';
 
-class DateTimeUtcConverter extends NullAwareTypeConverter<DateTime, int> {
+class DateTimeUtcConverter extends MyTypeConverter<DateTime, int> {
   const DateTimeUtcConverter();
 
   @override
-  DateTime requireMapToDart(int fromDb) => DateTime.fromMillisecondsSinceEpoch(fromDb * 1000, isUtc: true);
+  DateTime fromSql(int fromDb) => DateTime.fromMillisecondsSinceEpoch(fromDb * 1000, isUtc: true);
 
   @override
-  int requireMapToSql(DateTime value) => value.toUtc().millisecondsSinceEpoch ~/ 1000;
+  int toSql(DateTime value) => value.toUtc().millisecondsSinceEpoch ~/ 1000;
 }

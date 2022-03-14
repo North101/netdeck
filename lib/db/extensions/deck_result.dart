@@ -1,8 +1,59 @@
 import 'package:drift/drift.dart';
+import 'package:kotlin_flavor/scope_functions.dart';
 
-import '../database.dart';
+import '/db/database.dart';
 
 extension DeckResultEx on DeckResult {
+  static fromJson(Map<String, dynamic> json) => DeckResult(
+        deck: DeckData.fromJson((json['deck'] as Map).cast()),
+        identity: CardData.fromJson((json['identity'] as Map).cast()),
+        pack: PackData.fromJson((json['pack'] as Map).cast()),
+        cycle: CycleData.fromJson((json['cycle'] as Map).cast()),
+        faction: FactionData.fromJson((json['faction'] as Map).cast()),
+        side: SideData.fromJson((json['side'] as Map).cast()),
+        type: TypeData.fromJson((json['type'] as Map).cast()),
+        subtype: (json['subtype'] as Map?)?.let((e) => TypeData.fromJson(e.cast())),
+        format: (json['format'] as Map?)?.let((e) => FormatData.fromJson(e.cast())),
+        rotation: (json['rotation'] as Map?)?.let((e) => RotationData.fromJson(e.cast())),
+        mwl: (json['mwl'] as Map?)?.let((e) => MwlData.fromJson(e.cast())),
+      );
+
+  Map<String, dynamic> toJson() {
+    return {
+      'deck': deck.toJson(),
+      'identity': identity.toJson(),
+      'pack': pack.toJson(),
+      'cycle': cycle.toJson(),
+      'faction': faction.toJson(),
+      'side': side.toJson(),
+      'type': type.toJson(),
+      'subtype': subtype?.toJson(),
+      'format': format?.toJson(),
+      'rotation': rotation?.toJson(),
+      'mwl': mwl?.toJson(),
+    };
+  }
+
+  DeckFullResult toFullResult({
+    Map<CardResult, int> cards = const {},
+    List<String> tags = const [],
+  }) =>
+      DeckFullResult(
+        deck: deck,
+        identity: identity,
+        pack: pack,
+        cycle: cycle,
+        faction: faction,
+        side: side,
+        type: type,
+        subtype: subtype,
+        format: format,
+        rotation: rotation,
+        mwl: mwl,
+        cards: cards,
+        tags: tags,
+      );
+
   DeckResult copyWith({
     DeckData? deck,
     Value<FormatData?> format = const Value.absent(),
@@ -40,24 +91,5 @@ extension DeckResultEx on DeckResult {
     );
   }
 
-  SyncIssues syncIssues([DateTime? remoteUpdated]) {
-    final hasLocalChanges = deck.synced != null && deck.updated != deck.synced;
-    final hasRemoteChanges = deck.synced != null && deck.synced != (remoteUpdated ?? deck.remoteUpdated);
-    if (hasLocalChanges && hasRemoteChanges) {
-      return SyncIssues.both;
-    } else if (hasLocalChanges) {
-      return SyncIssues.local;
-    } else if (hasRemoteChanges) {
-      return SyncIssues.remote;
-    } else {
-      return SyncIssues.none;
-    }
-  }
-}
-
-enum SyncIssues {
-  none,
-  local,
-  remote,
-  both,
+  SyncIssues syncIssues([DateTime? remoteUpdated]) => deck.syncIssues(remoteUpdated);
 }

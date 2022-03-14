@@ -4,15 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/db/database.dart';
 import '/providers.dart';
-import 'async_value_builder.dart';
 
 class RotationDropdown extends ConsumerWidget {
-  const RotationDropdown({Key? key, required this.onChanged}) : super(key: key);
+  const RotationDropdown({super.key, required this.onChanged});
 
-  static withOverrides({
+  static Widget withOverrides({
     required FormatData? format,
     required RotationData? rotation,
-    required void Function(RotationData? value) onChanged,
+    required void Function(RotationData? value)? onChanged,
   }) {
     return ProviderScope(
       overrides: [
@@ -23,26 +22,27 @@ class RotationDropdown extends ConsumerWidget {
     );
   }
 
-  final void Function(RotationData? value) onChanged;
+  final void Function(RotationData? value)? onChanged;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final format = ref.watch(formatProvider);
     final rotation = ref.watch(rotationProvider);
     final rotationList = ref.watch(rotationListProvider(format));
-    return AsyncValueBuilder<List<RotationData>>(
-      value: rotationList,
-      data: (items) => DropdownButtonFormField<RotationData>(
-        isExpanded: true,
-        value: items.firstWhereOrNull((e) => e == rotation),
-        decoration: const InputDecoration(
-          labelText: 'Rotation',
-        ),
-        onChanged: (value) {
-          FocusScope.of(context).requestFocus(FocusNode());
-          onChanged(value);
-        },
-        selectedItemBuilder: (context) {
+    return DropdownButtonFormField<RotationData>(
+      isExpanded: true,
+      value: rotationList.whenOrNull<RotationData?>(
+        data: (items) => items.firstWhereOrNull((e) => e == rotation),
+      ),
+      decoration: const InputDecoration(
+        labelText: 'Rotation',
+      ),
+      onChanged: rotationList.whenOrNull<void Function(RotationData?)?>(
+        data: (items) => onChanged,
+      ),
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      selectedItemBuilder: rotationList.whenOrNull(
+        data: (items) => (context) {
           return [
             ...items.map(
               (item) => Row(
@@ -53,14 +53,16 @@ class RotationDropdown extends ConsumerWidget {
                     color: Theme.of(context).iconTheme.color,
                     iconSize: 16,
                     icon: const Icon(Icons.clear),
-                    onPressed: () => onChanged(null),
+                    onPressed: onChanged != null ? () => onChanged!(null) : null,
                   ),
                 ],
               ),
             ),
           ];
         },
-        items: [
+      ),
+      items: rotationList.whenOrNull(
+        data: (items) => [
           ...items.map(
             (item) => DropdownMenuItem(
               value: item,

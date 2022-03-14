@@ -1,4 +1,6 @@
 import 'package:drift/drift.dart' as drift;
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:kotlin_flavor/scope_functions.dart';
 import 'package:query/query.dart';
@@ -8,21 +10,125 @@ import '/db/querybuilder.dart';
 import '/providers/db.dart';
 import '/util/filter_type.dart';
 
-final filterSearchingProvider = StateProvider<bool>((_) => throw UnimplementedError());
-final filterQueryProvider = StateProvider<Query?>((_) => throw UnimplementedError());
-final filterFormatProvider = StateProvider<FormatData?>((_) => throw UnimplementedError());
-final filterRotationProvider = StateProvider<RotationData?>((_) => throw UnimplementedError());
-final filterMwlProvider = StateProvider<MwlData?>((_) => throw UnimplementedError());
-final filterCollectionProvider = StateProvider<bool>((_) => throw UnimplementedError());
-final filterPacksProvider = StateProvider<FilterType<String>>((_) => throw UnimplementedError());
-final filterSidesProvider = StateProvider<FilterType<String>>((_) => throw UnimplementedError());
-final filterFactionsProvider = StateProvider<FilterType<String>>((_) => throw UnimplementedError());
-final filterTypesProvider = StateProvider<FilterType<String>>((_) => throw UnimplementedError());
-final filterTagsProvider = StateProvider<Set<String>>((_) => throw UnimplementedError());
+class RestorableQuery extends RestorableValue<Query?> {
+  RestorableQuery(this._defaultValue);
+
+  final Query? _defaultValue;
+
+  @override
+  createDefaultValue() => _defaultValue;
+
+  @override
+  void didUpdateValue(oldValue) {
+    assert(debugIsSerializableForRestoration(toPrimitives()));
+    notifyListeners();
+  }
+
+  @override
+  fromPrimitives(Object? data) => data != null ? tryParseQuery(data as String) : null;
+
+  @override
+  Object? toPrimitives() => value?.toString();
+}
+
+abstract class RestorableData<T extends drift.DataClass?> extends RestorableValue<T> {
+  RestorableData(this._defaultValue);
+
+  final T _defaultValue;
+
+  @override
+  createDefaultValue() => _defaultValue;
+
+  @override
+  void didUpdateValue(oldValue) {
+    assert(debugIsSerializableForRestoration(toPrimitives()));
+    notifyListeners();
+  }
+
+  @override
+  Object? toPrimitives() => value?.toJson();
+}
+
+class RestorableFormatData extends RestorableData<FormatData?> {
+  RestorableFormatData(super.defaultValue);
+
+  @override
+  fromPrimitives(Object? data) => data != null ? FormatData.fromJson((data as Map).cast()) : null;
+}
+
+class RestorableRotationData extends RestorableData<RotationData?> {
+  RestorableRotationData(super.defaultValue);
+
+  @override
+  fromPrimitives(Object? data) => data != null ? RotationData.fromJson((data as Map).cast()) : null;
+}
+
+class RestorableMwlData extends RestorableData<MwlData?> {
+  RestorableMwlData(super.defaultValue);
+
+  @override
+  fromPrimitives(Object? data) => data != null ? MwlData.fromJson((data as Map).cast()) : null;
+}
+
+class RestorableFilterType extends RestorableValue<FilterType<String>> {
+  RestorableFilterType(this._defaultValue);
+
+  final FilterType<String> _defaultValue;
+
+  @override
+  createDefaultValue() => _defaultValue;
+
+  @override
+  void didUpdateValue(oldValue) {
+    assert(debugIsSerializableForRestoration(toPrimitives()));
+    notifyListeners();
+  }
+
+  @override
+  FilterType<String> fromPrimitives(Object? data) => FilterType<String>.fromJson((data as Map).cast());
+
+  @override
+  Object? toPrimitives() => value.toJson();
+}
+
+class RestorableSet<T> extends RestorableValue<Set<T>> {
+  RestorableSet(this._defaultValue);
+
+  final Set<T> _defaultValue;
+
+  @override
+  createDefaultValue() => _defaultValue;
+
+  @override
+  void didUpdateValue(oldValue) {
+    assert(debugIsSerializableForRestoration(toPrimitives()));
+    notifyListeners();
+  }
+
+  @override
+  Set<T> fromPrimitives(Object? data) => Set<T>.from(data as List);
+
+  @override
+  Object? toPrimitives() {
+    return value.toList();
+  }
+}
+
+final filterSearchingProvider = RestorableProvider<RestorableBool>((_) => throw UnimplementedError());
+final filterQueryProvider = RestorableProvider<RestorableQuery>((_) => throw UnimplementedError());
+final filterFormatProvider = RestorableProvider<RestorableFormatData>((_) => throw UnimplementedError());
+final filterRotationProvider = RestorableProvider<RestorableRotationData>((_) => throw UnimplementedError());
+final filterMwlProvider = RestorableProvider<RestorableMwlData>((_) => throw UnimplementedError());
+final filterCollectionProvider = RestorableProvider<RestorableBool>((_) => throw UnimplementedError());
+final filterPacksProvider = RestorableProvider<RestorableFilterType>((_) => throw UnimplementedError());
+final filterSidesProvider = RestorableProvider<RestorableFilterType>((_) => throw UnimplementedError());
+final filterFactionsProvider = RestorableProvider<RestorableFilterType>((_) => throw UnimplementedError());
+final filterTypesProvider = RestorableProvider<RestorableFilterType>((_) => throw UnimplementedError());
+final filterTagsProvider = RestorableProvider<RestorableSet<String>>((_) => throw UnimplementedError());
 
 final filterRotationFilterProvider = Provider((ref) {
   final db = ref.watch(dbProvider);
-  final rotation = ref.watch(filterRotationProvider);
+  final rotation = ref.watch(filterRotationProvider).value;
   if (rotation == null) return null;
 
   return db.cycle.code.isInQuery(db.selectOnly(db.rotationCycle).also((e) {
@@ -33,7 +139,7 @@ final filterRotationFilterProvider = Provider((ref) {
 
 final filterMwlFilterProvider = Provider((ref) {
   final db = ref.watch(dbProvider);
-  final mwl = ref.watch(filterMwlProvider);
+  final mwl = ref.watch(filterMwlProvider).value;
   if (mwl == null) return null;
 
   return buildOr([
@@ -44,7 +150,7 @@ final filterMwlFilterProvider = Provider((ref) {
 
 final filterCollectionFilterProvider = Provider((ref) {
   final db = ref.watch(dbProvider);
-  final collection = ref.watch(filterCollectionProvider);
+  final collection = ref.watch(filterCollectionProvider).value;
   if (!collection) return null;
 
   return db.pack.code.isInQuery(db.select(db.collection));
@@ -52,7 +158,7 @@ final filterCollectionFilterProvider = Provider((ref) {
 
 final filterPackFilterProvider = Provider.family<drift.Expression<bool?>, FilterState>((ref, state) {
   final db = ref.watch(dbProvider);
-  final packs = ref.watch(filterPacksProvider);
+  final packs = ref.watch(filterPacksProvider).value;
   return buildAnd([
     if (state.always && packs.always.isNotEmpty) db.pack.code.isIn(packs.always),
     if (state.values && packs.isNotEmpty) db.pack.code.isIn(packs),
@@ -62,7 +168,7 @@ final filterPackFilterProvider = Provider.family<drift.Expression<bool?>, Filter
 
 final filterSideFilterProvider = Provider.family<drift.Expression<bool?>, FilterState>((ref, state) {
   final db = ref.watch(dbProvider);
-  final sides = ref.watch(filterSidesProvider);
+  final sides = ref.watch(filterSidesProvider).value;
   return buildAnd([
     if (state.always && sides.always.isNotEmpty) db.side.code.isIn(sides.always),
     if (state.values && sides.values.isNotEmpty) db.side.code.isIn(sides.values),
@@ -72,7 +178,7 @@ final filterSideFilterProvider = Provider.family<drift.Expression<bool?>, Filter
 
 final filterFactionFilterProvider = Provider.family<drift.Expression<bool?>, FilterState>((ref, state) {
   final db = ref.watch(dbProvider);
-  final factions = ref.watch(filterFactionsProvider);
+  final factions = ref.watch(filterFactionsProvider).value;
   final sideFilter = ref.watch(filterSideFilterProvider(FilterState(
     always: state.always,
     never: state.never,
@@ -87,7 +193,7 @@ final filterFactionFilterProvider = Provider.family<drift.Expression<bool?>, Fil
 
 final filterTypeFilterProvider = Provider.family<drift.Expression<bool?>, TypeFilterState>((ref, state) {
   final db = ref.watch(dbProvider);
-  final types = ref.watch(filterTypesProvider);
+  final types = ref.watch(filterTypesProvider).value;
   final sideFilter = ref.watch(filterSideFilterProvider(FilterState(
     always: state.always,
     never: state.never,
@@ -114,8 +220,9 @@ final filterTypeFilterProvider = Provider.family<drift.Expression<bool?>, TypeFi
 
 final tagFilterProvider = Provider((ref) {
   final db = ref.watch(dbProvider);
-  final tags = ref.watch(filterTagsProvider);
+  final tags = ref.watch(filterTagsProvider).value;
   if (tags.isEmpty) return trueExpression;
+
   return db.deck.id.isInQuery(
     db.selectOnly(db.deckTag).also((e) {
       e.addColumns([db.deckTag.deckId]);
@@ -123,58 +230,6 @@ final tagFilterProvider = Provider((ref) {
     }),
   );
 }, dependencies: [dbProvider, filterTagsProvider]);
-
-final cardQueryBuilderProvider = Provider((ref) {
-  final db = ref.watch(dbProvider);
-  return CardQueryBuilder(db);
-});
-
-final hasCardFilterProvider = Provider((ref) {
-  final collection = ref.watch(filterCollectionProvider);
-  final rotation = ref.watch(filterRotationProvider);
-  final mwl = ref.watch(filterMwlProvider);
-  final packs = ref.watch(filterPacksProvider);
-  final factions = ref.watch(filterFactionsProvider);
-  final types = ref.watch(filterTypesProvider);
-  return collection || rotation != null || mwl != null || packs.isVisible || factions.isVisible || types.isVisible;
-}, dependencies: [
-  filterCollectionProvider,
-  filterRotationProvider,
-  filterMwlProvider,
-  filterPacksProvider,
-  filterFactionsProvider,
-  filterTypesProvider,
-]);
-
-final cardFilterProvider = Provider.family<drift.Expression<bool?>, CardFilterState>((ref, state) {
-  final cardQueryBuilder = ref.watch(cardQueryBuilderProvider);
-  final parsedQuery = ref.watch(filterQueryProvider);
-  final collectionFilter = ref.watch(filterCollectionFilterProvider);
-  final rotationFilter = ref.watch(filterRotationFilterProvider);
-  final mwlFilter = ref.watch(filterMwlFilterProvider);
-  final packFilter = ref.watch(filterPackFilterProvider(state));
-  final factionFilter = ref.watch(filterFactionFilterProvider(state));
-  final typeFilter = ref.watch(filterTypeFilterProvider(state));
-  return buildAnd([
-    if (parsedQuery != null) cardQueryBuilder.build(parsedQuery),
-    if (state.collection && collectionFilter != null) collectionFilter,
-    if (state.rotation && rotationFilter != null) rotationFilter,
-    if (state.mwl && mwlFilter != null) mwlFilter,
-    packFilter,
-    factionFilter,
-    typeFilter,
-  ]);
-}, dependencies: [
-  dbProvider,
-  cardQueryBuilderProvider,
-  filterQueryProvider,
-  filterCollectionFilterProvider,
-  filterRotationFilterProvider,
-  filterMwlFilterProvider,
-  filterPackFilterProvider,
-  filterFactionFilterProvider,
-  filterTypeFilterProvider,
-]);
 
 final countStuffProvider = StreamProvider((ref) {
   final db = ref.watch(dbProvider);

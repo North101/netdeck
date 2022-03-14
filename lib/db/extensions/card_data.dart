@@ -1,6 +1,5 @@
-import '../database.dart';
+import '/db/database.dart';
 
 extension CardDataEx on CardData {
-  String get url => 'https://netrunnerdb.com/en/card/$code';
-  String get imageUrl => 'https://netrunnerdb.com/card_image/large/$code.jpg';
+  Uri get url => Uri.https('netrunnerdb.com', '/en/card/$code');
 }

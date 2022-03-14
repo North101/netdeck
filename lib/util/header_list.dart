@@ -21,10 +21,12 @@ class HeaderList<T> extends Iterable<HeaderItems<T>> {
   @override
   Iterator<HeaderItems<T>> get iterator => items.iterator;
 
-  int sumUntilItem(HeaderItems<T> item) {
-    return items.take(items.indexOf(item)).map((value) {
-        return value.length;
-      }).sum;
+  Iterable<R> mapItems<R>(R Function(int offset, HeaderItems<T> e) toElement) sync* {
+    int offset = 0;
+    for (final item in items) {
+      yield toElement(offset, item);
+      offset += item.length;
+    }
   }
 
   HeaderItems<T> operator [](int index) => items[index];

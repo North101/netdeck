@@ -3,7 +3,7 @@ import 'package:kotlin_flavor/scope_functions.dart';
 import 'package:petitparser/petitparser.dart';
 import 'package:query/query.dart';
 
-import '/db/database.dart';
+import 'database.dart';
 
 typedef FieldMap = Map<String, QueryBuilder>;
 
@@ -19,16 +19,110 @@ Query? tryParseQuery(String query) {
   return null;
 }
 
-abstract class QueryBuilder {
+String wrapQuotes(String text) {
+  if (text.contains(' ')) return '"$text"';
+  return text;
+}
+
+class Option {
+  const Option(this.value, this.replacement, [this.help]);
+
+  Option.replace(String text, int start, int end, this.value, [this.help])
+      : replacement = text.replaceRange(start, end, wrapQuotes(value));
+
+  final String value;
+  final String replacement;
+  final String? help;
+}
+
+extension on Query {
+  bool within(int position) => position >= startIndex && position <= endIndex;
+}
+
+abstract class QueryBuilder<T extends drift.TableInfo> {
   const QueryBuilder({
+    required this.table,
     this.fields = const {},
     this.extraFields = const {},
     required this.help,
   });
 
+  final T table;
   final FieldMap fields;
   final FieldMap extraFields;
   final String help;
+
+  Future<Iterable<Option>> options(Database db, String text, Query? query, int position, [String? op]) async {
+    if (query == null) {
+      return listFieldOptions(text, position, position, op: ':');
+      //
+    } else if (!query.within(position)) {
+      return const [];
+      //
+    } else if (query is TextQuery) {
+      return [
+        ...listFieldOptions(text, query.startIndex, query.endIndex, search: query.text, op: ':'),
+        ...await listQueryOptions(db, text, query, op ?? '='),
+      ];
+      //
+    } else if (query is FieldCompareQuery) {
+      if (query.field.within(position)) {
+        return listFieldOptions(text, query.field.startIndex, query.field.endIndex, search: query.field.text);
+      }
+
+      final field = fields[query.field.text] ?? extraFields[query.field.text];
+      if (field == null) return const [];
+
+      return field.options(db, text, query.text, position, query.operator.text);
+      //
+    } else if (query is FieldScope) {
+      if (query.field.within(position)) {
+        return listFieldOptions(text, query.field.startIndex, query.field.endIndex, search: query.field.text);
+      }
+
+      final field = fields[query.field.text] ?? extraFields[query.field.text];
+      if (field == null) return const [];
+
+      final child = query.child;
+      if (child is TextQuery) return await field.listQueryOptions(db, text, child, '=');
+
+      return field.options(db, text, child, position, '=');
+      //
+    } else if (query is GroupQuery) {
+      return options(db, text, query.child, position, op);
+      //
+    } else if (query is NotQuery) {
+      return options(db, text, query.child, position, op);
+      //
+    } else if (query is AndQuery) {
+      final children = query.children.reversed.where((e) => e.within(position));
+      for (final child in children) {
+        final result = await options(db, text, child, position, op);
+        if (result.isNotEmpty) return result;
+      }
+      return const [];
+      //
+    } else if (query is OrQuery) {
+      final children = query.children.reversed.where((e) => e.within(position));
+      for (final child in children) {
+        final result = await options(db, text, child, position, op);
+        if (result.isNotEmpty) return result;
+      }
+      return const [];
+      //
+    } else if (query is RangeQuery) {
+      if (query.start.within(position)) {
+        return options(db, text, query.start, position, '=');
+      } else if (query.end.within(position)) {
+        return options(db, text, query.end, position, '=');
+      }
+
+      return const [];
+      //
+    }
+
+    return const [];
+  }
 
   drift.Expression<bool?> build(Query? query) {
     if (query == null) {
@@ -38,21 +132,15 @@ abstract class QueryBuilder {
       return call(null, query);
       //
     } else if (query is FieldCompareQuery) {
-      final field = fields[query.field] ?? extraFields[query.field];
-      if (field != null) {
-        return field(query.operator, query.text);
-      }
-      print(fields.keys);
-      print('Unknown field: ${query.field}');
+      final field = fields[query.field.text] ?? extraFields[query.field.text];
+      if (field != null) return field(query.operator.text, query.text);
+
       return falseExpression;
       //
     } else if (query is FieldScope) {
-      final field = fields[query.field] ?? extraFields[query.field];
-      if (field != null) {
-        return field.build(query.child);
-      }
-      print(fields.keys);
-      print('Unknown field: ${query.field}');
+      final field = fields[query.field.text] ?? extraFields[query.field.text];
+      if (field != null) return field.build(query.child);
+
       return falseExpression;
       //
     } else if (query is GroupQuery) {
@@ -68,10 +156,10 @@ abstract class QueryBuilder {
       return buildOr(query.children.map(build));
       //
     } else if (query is RangeQuery) {
+      return call(query.startInclusive ? '>=' : '>', query.start) & call(query.endInclusive ? '<=' : '<', query.end);
       //
     }
 
-    print('Unknown query: $query');
     return falseExpression;
   }
 
@@ -92,7 +180,6 @@ abstract class QueryBuilder {
       return moreThanEqual(query);
     }
 
-    print('Unknown op: $op');
     return falseExpression;
   }
 
@@ -109,95 +196,135 @@ abstract class QueryBuilder {
   drift.Expression<bool?> moreThan(TextQuery query) => falseExpression;
 
   drift.Expression<bool?> moreThanEqual(TextQuery query) => falseExpression;
+
+  Iterable<Option> listFieldOptions(String text, int start, int stop, {String? search, String op = ''}) {
+    var options = fields.entries.followedBy(extraFields.entries);
+    if (search != null) {
+      options = options.where((e) => e.key.toLowerCase().contains(search.toLowerCase()));
+    }
+
+    return options.map((e) => Option.replace(text, start, stop, '${e.key}$op', e.value.help));
+  }
+
+  Future<Iterable<Option>> listQueryOptions(Database db, String text, TextQuery query, String op) async {
+    final select = await buildQueryOptionsStatement(db, query, op).get();
+    return [
+      ...await listQuerySpecialOptions(db, text, query, op),
+      ...select.map((e) {
+        print(e.read(queryOption()));
+        return Option.replace(text, query.startIndex, query.endIndex, e.read(queryOption()).toString());
+      }),
+    ];
+  }
+
+  Future<Iterable<Option>> listQuerySpecialOptions(Database db, String text, TextQuery query, String op) async =>
+      const [];
+
+  drift.Selectable<drift.TypedResult> buildQueryOptionsStatement(Database db, TextQuery query, String op) {
+    return db.selectOnly(table, distinct: true)
+      ..addColumns([queryOption()])
+      ..where((query.text.isEmpty ? trueExpression : call(op, query)) & queryOption().isNotNull())
+      ..orderBy([drift.OrderingTerm(expression: queryOption(), mode: queryOptionOrder())]);
+  }
+
+  drift.Expression queryOption();
+
+  drift.OrderingMode queryOptionOrder() => drift.OrderingMode.asc;
 }
 
-abstract class ColumnQueryBuilder<T extends drift.GeneratedColumn> extends QueryBuilder {
-  const ColumnQueryBuilder(
-    this.column, {
-    FieldMap fields = const {},
-    FieldMap extraFields = const {},
-    required String help,
-  }) : super(
-          fields: fields,
-          extraFields: extraFields,
-          help: help,
-        );
+abstract class ColumnQueryBuilder<T extends drift.TableInfo, C extends drift.GeneratedColumn> extends QueryBuilder<T> {
+  const ColumnQueryBuilder({
+    required super.table,
+    required this.column,
+    super.fields,
+    super.extraFields,
+    required super.help,
+  });
 
-  final T column;
+  final C column;
+
+  @override
+  drift.Expression queryOption() => column;
 }
 
-class StringQueryBuilder extends ColumnQueryBuilder<drift.GeneratedColumn<String?>> {
-  const StringQueryBuilder(
-    drift.GeneratedColumn<String?> column, {
-    FieldMap fields = const {},
-    FieldMap extraFields = const {},
-    required String help,
-  }) : super(
-          column,
-          fields: fields,
-          extraFields: extraFields,
-          help: help,
-        );
+class StringQueryBuilder<T extends drift.TableInfo> extends ColumnQueryBuilder<T, drift.GeneratedColumn<String?>> {
+  const StringQueryBuilder({
+    required super.table,
+    required super.column,
+    this.strippedColumn,
+    super.fields,
+    super.extraFields,
+    required super.help,
+  });
+
+  final drift.Column<String?>? strippedColumn;
 
   @override
   drift.Expression<bool?> equal(TextQuery query) {
-    return column.lower().equals(query.text.toLowerCase());
+    final text = query.text.toLowerCase();
+    final result = column.lower().equals(text);
+    if (strippedColumn == null) return result;
+
+    return result | strippedColumn!.lower().equals(text);
   }
 }
 
-class ContainsStringQueryBuilder extends ColumnQueryBuilder<drift.GeneratedColumn<String?>> {
-  const ContainsStringQueryBuilder(
-    drift.GeneratedColumn<String?> column, {
-    FieldMap fields = const {},
-    FieldMap extraFields = const {},
-    required String help,
-  }) : super(
-          column,
-          fields: fields,
-          extraFields: extraFields,
-          help: help,
-        );
+class ContainsStringQueryBuilder<T extends drift.TableInfo> extends StringQueryBuilder<T> {
+  const ContainsStringQueryBuilder({
+    required super.table,
+    required super.column,
+    super.strippedColumn,
+    super.fields,
+    super.extraFields,
+    required super.help,
+  });
 
   @override
   drift.Expression<bool?> equal(TextQuery query) {
-    return column.lower().contains(query.text.toLowerCase());
+    final text = query.text.toLowerCase();
+    final result = column.lower().contains(text);
+    if (strippedColumn == null) return result;
+
+    return result | strippedColumn!.lower().contains(text);
   }
 }
 
-class CodeNameQueryBuilder extends QueryBuilder {
+class CodeNameQueryBuilder<T extends drift.TableInfo> extends QueryBuilder<T> {
   const CodeNameQueryBuilder(
     this.code,
     this.name, {
-    FieldMap fields = const {},
-    FieldMap extraFields = const {},
-    required String help,
-  }) : super(
-          fields: fields,
-          extraFields: extraFields,
-          help: help,
-        );
+    this.strippedName,
+    required super.table,
+    super.fields,
+    super.extraFields,
+    required super.help,
+  });
 
   final drift.GeneratedColumn<String?> code;
   final drift.GeneratedColumn<String?> name;
+  final drift.GeneratedColumn<String?>? strippedName;
 
   @override
   drift.Expression<bool?> equal(TextQuery query) {
-    return code.lower().equals(query.text.toLowerCase()) | name.lower().contains(query.text.toLowerCase());
+    final text = query.text.toLowerCase();
+    final result = code.lower().equals(text) | name.lower().contains(text);
+    if (strippedName == null) return result;
+
+    return result | strippedName!.lower().contains(text);
   }
+
+  @override
+  drift.Expression queryOption() => name;
 }
 
-class IntQueryBuilder extends ColumnQueryBuilder<drift.GeneratedColumn<int?>> {
-  const IntQueryBuilder(
-    drift.GeneratedColumn<int?> column, {
-    FieldMap fields = const {},
-    FieldMap extraFields = const {},
-    required String help,
-  }) : super(
-          column,
-          fields: fields,
-          extraFields: extraFields,
-          help: help,
-        );
+class IntQueryBuilder<T extends drift.TableInfo> extends ColumnQueryBuilder<T, drift.GeneratedColumn<int?>> {
+  const IntQueryBuilder({
+    required super.table,
+    required super.column,
+    super.fields,
+    super.extraFields,
+    required super.help,
+  });
 
   @override
   drift.Expression<bool?> equal(TextQuery query) {
@@ -227,18 +354,14 @@ class IntQueryBuilder extends ColumnQueryBuilder<drift.GeneratedColumn<int?>> {
   int? parse(TextQuery query) => int.tryParse(query.text);
 }
 
-class BoolQueryBuilder extends ColumnQueryBuilder<drift.GeneratedColumn<bool?>> {
-  const BoolQueryBuilder(
-    drift.GeneratedColumn<bool?> column, {
-    FieldMap fields = const {},
-    FieldMap extraFields = const {},
-    required String help,
-  }) : super(
-          column,
-          fields: fields,
-          extraFields: extraFields,
-          help: help,
-        );
+class BoolQueryBuilder<T extends drift.TableInfo> extends ColumnQueryBuilder<T, drift.GeneratedColumn<bool?>> {
+  const BoolQueryBuilder({
+    required super.table,
+    required super.column,
+    super.fields,
+    super.extraFields,
+    required super.help,
+  });
 
   static Map<String, bool> lookup = {
     'true': true,
@@ -259,18 +382,15 @@ class BoolQueryBuilder extends ColumnQueryBuilder<drift.GeneratedColumn<bool?>> 
   }
 }
 
-class DateTimeQueryBuilder extends ColumnQueryBuilder<drift.GeneratedColumnWithTypeConverter<DateTime?, int?>> {
-  const DateTimeQueryBuilder(
-    drift.GeneratedColumnWithTypeConverter<DateTime?, int?> column, {
-    FieldMap fields = const {},
-    FieldMap extraFields = const {},
-    required String help,
-  }) : super(
-          column,
-          fields: fields,
-          extraFields: extraFields,
-          help: help,
-        );
+class DateTimeQueryBuilder<T extends drift.TableInfo>
+    extends ColumnQueryBuilder<T, drift.GeneratedColumnWithTypeConverter<DateTime?, int?>> {
+  const DateTimeQueryBuilder({
+    required super.table,
+    required super.column,
+    super.fields,
+    super.extraFields,
+    required super.help,
+  });
 
   @override
   drift.Expression<bool?> equal(TextQuery query) {
@@ -291,31 +411,33 @@ class DateTimeQueryBuilder extends ColumnQueryBuilder<drift.GeneratedColumnWithT
       final end = endOfYear;
       return column.isBetweenValues(convert(start), convert(end));
     }
-    return column.equals(convert(DateTime.tryParse(query.text)));
+
+    return datetime().like('${query.text}%');
   }
 
   @override
   drift.Expression<bool?> lessThan(TextQuery query) {
-    return column.isSmallerThanValue(convert(parseStart(query)));
+    return datetime().isSmallerThanValue(parseStart(query)?.toIso8601String() ?? query.text);
   }
 
   @override
   drift.Expression<bool?> lessThanEqual(TextQuery query) {
-    return column.isSmallerOrEqualValue(convert(parseEnd(query)));
+    return datetime().isSmallerOrEqualValue(parseEnd(query)?.toIso8601String() ?? query.text);
   }
 
   @override
   drift.Expression<bool?> moreThan(TextQuery query) {
-    return column.isBiggerThanValue(convert(parseEnd(query)));
+    return datetime().isBiggerThanValue(parseEnd(query)?.toIso8601String() ?? query.text);
   }
 
   @override
   drift.Expression<bool?> moreThanEqual(TextQuery query) {
-    return column.isBiggerOrEqualValue(convert(parseStart(query)));
+    return datetime().isBiggerOrEqualValue(parseStart(query)?.toIso8601String() ?? query.text);
   }
 
   int? convert(DateTime? value) {
-    return const DateTimeUtcConverter().mapToSql(value);
+    if (value == null) return null;
+    return column.converter.toSql(value);
   }
 
   DateTime? parseStart(TextQuery query) {
@@ -327,9 +449,8 @@ class DateTimeQueryBuilder extends ColumnQueryBuilder<drift.GeneratedColumnWithT
       return startOfMonth;
     } else if (query.text == 'year') {
       return startOfYear;
-    } else {
-      return DateTime.tryParse(query.text);
     }
+    return null;
   }
 
   DateTime? parseEnd(TextQuery query) {
@@ -341,9 +462,8 @@ class DateTimeQueryBuilder extends ColumnQueryBuilder<drift.GeneratedColumnWithT
       return endOfMonth;
     } else if (query.text == 'year') {
       return endOfYear;
-    } else {
-      return DateTime.tryParse(query.text);
     }
+    return null;
   }
 
   DateTime get startOfToday {
@@ -385,288 +505,321 @@ class DateTimeQueryBuilder extends ColumnQueryBuilder<drift.GeneratedColumnWithT
     final now = DateTime.now();
     return DateTime(now.year + 1, 0);
   }
+
+  drift.Expression<String?> datetime() =>
+      column.dartCast<DateTime?>().datetime;
+
+  @override
+  Future<Iterable<Option>> listQuerySpecialOptions(Database db, String text, TextQuery query, String op) async {
+    return [
+      for (final extra in const ['today', 'yesterday', 'month', 'year'])
+        if (extra.startsWith(query.text)) Option.replace(text, query.startIndex, query.endIndex, extra),
+    ];
+  }
+
+  @override
+  drift.Selectable<drift.TypedResult> buildQueryOptionsStatement(Database db, TextQuery query, String op) {
+    return db.selectOnly(table, distinct: true, includeJoinedTableColumns: false)
+      ..addColumns([queryOption()])
+      ..where((query.text.isEmpty ? trueExpression : call(op, query)) & queryOption().isNotNull())
+      ..orderBy([drift.OrderingTerm(expression: queryOption(), mode: queryOptionOrder())]);
+  }
+
+  @override
+  drift.Expression<String?> queryOption() => column.dartCast<DateTime?>().date;
+
+  @override
+  drift.OrderingMode queryOptionOrder() => drift.OrderingMode.desc;
 }
 
-class DeckTagsQueryBuilder extends QueryBuilder {
+class DeckTagsQueryBuilder extends QueryBuilder<DeckTag> {
   DeckTagsQueryBuilder(
     this.db, {
-    FieldMap fields = const {},
-    FieldMap extraFields = const {},
-    required String help,
-  }) : super(
-          fields: fields,
-          extraFields: extraFields,
-          help: help,
-        );
+    required super.table,
+    super.fields,
+    super.extraFields,
+    required super.help,
+  });
 
   final Database db;
 
   @override
   drift.Expression<bool?> equal(TextQuery query) {
     return db.deck.id.isInQuery(
-      db.selectOnly(db.deckTag).also((e) {
-        e.addColumns([db.deckTag.deckId]);
-        e.where(db.deckTag.tag.lower().equals(query.text.toLowerCase()));
+      db.selectOnly(table).also((e) {
+        e.addColumns([table.deckId]);
+        e.where(table.tag.lower().equals(query.text.toLowerCase()));
       }),
     );
   }
+
+  @override
+  drift.Expression queryOption() => table.tag;
 }
 
-class DeckCardsQueryBuilder extends QueryBuilder {
+class DeckCardsQueryBuilder extends CodeNameQueryBuilder<DeckCard> {
   DeckCardsQueryBuilder(
     this.db, {
-    FieldMap fields = const {},
-    FieldMap extraFields = const {},
-    required String help,
-  }) : super(
-          fields: fields,
-          extraFields: extraFields,
-          help: help,
-        );
+    required super.table,
+    super.fields,
+    super.extraFields,
+    required super.help,
+  }) : super(db.card.code, db.card.title, strippedName: db.card.strippedTitle);
 
   final Database db;
 
   @override
-  drift.Expression<bool?> equal(TextQuery query) {
+  drift.Expression<bool?> call(String? op, TextQuery query) {
     return db.deck.id.isInQuery(
-      db.selectOnly(db.deckCard, includeJoinedTableColumns: false).join([
-        drift.innerJoin(db.card, db.deckCard.cardCode.equalsExp(db.card.code)),
+      db.selectOnly(table, includeJoinedTableColumns: false).join([
+        drift.innerJoin(db.card, table.cardCode.equalsExp(db.card.code)),
       ]).also((e) {
-        e.addColumns([db.deckCard.deckId]);
-        e.where(db.card.code.lower().equals(query.text.toLowerCase()) |
-            db.card.title.lower().contains(query.text.toLowerCase()));
+        e.addColumns([table.deckId]);
+        e.where(super.call(op, query));
       }),
     );
   }
+
+  @override
+  drift.Selectable<drift.TypedResult> buildQueryOptionsStatement(Database db, TextQuery query, String op) {
+    return db.selectOnly(db.deck, distinct: true, includeJoinedTableColumns: false).join([
+      drift.innerJoin(table, table.deckId.equalsExp(db.deck.id)),
+      drift.innerJoin(db.card, db.card.code.equalsExp(table.cardCode)),
+    ])
+      ..addColumns([queryOption()])
+      ..where((query.text.isEmpty ? trueExpression : super.call(op, query)) & queryOption().isNotNull())
+      ..orderBy([drift.OrderingTerm(expression: queryOption())]);
+  }
+
+  @override
+  drift.Expression queryOption() => db.card.title;
 }
 
-class CardQueryBuilder extends CodeNameQueryBuilder {
+class CardQueryBuilder extends CodeNameQueryBuilder<Card> {
   CardQueryBuilder._(
-    Database db,
-    Card table, {
-    FieldMap extraFields = const {},
-    required String help,
+    Database db, {
+    required super.table,
+    super.extraFields,
+    required super.help,
   }) : super(
           table.code,
-          table.title,
+          table.strippedTitle,
           fields: {
-            'code': StringQueryBuilder(table.code, help: 'card code'),
-            'title': ContainsStringQueryBuilder(table.title, help: 'card title'),
-            'body': ContainsStringQueryBuilder(table.body, help: 'card body'),
-            'keyword': ContainsStringQueryBuilder(table.keywords, help: 'card keyword'),
-            'flavor': ContainsStringQueryBuilder(table.flavor, help: 'card flavor'),
-            'quantity': IntQueryBuilder(table.quantity, help: 'card quantity'),
-            'cost': IntQueryBuilder(table.cost, help: 'card cost'),
-            'limit': IntQueryBuilder(table.deckLimit, help: 'card deck limit'),
-            'influence': IntQueryBuilder(table.factionCost, help: 'card influence cost'),
-            'unique': BoolQueryBuilder(table.uniqueness, help: 'card uniqeness'),
-            'advancement': IntQueryBuilder(table.advancementCost, help: 'card advancement cost'),
-            'mu': IntQueryBuilder(table.memoryCost, help: 'card mu'),
-            'strength': IntQueryBuilder(table.strength, help: 'card strength'),
-            'agenda': IntQueryBuilder(table.agendaPoints, help: 'card agenda points'),
-            'trash': IntQueryBuilder(table.trashCost, help: 'card trash cost'),
-            'link': IntQueryBuilder(table.baseLink, help: 'identity base link'),
-            'influence_limit': IntQueryBuilder(table.influenceLimit, help: 'identity influence limit'),
-            'min_deck': IntQueryBuilder(table.minimumDeckSize, help: 'identity min deck size'),
+            'code': StringQueryBuilder(table: table, column: table.code, help: 'card code'),
+            'title': ContainsStringQueryBuilder(
+                table: table, column: table.title, strippedColumn: table.strippedTitle, help: 'card title'),
+            'body': ContainsStringQueryBuilder(
+                table: table, column: table.body, strippedColumn: table.strippedBody, help: 'card body'),
+            'keyword': ContainsStringQueryBuilder(table: table, column: table.keywords, help: 'card keyword'),
+            'flavor': ContainsStringQueryBuilder(table: table, column: table.flavor, help: 'card flavor'),
+            'quantity': IntQueryBuilder(table: table, column: table.quantity, help: 'card quantity'),
+            'cost': IntQueryBuilder(table: table, column: table.cost, help: 'card cost'),
+            'limit': IntQueryBuilder(table: table, column: table.deckLimit, help: 'card deck limit'),
+            'influence': IntQueryBuilder(table: table, column: table.factionCost, help: 'card influence cost'),
+            'unique': BoolQueryBuilder(table: table, column: table.uniqueness, help: 'card uniqeness'),
+            'advancement': IntQueryBuilder(table: table, column: table.advancementCost, help: 'card advancement cost'),
+            'mu': IntQueryBuilder(table: table, column: table.memoryCost, help: 'card mu'),
+            'strength': IntQueryBuilder(table: table, column: table.strength, help: 'card strength'),
+            'agenda': IntQueryBuilder(table: table, column: table.agendaPoints, help: 'card agenda points'),
+            'trash': IntQueryBuilder(table: table, column: table.trashCost, help: 'card trash cost'),
+            'link': IntQueryBuilder(table: table, column: table.baseLink, help: 'identity base link'),
+            'influence_limit':
+                IntQueryBuilder(table: table, column: table.influenceLimit, help: 'identity influence limit'),
+            'min_deck': IntQueryBuilder(table: table, column: table.minimumDeckSize, help: 'identity min deck size'),
           },
-          extraFields: extraFields,
-          help: help,
         );
 
   factory CardQueryBuilder(Database db) {
     final FieldMap extraFields = {};
     extraFields.addAll({
-      'card': CardQueryBuilder._(db, db.card, extraFields: extraFields, help: 'card title'),
-      'cycle': CycleQueryBuilder(db, extraFields: extraFields, help: 'cycle code or name'),
-      'pack': PackQueryBuilder(db, extraFields: extraFields, help: 'pack code or name'),
-      'side': SideQueryBuilder(db, extraFields: extraFields, help: 'side code or name'),
-      'faction': FactionQueryBuilder(db, extraFields: extraFields, help: 'faction code or name'),
-      'type': TypeQueryBuilder(db, extraFields: extraFields, help: 'type code or name'),
+      'card': CardQueryBuilder._(db, table: db.card, extraFields: extraFields, help: 'card title'),
+      'cycle': CycleQueryBuilder(db, table: db.cycle, extraFields: extraFields, help: 'cycle code or name'),
+      'pack': PackQueryBuilder(db, table: db.pack, extraFields: extraFields, help: 'pack code or name'),
+      'side': SideQueryBuilder(db, table: db.side, extraFields: extraFields, help: 'side code or name'),
+      'faction': FactionQueryBuilder(db, table: db.faction, extraFields: extraFields, help: 'faction code or name'),
+      'type': TypeQueryBuilder(db, table: db.type, extraFields: extraFields, help: 'type code or name'),
     });
-    return CardQueryBuilder._(db, db.card, extraFields: extraFields, help: 'card title');
+    return CardQueryBuilder._(db, table: db.card, extraFields: extraFields, help: 'card title');
   }
+
+  @override
+  drift.Expression queryOption() => table.strippedTitle;
 }
 
-class DeckQueryBuilder extends ContainsStringQueryBuilder {
+class DeckQueryBuilder extends ContainsStringQueryBuilder<Deck> {
   DeckQueryBuilder._(
-    Database db,
-    Deck table, {
-    FieldMap extraFields = const {},
-    required String help,
+    Database db, {
+    required super.table,
+    super.extraFields,
+    required super.help,
   }) : super(
-          table.name,
+          column: table.name,
           fields: {
-            'name': ContainsStringQueryBuilder(db.deck.name, help: 'deck name'),
-            'description': ContainsStringQueryBuilder(db.deck.description, help: 'deck description'),
-            'created': DateTimeQueryBuilder(db.deck.created, help: 'deck created date'),
-            'updated': DateTimeQueryBuilder(db.deck.updated, help: 'deck updated date'),
-            'synced': DateTimeQueryBuilder(db.deck.synced, help: 'deck synced date'),
-            'remote_updated': DateTimeQueryBuilder(db.deck.remoteUpdated, help: 'deck remote updated date'),
+            'name': ContainsStringQueryBuilder(table: table, column: db.deck.name, help: 'deck name'),
+            'description':
+                ContainsStringQueryBuilder(table: table, column: db.deck.description, help: 'deck description'),
+            'created': DateTimeQueryBuilder(table: table, column: db.deck.created, help: 'deck created date'),
+            'updated': DateTimeQueryBuilder(table: table, column: db.deck.updated, help: 'deck updated date'),
+            'synced': DateTimeQueryBuilder(table: table, column: db.deck.synced, help: 'deck synced date'),
+            'remote_updated':
+                DateTimeQueryBuilder(table: table, column: db.deck.remoteUpdated, help: 'deck remote updated date'),
           },
-          extraFields: extraFields,
-          help: help,
         );
 
   factory DeckQueryBuilder(Database db) {
     final FieldMap extraFields = {};
     extraFields.addAll({
-      'deck': DeckQueryBuilder._(db, db.deck, extraFields: extraFields, help: 'deck name'),
-      'tag': DeckTagsQueryBuilder(db, extraFields: extraFields, help: 'deck tag'),
-      'card': DeckCardsQueryBuilder(db, extraFields: extraFields, help: 'deck card'),
-      'identity':
-          CardQueryBuilder._(db, db.card.createAlias('identity'), extraFields: extraFields, help: 'identity name'),
-      'cycle': CycleQueryBuilder(db, extraFields: extraFields, help: 'cycle code or name'),
-      'pack': PackQueryBuilder(db, extraFields: extraFields, help: 'pack code or name'),
-      'side': SideQueryBuilder(db, extraFields: extraFields, help: 'side code or name'),
-      'faction': FactionQueryBuilder(db, extraFields: extraFields, help: 'faction code or name'),
+      'deck': DeckQueryBuilder._(db, table: db.deck, extraFields: extraFields, help: 'deck name'),
+      'identity': CardQueryBuilder._(db,
+          table: db.card.createAlias('identity'), extraFields: extraFields, help: 'identity name'),
+      'cycle': CycleQueryBuilder(db, table: db.cycle, extraFields: extraFields, help: 'cycle code or name'),
+      'pack': PackQueryBuilder(db, table: db.pack, extraFields: extraFields, help: 'pack code or name'),
+      'side': SideQueryBuilder(db, table: db.side, extraFields: extraFields, help: 'side code or name'),
+      'faction': FactionQueryBuilder(db, table: db.faction, extraFields: extraFields, help: 'faction code or name'),
+      'card': DeckCardsQueryBuilder(db, table: db.deckCard, extraFields: extraFields, help: 'deck card'),
+      'tag': DeckTagsQueryBuilder(db, table: db.deckTag, extraFields: extraFields, help: 'deck tag'),
     });
-    return DeckQueryBuilder._(db, db.deck, extraFields: extraFields, help: 'deck name');
+    return DeckQueryBuilder._(db, table: db.deck, extraFields: extraFields, help: 'deck name');
   }
 }
 
-class CycleQueryBuilder extends CodeNameQueryBuilder {
+class CycleQueryBuilder extends CodeNameQueryBuilder<Cycle> {
   CycleQueryBuilder(
     Database db, {
-    FieldMap extraFields = const {},
-    required String help,
+    required super.table,
+    super.extraFields,
+    required super.help,
   }) : super(
-          db.cycle.code,
-          db.cycle.name,
+          table.code,
+          table.name,
           fields: {
-            'code': StringQueryBuilder(db.cycle.code, help: 'cycle code'),
-            'name': ContainsStringQueryBuilder(db.cycle.name, help: 'cycle name'),
-            'position': IntQueryBuilder(db.cycle.position, help: 'cycle position'),
+            'code': StringQueryBuilder(table: table, column: table.code, help: 'cycle code'),
+            'name': ContainsStringQueryBuilder(table: table, column: table.name, help: 'cycle name'),
+            'position': IntQueryBuilder(table: table, column: table.position, help: 'cycle position'),
+            'rotated': BoolQueryBuilder(table: table, column: table.rotated, help: 'cycle rotated'),
           },
-          extraFields: extraFields,
-          help: help,
         );
 }
 
-class PackQueryBuilder extends CodeNameQueryBuilder {
+class PackQueryBuilder extends CodeNameQueryBuilder<Pack> {
   PackQueryBuilder(
     Database db, {
-    FieldMap extraFields = const {},
-    required String help,
+    required super.table,
+    super.extraFields,
+    required super.help,
   }) : super(
-          db.pack.code,
-          db.pack.name,
+          table.code,
+          table.name,
           fields: {
-            'code': StringQueryBuilder(db.pack.code, help: 'pack code'),
-            'name': ContainsStringQueryBuilder(db.pack.name, help: 'pack name'),
-            'position': IntQueryBuilder(db.pack.position, help: 'pack position'),
+            'code': StringQueryBuilder(table: table, column: table.code, help: 'pack code'),
+            'name': ContainsStringQueryBuilder(table: table, column: table.name, help: 'pack name'),
+            'position': IntQueryBuilder(table: table, column: table.position, help: 'pack position'),
+            'release': DateTimeQueryBuilder(table: table, column: table.dateRelease, help: 'pack release date'),
           },
-          extraFields: extraFields,
-          help: help,
         );
 }
 
-class SideQueryBuilder extends CodeNameQueryBuilder {
+class SideQueryBuilder extends CodeNameQueryBuilder<Side> {
   SideQueryBuilder(
     Database db, {
-    FieldMap extraFields = const {},
-    required String help,
+    required super.table,
+    super.extraFields,
+    required super.help,
   }) : super(
-          db.side.code,
-          db.side.name,
+          table.code,
+          table.name,
           fields: {
-            'code': StringQueryBuilder(db.side.code, help: 'side code'),
-            'name': ContainsStringQueryBuilder(db.side.name, help: 'side name'),
+            'code': StringQueryBuilder(table: table, column: table.code, help: 'side code'),
+            'name': ContainsStringQueryBuilder(table: table, column: table.name, help: 'side name'),
           },
-          extraFields: extraFields,
-          help: help,
         );
 }
 
-class FactionQueryBuilder extends CodeNameQueryBuilder {
+class FactionQueryBuilder extends CodeNameQueryBuilder<Faction> {
   FactionQueryBuilder(
     Database db, {
-    FieldMap extraFields = const {},
-    required String help,
+    required super.table,
+    super.extraFields,
+    required super.help,
   }) : super(
-          db.faction.code,
-          db.faction.name,
+          table.code,
+          table.name,
           fields: {
-            'code': StringQueryBuilder(db.faction.code, help: 'faction code'),
-            'name': ContainsStringQueryBuilder(db.faction.name, help: 'faction name'),
-            'mini': BoolQueryBuilder(db.faction.isMini, help: 'is mini faction'),
+            'code': StringQueryBuilder(table: table, column: table.code, help: 'faction code'),
+            'name': ContainsStringQueryBuilder(table: table, column: table.name, help: 'faction name'),
+            'mini': BoolQueryBuilder(table: table, column: table.isMini, help: 'is mini faction'),
           },
-          extraFields: extraFields,
-          help: help,
         );
 }
 
-class TypeQueryBuilder extends CodeNameQueryBuilder {
+class TypeQueryBuilder extends CodeNameQueryBuilder<Type> {
   TypeQueryBuilder(
     Database db, {
-    FieldMap extraFields = const {},
-    required String help,
+    required super.table,
+    super.extraFields,
+    required super.help,
   }) : super(
-          db.type.code,
-          db.type.name,
+          table.code,
+          table.name,
           fields: {
-            'code': StringQueryBuilder(db.type.code, help: 'type code'),
-            'name': ContainsStringQueryBuilder(db.type.name, help: 'type name'),
-            'position': IntQueryBuilder(db.type.position, help: 'type position'),
-            'subtype': BoolQueryBuilder(db.type.isSubtype, help: 'type is subtype'),
+            'code': StringQueryBuilder(table: table, column: table.code, help: 'type code'),
+            'name': ContainsStringQueryBuilder(table: table, column: table.name, help: 'type name'),
+            'position': IntQueryBuilder(table: table, column: table.position, help: 'type position'),
+            'subtype': BoolQueryBuilder(table: table, column: table.isSubtype, help: 'type is subtype'),
           },
-          extraFields: extraFields,
-          help: help,
         );
 }
 
-class FormatQueryBuilder extends CodeNameQueryBuilder {
+class FormatQueryBuilder extends CodeNameQueryBuilder<Format> {
   FormatQueryBuilder(
     Database db, {
-    FieldMap extraFields = const {},
-    required String help,
+    required super.table,
+    super.extraFields,
+    required super.help,
   }) : super(
-          db.format.code,
-          db.format.name,
+          table.code,
+          table.name,
           fields: {
-            'code': StringQueryBuilder(db.format.code, help: 'format code'),
-            'name': ContainsStringQueryBuilder(db.format.name, help: 'format name'),
+            'code': StringQueryBuilder(table: table, column: table.code, help: 'format code'),
+            'name': ContainsStringQueryBuilder(table: table, column: table.name, help: 'format name'),
           },
-          extraFields: extraFields,
-          help: help,
         );
 }
 
-class RotationQueryBuilder extends CodeNameQueryBuilder {
+class RotationQueryBuilder extends CodeNameQueryBuilder<Rotation> {
   RotationQueryBuilder(
     Database db, {
-    FieldMap extraFields = const {},
-    required String help,
+    required super.table,
+    super.extraFields,
+    required super.help,
   }) : super(
-          db.rotation.code,
-          db.rotation.name,
+          table.code,
+          table.name,
           fields: {
-            'code': StringQueryBuilder(db.rotation.code, help: 'rotation code'),
-            'name': ContainsStringQueryBuilder(db.rotation.name, help: 'rotation name'),
-            'current': BoolQueryBuilder(db.rotation.current, help: 'rotation current'),
-            'latest': BoolQueryBuilder(db.rotation.latest, help: 'rotation latest'),
-            'start': DateTimeQueryBuilder(db.rotation.dateStart, help: 'rotation start date'),
+            'code': StringQueryBuilder(table: table, column: table.code, help: 'rotation code'),
+            'name': ContainsStringQueryBuilder(table: table, column: table.name, help: 'rotation name'),
+            'current': BoolQueryBuilder(table: table, column: table.current, help: 'rotation current'),
+            'latest': BoolQueryBuilder(table: table, column: table.latest, help: 'rotation latest'),
+            'start': DateTimeQueryBuilder(table: table, column: table.dateStart, help: 'rotation start date'),
           },
-          extraFields: extraFields,
-          help: help,
         );
 }
 
-class MwlQueryBuilder extends CodeNameQueryBuilder {
+class MwlQueryBuilder extends CodeNameQueryBuilder<Mwl> {
   MwlQueryBuilder(
     Database db, {
-    FieldMap extraFields = const {},
-    required String help,
+    required super.table,
+    super.extraFields,
+    required super.help,
   }) : super(
-          db.mwl.code,
-          db.mwl.name,
+          table.code,
+          table.name,
           fields: {
-            'code': StringQueryBuilder(db.mwl.code, help: 'mwl code'),
-            'name': ContainsStringQueryBuilder(db.mwl.name, help: 'mwl name'),
-            'active': BoolQueryBuilder(db.mwl.active, help: 'mwl active'),
-            'latest': BoolQueryBuilder(db.mwl.latest, help: 'mwl latest'),
-            'start': DateTimeQueryBuilder(db.mwl.dateStart, help: 'mwl start date'),
+            'code': StringQueryBuilder(table: table, column: table.code, help: 'mwl code'),
+            'name': ContainsStringQueryBuilder(table: table, column: table.name, help: 'mwl name'),
+            'active': BoolQueryBuilder(table: table, column: table.active, help: 'mwl active'),
+            'latest': BoolQueryBuilder(table: table, column: table.latest, help: 'mwl latest'),
+            'start': DateTimeQueryBuilder(table: table, column: table.dateStart, help: 'mwl start date'),
           },
-          extraFields: extraFields,
-          help: help,
         );
 }

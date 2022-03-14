@@ -1,5 +1,5 @@
 import '/util/assets.gen.dart';
-import '../database.dart';
+import '/db/database.dart';
 
 const factionOrder = [
   'anarch',
@@ -30,6 +30,6 @@ final factionIcon = {
 
 extension FactionDataEx on FactionData {
   int get order => factionOrder.indexOf(code);
-  
+
   AssetGenImage? get icon => factionIcon[code];
 }

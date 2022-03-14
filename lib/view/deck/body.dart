@@ -8,9 +8,11 @@ import 'package:kotlin_flavor/scope_functions.dart';
 
 import '/db/database.dart' hide Card;
 import '/providers.dart';
+import '/util.dart';
+import '/util/deck_validator.dart';
 import '/util/extensions.dart';
+import '/util/grouped_card_code_list.dart';
 import '/util/header_list.dart';
-import '/view/async_value_builder.dart';
 import '/view/card_gallery_page.dart';
 import '/view/card_tile.dart';
 import '/view/fab_spacer.dart';
@@ -18,58 +20,167 @@ import '/view/format_dropdown.dart';
 import '/view/header_list_tile.dart';
 import '/view/mwl_dropdown.dart';
 import '/view/rotation_dropdown.dart';
+import '/view/save_deck_dialog.dart';
 import 'appbar.dart';
 import 'description_page.dart';
-import 'util.dart';
 
-class DeckBody extends ConsumerWidget {
-  const DeckBody({Key? key}) : super(key: key);
+class DeckStatsHeaderDelegate extends SliverPersistentHeaderDelegate {
+  const DeckStatsHeaderDelegate();
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final groupedCardList = ref.watch(groupedCardListProvider);
-    return AsyncValueBuilder<HeaderList<CardResult>>(
-      value: groupedCardList,
-      data: (groupedCardList) => LayoutBuilder(
-        builder: (context, constraints) => CustomScrollView(slivers: [
-          DeckAppBar(constraints: constraints),
-          const SliverList(
-            delegate: SliverChildListDelegate.fixed([
-              DeckSyncStatus(),
-              DeckErrors(),
-              DeckStats(),
-              DeckIdentity(),
-              DeckNameField(),
-              DeckDescriptionField(),
-              DeckTags(),
-              DeckFormatDropdown(),
-              DeckRotationDropdown(),
-              DeckMwlDropdown(),
-            ]),
-          ),
-          ...groupedCardList.map((e) => DeckCardHeader(groupedCardList.sumUntilItem(e), e)),
-          const SliverList(delegate: SliverChildListDelegate.fixed([FloatingActionButtonSpacer()])),
-        ]),
-      ),
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Material(
+      elevation: 1,
+      color: Theme.of(context).canvasColor,
+      child: const DeckStats(),
     );
+  }
+
+  @override
+  final double maxExtent = 50;
+
+  @override
+  final double minExtent = 50;
+
+  @override
+  bool shouldRebuild(SliverPersistentHeaderDelegate oldDelegate) => true;
+}
+
+class DeckBody extends ConsumerStatefulWidget {
+  const DeckBody({super.key});
+
+  @override
+  DeckBodyState createState() => DeckBodyState();
+}
+
+class DeckBodyState extends ConsumerState<DeckBody> with RestorationMixin {
+  late RestorableRouteFuture<CardGalleryResult> cardGalleryRoute;
+
+  @override
+  void initState() {
+    super.initState();
+
+    cardGalleryRoute = RestorableRouteFuture<CardGalleryResult>(
+      onPresent: (navigator, arguments) => Navigator.of(context).restorablePush(
+        openCardGalleryPage,
+        arguments: arguments,
+      ),
+      onComplete: (result) {
+        final deck = ref.read(deckProvider);
+        deck.value = deck.value.copyWith(cards: result.deckCards);
+      },
+    );
+  }
+
+  void showErrors(List<String> errors) {
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    if (errors.isEmpty) {
+      scaffoldMessenger.hideCurrentMaterialBanner();
+      return;
+    }
+
+    scaffoldMessenger.showMaterialBanner(MaterialBanner(
+      padding: const EdgeInsets.all(4),
+      content: ListTile(
+        title: Text(
+          errors.join('\n'),
+          style: TextStyle(
+            color: Theme.of(context).errorColor,
+          ),
+        ),
+      ),
+      actions: const [
+        TextButton(
+          onPressed: null,
+          child: Text('DISMISS'),
+        ),
+      ],
+    ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final groupedCardList = ref.watch(groupedCardListProvider);
+    return LayoutBuilder(
+      builder: (context, constraints) => CustomScrollView(slivers: [
+        DeckAppBar(constraints: constraints),
+        const SliverPersistentHeader(
+          pinned: true,
+          delegate: DeckStatsHeaderDelegate(),
+        ),
+        const SliverList(
+          delegate: SliverChildListDelegate.fixed([
+            DeckSyncStatus(),
+            DeckErrors(),
+            DeckIdentity(),
+            DeckNameField(),
+            DeckDescriptionField(),
+            DeckTags(),
+            DeckFormatDropdown(),
+            DeckRotationDropdown(),
+            DeckMwlDropdown(),
+          ]),
+        ),
+        if (groupedCardList.hasError)
+          SliverToBoxAdapter(child: Text(groupedCardList.error!.toString()))
+        else if (!groupedCardList.hasValue)
+          const SliverToBoxAdapter(child: Center(child: CircularProgressIndicator()))
+        else
+          ...groupedCardList.value!.mapItems((offset, e) {
+            return DeckCardHeader(offset, e, cardGalleryRoute);
+          }),
+        const SliverList(delegate: SliverChildListDelegate.fixed([FloatingActionButtonSpacer()])),
+      ]),
+    );
+  }
+
+  @override
+  String? get restorationId => 'deck_body';
+
+  @override
+  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
+    registerForRestoration(cardGalleryRoute, 'cardGalleryRoute');
   }
 }
 
-class DeckNameField extends ConsumerWidget {
-  const DeckNameField({Key? key}) : super(key: key);
+class DeckNameField extends ConsumerStatefulWidget {
+  const DeckNameField({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final deck = ref.watch(deckProvider);
+  DeckNameFieldState createState() => DeckNameFieldState();
+}
+
+class DeckNameFieldState extends ConsumerState<DeckNameField> {
+  final controller = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    setName(ref.read(deckValidatorResultProvider).deck.deck.name);
+  }
+
+  void setName(String name) {
+    if (controller.text == name) return;
+
+    controller.text = name;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    ref.listen<String>(
+      deckValidatorResultProvider.select((value) => value.deck.deck.name),
+      (prevValue, value) => setName(value),
+    );
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: TextFormField(
-        initialValue: deck.deck.name,
+        controller: controller,
         decoration: const InputDecoration(labelText: 'Name'),
         onChanged: (value) {
-          final deck = ref.read(deckProvider.notifier);
+          final deck = ref.read(deckProvider);
           deck.unsaved = deck.value.copyWith(
-            deck: deck.value.deck.copyWith(name: value),
+            name: value,
           );
         },
       ),
@@ -82,46 +193,83 @@ class AlwaysDisabledFocusNode extends FocusNode {
   bool get hasFocus => false;
 }
 
-class DeckDescriptionField extends ConsumerWidget {
-  const DeckDescriptionField({Key? key}) : super(key: key);
+class DeckDescriptionField extends ConsumerStatefulWidget {
+  const DeckDescriptionField({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final deck = ref.watch(deckProvider);
+  DeckDescriptionFieldState createState() => DeckDescriptionFieldState();
+}
+
+class DeckDescriptionFieldState extends ConsumerState<DeckDescriptionField> with RestorationMixin {
+  late RestorableRouteFuture<String> deckDescriptionRoute;
+
+  @override
+  void initState() {
+    super.initState();
+
+    deckDescriptionRoute = RestorableRouteFuture<String>(
+      onPresent: (navigator, arguments) => Navigator.of(context).restorablePush(
+        openDeckDescription,
+        arguments: arguments,
+      ),
+      onComplete: (value) {
+        final deck = ref.read(deckProvider);
+        deck.value = deck.value.copyWith(
+          description: value,
+        );
+      },
+    );
+  }
+
+  static Route<String> openDeckDescription(BuildContext context, Object? arguments) {
+    return DeckDescriptionRoute(DeckDescriptionPage(
+      description: arguments as String,
+    ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final description = ref.watch(deckValidatorResultProvider.select((value) => value.deck.deck.description));
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: TextField(
-        controller: TextEditingController(text: deck.deck.description.replaceAll('\n', ' ')),
+        controller: TextEditingController(text: description.replaceAll('\n', ' ')),
         focusNode: AlwaysDisabledFocusNode(),
         decoration: const InputDecoration(labelText: 'Description'),
         readOnly: true,
         onTap: () {
-          final deck = ref.read(deckProvider.notifier);
-          Navigator.of(context).push(DeckDescriptionRoute(DeckDescriptionPage.withOverrides(
-            deck: deck,
-          )));
+          final deck = ref.read(deckProvider);
+          deckDescriptionRoute.present(deck.value.description);
         },
       ),
     );
   }
+
+  @override
+  String? restorationId = 'deck_description_field';
+
+  @override
+  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
+    registerForRestoration(deckDescriptionRoute, 'deckDescriptionRoute');
+  }
 }
 
 class DeckFormatDropdown extends ConsumerWidget {
-  const DeckFormatDropdown({Key? key}) : super(key: key);
+  const DeckFormatDropdown({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final deck = ref.watch(deckProvider);
+    final format = ref.watch(deckValidatorResultProvider.select((value) => value.deck.format));
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: FormatDropdown.withOverrides(
-        format: deck.format,
+        format: format,
         onChanged: (value) {
-          final deck = ref.read(deckProvider.notifier);
+          final deck = ref.read(deckProvider);
           deck.unsaved = deck.value.copyWith(
-            format: drift.Value(value?.format),
-            rotation: drift.Value(value?.let((e) => e.currentRotation) ?? deck.value.rotation),
-            mwl: drift.Value(value?.let((e) => e.activeMwl) ?? deck.value.mwl),
+            formatCode: drift.Value(value?.format.code),
+            rotationCode: drift.Value(value?.let((e) => e.currentRotation?.code) ?? deck.value.rotationCode),
+            mwlCode: drift.Value(value?.let((e) => e.activeMwl?.code) ?? deck.value.mwlCode),
           );
         },
       ),
@@ -130,20 +278,21 @@ class DeckFormatDropdown extends ConsumerWidget {
 }
 
 class DeckRotationDropdown extends ConsumerWidget {
-  const DeckRotationDropdown({Key? key}) : super(key: key);
+  const DeckRotationDropdown({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final deck = ref.watch(deckProvider);
+    final format = ref.watch(deckValidatorResultProvider.select((value) => value.deck.format));
+    final rotation = ref.watch(deckValidatorResultProvider.select((value) => value.deck.rotation));
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: RotationDropdown.withOverrides(
-        format: deck.format,
-        rotation: deck.rotation,
+        format: format,
+        rotation: rotation,
         onChanged: (value) {
-          final deck = ref.read(deckProvider.notifier);
+          final deck = ref.read(deckProvider);
           deck.unsaved = deck.value.copyWith(
-            rotation: drift.Value(value),
+            rotationCode: drift.Value(value?.code),
           );
         },
       ),
@@ -152,20 +301,21 @@ class DeckRotationDropdown extends ConsumerWidget {
 }
 
 class DeckMwlDropdown extends ConsumerWidget {
-  const DeckMwlDropdown({Key? key}) : super(key: key);
+  const DeckMwlDropdown({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final deck = ref.watch(deckProvider);
+    final format = ref.watch(deckValidatorResultProvider.select((value) => value.deck.format));
+    final mwl = ref.watch(deckValidatorResultProvider.select((value) => value.deck.mwl));
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: MwlDropdown.withOverrides(
-        format: deck.format,
-        mwl: deck.mwl,
+        format: format,
+        mwl: mwl,
         onChanged: (value) {
-          final deck = ref.read(deckProvider.notifier);
+          final deck = ref.read(deckProvider);
           deck.unsaved = deck.value.copyWith(
-            mwl: drift.Value(value),
+            mwlCode: drift.Value(value?.code),
           );
         },
       ),
@@ -174,106 +324,67 @@ class DeckMwlDropdown extends ConsumerWidget {
 }
 
 class DeckIdentity extends ConsumerWidget {
-  const DeckIdentity({Key? key}) : super(key: key);
+  const DeckIdentity({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final deck = ref.watch(deckProvider);
+    final identity = ref.watch(deckValidatorResultProvider.select((value) => value.deck.toCard()));
     return CardTile(
-      deck.toCard(),
-      key: ValueKey(deck.identity),
+      identity,
+      key: ValueKey(identity.code),
       logo: false,
       body: true,
       onTap: () async {
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-          return CardGalleryPage.withOverrides(
-            groupedCardList: HeaderList([HeaderItems(deck.type.name, [deck.toCard()])]),
-            currentIndex: 0,
-          );
-        }));
+        final navigator = Navigator.of(context);
+        final cards = await ref.read(groupedCardListProvider.future);
+        final deckCards = ref.read(deckProvider).value.cards;
+
+        navigator.restorablePush(
+          openCardGalleryPage,
+          arguments: CardGalleryArguments(
+            items: GroupedCardCodeList.fromCardResult(HeaderList([
+              HeaderItems(
+                identity.type.name,
+                [identity],
+              ),
+              ...cards,
+            ])),
+            index: 0,
+            deckCards: deckCards,
+          ).toJson(),
+        );
       },
     );
   }
 }
 
 class DeckCardHeader extends ConsumerWidget {
-  const DeckCardHeader(this.indexOffset, this.headerList, {Key? key}) : super(key: key);
+  const DeckCardHeader(
+    this.indexOffset,
+    this.headerList,
+    this.cardGalleryRoute, {
+    super.key,
+  });
 
   final HeaderItems<CardResult> headerList;
   final int indexOffset;
-
-  void onTap(BuildContext context, WidgetRef ref, int index) {}
-
-  Widget cardItemBuilder(BuildContext context, WidgetRef ref, int index, CardResult card) {
-    final deck = ref.watch(deckProvider);
-    final deckCardList = ref.watch(deckProvider.select((value) => value.cards));
-    final count = deckCardList[card] ?? 0;
-    final deckValidator = ref.watch(deckValidatorProvider(deck).select((value) {
-      return value.whenOrNull(data: (data) => data);
-    }));
-    final cardError = deckValidator?.cardErrorList[card];
-    return CardTile(
-      card,
-      key: ValueKey(card),
-      faction: deck.faction,
-      error: cardError,
-      mwlCard: deckValidator?.mwlCardMap[card.code],
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (count > 0)
-            IconButton(
-              constraints: const BoxConstraints(),
-              visualDensity: VisualDensity.compact,
-              icon: const Icon(Icons.remove_outlined),
-              onPressed: () {
-                final deck = ref.read(deckProvider.notifier);
-                deck.decCard(card);
-              },
-            ),
-          if (count > 0) Text('$count'),
-          IconButton(
-            constraints: const BoxConstraints(),
-            visualDensity: VisualDensity.compact,
-            icon: const Icon(Icons.add_outlined),
-            onPressed: () {
-              final deck = ref.read(deckProvider.notifier);
-              deck.incCard(card);
-            },
-          ),
-        ],
-      ),
-      onTap: () async {
-        final groupedCardList = await ref.read(groupedCardListProvider.future);
-        final deckNotifier = ref.read(deckProvider.notifier);
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-          return CardGalleryPage.withOverrides(
-            groupedCardList: groupedCardList,
-            currentIndex: index,
-            deckNotifier: deckNotifier,
-          );
-        }));
-      },
-    );
-  }
+  final RestorableRouteFuture<CardGalleryResult> cardGalleryRoute;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final deckCardList = ref.watch(deckProvider.select((value) => value.cards));
-    final count = headerList.fold<int>(0, (value, entry) => value += (deckCardList[entry] ?? 0));
+    final deckCardList = ref.watch(deckProvider.select((value) => value.value.cards));
+    final count = headerList.map<int>((e) => deckCardList[e.code] ?? 0).sum;
     return SliverStickyHeader(
       header: HeaderListTile.titleCount(title: headerList.header, count: count),
       sliver: SliverList(
-        delegate: SliverChildBuilderDelegate(
-          (context, index) {
-            if (index.isEven) {
-              final realIndex = index ~/ 2;
-              return cardItemBuilder(context, ref, indexOffset + realIndex, headerList[realIndex]);
-            } else {
-              return const Divider();
-            }
-          },
-          childCount: headerList.length * 2,
+        delegate: SliverChildSeperatedBuilderDelegate(
+          (context, index) => DeckCardTile(
+            index: indexOffset + index,
+            card: headerList[index],
+            cardGalleryRoute: cardGalleryRoute,
+          ),
+          (context, index) => const Divider(),
+          childCount: headerList.length,
         ),
       ),
     );
@@ -281,215 +392,202 @@ class DeckCardHeader extends ConsumerWidget {
 }
 
 class DeckInfluenceStat extends ConsumerWidget {
-  const DeckInfluenceStat({Key? key}) : super(key: key);
+  const DeckInfluenceStat({
+    required this.deckValidator,
+    super.key,
+  });
+
+  final DeckValidator deckValidator;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final deck = ref.watch(deckProvider);
-    final deckValidator = ref.watch(deckValidatorProvider(deck));
-    return deckValidator.when(
-      loading: () => const SizedBox.shrink(),
-      error: (error, strackTrace) => const SizedBox.shrink(),
-      data: (deckValidator) {
-        final theme = Theme.of(context);
-        final influence = deckValidator.influence;
-        final maxInfluence = deckValidator.maxInfluence;
-        final hasError = deckValidator.influenceError != null;
-        return Column(children: [
-          RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: '$influence',
-                  style: TextStyle(color: hasError ? theme.errorColor : null),
-                ),
-                const TextSpan(text: ' / '),
-                TextSpan(text: '${maxInfluence ?? '∞'}'),
-              ],
-              style: DefaultTextStyle.of(context).style.copyWith(fontWeight: FontWeight.bold),
+    final theme = Theme.of(context);
+    final influence = deckValidator.influence;
+    final maxInfluence = deckValidator.maxInfluence;
+    final hasError = deckValidator.influenceError != null;
+    return Column(children: [
+      Text.rich(
+        TextSpan(
+          children: [
+            TextSpan(
+              text: '$influence',
+              style: TextStyle(color: hasError ? theme.errorColor : null),
             ),
-            textAlign: TextAlign.center,
-          ),
-          const Text('Influence'),
-        ]);
-      },
-    );
+            const TextSpan(text: ' / '),
+            TextSpan(text: '${maxInfluence ?? '∞'}'),
+          ],
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        textAlign: TextAlign.center,
+      ),
+      const Text('Influence'),
+    ]);
   }
 }
 
 class DeckAgendaStat extends ConsumerWidget {
-  const DeckAgendaStat({Key? key}) : super(key: key);
+  const DeckAgendaStat({
+    required this.deckValidator,
+    super.key,
+  });
+
+  final DeckValidator deckValidator;
+
+  static bool visible(DeckValidator deckValidator) => deckValidator.deck.side.code == 'corp';
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final deck = ref.watch(deckProvider);
-    final deckValidator = ref.watch(deckValidatorProvider(deck));
-    return deckValidator.when(
-      loading: () => const SizedBox.shrink(),
-      error: (error, strackTrace) => const SizedBox.shrink(),
-      data: (deckValidator) {
-        final theme = Theme.of(context);
-        final agendaPoints = deckValidator.agendaPoints;
-        final minAgendaPoints = deckValidator.minAgendaPoints;
-        final maxAgendaPoints = deckValidator.maxAgendaPoints;
-        final hasError = deckValidator.agendaError != null;
-        return Column(children: [
-          RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: '$agendaPoints',
-                  style: TextStyle(color: hasError ? theme.errorColor : null),
-                ),
-                const TextSpan(text: ' / '),
-                TextSpan(text: '$minAgendaPoints - $maxAgendaPoints'),
-              ],
-              style: DefaultTextStyle.of(context).style.copyWith(fontWeight: FontWeight.bold),
+    final theme = Theme.of(context);
+    final agendaPoints = deckValidator.agendaPoints;
+    final minAgendaPoints = deckValidator.minAgendaPoints;
+    final maxAgendaPoints = deckValidator.maxAgendaPoints;
+    final hasError = deckValidator.agendaError != null;
+    return Column(children: [
+      Text.rich(
+        TextSpan(
+          children: [
+            TextSpan(
+              text: '$agendaPoints',
+              style: TextStyle(color: hasError ? theme.errorColor : null),
             ),
-            textAlign: TextAlign.center,
-          ),
-          const Text('Agenda Points'),
-        ]);
-      },
-    );
+            const TextSpan(text: ' / '),
+            TextSpan(text: '$minAgendaPoints - $maxAgendaPoints'),
+          ],
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        textAlign: TextAlign.center,
+      ),
+      const Text('Agenda Points'),
+    ]);
   }
 }
 
 class DeckSizeStat extends ConsumerWidget {
-  const DeckSizeStat({Key? key}) : super(key: key);
+  const DeckSizeStat({
+    required this.deckValidator,
+    super.key,
+  });
+
+  final DeckValidator deckValidator;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final deck = ref.watch(deckProvider);
-    final deckValidator = ref.watch(deckValidatorProvider(deck));
-    return deckValidator.when(
-      loading: () => const SizedBox.shrink(),
-      error: (error, strackTrace) => const SizedBox.shrink(),
-      data: (deckValidator) {
-        final theme = Theme.of(context);
-        final deckSize = deckValidator.deckSize;
-        final minDeckSize = deckValidator.minDeckSize ?? 0;
-        final hasError = deckValidator.deckSizeError != null;
-        return Column(children: [
-          RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: '$deckSize',
-                  style: TextStyle(color: hasError ? theme.errorColor : null),
-                ),
-                const TextSpan(text: ' / '),
-                TextSpan(text: '$minDeckSize'),
-              ],
-              style: DefaultTextStyle.of(context).style.copyWith(fontWeight: FontWeight.bold),
+    final theme = Theme.of(context);
+    final deckSize = deckValidator.deckSize;
+    final minDeckSize = deckValidator.minDeckSize ?? 0;
+    final hasError = deckValidator.deckSizeError != null;
+    return Column(children: [
+      Text.rich(
+        TextSpan(
+          children: [
+            TextSpan(
+              text: '$deckSize',
+              style: TextStyle(color: hasError ? theme.errorColor : null),
             ),
-            textAlign: TextAlign.center,
-          ),
-          const Text('Deck Size'),
-        ]);
-      },
-    );
+            const TextSpan(text: ' / '),
+            TextSpan(text: '$minDeckSize'),
+          ],
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        textAlign: TextAlign.center,
+      ),
+      const Text('Deck Size'),
+    ]);
   }
 }
 
 class DeckMwlPointsStat extends ConsumerWidget {
-  const DeckMwlPointsStat({Key? key}) : super(key: key);
+  const DeckMwlPointsStat({
+    required this.deckValidator,
+    super.key,
+  });
+
+  static bool visible(DeckValidator deckValidator) => deckValidator.deck.mwl?.points(deckValidator.deck.side) != null;
+
+  final DeckValidator deckValidator;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final deck = ref.watch(deckProvider);
-    final deckValidator = ref.watch(deckValidatorProvider(deck));
-    return deckValidator.when(
-      loading: () => const SizedBox.shrink(),
-      error: (error, strackTrace) => const SizedBox.shrink(),
-      data: (deckValidator) {
-        final theme = Theme.of(context);
-        final points = deckValidator.mwlPoints;
-        final maxPoints = deckValidator.maxMwlPoints;
-        final hasError = deckValidator.mwlPointsError != null;
-        return Column(children: [
-          RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: '$points',
-                  style: TextStyle(color: hasError ? theme.errorColor : null),
-                ),
-                const TextSpan(text: ' / '),
-                TextSpan(text: '$maxPoints'),
-              ],
-              style: DefaultTextStyle.of(context).style.copyWith(fontWeight: FontWeight.bold),
+    final theme = Theme.of(context);
+    final points = deckValidator.mwlPoints;
+    final maxPoints = deckValidator.maxMwlPoints;
+    final hasError = deckValidator.mwlPointsError != null;
+    return Column(children: [
+      Text.rich(
+        TextSpan(
+          children: [
+            TextSpan(
+              text: '$points',
+              style: TextStyle(color: hasError ? theme.errorColor : null),
             ),
-            textAlign: TextAlign.center,
-          ),
-          const Text('MWL Points'),
-        ]);
-      },
-    );
+            const TextSpan(text: ' / '),
+            TextSpan(text: '$maxPoints'),
+          ],
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        textAlign: TextAlign.center,
+      ),
+      const Text('MWL Points'),
+    ]);
   }
 }
 
 class DeckStats extends ConsumerWidget {
-  const DeckStats({Key? key}) : super(key: key);
+  const DeckStats({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final deck = ref.watch(deckProvider);
+    final deckValidator = ref.watch(deckValidatorResultProvider);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: IntrinsicHeight(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const DeckSizeStat(),
-            if (deck.side.code == 'corp') const DeckAgendaStat(),
-            const DeckInfluenceStat(),
-            if (deck.mwl?.points(deck.side) != null) const DeckMwlPointsStat(),
-          ].seperatedBy(const VerticalDivider(color: Colors.black, width: 16)).toList(),
-        ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          DeckSizeStat(deckValidator: deckValidator),
+          if (DeckAgendaStat.visible(deckValidator)) DeckAgendaStat(deckValidator: deckValidator),
+          DeckInfluenceStat(deckValidator: deckValidator),
+          if (DeckMwlPointsStat.visible(deckValidator)) DeckMwlPointsStat(deckValidator: deckValidator),
+        ].seperatedBy(const VerticalDivider(color: Colors.black, width: 16)).toList(),
       ),
     );
   }
 }
 
 class DeckErrors extends ConsumerWidget {
-  const DeckErrors({Key? key}) : super(key: key);
+  const DeckErrors({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final deck = ref.watch(deckProvider);
-    final deckValidator = ref.watch(deckValidatorProvider(deck).select((value) {
-      return value.whenOrNull(data: (data) => data);
-    }));
-    if (deckValidator == null) return const SizedBox.shrink();
-
+    final deckValidator = ref.watch(deckValidatorResultProvider);
     final allErrors = [
       ...deckValidator.allErrors,
     ];
     if (allErrors.isEmpty) return const SizedBox.shrink();
 
-    return Padding(
+    return MaterialBanner(
       padding: const EdgeInsets.all(4),
-      child: Card(
-        color: const Color(0xFFF2DEDE),
-        child: ListTile(
-          title: Text(allErrors.join('\n'),
-              style: TextStyle(
-                color: Theme.of(context).errorColor,
-              )),
+      content: ListTile(
+        title: Text(
+          allErrors.join('\n'),
+          style: TextStyle(
+            color: Theme.of(context).errorColor,
+          ),
         ),
       ),
+      actions: const [
+        SizedBox.shrink(),
+      ],
     );
   }
 }
 
 class DeckTags extends ConsumerWidget {
-  const DeckTags({Key? key}) : super(key: key);
+  const DeckTags({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final db = ref.watch(dbProvider);
-    final tagList = ref.watch(deckProvider.select((value) => value.tags));
+    final tagList = ref.watch(deckProvider.select((value) => value.value.tags));
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: ChipsInput<String>(
@@ -510,7 +608,7 @@ class DeckTags extends ConsumerWidget {
           ];
         },
         onChanged: (data) {
-          final deck = ref.read(deckProvider.notifier);
+          final deck = ref.read(deckProvider);
           deck.unsaved = deck.value.copyWith(
             tags: data,
           );
@@ -551,23 +649,45 @@ class DeckTags extends ConsumerWidget {
 }
 
 class DeckSyncStatus extends ConsumerWidget {
-  const DeckSyncStatus({Key? key}) : super(key: key);
+  const DeckSyncStatus({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final deck = ref.watch(deckProvider);
-    final syncIssues = deck.syncIssues();
+    final syncIssues = ref.watch(deckValidatorResultProvider.select((value) => value.deck.syncIssues()));
     if (syncIssues == SyncIssues.both) {
       return MaterialBanner(
         content: const Text('Deck has changes to upload and download'),
         leading: const Icon(Icons.error, color: Colors.red),
         actions: <Widget>[
           TextButton(
-            onPressed: () => upload(context, ref),
+            onPressed: () async {
+              final deckNotifier = ref.read(deckProvider);
+              final result = await showDialog<DeckNotifierResult>(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => SaveDeckDialog.withOverrides(
+                  deck: deckNotifier.value,
+                  state: SaveDialogState.saveRemote,
+                ),
+              );
+              if (result == null) return;
+
+              deckNotifier.saved = result;
+            },
             child: const Text('Upload'),
           ),
           TextButton(
-            onPressed: () => download(context, ref),
+            onPressed: () async {
+              final deckNotifier = ref.read(deckProvider);
+              final result = await showDialog<DeckNotifierResult>(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => DownloadDeckDialog.withOverrides(deck: deckNotifier.value),
+              );
+              if (result == null) return;
+
+              deckNotifier.saved = result;
+            },
             child: const Text('Download'),
           ),
         ],
@@ -578,7 +698,17 @@ class DeckSyncStatus extends ConsumerWidget {
         leading: const Icon(Icons.warning, color: Colors.red),
         actions: <Widget>[
           TextButton(
-            onPressed: () => download(context, ref),
+            onPressed: () async {
+              final deckNotifier = ref.read(deckProvider);
+              final result = await showDialog<DeckNotifierResult>(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => DownloadDeckDialog.withOverrides(deck: deckNotifier.value),
+              );
+              if (result == null) return;
+
+              deckNotifier.saved = result;
+            },
             child: const Text('Download'),
           ),
         ],
@@ -589,7 +719,20 @@ class DeckSyncStatus extends ConsumerWidget {
         leading: const Icon(Icons.sync, color: Colors.amber),
         actions: <Widget>[
           TextButton(
-            onPressed: () => upload(context, ref),
+            onPressed: () async {
+              final deckNotifier = ref.read(deckProvider);
+              final result = await showDialog<DeckNotifierResult>(
+                context: context,
+                barrierDismissible: false,
+                builder: (context) => SaveDeckDialog.withOverrides(
+                  deck: deckNotifier.value,
+                  state: SaveDialogState.saveRemote,
+                ),
+              );
+              if (result == null) return;
+
+              deckNotifier.saved = result;
+            },
             child: const Text('Upload'),
           ),
         ],
@@ -597,5 +740,82 @@ class DeckSyncStatus extends ConsumerWidget {
     } else {
       return const SizedBox.shrink();
     }
+  }
+}
+
+class DeckCardTile extends ConsumerWidget {
+  const DeckCardTile({
+    required this.index,
+    required this.card,
+    required this.cardGalleryRoute,
+    super.key,
+  });
+
+  final int index;
+  final CardResult card;
+  final RestorableRouteFuture<CardGalleryResult> cardGalleryRoute;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final faction = ref.watch(deckValidatorResultProvider.select((value) {
+      return value.deck.faction;
+    }));
+    final count = ref.watch(deckValidatorResultProvider.select((value) {
+      return value.deck.cards[card] ?? 0;
+    }));
+    final cardError = ref.watch(deckValidatorResultProvider.select((value) {
+      return value.cardErrorList[card];
+    }));
+    final mwlCard = ref.watch(deckValidatorResultProvider.select((value) {
+      return value.mwlCardMap[card.code];
+    }));
+    return CardTile(
+      card,
+      key: ValueKey(card.code),
+      faction: faction,
+      error: cardError,
+      mwlCard: mwlCard,
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (count > 0)
+            IconButton(
+              constraints: const BoxConstraints(),
+              visualDensity: VisualDensity.compact,
+              icon: const Icon(Icons.remove_outlined),
+              onPressed: () {
+                final deck = ref.read(deckProvider);
+                deck.decCard(card, keep: true);
+              },
+            ),
+          Text('$count'),
+          IconButton(
+            constraints: const BoxConstraints(),
+            visualDensity: VisualDensity.compact,
+            icon: const Icon(Icons.add_outlined),
+            onPressed: () {
+              final deck = ref.read(deckProvider);
+              deck.incCard(card);
+            },
+          ),
+        ],
+      ),
+      onTap: () async {
+        final identity = ref.read(deckValidatorResultProvider).deck.toCard();
+        final groupedCardList = await ref.read(groupedCardListProvider.future);
+        final deckCards = ref.read(deckProvider).value.cards;
+        cardGalleryRoute.present(CardGalleryArguments(
+          items: GroupedCardCodeList.fromCardResult(HeaderList([
+            HeaderItems(
+              identity.type.name,
+              [identity],
+            ),
+            ...groupedCardList
+          ])),
+          index: index + 1,
+          deckCards: deckCards,
+        ).toJson());
+      },
+    );
   }
 }

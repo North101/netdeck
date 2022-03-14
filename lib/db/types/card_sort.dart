@@ -1,5 +1,4 @@
 import 'package:collection/collection.dart';
-import 'package:drift/drift.dart';
 
 import '/db/database.dart';
 import '/util.dart';
@@ -93,15 +92,14 @@ extension CardSortEx on CardSort {
   List<CardResult> call(Iterable<CardResult> items) => items.sorted(sorted);
 }
 
-class CardSortConverter extends NullAwareTypeConverter<CardSort, String> {
+class CardSortConverter extends MyTypeConverter<CardSort, String> {
   const CardSortConverter(this.defaultValue);
 
   final CardSort defaultValue;
 
   @override
-  CardSort requireMapToDart(String fromDb) =>
-      CardSort.values.firstWhereOrNull((e) => requireMapToSql(e) == fromDb) ?? defaultValue;
+  CardSort fromSql(String fromDb) => CardSort.values.firstWhereOrNull((e) => toSql(e) == fromDb) ?? defaultValue;
 
   @override
-  String requireMapToSql(CardSort value) => value.toString();
+  String toSql(CardSort value) => value.toString();
 }

@@ -1,17 +1,24 @@
-//import 'package:drift/drift.dart';
+import '/db/database.dart';
 
-// import '/util/nrdb.dart';
-import '../database.dart';
+enum SyncIssues {
+  none,
+  local,
+  remote,
+  both,
+}
 
 extension DeckDataEx on DeckData {
-  // DeckData copyFrom(NrdbDeck nrdbDeck) {
-  //   return copyWith(
-  //     id: formatNrdbId(nrdbDeck.id),
-  //     name: nrdbDeck.name,
-  //     description: nrdbDeck.description,
-  //     mwlCode: Value(nrdbDeck.mwlCode),
-  //     updated: nrdbDeck.dateUpdate,
-  //     lastSynced: Value(nrdbDeck.dateUpdate),
-  //   );
-  // }
+  SyncIssues syncIssues([DateTime? remoteUpdated]) {
+    final hasLocalChanges = synced != null && updated != synced;
+    final hasRemoteChanges = synced != null && synced != (remoteUpdated ?? this.remoteUpdated);
+    if (hasLocalChanges && hasRemoteChanges) {
+      return SyncIssues.both;
+    } else if (hasLocalChanges) {
+      return SyncIssues.local;
+    } else if (hasRemoteChanges) {
+      return SyncIssues.remote;
+    } else {
+      return SyncIssues.none;
+    }
+  }
 }

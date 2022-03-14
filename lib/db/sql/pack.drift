@@ -1,4 +1,5 @@
-import '../types.dart';
+import 'package:drift/drift.dart';
+import '/db/types.dart';
 import 'cycle.drift';
 import 'rotation.drift';
 

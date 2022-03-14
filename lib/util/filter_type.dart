@@ -13,8 +13,26 @@ class FilterType<T> extends Iterable<T> with _$FilterType<T> {
 
   const FilterType._();
 
+  factory FilterType.fromJson(Map<String, dynamic> data) {
+    return FilterType(
+      visible: data['visible'] as bool,
+      always: Set<T>.from(data['always']),
+      values: Set<T>.from(data['values']),
+      never: Set<T>.from(data['never']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'visible': visible,
+      'always': always.toList(),
+      'values': values.toList(),
+      'never': never.toList(),
+    };
+  }
+
   @override
-  Iterator<T> get iterator => (values.union(always).difference(never)).iterator;
+  Iterator<T> get iterator => ({...values}.union(always).difference(never)).iterator;
 
   bool get isVisible => visible && isNotEmpty;
 }
@@ -33,34 +51,25 @@ class FilterState {
 
 class TypeFilterState extends FilterState {
   const TypeFilterState({
-    bool always = true,
-    bool values = true,
-    bool never = true,
+    super.always,
+    super.values,
+    super.never,
     this.subtypes = true,
-  }) : super(
-          always: always,
-          values: values,
-          never: never,
-        );
+  });
 
   final bool subtypes;
 }
 
 class CardFilterState extends TypeFilterState {
   const CardFilterState({
-    bool always = true,
-    bool values = true,
-    bool never = true,
-    bool subtypes = true,
+    super.always,
+    super.values,
+    super.never,
+    super.subtypes,
     this.rotation = true,
     this.mwl = true,
     this.collection = true,
-  }) : super(
-          always: always,
-          values: values,
-          never: never,
-          subtypes: subtypes,
-        );
+  });
 
   final bool rotation;
   final bool mwl;

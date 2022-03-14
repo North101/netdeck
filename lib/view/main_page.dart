@@ -5,28 +5,24 @@ import '/db/database.dart';
 import '/providers.dart';
 import '/util/assets.gen.dart';
 import '/util/filter_type.dart';
+import '/util/grouped_card_code_list.dart';
 import '/util/nrdb/private.dart';
-import '/view/card_list/appbar.dart';
-import '/view/card_list/body.dart';
 import 'card_gallery_page.dart';
+import 'card_list/page.dart';
 import 'card_tile.dart';
 import 'deck/page.dart';
-import 'deck_list/appbar.dart';
-import 'deck_list/body.dart';
 import 'deck_list/fab.dart';
+import 'deck_list/page.dart';
 import 'deck_tile.dart';
-import 'settings/appbar.dart';
-import 'settings/body.dart';
+import 'settings/page.dart';
 
 class BottomNavigationItem {
   const BottomNavigationItem({
-    required this.appBar,
     required this.body,
     required this.item,
     this.floatingActionButton,
   });
 
-  final Widget appBar;
   final Widget body;
   final BottomNavigationBarItem item;
   final Widget? floatingActionButton;
@@ -34,43 +30,31 @@ class BottomNavigationItem {
 
 class CardListBottomNavigationItem extends BottomNavigationItem {
   CardListBottomNavigationItem({
-    required Widget appBar,
-    required Widget body,
-    required BottomNavigationBarItem item,
-    Widget? floatingActionButton,
-  }) : super(
-          appBar: appBar,
-          body: body,
-          item: item,
-          floatingActionButton: floatingActionButton,
-        );
+    required super.body,
+    required super.item,
+    super.floatingActionButton,
+  });
 
   factory CardListBottomNavigationItem.fromSettings(SettingResult settings) {
-    final cardListOverrides = [
-      filterSearchingProvider.overrideWithValue(StateController(false)),
-      filterQueryProvider.overrideWithValue(StateController(null)),
-      filterCollectionProvider.overrideWithValue(StateController(settings.settings.filterCollection)),
-      filterFormatProvider.overrideWithValue(StateController(settings.filterFormat)),
-      filterRotationProvider.overrideWithValue(StateController(settings.filterRotation)),
-      filterMwlProvider.overrideWithValue(StateController(settings.filterMwl)),
-      filterPacksProvider.overrideWithValue(StateController(FilterType())),
-      filterSidesProvider.overrideWithValue(StateController(FilterType())),
-      filterFactionsProvider.overrideWithValue(StateController(FilterType())),
-      filterTypesProvider.overrideWithValue(StateController(FilterType())),
-      cardItemBuilderProvider.overrideWithValue(cardItemBuilder),
-    ];
-
     return CardListBottomNavigationItem(
-      appBar: ProviderScope(
-        overrides: cardListOverrides,
-        child: const CardListAppBar(
-          title: 'Cards',
-          automaticallyImplyLeading: false,
+      body: CardListPage.withOverrides(
+        restorationId: 'card_list_page',
+        automaticallyImplyLeading: false,
+        title: 'Cards',
+        filterSearching: false,
+        filterQuery: null,
+        filterCollection: settings.settings.filterCollection,
+        filterFormat: settings.filterFormat,
+        filterRotation: settings.filterRotation,
+        filterMwl: settings.filterMwl,
+        filterPacks: FilterType(),
+        filterSides: FilterType(),
+        filterFactions: FilterType(),
+        filterTypes: FilterType(),
+        itemBuilder: (context, ref, index, card) => CardTileWidget(
+          index: index,
+          card: card,
         ),
-      ),
-      body: ProviderScope(
-        overrides: cardListOverrides,
-        child: const CardListBody(),
       ),
       item: BottomNavigationBarItem(
         icon: Assets.icons.cards.image(height: 24, color: Colors.grey[600]),
@@ -79,66 +63,36 @@ class CardListBottomNavigationItem extends BottomNavigationItem {
       ),
     );
   }
-
-  static Widget cardItemBuilder(BuildContext context, WidgetRef ref, int index, CardResult card) {
-    final mwlCardMap = ref.watch(mwlCardMapProvider.select((value) {
-      return value.whenOrNull(data: (data) => data);
-    }));
-    return CardTile(
-      card,
-      key: ValueKey(card),
-      mwlCard: mwlCardMap?[card.code],
-      onTap: () async {
-        final groupedCardList = await ref.read(groupedCardListProvider.future);
-        Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-          return CardGalleryPage.withOverrides(
-            groupedCardList: groupedCardList,
-            currentIndex: index,
-          );
-        }));
-      },
-    );
-  }
 }
 
 class DeckListBottomNavigationItem extends BottomNavigationItem {
   DeckListBottomNavigationItem({
-    required Widget appBar,
-    required Widget body,
-    required BottomNavigationBarItem item,
-    Widget? floatingActionButton,
-  }) : super(
-          appBar: appBar,
-          body: body,
-          item: item,
-          floatingActionButton: floatingActionButton,
-        );
+    required super.body,
+    required super.item,
+    super.floatingActionButton,
+  });
 
   factory DeckListBottomNavigationItem.fromSettings(SettingResult settings) {
-    final deckListOverrides = [
-      filterSearchingProvider.overrideWithValue(StateController(false)),
-      filterQueryProvider.overrideWithValue(StateController(null)),
-      filterFormatProvider.overrideWithValue(StateController(null)),
-      filterRotationProvider.overrideWithValue(StateController(null)),
-      filterMwlProvider.overrideWithValue(StateController(null)),
-      filterPacksProvider.overrideWithValue(StateController(FilterType())),
-      filterSidesProvider.overrideWithValue(StateController(FilterType())),
-      filterFactionsProvider.overrideWithValue(StateController(FilterType())),
-      filterTypesProvider.overrideWithValue(StateController(FilterType())),
-      filterTagsProvider.overrideWithValue(StateController(const {})),
-      deckItemBuilderProvider.overrideWithValue(deckItemBuilder),
-      deckFabProvider.overrideWithValue(null),
-    ];
-
     return DeckListBottomNavigationItem(
-      appBar: ProviderScope(
-        overrides: deckListOverrides,
-        child: const DeckListAppBar(
-          title: 'Decks',
-          automaticallyImplyLeading: false,
+      body: DeckListPage.withOverrides(
+        restorationId: 'deck_list_page',
+        automaticallyImplyLeading: false,
+        title: 'Decks',
+        filterSearching: false,
+        filterQuery: null,
+        filterFormat: null,
+        filterRotation: null,
+        filterMwl: null,
+        filterPacks: FilterType(),
+        filterSides: FilterType(),
+        filterFactions: FilterType(),
+        filterTypes: FilterType(),
+        filterTags: const {},
+        itemBuilder: (context, ref, index, deck) => DeckTileWidget(
+          index: index,
+          deck: deck,
         ),
       ),
-      body: ProviderScope(overrides: deckListOverrides, child: const DeckListBody()),
       floatingActionButton: const DeckListFloatingActionBar(),
       item: BottomNavigationBarItem(
         icon: Assets.icons.decks.image(height: 24, color: Colors.grey[600]),
@@ -147,48 +101,12 @@ class DeckListBottomNavigationItem extends BottomNavigationItem {
       ),
     );
   }
-
-  static Widget deckItemBuilder(BuildContext context, WidgetRef ref, int index, DeckResult2 deck) {
-    final tags = ref.watch(filterTagsProvider.state);
-    final selectedDecks = ref.watch(selectedDecksProvider.state);
-    final selected = selectedDecks.state.contains(deck);
-    return DeckTile(
-      deck: deck,
-      selected: selected,
-      selectedTags: tags.state,
-      onTap: () {
-        if (selectedDecks.state.isEmpty) {
-          Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-            return DeckPage.withOverrides(deck: deck);
-          }));
-        } else {
-          selectedDecks.state = {
-            ...selectedDecks.state.where((e) => e != deck),
-            if (!selected) deck,
-          };
-        }
-      },
-      onLongPress: () {
-        selectedDecks.state = {
-          ...selectedDecks.state,
-          deck,
-        };
-      },
-      onTagTap: (tag, value) {
-        tags.state = {
-          ...tags.state.where((e) => e != tag),
-          if (value) tag,
-        };
-      },
-    );
-  }
 }
 
 class SettingsBottomNavigationItem extends BottomNavigationItem {
   const SettingsBottomNavigationItem()
       : super(
-          appBar: const SettingsAppBar(automaticallyImplyLeading: false),
-          body: const SettingsBody(),
+          body: const SettingsPage(),
           item: const BottomNavigationBarItem(
             icon: Icon(Icons.settings),
             activeIcon: Icon(Icons.settings, color: Colors.blueAccent),
@@ -197,23 +115,34 @@ class SettingsBottomNavigationItem extends BottomNavigationItem {
         );
 }
 
-final itemsProvider = Provider<List<BottomNavigationItem>>((ref) {
-  final settings = ref.watch(settingResultProvider);
+final itemsProvider = FutureProvider<List<BottomNavigationItem>>((ref) async {
+  final db = ref.read(dbProvider);
+  final settings = await db.getSettings().getSingle();
   return [
     CardListBottomNavigationItem.fromSettings(settings),
     DeckListBottomNavigationItem.fromSettings(settings),
     const SettingsBottomNavigationItem(),
   ];
-}, dependencies: [settingResultProvider]);
+}, dependencies: [dbProvider]);
 
-final selectedIndexProvider = StateProvider<int>((ref) => 0);
+final selectedIndexProvider = RestorableProvider.autoDispose<RestorableInt>((ref) => throw UnimplementedError());
 
 class MainPage extends ConsumerWidget {
-  const MainPage({Key? key}) : super(key: key);
+  const MainPage({super.key});
+
+  static Widget withOverrides() {
+    return ProviderScope(
+      restorationId: 'main_page_scope',
+      overrides: [
+        selectedIndexProvider.overrideWithValue(RestorableInt(0), 'selectedIndexProvider'),
+      ],
+      child: const MainPage(),
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       final authState = ref.read(nrdbAuthStateProvider);
       if (authState is InitAuthState) {
         AuthState.refreshToken(authState.ref);
@@ -243,8 +172,9 @@ class MainPage extends ConsumerWidget {
       });
     });
 
-    final settings = ref.watch(initSettingsProvider);
-    return settings.when(
+    final index = ref.watch(selectedIndexProvider);
+    final items = ref.watch(itemsProvider);
+    return items.when(
       loading: () => Scaffold(
         appBar: AppBar(title: const Text('Netdeck')),
         body: const Center(child: CircularProgressIndicator()),
@@ -253,51 +183,114 @@ class MainPage extends ConsumerWidget {
         appBar: AppBar(title: const Text('Netdeck')),
         body: Text(error.toString()),
       ),
-      data: (data) => _MainPage.withOverrides(settings: data),
+      data: (items) {
+        final selected = items[index.value];
+        return Scaffold(
+          body: IndexedStack(
+            index: index.value,
+            children: items.map((e) => e.body).toList(),
+          ),
+          floatingActionButton: selected.floatingActionButton,
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: index.value,
+            items: items.map((e) => e.item).toList(),
+            onTap: (value) {
+              index.value = value;
+            },
+          ),
+        );
+      },
     );
   }
 }
 
-class _MainPage extends ConsumerWidget {
-  const _MainPage({Key? key}) : super(key: key);
+class CardTileWidget extends ConsumerWidget {
+  const CardTileWidget({
+    required this.index,
+    required this.card,
+    super.key,
+  });
 
-  static withOverrides({
-    required SettingResult settings,
-  }) {
-    return ProviderScope(
-      overrides: [
-        settingResultProvider.overrideWithValue(settings),
-      ],
-      child: const _MainPage(),
+  final int index;
+  final CardResult card;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final mwlCardMap = ref.watch(mwlCardMapProvider.select((value) {
+      return value.whenOrNull(data: (data) => data);
+    }));
+    return CardTile(
+      card,
+      key: ValueKey(card),
+      mwlCard: mwlCardMap?[card.code],
+      onTap: () async {
+        final navigator = Navigator.of(context);
+        final groupedCardList = await ref.read(groupedCardListProvider.future);
+        navigator.restorablePush(
+          openCardGalleryPage,
+          arguments: CardGalleryArguments(
+            items: GroupedCardCodeList.fromCardResult(groupedCardList),
+            index: index,
+          ).toJson(),
+        );
+      },
     );
+  }
+}
+
+class DeckTileWidget extends ConsumerWidget {
+  const DeckTileWidget({
+    required this.index,
+    required this.deck,
+    super.key,
+  });
+
+  final int index;
+  final DeckFullResult deck;
+
+  static Route<void> openDeckRoute(BuildContext context, Object? arguments) {
+    final deck = DeckFullResult.fromJson((arguments as Map).cast());
+    return MaterialPageRoute(builder: (context) {
+      return DeckPage.withOverrides(
+        deck: deck.toNotifierResult(DeckSaveState.isSaved),
+      );
+    });
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final index = ref.watch(selectedIndexProvider.state);
-    final items = ref.watch(itemsProvider);
-    final selected = items[index.state];
-
-    return Scaffold(
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(kToolbarHeight),
-        child: IndexedStack(
-          index: index.state,
-          children: items.map((e) => e.appBar).toList(),
-        ),
-      ),
-      body: IndexedStack(
-        index: index.state,
-        children: items.map((e) => e.body).toList(),
-      ),
-      floatingActionButton: selected.floatingActionButton,
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: index.state,
-        items: items.map((e) => e.item).toList(),
-        onTap: (value) {
-          index.state = value;
-        },
-      ),
+    final tags = ref.watch(filterTagsProvider);
+    final selectedDecks = ref.watch(selectedDeckIdsProvider);
+    final selected = selectedDecks.value.contains(deck.deck.id);
+    return DeckTile(
+      deck: deck,
+      selected: selected,
+      selectedTags: tags.value,
+      onTap: () {
+        if (selectedDecks.value.isEmpty) {
+          Navigator.of(context).restorablePush(
+            openDeckRoute,
+            arguments: deck.toJson(),
+          );
+        } else {
+          selectedDecks.value = {
+            ...selectedDecks.value.where((e) => e != deck.deck.id),
+            if (!selected) deck.deck.id,
+          };
+        }
+      },
+      onLongPress: () {
+        selectedDecks.value = {
+          ...selectedDecks.value,
+          deck.deck.id,
+        };
+      },
+      onTagTap: (tag, value) {
+        tags.value = {
+          ...tags.value.where((e) => e != tag),
+          if (value) tag,
+        };
+      },
     );
   }
 }

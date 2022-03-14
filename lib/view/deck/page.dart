@@ -1,30 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:netrunner_deckbuilder/view/deck/util.dart';
 
-import '/db/database.dart';
 import '/providers.dart';
+import '/util/deck_validator.dart';
 import '/util/filter_type.dart';
+import '/view/async_value_builder.dart';
+import '/view/save_deck_dialog.dart';
 import 'body.dart';
 import 'fab.dart';
 
 class DeckPage extends ConsumerWidget {
-  const DeckPage({Key? key}) : super(key: key);
+  const DeckPage({super.key});
 
-  static withOverrides({
-    required DeckResult2 deck,
+  static Widget withOverrides({
+    required DeckNotifierResult deck,
   }) {
     return ProviderScope(
+      restorationId: 'deck_page',
       overrides: [
-        deckProvider.overrideWithValue(DeckNotifier(deck)),
-        groupedCardListProvider.overrideWithProvider(groupedDeckCardListProvider),
-        filterSearchingProvider.overrideWithValue(StateController(false)),
-        filterQueryProvider.overrideWithValue(StateController(null)),
-        filterCollectionProvider.overrideWithValue(StateController(false)),
-        filterPacksProvider.overrideWithValue(StateController(FilterType())),
-        filterSidesProvider.overrideWithValue(StateController(FilterType(always: {deck.side.code}))),
-        filterFactionsProvider.overrideWithValue(StateController(FilterType())),
-        filterTypesProvider.overrideWithValue(StateController(FilterType(never: {deck.identity.typeCode}))),
+        deckProvider.overrideWithValue(DeckNotifier(deck), 'deckProvider'),
+        filterSearchingProvider.overrideWithValue(RestorableBool(false), 'filterSearchingProvider'),
+        filterQueryProvider.overrideWithValue(RestorableQuery(null), 'filterQueryProvider'),
+        filterCollectionProvider.overrideWithValue(RestorableBool(false), 'filterCollectionProvider'),
+        filterPacksProvider.overrideWithValue(RestorableFilterType(FilterType()), 'filterPacksProvider'),
+        filterSidesProvider.overrideWithValue(RestorableFilterType(FilterType()), 'filterSidesProvider'),
+        filterFactionsProvider.overrideWithValue(RestorableFilterType(FilterType()), 'filterFactionsProvider'),
+        filterTypesProvider.overrideWithValue(RestorableFilterType(FilterType()), 'filterTypesProvider'),
       ],
       child: const DeckPage(),
     );
@@ -32,10 +33,36 @@ class DeckPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final deckResultStream = ref.watch(deckValidatorStreamProvider);
+    return AsyncValueBuilder<DeckValidator>(
+      value: deckResultStream,
+      loading: () => const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      ),
+      error: (error, stackTrace) => Scaffold(
+        body: Center(child: Text(error.toString())),
+      ),
+      data: (deckValidator) => ProviderScope(
+        overrides: [
+          deckValidatorResultProvider.overrideWithValue(deckValidator),
+          groupedCardListProvider.overrideWithProvider(groupedDeckCardListProvider),
+        ],
+        child: const DeckResultPage(),
+      ),
+    );
+  }
+}
+
+class DeckResultPage extends ConsumerWidget {
+  const DeckResultPage({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     return WillPopScope(
       onWillPop: () async {
-        final deckNotifier = ref.read(deckProvider.notifier);
-        if (!deckNotifier.changed) return true;
+        final deck = ref.read(deckProvider).value;
+        final changed = deck.state != DeckSaveState.isSaved;
+        if (!changed) return true;
 
         final result = await showDialog<bool>(
           context: context,
@@ -60,14 +87,12 @@ class DeckPage extends ConsumerWidget {
         );
         if (result != true) return result != null;
 
-        final saveLocation = await whereToSave(context, ref);
-        if (saveLocation == null) {
-          return false;
-        } else if (saveLocation == SaveLocation.local) {
-          return await save(context, ref);
-        } else {
-          return await upload(context, ref);
-        }
+        final saveResult = await showDialog<DeckNotifierResult>(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) => SaveDeckDialog.withOverrides(deck: deck),
+        );
+        return saveResult != null;
       },
       child: const Scaffold(
         body: DeckBody(),
