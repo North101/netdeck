@@ -11,9 +11,8 @@ class DeckListAppBar extends ConsumerWidget implements PreferredSizeWidget {
     this.automaticallyImplyLeading = true,
     required this.title,
     this.color,
-    Key? key,
-  })  : preferredSize = const Size.fromHeight(kToolbarHeight),
-        super(key: key);
+    super.key,
+  }) : preferredSize = const Size.fromHeight(kToolbarHeight);
 
   final bool automaticallyImplyLeading;
   final String title;
@@ -24,8 +23,8 @@ class DeckListAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Widget build(context, ref) {
-    final isSelected = ref.watch(selectedDecksProvider.select((value) => value.isNotEmpty));
-    final isSearching = ref.watch(filterSearchingProvider);
+    final isSelected = ref.watch(selectedDeckIdsProvider.select((value) => value.value.isNotEmpty));
+    final isSearching = ref.watch(filterSearchingProvider).value;
     if (isSelected) {
       return const DeckSelectedAppBar();
     } else if (isSearching) {

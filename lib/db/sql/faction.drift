@@ -1,4 +1,4 @@
-import '../types.dart';
+import '/db/types.dart';
 
 import 'side.drift';
 
@@ -7,7 +7,7 @@ CREATE TABLE faction(
   side_code TEXT NOT NULL,
 
   name TEXT NOT NULL,
-  color INT MAPPED BY `const ColorConverter()` NOT NULL,
+  color INT NOT NULL MAPPED BY `const ColorConverter()`,
   is_mini BOOLEAN NOT NULL
 );
 

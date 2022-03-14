@@ -1,48 +1,42 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart'
+    hide AutocompleteFieldViewBuilder, RawAutocomplete, AutocompleteOnSelected, AutocompleteHighlightedOption;
 import 'package:flutter/scheduler.dart';
 
+import '/db/database.dart';
 import '/db/querybuilder.dart';
+import 'autocomplete.dart';
 
 class QueryBuilderAutocomplete extends StatelessWidget {
   const QueryBuilderAutocomplete({
+    required this.db,
     required this.focusNode,
     required this.textEditingController,
     required this.fieldViewBuilder,
     required this.queryBuilder,
-    Key? key,
-  }) : super(key: key);
+    this.onSelected,
+    super.key,
+  });
 
+  final Database db;
   final FocusNode? focusNode;
   final TextEditingController textEditingController;
   final AutocompleteFieldViewBuilder fieldViewBuilder;
   final QueryBuilder queryBuilder;
+  final void Function(Option option)? onSelected;
 
   @override
   Widget build(BuildContext context) {
-    return RawAutocomplete<MapEntry<String, QueryBuilder>>(
+    return RawAutocomplete<Option>(
       focusNode: focusNode,
       textEditingController: textEditingController,
-      displayStringForOption: (option) => '${option.key}:',
+      displayStringForOption: (option) => option.replacement,
       fieldViewBuilder: fieldViewBuilder,
-      optionsBuilder: (TextEditingValue textEditingValue) {
+      onSelected: onSelected,
+      optionsBuilder: (TextEditingValue textEditingValue) async {
         final text = textEditingValue.text;
-        final startOption = text
-            .substring(0, textEditingValue.selection.start)
-            .characters
-            .toList()
-            .reversed
-            .takeWhile((c) => c != ':' && c != ' ')
-            .toList()
-            .reversed;
-        final endOption =
-            text.substring(textEditingValue.selection.start).characters.toList().takeWhile((c) => c != ':' && c != ' ');
-        final option = startOption.followedBy(endOption).join('');
-        return [
-          for (final entry in queryBuilder.fields.entries)
-            if (option.isEmpty || entry.key.contains(option)) entry,
-          for (final entry in queryBuilder.extraFields.entries)
-            if (option.isEmpty || entry.key.contains(option)) entry,
-        ];
+        final query = tryParseQuery(textEditingValue.text);
+        final position = textEditingValue.selection.base.offset;
+        return await queryBuilder.options(db, text, query, position);
       },
       optionsViewBuilder: (_, onSelected, options) {
         final box = context.findRenderObject() as RenderBox?;
@@ -62,15 +56,14 @@ class QueryBuilderAutocomplete extends StatelessWidget {
 
 class _AutocompleteOptions extends StatelessWidget {
   const _AutocompleteOptions({
-    Key? key,
     required this.onSelected,
     required this.options,
     required this.maxOptionsHeight,
-  }) : super(key: key);
+  });
 
-  final AutocompleteOnSelected<MapEntry<String, QueryBuilder>> onSelected;
+  final AutocompleteOnSelected<Option> onSelected;
 
-  final Iterable<MapEntry<String, QueryBuilder>> options;
+  final Iterable<Option> options;
   final double maxOptionsHeight;
 
   @override
@@ -112,13 +105,23 @@ class _AutocompleteOptions extends StatelessWidget {
                             child: Builder(builder: (BuildContext context) {
                               final bool highlight = AutocompleteHighlightedOption.of(context) == index;
                               if (highlight) {
-                                SchedulerBinding.instance!.addPostFrameCallback((Duration timeStamp) {
+                                SchedulerBinding.instance.addPostFrameCallback((Duration timeStamp) {
                                   Scrollable.ensureVisible(context, alignment: 0.5);
                                 });
                               }
                               return ListTile(
                                 dense: true,
-                                title: Text('${option.key}: ${option.value.help}'),
+                                title: option.help != null
+                                    ? Text.rich(TextSpan(
+                                        children: [
+                                          TextSpan(
+                                            text: '${option.value} ',
+                                            style: const TextStyle(fontWeight: FontWeight.bold),
+                                          ),
+                                          TextSpan(text: option.help),
+                                        ],
+                                      ))
+                                    : Text(option.value),
                               );
                             }),
                           );

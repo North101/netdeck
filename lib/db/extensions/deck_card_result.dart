@@ -1,4 +1,4 @@
-import '../database.dart';
+import '/db/database.dart';
 
 extension DeckCardResultEx on DeckCardResult {
   String get deckId => deckCard.deckId;

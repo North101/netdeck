@@ -6,42 +6,47 @@ import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 import '/db/database.dart';
 import '/providers.dart';
 import '/util/header_list.dart';
-import '/view/header_list_tile.dart';
+import 'async_value_builder.dart';
 import 'card_gallery_swipe_page.dart';
+import 'header_list_tile.dart';
 
 class CardGalleryListPage extends ConsumerWidget {
-  const CardGalleryListPage({Key? key}) : super(key: key);
+  CardGalleryListPage({super.key});
+
+  final ScrollController controller = ScrollController();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final groupedCardList = ref.watch(cardGalleryGroupedCardListProvider);
+    final groupedCardListStream = ref.watch(cardGalleryGroupedCardListProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Card Gallery')),
-      body: CustomScrollView(
-        controller: ScrollController(),
-        slivers: groupedCardList.map((e) => CardHeader(groupedCardList.sumUntilItem(e), e)).toList(),
+      body: AsyncValueBuilder<HeaderList<CardResult>>(
+        value: groupedCardListStream,
+        data: (groupedCardList) => CustomScrollView(
+          controller: controller,
+          slivers: groupedCardList.mapItems(CardHeader.new).toList(),
+        ),
       ),
     );
   }
 }
 
 class CardHeader extends ConsumerWidget {
-  const CardHeader(this.indexOffset, this.headerList, {Key? key}) : super(key: key);
+  const CardHeader(this.indexOffset, this.headerList, {super.key});
 
   final int indexOffset;
   final HeaderItems<CardResult> headerList;
 
-  void onTap(BuildContext context, WidgetRef ref, int index) {
-    final currentIndex = ref.read(cardGalleryIndexProvider.state);
-    currentIndex.state = index;
+  void onTap(BuildContext context, WidgetRef ref, int value) {
+    final index = ref.read(cardGalleryIndexProvider);
+    index.value = value;
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mediaQuery = MediaQuery.of(context);
     final orientation = mediaQuery.orientation;
-    final deckNotifier = ref.watch(cardGalleryDeckProvider.notifier);
-    final deckCardList = deckNotifier.value?.cards;
+    final deckCardList = ref.watch(cardGalleryDeckCardCodesProvider)?.value;
 
     const rowCount = 2;
     const imageAspectRatio = (300 + 16) / (419 + 16);
@@ -60,17 +65,13 @@ class CardHeader extends ConsumerWidget {
         delegate: SliverChildBuilderDelegate(
           (context, index) {
             final card = headerList[index];
-            return Padding(
-              padding: const EdgeInsets.all(8),
-              child: Stack(
-                alignment: Alignment.center,
-                fit: StackFit.passthrough,
-                children: [
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    child: InkWell(
+            return FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Padding(
+                padding: const EdgeInsets.all(8),
+                child: Column(
+                  children: [
+                    InkWell(
                       onTap: () => onTap(context, ref, indexOffset + index),
                       child: CachedNetworkImage(
                         fit: BoxFit.contain,
@@ -80,19 +81,9 @@ class CardHeader extends ConsumerWidget {
                             card.faction.icon?.image() ?? const SizedBox.shrink(),
                       ),
                     ),
-                  ),
-                  if (deckCardList != null)
-                    Positioned(
-                      right: 0,
-                      left: 0,
-                      bottom: 0,
-                      child: Transform.scale(
-                        scale: counterScale,
-                        alignment: Alignment.bottomCenter,
-                        child:Center(child: DeckCardCount(card))
-                      ),
-                    ),
-                ],
+                    if (deckCardList != null && card.type.code != 'identity') Center(child: DeckCardCount(card)),
+                  ],
+                ),
               ),
             );
           },

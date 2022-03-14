@@ -34,7 +34,8 @@ CREATE TABLE card(
   minimum_deck_size INT,
 
   flavor TEXT,
-  illustrator TEXT
+  illustrator TEXT,
+  image_url TEXT NOT NULL
 );
 
 listCards($where = TRUE, :mwlCode AS TEXT OR NULL) AS CardResult:

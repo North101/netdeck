@@ -1,4 +1,4 @@
-import '../types.dart';
+import '/db/types.dart';
 
 CREATE TABLE mwl_card(
   mwl_code TEXT NOT NULL,

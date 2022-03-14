@@ -3,28 +3,23 @@ import 'package:flutter/material.dart';
 import '/db/database.dart';
 
 class CardTypeWidget extends StatelessWidget {
-  const CardTypeWidget(this.card, {Key? key}) : super(key: key);
+  const CardTypeWidget(this.card, {super.key});
 
   final CardResult card;
 
   @override
   Widget build(BuildContext context) {
-    return RichText(
-      text: TextSpan(
-        children: [
-          TextSpan(
-            text: card.type.name,
-            style: const TextStyle(fontWeight: FontWeight.bold),
-          ),
-          if (card.card.keywords != null)
-            const TextSpan(
-              text: ': ',
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-          if (card.card.keywords != null) TextSpan(text: card.card.keywords),
-        ],
-        style: DefaultTextStyle.of(context).style,
+    return Text.rich(TextSpan(children: [
+      TextSpan(
+        text: card.type.name,
+        style: const TextStyle(fontWeight: FontWeight.bold),
       ),
-    );
+      if (card.card.keywords != null)
+        const TextSpan(
+          text: ': ',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+      if (card.card.keywords != null) TextSpan(text: card.card.keywords),
+    ]));
   }
 }

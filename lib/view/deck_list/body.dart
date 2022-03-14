@@ -4,6 +4,7 @@ import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 
 import '/db/database.dart';
 import '/providers.dart';
+import '/util.dart';
 import '/util/header_list.dart';
 import '/util/nrdb/private.dart';
 import '/view/async_value_builder.dart';
@@ -13,7 +14,7 @@ import '/view/header_list_tile.dart';
 import '/view/tag_chip.dart';
 
 class DeckListFilters extends ConsumerWidget {
-  const DeckListFilters({Key? key}) : super(key: key);
+  const DeckListFilters({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -22,7 +23,7 @@ class DeckListFilters extends ConsumerWidget {
       return const SizedBox();
     }
 
-    final tags = ref.watch(filterTagsProvider);
+    final tags = ref.watch(filterTagsProvider).value;
     final countStuff = ref.watch(countStuffProvider);
     return AsyncValueBuilder<CountStuffResult>(
       value: countStuff,
@@ -50,9 +51,9 @@ class DeckListFilters extends ConsumerWidget {
 }
 
 class DeckHeader extends ConsumerWidget {
-  const DeckHeader(this.indexOffset, this.headerList, {Key? key}) : super(key: key);
+  const DeckHeader(this.indexOffset, this.headerList, {super.key});
 
-  final HeaderItems<DeckResult2> headerList;
+  final HeaderItems<DeckFullResult> headerList;
   final int indexOffset;
 
   void onTap(BuildContext context, WidgetRef ref, int index) {}
@@ -63,16 +64,10 @@ class DeckHeader extends ConsumerWidget {
     return SliverStickyHeader(
       header: HeaderListTile.titleCount(title: headerList.header, count: headerList.length),
       sliver: SliverList(
-        delegate: SliverChildBuilderDelegate(
-          (context, index) {
-            if (index.isEven) {
-              final realIndex = index ~/ 2;
-              return deckItemBuilder(context, ref, realIndex, headerList[realIndex]);
-            } else {
-              return const Divider();
-            }
-          },
-          childCount: headerList.length * 2,
+        delegate: SliverChildSeperatedBuilderDelegate(
+          (context, index) => deckItemBuilder(context, ref, index, headerList[index]),
+          (context, index) => const Divider(),
+          childCount: headerList.length,
         ),
       ),
     );
@@ -80,12 +75,12 @@ class DeckHeader extends ConsumerWidget {
 }
 
 class DeckListList extends ConsumerWidget {
-  const DeckListList({Key? key}) : super(key: key);
+  const DeckListList({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final groupedDeckList = ref.watch(groupedDeckListProvider);
-    return AsyncValueBuilder<HeaderList<DeckResult2>>(
+    return AsyncValueBuilder<HeaderList<DeckFullResult>>(
       value: groupedDeckList,
       data: (data) {
         if (data.isEmpty) {
@@ -94,7 +89,7 @@ class DeckListList extends ConsumerWidget {
         return CustomScrollView(
           controller: ScrollController(),
           slivers: [
-            ...data.map((item) => DeckHeader(data.sumUntilItem(item), item)).toList(),
+            ...data.mapItems(DeckHeader.new).toList(),
             const SliverList(delegate: SliverChildListDelegate.fixed([FloatingActionButtonSpacer()])),
           ],
         );
@@ -104,7 +99,7 @@ class DeckListList extends ConsumerWidget {
 }
 
 class DeckListBody extends ConsumerWidget {
-  const DeckListBody({Key? key}) : super(key: key);
+  const DeckListBody({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -112,13 +107,14 @@ class DeckListBody extends ConsumerWidget {
       children: [
         RefreshIndicator(
           onRefresh: () async {
+            final scaffoldMessenger = ScaffoldMessenger.of(context);
             final nrdbAuthState = ref.read(nrdbAuthStateProvider);
             final online = nrdbAuthState.maybeMap(
               online: (state) => state,
               orElse: () => null,
             );
             if (online == null) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              scaffoldMessenger.showSnackBar(const SnackBar(
                 content: Text('You are not online or connected your netrunnerdb account'),
               ));
               return;
@@ -131,7 +127,7 @@ class DeckListBody extends ConsumerWidget {
                 await online.syncDecks(db, decks.value);
               });
             } else {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+              scaffoldMessenger.showSnackBar(const SnackBar(
                 content: Text('Failed to refresh decks'),
               ));
             }
@@ -152,7 +148,7 @@ class DeckListBody extends ConsumerWidget {
 }
 
 class DeckListLoading extends ConsumerWidget {
-  const DeckListLoading({Key? key}) : super(key: key);
+  const DeckListLoading({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

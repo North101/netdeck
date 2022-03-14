@@ -2,30 +2,71 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:collection/collection.dart';
+import 'package:diacritic/diacritic.dart';
 import 'package:flutter/material.dart' hide Card;
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:http/http.dart' as http;
+import 'package:kotlin_flavor/scope_functions.dart';
 
 import '/db/database.dart';
 import '/util/assets.gen.dart';
 import '/util/extensions.dart';
 
+part 'public.freezed.dart';
+
 const headerIfNotModifiedSince = 'if-modified-since';
 
-class ApiResults {
-  const ApiResults(
-    this.results,
-    this.modified,
-  );
+extension DateTimeUtc on DateTime {
+  static DateTime parseUtc(String formattedDate) {
+    final value = DateTime.parse(formattedDate);
+    if (value.isUtc) return value;
 
-  factory ApiResults.fromJson(dynamic json) {
-    return ApiResults((json['data'] as List).cast<Map>(), DateTime.parse(json['last_updated']));
+    return value.asUtc();
   }
 
-  final DateTime modified;
-  final List<Map>? results;
+  static DateTime? tryParseUtc(String formattedDate) {
+    final value = DateTime.tryParse(formattedDate);
+    if (value == null || value.isUtc) return value;
+
+    return value.asUtc();
+  }
+
+  DateTime asUtc() => DateTime.utc(
+        year,
+        month,
+        day,
+        hour,
+        minute,
+        second,
+        millisecond,
+        microsecond,
+      );
+}
+
+int? tryParseDateTime(String? value) =>
+    value != null ? const DateTimeUtcConverter().toJson(DateTimeUtc.parseUtc(value)) : null;
+
+@freezed
+class ApiResult with _$ApiResult {
+  const factory ApiResult.unmodified(DateTime lastUpdated) = UnmodifiedApiResult;
+
+  const factory ApiResult.modified({
+    required DateTime lastUpdated,
+    required List<Map<String, dynamic>> data,
+    required Map<String, dynamic> info,
+  }) = ModifiedApiResult;
+
+  static ModifiedApiResult fromJson(Map<String, dynamic> json) {
+    return ModifiedApiResult(
+      lastUpdated: DateTime.parse(json['last_updated']),
+      data: (json['data'] as List).cast(),
+      info: {
+        for (final entry in json.entries)
+          if (!const ['last_updated', 'data'].contains(entry.key)) entry.key: entry.value
+      },
+    );
+  }
 }
 
 class NrdbDeck {
@@ -69,223 +110,222 @@ class NrdbPublicApi {
   static final fetchCardsEndpoint = Uri.parse('https://netrunnerdb.com/api/2.0/public/cards');
   static final fetchCyclesEndpoint = Uri.parse('https://netrunnerdb.com/api/2.0/public/cycles');
   static final fetchFactionsEndpoint = Uri.parse('https://netrunnerdb.com/api/2.0/public/factions');
-  static final fetchFormatsEndpoint = Uri.parse('https://raw.githubusercontent.com/North101/netdeck/master/assets/nrdb/formats.json');
-  static final fetchRotationsEndpoint = Uri.parse('https://raw.githubusercontent.com/North101/netdeck/master/assets/nrdb/rotations.json');
-  static final fetchMwlEndpoint = Uri.parse('https://raw.githubusercontent.com/North101/netdeck/master/assets/nrdb/mwl.json');
+  static final fetchFormatsEndpoint =
+      Uri.parse('https://raw.githubusercontent.com/North101/netdeck/master/assets/nrdb/formats.json');
+  static final fetchRotationsEndpoint =
+      Uri.parse('https://raw.githubusercontent.com/North101/netdeck/master/assets/nrdb/rotations.json');
+  static final fetchMwlEndpoint =
+      Uri.parse('https://raw.githubusercontent.com/North101/netdeck/master/assets/nrdb/mwl.json');
   static final fetchPacksEndpoint = Uri.parse('https://netrunnerdb.com/api/2.0/public/packs');
   static final fetchSidesEndpoint = Uri.parse('https://netrunnerdb.com/api/2.0/public/sides');
   static final fetchTypesEndpoint = Uri.parse('https://netrunnerdb.com/api/2.0/public/types');
 
   final Database _db;
 
-  Future<ApiResults> loadData(String key) async {
+  Future<ModifiedApiResult> loadData(String key) async {
     final results = json.decode(await rootBundle.loadString(key));
-    return ApiResults.fromJson(results);
+    return ApiResult.fromJson(results);
   }
 
-  Future<ApiResults> fetchData(Uri url, DateTime lastModified) async {
+  Future<ApiResult> fetchData(Uri url, DateTime lastModified) async {
     final response = await http.get(url, headers: {
       headerIfNotModifiedSince: lastModified.toIso8601String(),
     });
     if (response.statusCode == 304) {
-      return ApiResults(
-        null,
-        lastModified,
-      );
+      return ApiResult.unmodified(lastModified);
     }
     final data = json.decode(response.body);
     final lastUpdated = DateTime.parse(data['last_updated']);
     if (!lastUpdated.isAfter(lastModified)) {
-      return ApiResults(
-        null,
-        lastModified,
-      );
+      return ApiResult.unmodified(lastModified);
     }
 
-    return ApiResults.fromJson(data);
+    return ApiResult.fromJson(data);
   }
 
-  Future<DateTime> initCycles() async {
+  Future<ModifiedApiResult> initCycles() async {
     final data = await loadData(Assets.nrdb.cycles);
-    await updateCycles(data.results!);
-    return data.modified;
+    await updateCycles(data);
+    return data;
   }
 
-  Future<DateTime> fetchCycles(DateTime lastUpdated) async {
+  Future<ApiResult> fetchCycles(DateTime lastUpdated) async {
     final data = await fetchData(fetchCyclesEndpoint, lastUpdated);
-    if (data.results == null) return lastUpdated;
+    if (data is! ModifiedApiResult) return data;
 
-    await updateCycles(data.results!);
-    return data.modified;
+    await updateCycles(data);
+    return data;
   }
 
-  Future<void> updateCycles(List results) async {
+  Future<void> updateCycles(ModifiedApiResult result) async {
     await _db.batch((b) {
       b.deleteAll<Cycle, CycleData>(_db.cycle);
       b.insertAll(
         _db.cycle,
-        results.map<CycleData>((result) => CycleData.fromJson(result)).toList(),
+        result.data.map<CycleData>((item) => CycleData.fromJson(item.cast())).toList(),
       );
     });
   }
 
-  Future<DateTime> initPacks() async {
+  Future<ModifiedApiResult> initPacks() async {
     final data = await loadData(Assets.nrdb.packs);
-    await updatePacks(data.results!);
-    return data.modified;
+    await updatePacks(data);
+    return data;
   }
 
-  Future<DateTime> fetchPacks(DateTime lastUpdated) async {
+  Future<ApiResult> fetchPacks(DateTime lastUpdated) async {
     final data = await fetchData(fetchPacksEndpoint, lastUpdated);
-    if (data.results == null) return lastUpdated;
+    if (data is! ModifiedApiResult) return data;
 
-    await updatePacks(data.results!);
-    return data.modified;
+    await updatePacks(data);
+    return data;
   }
 
-  Future<void> updatePacks(List results) async {
+  Future<void> updatePacks(ModifiedApiResult result) async {
     await _db.batch((b) {
       b.deleteAll<Pack, PackData>(_db.pack);
       b.insertAll(
         _db.pack,
-        results.map<PackData>((result) {
+        result.data.map<PackData>((result) {
           return PackData.fromJson({
             ...result,
-            'date_release':
-                result['date_release'] != null ? DateTime.parse(result['date_release']).millisecondsSinceEpoch : null,
+            'date_release': tryParseDateTime(result['date_release']),
           });
         }).toList(),
       );
     });
   }
 
-  Future<DateTime> initSides() async {
+  Future<ModifiedApiResult> initSides() async {
     final data = await loadData(Assets.nrdb.sides);
-    await updateSides(data.results!);
-    return data.modified;
+    await updateSides(data);
+    return data;
   }
 
-  Future<DateTime> fetchSides(DateTime lastUpdated) async {
+  Future<ApiResult> fetchSides(DateTime lastUpdated) async {
     final data = await fetchData(fetchSidesEndpoint, lastUpdated);
-    if (data.results == null) return lastUpdated;
+    if (data is! ModifiedApiResult) return data;
 
-    await updateSides(data.results!);
-    return data.modified;
+    await updateSides(data);
+    return data;
   }
 
-  Future<void> updateSides(List results) async {
+  Future<void> updateSides(ModifiedApiResult result) async {
     await _db.batch((b) {
       b.deleteAll<Side, SideData>(_db.side);
       b.insertAll(
         _db.side,
-        results.map<SideData>((result) => SideData.fromJson(result)).toList(),
+        result.data.map<SideData>((item) => SideData.fromJson(item)).toList(),
       );
     });
   }
 
-  Future<DateTime> initFactions() async {
+  Future<ModifiedApiResult> initFactions() async {
     final data = await loadData(Assets.nrdb.factions);
-    await updateFactions(data.results!);
-    return data.modified;
+    await updateFactions(data);
+    return data;
   }
 
-  Future<DateTime> fetchFactions(DateTime lastUpdated) async {
+  Future<ApiResult> fetchFactions(DateTime lastUpdated) async {
     final data = await fetchData(fetchFactionsEndpoint, lastUpdated);
-    if (data.results == null) return lastUpdated;
+    if (data is! ModifiedApiResult) return data;
 
-    await updateFactions(data.results!);
-    return data.modified;
+    await updateFactions(data);
+    return data;
   }
 
-  Future<void> updateFactions(List results) async {
+  Future<void> updateFactions(ModifiedApiResult result) async {
     await _db.batch((b) {
       b.deleteAll<Faction, FactionData>(_db.faction);
       b.insertAll(
         _db.faction,
-        results.map<FactionData>((result) {
+        result.data.map<FactionData>((result) {
           return FactionData.fromJson({
             ...result,
-            'color': Color(int.parse(result['color'], radix: 16) + 0xFF000000),
+            'color': int.parse(result['color'], radix: 16) + 0xFF000000,
           });
         }).toList(),
       );
     });
   }
 
-  Future<DateTime> initTypes() async {
+  Future<ModifiedApiResult> initTypes() async {
     final data = await loadData(Assets.nrdb.types);
-    await updateTypes(data.results!);
-    return data.modified;
+    await updateTypes(data);
+    return data;
   }
 
-  Future<DateTime> fetchTypes(DateTime lastUpdated) async {
+  Future<ApiResult> fetchTypes(DateTime lastUpdated) async {
     final data = await fetchData(fetchTypesEndpoint, lastUpdated);
-    if (data.results == null) return lastUpdated;
+    if (data is! ModifiedApiResult) return data;
 
-    await updateTypes(data.results!);
-    return data.modified;
+    await updateTypes(data);
+    return data;
   }
 
-  Future<void> updateTypes(List results) async {
+  Future<void> updateTypes(ModifiedApiResult result) async {
     await _db.batch((b) {
       b.deleteAll<Type, TypeData>(_db.type);
       b.insertAll(
         _db.type,
-        results.map<TypeData>((result) => TypeData.fromJson(result)).toList(),
+        result.data.map<TypeData>((result) => TypeData.fromJson(result)).toList(),
       );
     });
   }
 
-  Future<DateTime> initCards() async {
+  Future<ModifiedApiResult> initCards() async {
     final data = await loadData(Assets.nrdb.cards);
-    await updateCards(data.results!);
-    return data.modified;
+    await updateCards(data);
+    return data;
   }
 
-  Future<DateTime> fetchCards(DateTime lastUpdated) async {
+  Future<ApiResult> fetchCards(DateTime lastUpdated) async {
     final data = await fetchData(fetchCardsEndpoint, lastUpdated);
-    if (data.results == null) return lastUpdated;
+    if (data is! ModifiedApiResult) return data;
 
-    await updateCards(data.results!);
-    return data.modified;
+    await updateCards(data);
+    return data;
   }
 
-  Future<void> updateCards(List results) async {
+  Future<void> updateCards(ModifiedApiResult result) async {
+    final String imageUrlTemplate = result.info['imageUrlTemplate'];
     await _db.batch((b) {
       b.deleteAll<Card, CardData>(_db.card);
       b.insertAll<Card, CardData>(
         _db.card,
-        results.map<CardData>((result) {
+        result.data.map<CardData>((result) {
           return CardData.fromJson({
             ...result,
+            'stripped_title': removeDiacritics(result['stripped_title']),
             'body': result['text'],
-            'stripped_body': result['stripped_text'],
+            'stripped_body': (result['stripped_text'] as String?)?.let((e) => removeDiacritics(e)),
+            'image_url': imageUrlTemplate.replaceAll('{code}', result['code']),
           });
         }).toList(),
       );
     });
   }
 
-  Future<DateTime> initFormats() async {
+  Future<ModifiedApiResult> initFormats() async {
     final data = await loadData(Assets.nrdb.formats);
-    await updateFormats(data.results!);
-    return data.modified;
+    await updateFormats(data);
+    return data;
   }
 
-  Future<DateTime> fetchFormats(DateTime lastUpdated) async {
+  Future<ApiResult> fetchFormats(DateTime lastUpdated) async {
     final data = await fetchData(fetchFormatsEndpoint, lastUpdated);
-    if (data.results == null) return lastUpdated;
+    if (data is! ModifiedApiResult) return data;
 
-    await updateFormats(data.results!);
-    return data.modified;
+    await updateFormats(data);
+    return data;
   }
 
-  Future<void> updateFormats(List results) async {
+  Future<void> updateFormats(ModifiedApiResult result) async {
     await _db.batch((b) {
       b.deleteAll<Format, FormatData>(_db.format);
       b.insertAll<Format, FormatData>(
         _db.format,
-        results.mapIndexed<FormatData>((index, result) {
+        result.data.mapIndexed<FormatData>((index, result) {
           return FormatData.fromJson({
             ...result,
             'id': index,
@@ -295,37 +335,37 @@ class NrdbPublicApi {
     });
   }
 
-  Future<DateTime> initRotations() async {
+  Future<ModifiedApiResult> initRotations() async {
     final data = await loadData(Assets.nrdb.rotations);
-    await updateRotations(data.results!);
-    return data.modified;
+    await updateRotations(data);
+    return data;
   }
 
-  Future<DateTime> fetchRotations(DateTime lastUpdated) async {
+  Future<ApiResult> fetchRotations(DateTime lastUpdated) async {
     final data = await fetchData(fetchRotationsEndpoint, lastUpdated);
-    if (data.results == null) return lastUpdated;
+    if (data is! ModifiedApiResult) return data;
 
-    await updateRotations(data.results!);
-    return data.modified;
+    await updateRotations(data);
+    return data;
   }
 
-  Future<void> updateRotations(List results) async {
+  Future<void> updateRotations(ModifiedApiResult result) async {
     final rotations = [
-      ...results.where((e) => e['current']).map((e) => {
+      ...result.data.where((e) => e['current']).map((e) => {
             ...e,
             'code': '${e['format_code']}@current',
             'name': 'Current (${e['name']})',
             'current': true,
             'latest': false,
           }),
-      ...results.where((e) => e['latest']).map((e) => {
+      ...result.data.where((e) => e['latest']).map((e) => {
             ...e,
             'code': '${e['format_code']}@latest',
             'name': 'Latest (${e['name']})',
             'current': false,
             'latest': true,
           }),
-      ...results.map((e) => {
+      ...result.data.map((e) => {
             ...e,
             'current': false,
             'latest': false,
@@ -338,7 +378,7 @@ class NrdbPublicApi {
         rotations.map<RotationData>((result) {
           return RotationData.fromJson({
             ...result,
-            'date_start': DateTime.parse(result['date_start']).millisecondsSinceEpoch,
+            'date_start': tryParseDateTime(result['date_start']),
           });
         }).toList(),
       );
@@ -364,37 +404,37 @@ class NrdbPublicApi {
     });
   }
 
-  Future<DateTime> initMwl() async {
+  Future<ModifiedApiResult> initMwl() async {
     final data = await loadData(Assets.nrdb.mwl);
-    await updateMwl(data.results!);
-    return data.modified;
+    await updateMwl(data);
+    return data;
   }
 
-  Future<DateTime> fetchMwl(DateTime lastUpdated) async {
+  Future<ApiResult> fetchMwl(DateTime lastUpdated) async {
     final data = await fetchData(fetchMwlEndpoint, lastUpdated);
-    if (data.results == null) return lastUpdated;
+    if (data is! ModifiedApiResult) return data;
 
-    await updateMwl(data.results!);
-    return data.modified;
+    await updateMwl(data);
+    return data;
   }
 
-  Future<void> updateMwl(List<Map> results) async {
+  Future<void> updateMwl(ModifiedApiResult result) async {
     final mwl = [
-      ...results.where((e) => e['active']).map((e) => {
+      ...result.data.where((e) => e['active']).map((e) => {
             ...e,
             'code': '${e['format_code']}@active',
             'name': 'Active (${e['name']})',
             'active': true,
             'latest': false,
           }),
-      ...results.where((e) => e['latest']).map((e) => {
+      ...result.data.where((e) => e['latest']).map((e) => {
             ...e,
             'code': '${e['format_code']}@latest',
             'name': 'Latest (${e['name']})',
             'active': false,
             'latest': true,
           }),
-      ...results.map((e) => {
+      ...result.data.map((e) => {
             ...e,
             'active': false,
             'latest': false,
@@ -408,7 +448,7 @@ class NrdbPublicApi {
           result = result.cast<String, dynamic>();
           return MwlData.fromJson({
             ...result,
-            'date_start': DateTime.parse(result['date_start']).millisecondsSinceEpoch,
+            'date_start': tryParseDateTime(result['date_start']),
           });
         }).toList(),
       );
@@ -434,80 +474,94 @@ class NrdbPublicApi {
     });
   }
 
+  Future<NrdbData> initDatabase(DateTime now) async {
+    final cycleResult = await initCycles();
+    final packResult = await initPacks();
+    final sideResult = await initSides();
+    final factionResult = await initFactions();
+    final typeResult = await initTypes();
+    final cardResult = await initCards();
+    final formatResult = await initFormats();
+    final rotationResult = await initRotations();
+    final mwlResult = await initMwl();
+
+    return NrdbData(
+      id: true,
+      expires: now.add(const Duration(days: 1)),
+      cycleLastUpdated: cycleResult.lastUpdated,
+      packLastUpdated: packResult.lastUpdated,
+      sideLastUpdated: sideResult.lastUpdated,
+      factionLastUpdated: factionResult.lastUpdated,
+      typeLastUpdated: typeResult.lastUpdated,
+      cardLastUpdated: cardResult.lastUpdated,
+      formatLastUpdated: formatResult.lastUpdated,
+      rotationLastUpdated: rotationResult.lastUpdated,
+      mwlLastUpdated: mwlResult.lastUpdated,
+    );
+  }
+
   Future<DateTime> updateDatabase({bool force = false}) async {
     final now = DateTime.now().toUtc();
     return await _db.transaction(() async {
-      var nrdb = await _db.getNrdb().getSingleOrNull();
-      if (nrdb != null) {
-        final expired = force || nrdb.expires.isBefore(now);
-        if (!expired) {
-          return now;
-        }
-      } else {
-        final cycleLastUpdated = await initCycles();
-        final packLastUpdated = await initPacks();
-        final sideLastUpdated = await initSides();
-        final factionLastUpdated = await initFactions();
-        final typeLastUpdated = await initTypes();
-        final cardLastUpdated = await initCards();
-        final formatLastUpdated = await initFormats();
-        final rotationLastUpdated = await initRotations();
-        final mwlLastUpdated = await initMwl();
+      var nrdb = await _db.getNrdb().getSingleOrNull() ?? await initDatabase(now);
 
-        nrdb = NrdbData(
-          id: true,
-          expires: now.add(const Duration(days: 1)),
-          cycleLastUpdated: cycleLastUpdated,
-          packLastUpdated: packLastUpdated,
-          sideLastUpdated: sideLastUpdated,
-          factionLastUpdated: factionLastUpdated,
-          typeLastUpdated: typeLastUpdated,
-          cardLastUpdated: cardLastUpdated,
-          formatLastUpdated: formatLastUpdated,
-          rotationLastUpdated: rotationLastUpdated,
-          mwlLastUpdated: mwlLastUpdated,
-        );
-      }
+      final expired = force || nrdb.expires.isBefore(now);
+      if (!expired) return now;
 
-      final cycleLastUpdated = await fetchCycles(nrdb.cycleLastUpdated).catchError((e) => nrdb!.cycleLastUpdated);
-      final packLastUpdated = await fetchPacks(nrdb.packLastUpdated).catchError((e) => nrdb!.packLastUpdated);
-      final sideLastUpdated = await fetchSides(nrdb.sideLastUpdated).catchError((e) => nrdb!.sideLastUpdated);
-      final factionLastUpdated =
-          await fetchFactions(nrdb.factionLastUpdated).catchError((e) => nrdb!.factionLastUpdated);
-      final typeLastUpdated = await fetchTypes(nrdb.typeLastUpdated).catchError((e) => nrdb!.typeLastUpdated);
-      final cardLastUpdated = await fetchCards(nrdb.cardLastUpdated).catchError((e) => nrdb!.cardLastUpdated);
-      final formatLastUpdated = await fetchFormats(nrdb.formatLastUpdated).catchError((e) => nrdb!.formatLastUpdated);
-      final rotationLastUpdated = await fetchRotations(nrdb.rotationLastUpdated).catchError((e) => nrdb!.rotationLastUpdated);
-      final mwlLastUpdated = await fetchMwl(nrdb.mwlLastUpdated).catchError((e) => nrdb!.mwlLastUpdated);
+      final cycleResult = await fetchCycles(nrdb.cycleLastUpdated).catchError((e) {
+        return ApiResult.unmodified(nrdb.cycleLastUpdated);
+      });
+      final packResult = await fetchPacks(nrdb.packLastUpdated).catchError((e) {
+        return ApiResult.unmodified(nrdb.packLastUpdated);
+      });
+      final sideResult = await fetchSides(nrdb.sideLastUpdated).catchError((e) {
+        return ApiResult.unmodified(nrdb.sideLastUpdated);
+      });
+      final factionResult = await fetchFactions(nrdb.factionLastUpdated).catchError((e) {
+        return ApiResult.unmodified(nrdb.factionLastUpdated);
+      });
+      final typeResult = await fetchTypes(nrdb.typeLastUpdated).catchError((e) {
+        return ApiResult.unmodified(nrdb.typeLastUpdated);
+      });
+      final cardResult = await fetchCards(nrdb.cardLastUpdated).catchError((e) {
+        return ApiResult.unmodified(nrdb.cardLastUpdated);
+      });
+      final formatResult = await fetchFormats(nrdb.formatLastUpdated).catchError((e) {
+        return ApiResult.unmodified(nrdb.formatLastUpdated);
+      });
+      final rotationResult = await fetchRotations(nrdb.rotationLastUpdated).catchError((e) {
+        return ApiResult.unmodified(nrdb.rotationLastUpdated);
+      });
+      final mwlResult = await fetchMwl(nrdb.mwlLastUpdated).catchError((e) {
+        return ApiResult.unmodified(nrdb.mwlLastUpdated);
+      });
 
       await _db.delete(_db.nrdb).go();
       await _db.into(_db.nrdb).insert(NrdbData(
             id: true,
             expires: now.add(const Duration(days: 1)),
-            cycleLastUpdated: cycleLastUpdated,
-            packLastUpdated: packLastUpdated,
-            sideLastUpdated: sideLastUpdated,
-            factionLastUpdated: factionLastUpdated,
-            typeLastUpdated: typeLastUpdated,
-            cardLastUpdated: cardLastUpdated,
-            formatLastUpdated: formatLastUpdated,
-            rotationLastUpdated: rotationLastUpdated,
-            mwlLastUpdated: mwlLastUpdated,
+            cycleLastUpdated: cycleResult.lastUpdated,
+            packLastUpdated: packResult.lastUpdated,
+            sideLastUpdated: sideResult.lastUpdated,
+            factionLastUpdated: factionResult.lastUpdated,
+            typeLastUpdated: typeResult.lastUpdated,
+            cardLastUpdated: cardResult.lastUpdated,
+            formatLastUpdated: formatResult.lastUpdated,
+            rotationLastUpdated: rotationResult.lastUpdated,
+            mwlLastUpdated: mwlResult.lastUpdated,
           ));
       return now;
     });
   }
 }
 
-class NrdbPublicApiNotifier extends StateNotifier<AsyncValue<DateTime>> {
-  NrdbPublicApiNotifier(this.api) : super(const AsyncValue.loading()) {
-    update();
-  }
+class NrdbPublicApiNotifier extends RestorableDateTimeN {
+  NrdbPublicApiNotifier(this.api) : super(null);
 
   final NrdbPublicApi api;
 
   void update({bool force = false}) async {
-    state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => api.updateDatabase(force: force));
+    value = null;
+    value = await api.updateDatabase(force: force);
   }
 }

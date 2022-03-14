@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class FloatingActionButtonSpacer extends StatelessWidget {
-  const FloatingActionButtonSpacer({Key? key}) : super(key: key);
+  const FloatingActionButtonSpacer({super.key});
 
   @override
   Widget build(BuildContext context) {

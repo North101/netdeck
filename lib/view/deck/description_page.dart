@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '/db/database.dart';
-import '/providers.dart';
 import '/view/search_theme.dart';
 
 class DeckDescriptionRoute<T> extends PageRoute<T> {
@@ -44,45 +41,50 @@ class DeckDescriptionRoute<T> extends PageRoute<T> {
   Duration get transitionDuration => const Duration(milliseconds: 300);
 }
 
-class DeckDescriptionPage extends ConsumerWidget {
-  const DeckDescriptionPage({Key? key}) : super(key: key);
+class DeckDescriptionPage extends StatefulWidget {
+  const DeckDescriptionPage({required this.description, super.key});
 
-  static withOverrides({
-    required DeckNotifier<DeckResult2> deck,
-  }) {
-    return ProviderScope(
-      overrides: [
-        deckProvider.overrideWithValue(deck),
-      ],
-      child: const DeckDescriptionPage(),
-    );
-  }
+  final String description;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final deck = ref.watch(deckProvider);
-    return Theme(
-      data: SearchTheme.of(context),
-      child: Scaffold(
-        appBar: AppBar(title: const Text('Description')),
-        body: Padding(
-          padding: const EdgeInsets.all(16),
-          child: TextFormField(
-            initialValue: deck.deck.description,
-            keyboardType: TextInputType.multiline,
-            expands: true,
-            minLines: null,
-            maxLines: null,
-            autofocus: true,
-            onChanged: (value) {
-              final deck = ref.watch(deckProvider.notifier);
-              deck.unsaved = deck.value.copyWith(
-                deck: deck.value.deck.copyWith(description: value),
-              );
-            },
+  DeckDescriptionPageState createState() => DeckDescriptionPageState();
+}
+
+class DeckDescriptionPageState extends State<DeckDescriptionPage> with RestorationMixin {
+  late RestorableTextEditingController controller = RestorableTextEditingController(text: widget.description);
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.of(context).pop(controller.value.text);
+        return false;
+      },
+      child: Theme(
+        data: SearchTheme.of(context),
+        child: Scaffold(
+          appBar: AppBar(title: const Text('Description')),
+          body: Padding(
+            padding: const EdgeInsets.all(16),
+            child: TextFormField(
+              controller: controller.value,
+              keyboardType: TextInputType.multiline,
+              expands: true,
+              minLines: null,
+              maxLines: null,
+              autofocus: true,
+            ),
           ),
         ),
       ),
     );
+  }
+
+  @override
+  String? restorationId = 'deck_description_page';
+
+  @override
+  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
+    registerForRestoration(controller, 'controller');
   }
 }

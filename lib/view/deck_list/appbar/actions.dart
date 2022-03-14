@@ -7,7 +7,7 @@ import '/providers.dart';
 import '/view/deck_filter_page.dart';
 
 class DeckListGroupMenu extends ConsumerWidget {
-  const DeckListGroupMenu({Key? key}) : super(key: key);
+  const DeckListGroupMenu({super.key});
 
   Future<void> onSelected(BuildContext context, WidgetRef ref, DeckGroup value) async {
     final db = ref.read(dbProvider);
@@ -45,7 +45,7 @@ class DeckListGroupMenu extends ConsumerWidget {
 }
 
 class DeckListSortMenu extends ConsumerWidget {
-  const DeckListSortMenu({Key? key}) : super(key: key);
+  const DeckListSortMenu({super.key});
 
   Future<void> onSelected(BuildContext context, WidgetRef ref, DeckSort value) async {
     final db = ref.read(dbProvider);
@@ -82,39 +82,94 @@ class DeckListSortMenu extends ConsumerWidget {
   }
 }
 
-class DeckListMoreActions extends ConsumerWidget {
-  const DeckListMoreActions({Key? key}) : super(key: key);
+class DeckListMoreActions extends ConsumerStatefulWidget {
+  const DeckListMoreActions({super.key});
 
-  void _openFilterDialog(BuildContext context, WidgetRef ref) async {
-    final query = ref.read(filterQueryProvider.state);
-    final format = ref.read(filterFormatProvider.state);
-    final rotation = ref.read(filterRotationProvider.state);
-    final mwl = ref.read(filterMwlProvider.state);
-    final packs = ref.read(filterPacksProvider.state);
-    final sides = ref.read(filterSidesProvider.state);
-    final factions = ref.read(filterFactionsProvider.state);
-    final types = ref.read(filterTypesProvider.state);
-    final tags = ref.read(filterTagsProvider.state);
+  @override
+  DeckListMoreActionsState createState() => DeckListMoreActionsState();
+}
 
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => DeckFilterPage.withOverrides(
-          query: query,
-          format: format,
-          rotation: rotation,
-          mwl: mwl,
-          packs: packs,
-          sides: sides,
-          factions: factions,
-          types: types,
-          tags: tags,
-        ),
+class DeckListMoreActionsState extends ConsumerState<DeckListMoreActions> with RestorationMixin {
+  late RestorableRouteFuture<DeckFilterResult> deckFilterRoute;
+
+  @override
+  void initState() {
+    super.initState();
+
+    deckFilterRoute = RestorableRouteFuture(
+      onPresent: (navigator, arguments) => Navigator.of(context).restorablePush(
+        openDeckFilterRoute,
+        arguments: arguments,
       ),
+      onComplete: (result) {
+        final format = ref.read(filterFormatProvider);
+        format.value = result.format;
+
+        final rotation = ref.read(filterRotationProvider);
+        rotation.value = result.rotation;
+
+        final mwl = ref.read(filterMwlProvider);
+        mwl.value = result.mwl;
+
+        final packs = ref.read(filterPacksProvider);
+        packs.value = result.packs;
+
+        final sides = ref.read(filterSidesProvider);
+        sides.value = result.sides;
+
+        final factions = ref.read(filterFactionsProvider);
+        factions.value = result.factions;
+
+        final types = ref.read(filterTypesProvider);
+        types.value = result.types;
+
+        final tags = ref.read(filterTagsProvider);
+        tags.value = result.tags;
+      },
     );
   }
 
+  static Route<void> openDeckFilterRoute(BuildContext context, Object? arguments) {
+    final result = DeckFilterResult.fromJson((arguments as Map).cast());
+    return MaterialPageRoute<DeckFilterResult>(builder: (context) {
+      return DeckFilterPage.withOverrides(
+        format: result.format,
+        rotation: result.rotation,
+        mwl: result.mwl,
+        packs: result.packs,
+        sides: result.sides,
+        factions: result.factions,
+        types: result.types,
+        tags: result.tags,
+      );
+    });
+  }
+
+  void openCardFilterPage(BuildContext context, WidgetRef ref) {
+    final format = ref.read(filterFormatProvider);
+    final rotation = ref.read(filterRotationProvider);
+    final mwl = ref.read(filterMwlProvider);
+    final packs = ref.read(filterPacksProvider);
+    final sides = ref.read(filterSidesProvider);
+    final factions = ref.read(filterFactionsProvider);
+    final types = ref.read(filterTypesProvider);
+    final tags = ref.read(filterTagsProvider);
+
+    final result = DeckFilterResult(
+      format: format.value,
+      rotation: rotation.value,
+      mwl: mwl.value,
+      packs: packs.value,
+      sides: sides.value,
+      factions: factions.value,
+      types: types.value,
+      tags: tags.value,
+    );
+    deckFilterRoute.present(result.toJson());
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final settings = ref.watch(settingProvider);
     return settings.when(
       loading: () => const SizedBox.shrink(),
@@ -123,12 +178,20 @@ class DeckListMoreActions extends ConsumerWidget {
         itemBuilder: (context) => [
           PopupMenuItem(
             child: const ListTile(title: Text('Filter By')),
-            onTap: () => Future(() => _openFilterDialog(context, ref)),
+            onTap: () => Future(() => openCardFilterPage(context, ref)),
           ),
           const PopupMenuItem(child: DeckListGroupMenu()),
           const PopupMenuItem(child: DeckListSortMenu()),
         ],
       ),
     );
+  }
+
+  @override
+  String? restorationId = 'deck_list_more_actions';
+
+  @override
+  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
+    registerForRestoration(deckFilterRoute, 'deckFilterRoute');
   }
 }

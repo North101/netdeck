@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '/db/database.dart';
 
 class CardCycleWidget extends StatelessWidget {
-  const CardCycleWidget(this.card, {Key? key}) : super(key: key);
+  const CardCycleWidget(this.card, {super.key});
 
   final CardResult card;
 

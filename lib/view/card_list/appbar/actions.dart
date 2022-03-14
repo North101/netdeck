@@ -7,7 +7,7 @@ import '/providers.dart';
 import '/view/card_filter_page.dart';
 
 class CardListGroupMenu extends ConsumerWidget {
-  const CardListGroupMenu({Key? key}) : super(key: key);
+  const CardListGroupMenu({super.key});
 
   Future<void> onSelected(BuildContext context, WidgetRef ref, CardGroup value) async {
     final db = ref.read(dbProvider);
@@ -45,7 +45,7 @@ class CardListGroupMenu extends ConsumerWidget {
 }
 
 class CardListSortMenu extends ConsumerWidget {
-  const CardListSortMenu({Key? key}) : super(key: key);
+  const CardListSortMenu({super.key});
 
   Future<void> onSelected(BuildContext context, WidgetRef ref, CardSort value) async {
     final db = ref.read(dbProvider);
@@ -82,48 +82,111 @@ class CardListSortMenu extends ConsumerWidget {
   }
 }
 
-class CardListMoreActions extends ConsumerWidget {
-  const CardListMoreActions({Key? key}) : super(key: key);
+class CardListMoreActions extends ConsumerStatefulWidget {
+  const CardListMoreActions({super.key});
 
-  void _openFilterDialog(BuildContext context, WidgetRef ref) async {
-    final query = ref.read(filterQueryProvider.state);
-    final format = ref.read(filterFormatProvider.state);
-    final collection = ref.read(filterCollectionProvider.state);
-    final rotation = ref.read(filterRotationProvider.state);
-    final mwl = ref.read(filterMwlProvider.state);
-    final packs = ref.read(filterPacksProvider.state);
-    final sides = ref.read(filterSidesProvider.state);
-    final factions = ref.read(filterFactionsProvider.state);
-    final types = ref.read(filterTypesProvider.state);
+  @override
+  CardListMoreActionsState createState() => CardListMoreActionsState();
+}
 
-    await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => CardFilterPage.withOverrides(
-          query: query,
-          format: format,
-          rotation: rotation,
-          mwl: mwl,
-          collection: collection,
-          packs: packs,
-          sides: sides,
-          factions: factions,
-          types: types,
-        ),
+class CardListMoreActionsState extends ConsumerState<CardListMoreActions> with RestorationMixin {
+  late RestorableRouteFuture<CardFilterResult> cardListFilterRoute;
+
+  @override
+  void initState() {
+    super.initState();
+
+    cardListFilterRoute = RestorableRouteFuture<CardFilterResult>(
+      onPresent: (navigator, arguments) => Navigator.of(context).restorablePush(
+        openCardFilterRoute,
+        arguments: arguments,
       ),
+      onComplete: (result) {
+        final format = ref.read(filterFormatProvider);
+        format.value = result.format;
+
+        final collection = ref.read(filterCollectionProvider);
+        collection.value = result.collection;
+
+        final rotation = ref.read(filterRotationProvider);
+        rotation.value = result.rotation;
+
+        final mwl = ref.read(filterMwlProvider);
+        mwl.value = result.mwl;
+
+        final packs = ref.read(filterPacksProvider);
+        packs.value = result.packs;
+
+        final sides = ref.read(filterSidesProvider);
+        sides.value = result.sides;
+
+        final factions = ref.read(filterFactionsProvider);
+        factions.value = result.factions;
+
+        final types = ref.read(filterTypesProvider);
+        types.value = result.types;
+      },
     );
   }
 
+  static Route<void> openCardFilterRoute(BuildContext context, Object? arguments) {
+    final result = CardFilterResult.fromJson((arguments as Map).cast());
+    return MaterialPageRoute<CardFilterResult>(builder: (context) {
+      return CardFilterPage.withOverrides(
+        format: result.format,
+        rotation: result.rotation,
+        mwl: result.mwl,
+        collection: result.collection,
+        packs: result.packs,
+        sides: result.sides,
+        factions: result.factions,
+        types: result.types,
+      );
+    });
+  }
+
+  void openCardFilterPage(BuildContext context, WidgetRef ref) {
+    final format = ref.read(filterFormatProvider);
+    final collection = ref.read(filterCollectionProvider);
+    final rotation = ref.read(filterRotationProvider);
+    final mwl = ref.read(filterMwlProvider);
+    final packs = ref.read(filterPacksProvider);
+    final sides = ref.read(filterSidesProvider);
+    final factions = ref.read(filterFactionsProvider);
+    final types = ref.read(filterTypesProvider);
+
+    final result = CardFilterResult(
+      format: format.value,
+      collection: collection.value,
+      rotation: rotation.value,
+      mwl: mwl.value,
+      packs: packs.value,
+      sides: sides.value,
+      factions: factions.value,
+      types: types.value,
+    );
+    cardListFilterRoute.present(result.toJson());
+  }
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return PopupMenuButton(
       itemBuilder: (context) => [
         PopupMenuItem(
           child: const ListTile(title: Text('Filter By')),
-          onTap: () => Future(() => _openFilterDialog(context, ref)),
+          onTap: () => Future(() => openCardFilterPage(context, ref)),
         ),
         const PopupMenuItem(child: CardListGroupMenu()),
         const PopupMenuItem(child: CardListSortMenu()),
       ],
     );
+  }
+
+  @override
+  String? restorationId = 'card_list_more_actions';
+
+  @override
+  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
+    registerForRestoration(cardListFilterRoute, 'cardListFilterRoute');
   }
 }

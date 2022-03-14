@@ -5,18 +5,24 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/view/debug_page.dart';
 import '/view/loading_page.dart';
+import 'providers.dart';
 
-void main() {
-  runApp(const ProviderScope(child: App()));
-}
+void main() => runApp(const App());
 
 class App extends StatelessWidget {
-  const App({Key? key}) : super(key: key);
+  const App({super.key});
+
+  static Route<void> openHomeRoute(BuildContext context, Object? argument) {
+    return MaterialPageRoute(builder: (context) {
+      return const LoadingPage();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return MaterialApp(
+      restorationScopeId: 'root',
       title: 'Netdeck',
       theme: ThemeData(
         appBarTheme: theme.appBarTheme.copyWith(
@@ -37,7 +43,15 @@ class App extends StatelessWidget {
           buttonColor: const Color(0xFF093156),
         ),
       ),
-      home: kReleaseMode ? const LoadingPage() : const DebugPage(home: LoadingPage()),
+      builder: (context, child) => ProviderScope(
+        restorationId: 'app',
+        restorables: [
+          nrdbPublicApiProvider.withRestorationId('nrdbPublicApiProvider'),
+          lastSyncProvider.withRestorationId('lastSyncProvider'),
+        ],
+        child: child!,
+      ),
+      home: kDebugMode ? const DebugPage(route: openHomeRoute) : const LoadingPage(),
     );
   }
 }

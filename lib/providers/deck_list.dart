@@ -1,7 +1,6 @@
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:rxdart/rxdart.dart';
 
 import '/db/database.dart';
 import '/db/querybuilder.dart';
@@ -10,10 +9,11 @@ import '/util/header_list.dart';
 import 'db.dart';
 import 'filters.dart';
 
-final selectedDecksProvider = StateProvider<Set<DeckResult2>>((ref) => {});
+final selectedDeckIdsProvider = RestorableProvider<RestorableSet<String>>((ref) => throw UnimplementedError());
 
-final deckItemBuilderProvider = Provider<Widget Function(BuildContext context, WidgetRef ref, int index, DeckResult2 deck)>(
-    (ref) => throw UnimplementedError());
+final deckItemBuilderProvider =
+    Provider<Widget Function(BuildContext context, WidgetRef ref, int index, DeckFullResult deck)>(
+        (ref) => throw UnimplementedError());
 
 final deckFabProvider = Provider<Widget?>((ref) => throw UnimplementedError());
 
@@ -23,13 +23,13 @@ final deckQueryBuilderProvider = Provider((ref) {
 });
 
 final hasDeckFilterProvider = Provider((ref) {
-  final rotation = ref.watch(filterRotationProvider);
-  final mwl = ref.watch(filterMwlProvider);
-  final packs = ref.watch(filterPacksProvider);
-  final factions = ref.watch(filterFactionsProvider);
-  final types = ref.watch(filterTypesProvider);
-  final tags = ref.watch(filterTagsProvider);
-  return rotation != null || mwl != null || packs.isVisible || factions.isVisible || types.isVisible || tags.isNotEmpty;
+  final rotation = ref.watch(filterRotationProvider.select((value) => value.value != null));
+  final mwl = ref.watch(filterMwlProvider.select((value) => value.value != null));
+  final packs = ref.watch(filterPacksProvider.select((value) => value.value.isVisible));
+  final factions = ref.watch(filterFactionsProvider.select((value) => value.value.isVisible));
+  final types = ref.watch(filterTypesProvider.select((value) => value.value.isVisible));
+  final tags = ref.watch(filterTagsProvider.select((value) => value.value.isNotEmpty));
+  return rotation || mwl || packs || factions || types || tags;
 }, dependencies: [
   filterRotationProvider,
   filterMwlProvider,
@@ -41,7 +41,7 @@ final hasDeckFilterProvider = Provider((ref) {
 
 final deckFilterProvider = Provider.family<drift.Expression<bool?>, CardFilterState>((ref, state) {
   final deckQueryBuilder = ref.watch(deckQueryBuilderProvider);
-  final parsedQuery = ref.watch(filterQueryProvider);
+  final parsedQuery = ref.watch(filterQueryProvider).value;
   final rotationFilter = ref.watch(filterRotationFilterProvider);
   final mwlFilter = ref.watch(filterMwlFilterProvider);
   final packFilter = ref.watch(filterPackFilterProvider(state));
@@ -69,25 +69,25 @@ final deckFilterProvider = Provider.family<drift.Expression<bool?>, CardFilterSt
   tagFilterProvider,
 ]);
 
-final deckListProvider = StreamProvider<List<DeckResult2>>((ref) {
+final deckListProvider = StreamProvider<List<DeckFullResult>>((ref) {
   final db = ref.watch(dbProvider);
   final deckFilter = ref.watch(deckFilterProvider(const CardFilterState()));
   return db.listDecks2(where: deckFilter);
-}, dependencies: [dbProvider, deckFilterProvider]);
+}, dependencies: [
+  dbProvider,
+  deckFilterProvider,
+]);
 
-final groupedDeckListProvider = StreamProvider<HeaderList<DeckResult2>>((ref) {
-  final db = ref.watch(dbProvider);
-  final settingsStream = db.getSettings().watchSingle();
-  final deckListStream = ref.watch(deckListProvider.stream);
-  return Rx.combineLatest2<SettingResult, List<DeckResult2>, HeaderList<DeckResult2>>(
-    settingsStream,
-    deckListStream,
-    (settings, deckList) {
-      final groupBy = settings.settings.deckGroup;
-      final sortBy = settings.settings.deckSort;
-      return HeaderList([
-        ...groupBy(sortBy(deckList)),
-      ]);
-    },
-  );
-}, dependencies: [dbProvider, deckListProvider.stream]);
+final groupedDeckListProvider = StreamProvider<HeaderList<DeckFullResult>>((ref) async* {
+  final settings = await ref.watch(settingProvider.future);
+  final deckList = await ref.watch(deckListProvider.future);
+
+  final groupBy = settings.settings.deckGroup;
+  final sortBy = settings.settings.deckSort;
+  yield HeaderList([
+    ...groupBy(sortBy(deckList)),
+  ]);
+}, dependencies: [
+  settingProvider.future,
+  deckListProvider.future,
+]);

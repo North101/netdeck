@@ -9,7 +9,7 @@ import 'card_influence.dart';
 class DeckValidator {
   factory DeckValidator(
     SettingResult settings,
-    DeckResult2 deck,
+    DeckFullResult deck,
     Set<String>? formatCardSet,
     Map<String, MwlCardData> mwlCardMap,
   ) {
@@ -38,7 +38,7 @@ class DeckValidator {
 
   String? agendaError;
   final SettingResult settings;
-  final DeckResult2 deck;
+  final DeckFullResult deck;
   final Set<String>? formatCardSet;
   final Map<String, MwlCardData> mwlCardMap;
 
@@ -79,9 +79,10 @@ class DeckValidator {
   int get maxAgendaPoints => _maxAgendaPoints ??= minAgendaPoints + 1;
 
   int get mwlPoints {
-    return _mwlPoints ??= (mwlCardMap[deck.identity.code]?.points ?? 0) + cardList.entries.map((e) {
-      return (mwlCardMap[e.key.code]?.points ?? 0) * e.value;
-    }).sum;
+    return _mwlPoints ??= (mwlCardMap[deck.identity.code]?.points ?? 0) +
+        cardList.entries.map((e) {
+          return mwlCardMap[e.key.code]?.points ?? 0;
+        }).sum;
   }
 
   int? get maxMwlPoints => _maxMwlPoints ??= deck.mwl?.points(deck.side);
@@ -97,8 +98,8 @@ class DeckValidator {
   int get influence => _influence ??= cardList.entries.map((e) => cardInfluence(e.key, e.value)).sum;
 
   int cardInfluence(CardResult card, int quantity) {
-    final factionCost =
-        mwlCardMap[card.code]?.universalFactionCost ?? (card.faction.code != deck.faction.code ? card.card.factionCost : 0);
+    final factionCost = mwlCardMap[card.code]?.universalFactionCost ??
+        (card.faction.code != deck.faction.code ? card.card.factionCost : 0);
     if (factionCost == 0) {
       return 0;
     }
@@ -165,16 +166,11 @@ class DeckValidator {
 
 class RunnerDeckValidator extends DeckValidator {
   RunnerDeckValidator(
-    SettingResult settings,
-    DeckResult2 deck,
-    Set<String>? formatCardSet,
-    Map<String, MwlCardData> mwlCardMap,
-  ) : super._(
-          settings,
-          deck,
-          formatCardSet,
-          mwlCardMap,
-        );
+    super.settings,
+    super.deck,
+    super.formatCardSet,
+    super.mwlCardMap,
+  ) : super._();
 
   static const sideCode = 'runner';
 
@@ -190,16 +186,11 @@ class RunnerDeckValidator extends DeckValidator {
 
 class TheProfessorDeckValidator extends RunnerDeckValidator {
   TheProfessorDeckValidator(
-    SettingResult settings,
-    DeckResult2 deck,
-    Set<String>? formatCardSet,
-    Map<String, MwlCardData> mwlCardMap,
-  ) : super(
-          settings,
-          deck,
-          formatCardSet,
-          mwlCardMap,
-        );
+    super.settings,
+    super.deck,
+    super.formatCardSet,
+    super.mwlCardMap,
+  );
 
   static const identityCode = '03029';
 
@@ -215,16 +206,11 @@ class TheProfessorDeckValidator extends RunnerDeckValidator {
 
 class ApexDeckValidator extends RunnerDeckValidator {
   ApexDeckValidator(
-    SettingResult settings,
-    DeckResult2 deck,
-    Set<String>? formatCardSet,
-    Map<String, MwlCardData> mwlCardMap,
-  ) : super(
-          settings,
-          deck,
-          formatCardSet,
-          mwlCardMap,
-        );
+    super.settings,
+    super.deck,
+    super.formatCardSet,
+    super.mwlCardMap,
+  );
 
   static const identityCode = '09029';
 
@@ -244,16 +230,11 @@ class ApexDeckValidator extends RunnerDeckValidator {
 
 class CorpDeckValidator extends DeckValidator {
   CorpDeckValidator(
-    SettingResult settings,
-    DeckResult2 deck,
-    Set<String>? formatCardSet,
-    Map<String, MwlCardData> mwlCardMap,
-  ) : super._(
-          settings,
-          deck,
-          formatCardSet,
-          mwlCardMap,
-        );
+    super.settings,
+    super.deck,
+    super.formatCardSet,
+    super.mwlCardMap,
+  ) : super._();
 
   static const sideCode = 'corp';
 
@@ -290,16 +271,11 @@ class CorpDeckValidator extends DeckValidator {
 
 class CustomBioticsDeckValidator extends CorpDeckValidator {
   CustomBioticsDeckValidator(
-    SettingResult settings,
-    DeckResult2 deck,
-    Set<String>? formatCardSet,
-    Map<String, MwlCardData> mwlCardMap,
-  ) : super(
-          settings,
-          deck,
-          formatCardSet,
-          mwlCardMap,
-        );
+    super.settings,
+    super.deck,
+    super.formatCardSet,
+    super.mwlCardMap,
+  );
 
   static const identityCode = '03002';
 

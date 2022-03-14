@@ -6,7 +6,7 @@ import '/db/database.dart';
 import '/providers.dart';
 
 class DeckCompareSortMenu extends ConsumerWidget {
-  const DeckCompareSortMenu(this.settings, {Key? key}) : super(key: key);
+  const DeckCompareSortMenu(this.settings, {super.key});
 
   final SettingResult settings;
 
@@ -44,7 +44,7 @@ class DeckCompareSortMenu extends ConsumerWidget {
 }
 
 class DeckCompareMoreActions extends ConsumerWidget {
-  const DeckCompareMoreActions({Key? key}) : super(key: key);
+  const DeckCompareMoreActions({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -63,9 +63,8 @@ class DeckCompareMoreActions extends ConsumerWidget {
 
 class DeckCompareAppBar extends ConsumerWidget implements PreferredSizeWidget {
   const DeckCompareAppBar({
-    Key? key,
-  })  : preferredSize = const Size.fromHeight(kToolbarHeight),
-        super(key: key);
+    super.key,
+  }) : preferredSize = const Size.fromHeight(kToolbarHeight);
 
   @override
   final Size preferredSize;

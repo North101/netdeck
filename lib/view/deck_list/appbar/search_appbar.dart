@@ -8,9 +8,7 @@ import '/view/search_theme.dart';
 import 'actions.dart';
 
 class DeckSearchAppBar extends ConsumerWidget implements PreferredSizeWidget {
-  DeckSearchAppBar({Key? key})
-      : preferredSize = const Size.fromHeight(kToolbarHeight),
-        super(key: key);
+  DeckSearchAppBar({super.key}) : preferredSize = const Size.fromHeight(kToolbarHeight);
 
   @override
   final Size preferredSize;
@@ -24,21 +22,22 @@ class DeckSearchAppBar extends ConsumerWidget implements PreferredSizeWidget {
   }
 
   void _updateSearchQuery(BuildContext context, WidgetRef ref, String newQuery) {
-    final cardQuery = ref.read(filterQueryProvider.state);
-    cardQuery.state = tryParseQuery(newQuery);
+    final cardQuery = ref.read(filterQueryProvider);
+    cardQuery.value = tryParseQuery(newQuery);
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final db = ref.watch(dbProvider);
     final theme = SearchTheme.of(context);
     final queryBuilder = ref.watch(deckQueryBuilderProvider);
     return WillPopScope(
       onWillPop: () async {
-        final isSearching = ref.read(filterSearchingProvider.state);
-        isSearching.state = false;
+        final isSearching = ref.read(filterSearchingProvider);
+        isSearching.value = false;
 
-        final cardQuery = ref.read(filterQueryProvider.state);
-        cardQuery.state = null;
+        final cardQuery = ref.read(filterQueryProvider);
+        cardQuery.value = null;
         return false;
       },
       child: Theme(
@@ -46,6 +45,7 @@ class DeckSearchAppBar extends ConsumerWidget implements PreferredSizeWidget {
         child: AppBar(
           leading: const BackButton(),
           title: QueryBuilderAutocomplete(
+            db: db,
             focusNode: focusNode,
             textEditingController: controller,
             queryBuilder: queryBuilder,
@@ -60,17 +60,18 @@ class DeckSearchAppBar extends ConsumerWidget implements PreferredSizeWidget {
                 onChanged: (newQuery) => _updateSearchQuery(context, ref, newQuery),
               );
             },
+            onSelected: (Option option) => _updateSearchQuery(context, ref, option.replacement),
           ),
           actions: [
             IconButton(
               icon: const Icon(Icons.clear),
               onPressed: () {
                 if (controller.text.isEmpty) {
-                  final isSearching = ref.read(filterSearchingProvider.state);
-                  isSearching.state = false;
+                  final isSearching = ref.read(filterSearchingProvider);
+                  isSearching.value = false;
 
-                  final cardQuery = ref.read(filterQueryProvider.state);
-                  cardQuery.state = null;
+                  final cardQuery = ref.read(filterQueryProvider);
+                  cardQuery.value = null;
                   return;
                 }
                 _clearSearchQuery(context, ref);

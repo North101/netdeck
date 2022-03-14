@@ -1,7 +1,9 @@
 import 'dart:math';
 
+import 'package:drift/drift.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:rxdart/rxdart.dart';
 
 import '/db/database.dart';
 import '/util/deck_validator.dart';
@@ -9,23 +11,209 @@ import '/util/extensions.dart';
 import '/util/header_list.dart';
 import 'db.dart';
 
-final deckProvider = StateNotifierProvider<DeckNotifier<DeckResult2>, DeckResult2>((ref) => throw UnimplementedError());
+final deckProvider = RestorableProvider<DeckNotifier>((ref) => throw UnimplementedError());
 
-class DeckNotifier<T extends DeckResult2?> extends StateNotifier<T> {
-  DeckNotifier(T state) : super(state);
+final deckResultStreamProvider = StreamProvider((ref) {
+  final db = ref.watch(dbProvider);
+  final deck = ref.watch(deckProvider).value;
+  return db
+      .getDeckFromData(
+        identityCode: deck.identityCode,
+        formatCode: deck.formatCode,
+        rotationCode: deck.rotationCode,
+        mwlCode: deck.mwlCode,
+      )
+      .watchSingle()
+      .map(
+    (deckData) {
+      return DeckResult(
+        deck: deck,
+        identity: deckData.identity,
+        pack: deckData.pack,
+        cycle: deckData.cycle,
+        faction: deckData.faction,
+        side: deckData.side,
+        type: deckData.type,
+        subtype: deckData.subtype,
+        format: deckData.format,
+        rotation: deckData.rotation,
+        mwl: deckData.mwl,
+      );
+    },
+  );
+}, dependencies: [
+  dbProvider,
+  deckProvider,
+]);
 
-  bool changed = false;
+final deckDataProvider = StreamProvider((ref) {
+  final db = ref.watch(dbProvider);
+  final deck = ref.watch(deckProvider).value;
+  return db
+      .getDeckFromData(
+        identityCode: deck.identityCode,
+        formatCode: deck.formatCode,
+        rotationCode: deck.rotationCode,
+        mwlCode: deck.mwlCode,
+      )
+      .watchSingle();
+}, dependencies: [
+  dbProvider,
+  deckProvider,
+]);
 
-  T get value => state;
+final deckCardCodeSetProvider = Provider<Iterable<String>>((ref) {
+  final deck = ref.watch(deckProvider).value;
+  return deck.cards.keys;
+}, dependencies: [
+  deckProvider,
+]);
 
-  set unsaved(T value) {
-    changed = true;
-    state = value;
+final deckCardListProvider = StreamProvider((ref) {
+  final db = ref.watch(dbProvider);
+  final cards = ref.watch(deckCardCodeSetProvider);
+  return db.listCards(where: db.card.code.isIn(cards)).watch();
+}, dependencies: [
+  dbProvider,
+  deckCardCodeSetProvider,
+]);
+
+final deckFullResultStreamProvider = StreamProvider((ref) async* {
+  final deck = ref.watch(deckProvider).value;
+  final deckData = await ref.watch(deckDataProvider.future);
+  final deckCards = await ref.watch(deckCardListProvider.future);
+  yield DeckFullResult(
+    deck: deck,
+    identity: deckData.identity,
+    pack: deckData.pack,
+    cycle: deckData.cycle,
+    faction: deckData.faction,
+    side: deckData.side,
+    type: deckData.type,
+    subtype: deckData.subtype,
+    format: deckData.format,
+    rotation: deckData.rotation,
+    mwl: deckData.mwl,
+    cards: deckCards.map((e) {
+      return MapEntry(e, deck.cards[e.code] ?? 0);
+    }).toMap(),
+    tags: deck.tags,
+  );
+}, dependencies: [
+  deckProvider,
+  deckDataProvider.future,
+  deckCardListProvider.future,
+]);
+
+enum DeckSaveState {
+  isNew,
+  isChanged,
+  isSaved,
+}
+
+class DeckNotifierResult extends DeckMiniResult {
+  DeckNotifierResult({
+    required super.id,
+    required super.identityCode,
+    required super.formatCode,
+    required super.rotationCode,
+    required super.mwlCode,
+    required super.name,
+    required super.description,
+    required super.created,
+    required super.updated,
+    required super.deleted,
+    required super.remoteUpdated,
+    required super.synced,
+    required super.cards,
+    required super.tags,
+    required this.state,
+  });
+
+  factory DeckNotifierResult.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DeckNotifierResult(
+      id: serializer.fromJson<String>(json['id']),
+      identityCode: serializer.fromJson<String>(json['identity_code']),
+      formatCode: serializer.fromJson<String?>(json['format_code']),
+      rotationCode: serializer.fromJson<String?>(json['rotation_code']),
+      mwlCode: serializer.fromJson<String?>(json['mwl_code']),
+      name: serializer.fromJson<String>(json['name']),
+      description: serializer.fromJson<String>(json['description']),
+      created: serializer.fromJson<DateTime>(json['created']),
+      updated: serializer.fromJson<DateTime>(json['updated']),
+      deleted: serializer.fromJson<bool>(json['deleted']),
+      remoteUpdated: serializer.fromJson<DateTime?>(json['remote_updated']),
+      synced: serializer.fromJson<DateTime?>(json['synced']),
+      cards: (json['cards'] as Map).cast<String, int>(),
+      tags: (json['tags'] as List).cast<String>(),
+      state: DeckSaveState.values.firstWhere((e) => e.name == serializer!.fromJson<String>(json['state'])),
+    );
   }
 
-  set saved(T value) {
-    changed = false;
-    state = value;
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return {
+      ...super.toJson(),
+      'state': state.name,
+    };
+  }
+
+  final DeckSaveState state;
+
+  @override
+  DeckNotifierResult copyWith({
+    String? id,
+    String? identityCode,
+    Value<String?> formatCode = const Value.absent(),
+    Value<String?> rotationCode = const Value.absent(),
+    Value<String?> mwlCode = const Value.absent(),
+    String? name,
+    String? description,
+    DateTime? created,
+    DateTime? updated,
+    bool? deleted,
+    Value<DateTime?> remoteUpdated = const Value.absent(),
+    Value<DateTime?> synced = const Value.absent(),
+    Map<String, int>? cards,
+    List<String>? tags,
+    DeckSaveState? state,
+  }) =>
+      DeckNotifierResult(
+        id: id ?? this.id,
+        identityCode: identityCode ?? this.identityCode,
+        formatCode: formatCode.present ? formatCode.value : this.formatCode,
+        rotationCode: rotationCode.present ? rotationCode.value : this.rotationCode,
+        mwlCode: mwlCode.present ? mwlCode.value : this.mwlCode,
+        name: name ?? this.name,
+        description: description ?? this.description,
+        created: created ?? this.created,
+        updated: updated ?? this.updated,
+        deleted: deleted ?? this.deleted,
+        remoteUpdated: remoteUpdated.present ? remoteUpdated.value : this.remoteUpdated,
+        synced: synced.present ? synced.value : this.synced,
+        cards: cards ?? this.cards,
+        tags: tags ?? this.tags,
+        state: state ?? this.state,
+      );
+}
+
+class DeckNotifier extends RestorableValue<DeckNotifierResult> {
+  DeckNotifier(this.defaultValue);
+
+  final DeckNotifierResult defaultValue;
+
+  set unsaved(DeckNotifierResult value) {
+    this.value = value.copyWith(
+      state: value.state == DeckSaveState.isSaved ? DeckSaveState.isChanged : null,
+    );
+  }
+
+  set saved(DeckNotifierResult value) {
+    this.value = value.copyWith(
+      state: DeckSaveState.isSaved,
+    );
   }
 
   void incCard(CardResult key) {
@@ -33,67 +221,119 @@ class DeckNotifier<T extends DeckResult2?> extends StateNotifier<T> {
     setCard(key, value);
   }
 
-  void decCard(CardResult key) {
+  void decCard(CardResult key, {bool keep = false}) {
     final value = max(getCard(key) - 1, 0);
-    setCard(key, value);
+    setCard(key, value, keep: keep);
   }
 
-  void setCard(CardResult key, int value) {
-    unsaved = state?.copyWith(cards: {
-      for (final entry in state!.cards.entries.where((e) => e.key != key)) entry.key: entry.value,
-      if (value > 0) key: value,
-    }) as T;
+  void setCard(CardResult key, int value, {bool keep = false}) {
+    unsaved = this.value.copyWith(cards: {
+      for (final entry in this.value.cards.entries.where((e) => e.key != key.code)) entry.key: entry.value,
+      if (value > 0 || keep) key.code: value,
+    });
   }
 
-  int getCard(CardResult key) => state?.cards[key] ?? 0;
+  int getCard(CardResult key) => value.cards[key.code] ?? 0;
+
+  @override
+  DeckNotifierResult createDefaultValue() => defaultValue;
+
+  @override
+  void didUpdateValue(DeckNotifierResult? oldValue) {
+    assert(debugIsSerializableForRestoration(toPrimitives()));
+    notifyListeners();
+  }
+
+  @override
+  fromPrimitives(Object? data) => DeckNotifierResult.fromJson((data as Map).cast());
+
+  @override
+  Object? toPrimitives() => value.toJson();
 }
 
-final groupedDeckCardListProvider = StreamProvider((ref) {
-  final db = ref.watch(dbProvider);
-  final settings = db.getSettings().watchSingle();
-  final deckCardList = ref.watch(deckProvider.select((value) => value.cards));
-  return settings.map((settings) {
-    final groupBy = settings.settings.deckCardGroup;
-    final sortBy = settings.settings.deckCardSort;
-    return HeaderList([
-      ...groupBy(sortBy(deckCardList.keys)),
-    ]);
-  });
+final groupedDeckCardListProvider = StreamProvider((ref) async* {
+  final settings = await ref.watch(settingProvider.future);
+  final deckCardList = ref.watch(deckValidatorResultProvider.select((value) {
+    return value.deck.cards.keys;
+  }));
+
+  final groupBy = settings.settings.deckCardGroup;
+  final sortBy = settings.settings.deckCardSort;
+  yield HeaderList([
+    ...groupBy(sortBy(deckCardList)),
+  ]);
 });
 
-final deckValidatorProvider = StreamProvider.family<DeckValidator, DeckResult2>((ref, deck) {
+final deckRotationCardListProvider = StreamProvider.family<List<RotationCardResult>, DeckFullResult>((ref, deck) {
   final db = ref.watch(dbProvider);
-  final settingsStream = db.getSettings().watchSingle();
-  final formatCardSetStream = db
+  return db
       .listRotationCards(
         where: buildAnd([
           db.card.code.isIn(deck.cards.keys.map((e) => e.code).toList()),
           db.rotation.code.equals(deck.rotation?.code),
         ]),
       )
-      .watch()
-      .map((event) => event.map((e) => e.card.code).toSet());
-  final mwlCardMapStream = db //
-      .listMwlCard(where: db.mwlCard.mwlCode.equals(deck.mwl?.code)) //
-      .watch() //
-      .map((event) => event.map((e) => MapEntry(e.cardCode, e)).toMap());
-  return CombineLatestStream.combine3<SettingResult, Set<String>, Map<String, MwlCardData>, DeckValidator>(
-    settingsStream,
-    formatCardSetStream,
-    mwlCardMapStream,
-    (
-      settings,
-      formatCardSet,
-      mwlCardMap,
-    ) {
-      return DeckValidator(
-        settings,
-        deck,
-        deck.rotation != null ? formatCardSet.toSet() : null,
-        mwlCardMap,
-      );
-    },
-  );
-}, dependencies: [dbProvider, deckProvider]);
+      .watch();
+}, dependencies: [
+  dbProvider,
+]);
 
-final compareDeckListProvider = StateProvider<Set<DeckResult2>>((ref) => {});
+final deckMwlCardListProvider = StreamProvider.family<List<MwlCardData>, DeckFullResult>((ref, deck) {
+  final db = ref.watch(dbProvider);
+  return db //
+      .listMwlCard(where: db.mwlCard.mwlCode.equals(deck.mwl?.code)) //
+      .watch();
+}, dependencies: [
+  dbProvider,
+]);
+
+final deckValidatorProvider = StreamProvider.family<DeckValidator, DeckFullResult>((ref, deck) async* {
+  final settings = await ref.watch(settingProvider.future);
+  final rotationCardSet = await ref.watch(deckRotationCardListProvider(deck).future.select((value) {
+    return value.then((event) => event.map((e) => e.card.code).toSet());
+  }));
+  final mwlCardMap = await ref.watch(deckMwlCardListProvider(deck).future.select((value) {
+    return value.then((event) => event.map((e) => MapEntry(e.cardCode, e)).toMap());
+  }));
+  yield DeckValidator(
+    settings,
+    deck,
+    deck.rotation != null ? rotationCardSet.toSet() : null,
+    mwlCardMap,
+  );
+});
+
+final deckValidatorStreamProvider = StreamProvider<DeckValidator>((ref) async* {
+  final deck = await ref.watch(deckFullResultStreamProvider.future);
+  yield await ref.watch(deckValidatorProvider(deck).future);
+}, dependencies: [
+  deckFullResultStreamProvider.future,
+  deckValidatorProvider,
+]);
+
+final deckValidatorResultProvider = Provider<DeckValidator>((ref) => throw UnimplementedError());
+
+class RestorableDeckMicroResultSet extends RestorableValue<Set<DeckMicroResult>> {
+  RestorableDeckMicroResultSet(this.defaultValue);
+
+  final Set<DeckMicroResult> defaultValue;
+
+  @override
+  Set<DeckMicroResult> createDefaultValue() => defaultValue;
+
+  @override
+  void didUpdateValue(Set<DeckMicroResult>? oldValue) {
+    notifyListeners();
+  }
+
+  @override
+  Set<DeckMicroResult> fromPrimitives(Object? data) {
+    return (data as List).map((e) => DeckMicroResult.fromJson((e as Map).cast())).toSet();
+  }
+
+  @override
+  Object? toPrimitives() => value.map((e) => e.toJson()).toList();
+}
+
+final selectedCompareDeckListProvider =
+    RestorableProvider<RestorableDeckMicroResultSet>((ref) => throw UnimplementedError());

@@ -10,15 +10,17 @@ import 'body.dart';
 
 class DeckListPage extends ConsumerWidget {
   const DeckListPage({
+    required this.restorationId,
     required this.automaticallyImplyLeading,
     required this.title,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
-  static withOverrides({
+  static Widget withOverrides({
+    required String restorationId,
     bool automaticallyImplyLeading = false,
     required String title,
-    bool filterSearching = false,
+    bool? filterSearching,
     Query? filterQuery,
     FormatData? filterFormat,
     RotationData? filterRotation,
@@ -27,31 +29,37 @@ class DeckListPage extends ConsumerWidget {
     FilterType<String>? filterSides,
     FilterType<String>? filterFactions,
     FilterType<String>? filterTypes,
-    required Widget Function(BuildContext context, WidgetRef ref, int index, DeckResult2 deck) itemBuilder,
+    Set<String>? filterTags,
+    required Widget Function(BuildContext context, WidgetRef ref, int index, DeckFullResult deck) itemBuilder,
     Widget? fab,
   }) {
     return ProviderScope(
+      restorationId: restorationId,
       overrides: [
-        filterSearchingProvider.overrideWithValue(StateController(filterSearching)),
-        filterQueryProvider.overrideWithValue(StateController(filterQuery)),
-        filterFormatProvider.overrideWithValue(StateController(filterFormat)),
-        filterRotationProvider.overrideWithValue(StateController(filterRotation)),
-        filterMwlProvider.overrideWithValue(StateController(filterMwl)),
-        filterPacksProvider.overrideWithValue(StateController(filterPacks ?? FilterType())),
-        filterSidesProvider.overrideWithValue(StateController(filterSides ?? FilterType())),
-        filterFactionsProvider.overrideWithValue(StateController(filterFactions ?? FilterType())),
-        filterTypesProvider.overrideWithValue(StateController(filterTypes ?? FilterType())),
-        filterTagsProvider.overrideWithValue(StateController(const {})),
+        filterSearchingProvider.overrideWithValue(RestorableBool(filterSearching ?? false), 'filterSearchingProvider'),
+        filterQueryProvider.overrideWithValue(RestorableQuery(filterQuery), 'filterQueryProvider'),
+        filterFormatProvider.overrideWithValue(RestorableFormatData(filterFormat), 'filterFormatProvider'),
+        filterRotationProvider.overrideWithValue(RestorableRotationData(filterRotation), 'filterRotationProvider'),
+        filterMwlProvider.overrideWithValue(RestorableMwlData(filterMwl), 'filterMwlProvider'),
+        filterPacksProvider.overrideWithValue(RestorableFilterType(filterPacks ?? FilterType()), 'filterPacksProvider'),
+        filterSidesProvider.overrideWithValue(RestorableFilterType(filterSides ?? FilterType()), 'filterSidesProvider'),
+        filterFactionsProvider.overrideWithValue(
+            RestorableFilterType(filterFactions ?? FilterType()), 'filterFactionsProvider'),
+        filterTypesProvider.overrideWithValue(RestorableFilterType(filterTypes ?? FilterType()), 'filterTypesProvider'),
+        filterTagsProvider.overrideWithValue(RestorableSet(filterTags ?? const {}), 'filterTagsProvider'),
+        selectedDeckIdsProvider.overrideWithValue(RestorableSet<String>({}), 'selectedDeckIdsProvider'),
         deckItemBuilderProvider.overrideWithValue(itemBuilder),
         deckFabProvider.overrideWithValue(fab),
       ],
       child: DeckListPage(
+        restorationId: restorationId,
         automaticallyImplyLeading: automaticallyImplyLeading,
         title: title,
       ),
     );
   }
 
+  final String restorationId;
   final bool automaticallyImplyLeading;
   final String title;
 

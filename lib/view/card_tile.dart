@@ -50,23 +50,15 @@ class CardTile extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          RichText(
-            text: TextSpan(children: [
-              cardType(card),
-              TextSpan(children: [
-                const TextSpan(text: ' ('),
-                cardInfo(card),
-                const TextSpan(text: ')'),
-              ]),
-            ], style: DefaultTextStyle.of(context).style),
-          ),
-          if (influence.isNotEmpty)
-            RichText(
-              text: TextSpan(
-                children: influence,
-                style: DefaultTextStyle.of(context).style,
-              ),
-            ),
+          Text.rich(TextSpan(children: [
+            cardType(card),
+            TextSpan(children: [
+              const TextSpan(text: ' ('),
+              cardInfo(card),
+              const TextSpan(text: ')'),
+            ]),
+          ])),
+          if (influence.isNotEmpty) Text.rich(TextSpan(children: influence)),
           if (body) CardBodyWidget(card),
           CardCycleWidget(card),
           if (error != null) Text(error!, style: TextStyle(color: Theme.of(context).errorColor))

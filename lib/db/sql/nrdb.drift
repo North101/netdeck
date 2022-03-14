@@ -1,17 +1,17 @@
-import '../types.dart';
+import '/db/types.dart';
 
 CREATE TABLE nrdb(
   id BOOLEAN PRIMARY KEY NOT NULL DEFAULT TRUE,
-  expires INT MAPPED BY `const DateTimeUtcConverter()` NOT NULL,
-  cycle_last_updated INT MAPPED BY `const DateTimeUtcConverter()` NOT NULL,
-  pack_last_updated INT MAPPED BY `const DateTimeUtcConverter()` NOT NULL,
-  side_last_updated INT MAPPED BY `const DateTimeUtcConverter()` NOT NULL,
-  faction_last_updated INT MAPPED BY `const DateTimeUtcConverter()` NOT NULL,
-  type_last_updated INT MAPPED BY `const DateTimeUtcConverter()` NOT NULL,
-  card_last_updated INT MAPPED BY `const DateTimeUtcConverter()` NOT NULL,
-  format_last_updated INT MAPPED BY `const DateTimeUtcConverter()` NOT NULL,
-  rotation_last_updated INT MAPPED BY `const DateTimeUtcConverter()` NOT NULL,
-  mwl_last_updated INT MAPPED BY `const DateTimeUtcConverter()` NOT NULL,
+  expires INT NOT NULL MAPPED BY `const DateTimeUtcConverter()`,
+  cycle_last_updated INT NOT NULL MAPPED BY `const DateTimeUtcConverter()`,
+  pack_last_updated INT NOT NULL MAPPED BY `const DateTimeUtcConverter()`,
+  side_last_updated INT NOT NULL MAPPED BY `const DateTimeUtcConverter()`,
+  faction_last_updated INT NOT NULL MAPPED BY `const DateTimeUtcConverter()`,
+  type_last_updated INT NOT NULL MAPPED BY `const DateTimeUtcConverter()`,
+  card_last_updated INT NOT NULL MAPPED BY `const DateTimeUtcConverter()`,
+  format_last_updated INT NOT NULL MAPPED BY `const DateTimeUtcConverter()`,
+  rotation_last_updated INT NOT NULL MAPPED BY `const DateTimeUtcConverter()`,
+  mwl_last_updated INT NOT NULL MAPPED BY `const DateTimeUtcConverter()`,
   CONSTRAINT settings_id CHECK (id = TRUE)
 );
 

@@ -3,10 +3,10 @@
 part of 'database.dart';
 
 // **************************************************************************
-// MoorGenerator
+// DriftDatabaseGenerator
 // **************************************************************************
 
-// ignore_for_file: unnecessary_brace_in_string_interps, unnecessary_this
+// ignore_for_file: type=lint
 class TypeData extends DataClass implements Insertable<TypeData> {
   final String code;
   final String? sideCode;
@@ -494,7 +494,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
   final CardGroup deckCardGroup;
   final CardSort compareCardSort;
   final bool apexResources;
-  final CardGalleryView cardGalleryView;
+  final CardGalleryPageView cardGalleryView;
   SettingsData(
       {required this.id,
       this.filterFormatCode,
@@ -523,26 +523,26 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           .mapFromDatabaseResponse(data['${effectivePrefix}filter_mwl_code']),
       filterCollection: const BoolType().mapFromDatabaseResponse(
           data['${effectivePrefix}filter_collection'])!,
-      cardSort: Settings.$converter0.mapToDart(const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}card_sort']))!,
-      cardGroup: Settings.$converter1.mapToDart(const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}card_group']))!,
-      deckSort: Settings.$converter2.mapToDart(const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}deck_sort']))!,
-      deckGroup: Settings.$converter3.mapToDart(const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}deck_group']))!,
-      deckCardSort: Settings.$converter4.mapToDart(const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}deck_card_sort']))!,
-      deckCardGroup: Settings.$converter5.mapToDart(const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}deck_card_group']))!,
-      compareCardSort: Settings.$converter6.mapToDart(const StringType()
+      cardSort: Settings.$converter0.fromSql(const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}card_sort'])!),
+      cardGroup: Settings.$converter1.fromSql(const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}card_group'])!),
+      deckSort: Settings.$converter2.fromSql(const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}deck_sort'])!),
+      deckGroup: Settings.$converter3.fromSql(const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}deck_group'])!),
+      deckCardSort: Settings.$converter4.fromSql(const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}deck_card_sort'])!),
+      deckCardGroup: Settings.$converter5.fromSql(const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}deck_card_group'])!),
+      compareCardSort: Settings.$converter6.fromSql(const StringType()
           .mapFromDatabaseResponse(
-              data['${effectivePrefix}compare_card_sort']))!,
+              data['${effectivePrefix}compare_card_sort'])!),
       apexResources: const BoolType()
           .mapFromDatabaseResponse(data['${effectivePrefix}apex_resources'])!,
-      cardGalleryView: Settings.$converter7.mapToDart(const StringType()
+      cardGalleryView: Settings.$converter7.fromSql(const StringType()
           .mapFromDatabaseResponse(
-              data['${effectivePrefix}card_gallery_view']))!,
+              data['${effectivePrefix}card_gallery_view'])!),
     );
   }
   @override
@@ -561,40 +561,38 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     map['filter_collection'] = Variable<bool>(filterCollection);
     {
       final converter = Settings.$converter0;
-      map['card_sort'] = Variable<String>(converter.mapToSql(cardSort)!);
+      map['card_sort'] = Variable<String>(converter.toSql(cardSort));
     }
     {
       final converter = Settings.$converter1;
-      map['card_group'] = Variable<String>(converter.mapToSql(cardGroup)!);
+      map['card_group'] = Variable<String>(converter.toSql(cardGroup));
     }
     {
       final converter = Settings.$converter2;
-      map['deck_sort'] = Variable<String>(converter.mapToSql(deckSort)!);
+      map['deck_sort'] = Variable<String>(converter.toSql(deckSort));
     }
     {
       final converter = Settings.$converter3;
-      map['deck_group'] = Variable<String>(converter.mapToSql(deckGroup)!);
+      map['deck_group'] = Variable<String>(converter.toSql(deckGroup));
     }
     {
       final converter = Settings.$converter4;
-      map['deck_card_sort'] =
-          Variable<String>(converter.mapToSql(deckCardSort)!);
+      map['deck_card_sort'] = Variable<String>(converter.toSql(deckCardSort));
     }
     {
       final converter = Settings.$converter5;
-      map['deck_card_group'] =
-          Variable<String>(converter.mapToSql(deckCardGroup)!);
+      map['deck_card_group'] = Variable<String>(converter.toSql(deckCardGroup));
     }
     {
       final converter = Settings.$converter6;
       map['compare_card_sort'] =
-          Variable<String>(converter.mapToSql(compareCardSort)!);
+          Variable<String>(converter.toSql(compareCardSort));
     }
     map['apex_resources'] = Variable<bool>(apexResources);
     {
       final converter = Settings.$converter7;
       map['card_gallery_view'] =
-          Variable<String>(converter.mapToSql(cardGalleryView)!);
+          Variable<String>(converter.toSql(cardGalleryView));
     }
     return map;
   }
@@ -635,16 +633,23 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           serializer.fromJson<String?>(json['filter_rotation_code']),
       filterMwlCode: serializer.fromJson<String?>(json['filter_mwl_code']),
       filterCollection: serializer.fromJson<bool>(json['filter_collection']),
-      cardSort: serializer.fromJson<CardSort>(json['card_sort']),
-      cardGroup: serializer.fromJson<CardGroup>(json['card_group']),
-      deckSort: serializer.fromJson<DeckSort>(json['deck_sort']),
-      deckGroup: serializer.fromJson<DeckGroup>(json['deck_group']),
-      deckCardSort: serializer.fromJson<CardSort>(json['deck_card_sort']),
-      deckCardGroup: serializer.fromJson<CardGroup>(json['deck_card_group']),
-      compareCardSort: serializer.fromJson<CardSort>(json['compare_card_sort']),
+      cardSort: Settings.$converter0
+          .fromJson(serializer.fromJson<String>(json['card_sort'])),
+      cardGroup: Settings.$converter1
+          .fromJson(serializer.fromJson<String>(json['card_group'])),
+      deckSort: Settings.$converter2
+          .fromJson(serializer.fromJson<String>(json['deck_sort'])),
+      deckGroup: Settings.$converter3
+          .fromJson(serializer.fromJson<String>(json['deck_group'])),
+      deckCardSort: Settings.$converter4
+          .fromJson(serializer.fromJson<String>(json['deck_card_sort'])),
+      deckCardGroup: Settings.$converter5
+          .fromJson(serializer.fromJson<String>(json['deck_card_group'])),
+      compareCardSort: Settings.$converter6
+          .fromJson(serializer.fromJson<String>(json['compare_card_sort'])),
       apexResources: serializer.fromJson<bool>(json['apex_resources']),
-      cardGalleryView:
-          serializer.fromJson<CardGalleryView>(json['card_gallery_view']),
+      cardGalleryView: Settings.$converter7
+          .fromJson(serializer.fromJson<String>(json['card_gallery_view'])),
     );
   }
   @override
@@ -656,15 +661,23 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       'filter_rotation_code': serializer.toJson<String?>(filterRotationCode),
       'filter_mwl_code': serializer.toJson<String?>(filterMwlCode),
       'filter_collection': serializer.toJson<bool>(filterCollection),
-      'card_sort': serializer.toJson<CardSort>(cardSort),
-      'card_group': serializer.toJson<CardGroup>(cardGroup),
-      'deck_sort': serializer.toJson<DeckSort>(deckSort),
-      'deck_group': serializer.toJson<DeckGroup>(deckGroup),
-      'deck_card_sort': serializer.toJson<CardSort>(deckCardSort),
-      'deck_card_group': serializer.toJson<CardGroup>(deckCardGroup),
-      'compare_card_sort': serializer.toJson<CardSort>(compareCardSort),
+      'card_sort':
+          serializer.toJson<String?>(Settings.$converter0.toJson(cardSort)),
+      'card_group':
+          serializer.toJson<String?>(Settings.$converter1.toJson(cardGroup)),
+      'deck_sort':
+          serializer.toJson<String?>(Settings.$converter2.toJson(deckSort)),
+      'deck_group':
+          serializer.toJson<String?>(Settings.$converter3.toJson(deckGroup)),
+      'deck_card_sort':
+          serializer.toJson<String?>(Settings.$converter4.toJson(deckCardSort)),
+      'deck_card_group': serializer
+          .toJson<String?>(Settings.$converter5.toJson(deckCardGroup)),
+      'compare_card_sort': serializer
+          .toJson<String?>(Settings.$converter6.toJson(compareCardSort)),
       'apex_resources': serializer.toJson<bool>(apexResources),
-      'card_gallery_view': serializer.toJson<CardGalleryView>(cardGalleryView),
+      'card_gallery_view': serializer
+          .toJson<String?>(Settings.$converter7.toJson(cardGalleryView)),
     };
   }
 
@@ -682,7 +695,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           CardGroup? deckCardGroup,
           CardSort? compareCardSort,
           bool? apexResources,
-          CardGalleryView? cardGalleryView}) =>
+          CardGalleryPageView? cardGalleryView}) =>
       SettingsData(
         id: id ?? this.id,
         filterFormatCode: filterFormatCode.present
@@ -775,7 +788,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
   final Value<CardGroup> deckCardGroup;
   final Value<CardSort> compareCardSort;
   final Value<bool> apexResources;
-  final Value<CardGalleryView> cardGalleryView;
+  final Value<CardGalleryPageView> cardGalleryView;
   const SettingsCompanion({
     this.id = const Value.absent(),
     this.filterFormatCode = const Value.absent(),
@@ -822,7 +835,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     Expression<CardGroup>? deckCardGroup,
     Expression<CardSort>? compareCardSort,
     Expression<bool>? apexResources,
-    Expression<CardGalleryView>? cardGalleryView,
+    Expression<CardGalleryPageView>? cardGalleryView,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -857,7 +870,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       Value<CardGroup>? deckCardGroup,
       Value<CardSort>? compareCardSort,
       Value<bool>? apexResources,
-      Value<CardGalleryView>? cardGalleryView}) {
+      Value<CardGalleryPageView>? cardGalleryView}) {
     return SettingsCompanion(
       id: id ?? this.id,
       filterFormatCode: filterFormatCode ?? this.filterFormatCode,
@@ -896,36 +909,34 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     }
     if (cardSort.present) {
       final converter = Settings.$converter0;
-      map['card_sort'] = Variable<String>(converter.mapToSql(cardSort.value)!);
+      map['card_sort'] = Variable<String>(converter.toSql(cardSort.value));
     }
     if (cardGroup.present) {
       final converter = Settings.$converter1;
-      map['card_group'] =
-          Variable<String>(converter.mapToSql(cardGroup.value)!);
+      map['card_group'] = Variable<String>(converter.toSql(cardGroup.value));
     }
     if (deckSort.present) {
       final converter = Settings.$converter2;
-      map['deck_sort'] = Variable<String>(converter.mapToSql(deckSort.value)!);
+      map['deck_sort'] = Variable<String>(converter.toSql(deckSort.value));
     }
     if (deckGroup.present) {
       final converter = Settings.$converter3;
-      map['deck_group'] =
-          Variable<String>(converter.mapToSql(deckGroup.value)!);
+      map['deck_group'] = Variable<String>(converter.toSql(deckGroup.value));
     }
     if (deckCardSort.present) {
       final converter = Settings.$converter4;
       map['deck_card_sort'] =
-          Variable<String>(converter.mapToSql(deckCardSort.value)!);
+          Variable<String>(converter.toSql(deckCardSort.value));
     }
     if (deckCardGroup.present) {
       final converter = Settings.$converter5;
       map['deck_card_group'] =
-          Variable<String>(converter.mapToSql(deckCardGroup.value)!);
+          Variable<String>(converter.toSql(deckCardGroup.value));
     }
     if (compareCardSort.present) {
       final converter = Settings.$converter6;
       map['compare_card_sort'] =
-          Variable<String>(converter.mapToSql(compareCardSort.value)!);
+          Variable<String>(converter.toSql(compareCardSort.value));
     }
     if (apexResources.present) {
       map['apex_resources'] = Variable<bool>(apexResources.value);
@@ -933,7 +944,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
     if (cardGalleryView.present) {
       final converter = Settings.$converter7;
       map['card_gallery_view'] =
-          Variable<String>(converter.mapToSql(cardGalleryView.value)!);
+          Variable<String>(converter.toSql(cardGalleryView.value));
     }
     return map;
   }
@@ -1075,14 +1086,14 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
       defaultValue: const CustomExpression<bool>('FALSE'));
   final VerificationMeta _cardGalleryViewMeta =
       const VerificationMeta('cardGalleryView');
-  late final GeneratedColumnWithTypeConverter<CardGalleryView, String?>
+  late final GeneratedColumnWithTypeConverter<CardGalleryPageView, String?>
       cardGalleryView = GeneratedColumn<String?>(
               'card_gallery_view', aliasedName, false,
               type: const StringType(),
               requiredDuringInsert: false,
               $customConstraints: 'NOT NULL DEFAULT \'\'',
               defaultValue: const CustomExpression<String>('\'\''))
-          .withConverter<CardGalleryView>(Settings.$converter7);
+          .withConverter<CardGalleryPageView>(Settings.$converter7);
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -1166,22 +1177,22 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     return Settings(attachedDatabase, alias);
   }
 
-  static TypeConverter<CardSort, String> $converter0 =
+  static JsonTypeConverter<CardSort, String> $converter0 =
       const CardSortConverter(CardSort.set);
-  static TypeConverter<CardGroup, String> $converter1 =
+  static JsonTypeConverter<CardGroup, String> $converter1 =
       const CardGroupConverter(CardGroup.type);
-  static TypeConverter<DeckSort, String> $converter2 =
+  static JsonTypeConverter<DeckSort, String> $converter2 =
       const DeckSortConverter(DeckSort.updated);
-  static TypeConverter<DeckGroup, String> $converter3 =
+  static JsonTypeConverter<DeckGroup, String> $converter3 =
       const DeckGroupConverter(DeckGroup.side);
-  static TypeConverter<CardSort, String> $converter4 =
+  static JsonTypeConverter<CardSort, String> $converter4 =
       const CardSortConverter(CardSort.set);
-  static TypeConverter<CardGroup, String> $converter5 =
+  static JsonTypeConverter<CardGroup, String> $converter5 =
       const CardGroupConverter(CardGroup.type);
-  static TypeConverter<CardSort, String> $converter6 =
+  static JsonTypeConverter<CardSort, String> $converter6 =
       const CardSortConverter(CardSort.set);
-  static TypeConverter<CardGalleryView, String> $converter7 =
-      const CardGalleryViewConverter(CardGalleryView.image);
+  static JsonTypeConverter<CardGalleryPageView, String> $converter7 =
+      const CardGalleryViewConverter(CardGalleryPageView.image);
   @override
   List<String> get customConstraints =>
       const ['CONSTRAINT settings_id CHECK (id = TRUE)'];
@@ -1212,8 +1223,8 @@ class RotationData extends DataClass implements Insertable<RotationData> {
           .mapFromDatabaseResponse(data['${effectivePrefix}format_code'])!,
       name: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
-      dateStart: Rotation.$converter0.mapToDart(const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}date_start']))!,
+      dateStart: Rotation.$converter0.fromSql(const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}date_start'])!),
       current: const BoolType()
           .mapFromDatabaseResponse(data['${effectivePrefix}current'])!,
       latest: const BoolType()
@@ -1228,7 +1239,7 @@ class RotationData extends DataClass implements Insertable<RotationData> {
     map['name'] = Variable<String>(name);
     {
       final converter = Rotation.$converter0;
-      map['date_start'] = Variable<int>(converter.mapToSql(dateStart)!);
+      map['date_start'] = Variable<int>(converter.toSql(dateStart));
     }
     map['current'] = Variable<bool>(current);
     map['latest'] = Variable<bool>(latest);
@@ -1253,7 +1264,8 @@ class RotationData extends DataClass implements Insertable<RotationData> {
       code: serializer.fromJson<String>(json['code']),
       formatCode: serializer.fromJson<String>(json['format_code']),
       name: serializer.fromJson<String>(json['name']),
-      dateStart: serializer.fromJson<DateTime>(json['date_start']),
+      dateStart: Rotation.$converter0
+          .fromJson(serializer.fromJson<int>(json['date_start'])),
       current: serializer.fromJson<bool>(json['current']),
       latest: serializer.fromJson<bool>(json['latest']),
     );
@@ -1265,7 +1277,8 @@ class RotationData extends DataClass implements Insertable<RotationData> {
       'code': serializer.toJson<String>(code),
       'format_code': serializer.toJson<String>(formatCode),
       'name': serializer.toJson<String>(name),
-      'date_start': serializer.toJson<DateTime>(dateStart),
+      'date_start':
+          serializer.toJson<int?>(Rotation.$converter0.toJson(dateStart)),
       'current': serializer.toJson<bool>(current),
       'latest': serializer.toJson<bool>(latest),
     };
@@ -1391,7 +1404,7 @@ class RotationCompanion extends UpdateCompanion<RotationData> {
     }
     if (dateStart.present) {
       final converter = Rotation.$converter0;
-      map['date_start'] = Variable<int>(converter.mapToSql(dateStart.value)!);
+      map['date_start'] = Variable<int>(converter.toSql(dateStart.value));
     }
     if (current.present) {
       map['current'] = Variable<bool>(current.value);
@@ -1519,7 +1532,7 @@ class Rotation extends Table with TableInfo<Rotation, RotationData> {
     return Rotation(attachedDatabase, alias);
   }
 
-  static TypeConverter<DateTime, int> $converter0 =
+  static JsonTypeConverter<DateTime, int> $converter0 =
       const DateTimeUtcConverter();
   @override
   bool get dontWriteConstraints => true;
@@ -1740,7 +1753,7 @@ class PackData extends DataClass implements Insertable<PackData> {
           .mapFromDatabaseResponse(data['${effectivePrefix}position'])!,
       name: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
-      dateRelease: Pack.$converter0.mapToDart(const IntType()
+      dateRelease: Pack.$converter0n.fromSql(const IntType()
           .mapFromDatabaseResponse(data['${effectivePrefix}date_release'])),
       size: const IntType()
           .mapFromDatabaseResponse(data['${effectivePrefix}size']),
@@ -1754,8 +1767,8 @@ class PackData extends DataClass implements Insertable<PackData> {
     map['position'] = Variable<int>(position);
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || dateRelease != null) {
-      final converter = Pack.$converter0;
-      map['date_release'] = Variable<int?>(converter.mapToSql(dateRelease));
+      final converter = Pack.$converter0n;
+      map['date_release'] = Variable<int?>(converter.toSql(dateRelease));
     }
     if (!nullToAbsent || size != null) {
       map['size'] = Variable<int?>(size);
@@ -1784,7 +1797,8 @@ class PackData extends DataClass implements Insertable<PackData> {
       cycleCode: serializer.fromJson<String>(json['cycle_code']),
       position: serializer.fromJson<int>(json['position']),
       name: serializer.fromJson<String>(json['name']),
-      dateRelease: serializer.fromJson<DateTime?>(json['date_release']),
+      dateRelease: Pack.$converter0n
+          .fromJson(serializer.fromJson<int?>(json['date_release'])),
       size: serializer.fromJson<int?>(json['size']),
     );
   }
@@ -1796,7 +1810,8 @@ class PackData extends DataClass implements Insertable<PackData> {
       'cycle_code': serializer.toJson<String>(cycleCode),
       'position': serializer.toJson<int>(position),
       'name': serializer.toJson<String>(name),
-      'date_release': serializer.toJson<DateTime?>(dateRelease),
+      'date_release':
+          serializer.toJson<int?>(Pack.$converter0n.toJson(dateRelease)),
       'size': serializer.toJson<int?>(size),
     };
   }
@@ -1921,9 +1936,8 @@ class PackCompanion extends UpdateCompanion<PackData> {
       map['name'] = Variable<String>(name.value);
     }
     if (dateRelease.present) {
-      final converter = Pack.$converter0;
-      map['date_release'] =
-          Variable<int?>(converter.mapToSql(dateRelease.value));
+      final converter = Pack.$converter0n;
+      map['date_release'] = Variable<int?>(converter.toSql(dateRelease.value));
     }
     if (size.present) {
       map['size'] = Variable<int?>(size.value);
@@ -1976,12 +1990,12 @@ class Pack extends Table with TableInfo<Pack, PackData> {
       $customConstraints: 'NOT NULL');
   final VerificationMeta _dateReleaseMeta =
       const VerificationMeta('dateRelease');
-  late final GeneratedColumnWithTypeConverter<DateTime, int?> dateRelease =
+  late final GeneratedColumnWithTypeConverter<DateTime?, int?> dateRelease =
       GeneratedColumn<int?>('date_release', aliasedName, true,
               type: const IntType(),
               requiredDuringInsert: false,
               $customConstraints: '')
-          .withConverter<DateTime>(Pack.$converter0);
+          .withConverter<DateTime?>(Pack.$converter0n);
   final VerificationMeta _sizeMeta = const VerificationMeta('size');
   late final GeneratedColumn<int?> size = GeneratedColumn<int?>(
       'size', aliasedName, true,
@@ -2045,8 +2059,10 @@ class Pack extends Table with TableInfo<Pack, PackData> {
     return Pack(attachedDatabase, alias);
   }
 
-  static TypeConverter<DateTime, int> $converter0 =
+  static JsonTypeConverter<DateTime, int> $converter0 =
       const DateTimeUtcConverter();
+  static JsonTypeConverter<DateTime?, int?> $converter0n =
+      JsonTypeConverter.asNullable($converter0);
   @override
   bool get dontWriteConstraints => true;
 }
@@ -2080,35 +2096,35 @@ class NrdbData extends DataClass implements Insertable<NrdbData> {
     return NrdbData(
       id: const BoolType()
           .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      expires: Nrdb.$converter0.mapToDart(const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}expires']))!,
-      cycleLastUpdated: Nrdb.$converter1.mapToDart(const IntType()
+      expires: Nrdb.$converter0.fromSql(const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}expires'])!),
+      cycleLastUpdated: Nrdb.$converter1.fromSql(const IntType()
           .mapFromDatabaseResponse(
-              data['${effectivePrefix}cycle_last_updated']))!,
-      packLastUpdated: Nrdb.$converter2.mapToDart(const IntType()
+              data['${effectivePrefix}cycle_last_updated'])!),
+      packLastUpdated: Nrdb.$converter2.fromSql(const IntType()
           .mapFromDatabaseResponse(
-              data['${effectivePrefix}pack_last_updated']))!,
-      sideLastUpdated: Nrdb.$converter3.mapToDart(const IntType()
+              data['${effectivePrefix}pack_last_updated'])!),
+      sideLastUpdated: Nrdb.$converter3.fromSql(const IntType()
           .mapFromDatabaseResponse(
-              data['${effectivePrefix}side_last_updated']))!,
-      factionLastUpdated: Nrdb.$converter4.mapToDart(const IntType()
+              data['${effectivePrefix}side_last_updated'])!),
+      factionLastUpdated: Nrdb.$converter4.fromSql(const IntType()
           .mapFromDatabaseResponse(
-              data['${effectivePrefix}faction_last_updated']))!,
-      typeLastUpdated: Nrdb.$converter5.mapToDart(const IntType()
+              data['${effectivePrefix}faction_last_updated'])!),
+      typeLastUpdated: Nrdb.$converter5.fromSql(const IntType()
           .mapFromDatabaseResponse(
-              data['${effectivePrefix}type_last_updated']))!,
-      cardLastUpdated: Nrdb.$converter6.mapToDart(const IntType()
+              data['${effectivePrefix}type_last_updated'])!),
+      cardLastUpdated: Nrdb.$converter6.fromSql(const IntType()
           .mapFromDatabaseResponse(
-              data['${effectivePrefix}card_last_updated']))!,
-      formatLastUpdated: Nrdb.$converter7.mapToDart(const IntType()
+              data['${effectivePrefix}card_last_updated'])!),
+      formatLastUpdated: Nrdb.$converter7.fromSql(const IntType()
           .mapFromDatabaseResponse(
-              data['${effectivePrefix}format_last_updated']))!,
-      rotationLastUpdated: Nrdb.$converter8.mapToDart(const IntType()
+              data['${effectivePrefix}format_last_updated'])!),
+      rotationLastUpdated: Nrdb.$converter8.fromSql(const IntType()
           .mapFromDatabaseResponse(
-              data['${effectivePrefix}rotation_last_updated']))!,
-      mwlLastUpdated: Nrdb.$converter9.mapToDart(const IntType()
+              data['${effectivePrefix}rotation_last_updated'])!),
+      mwlLastUpdated: Nrdb.$converter9.fromSql(const IntType()
           .mapFromDatabaseResponse(
-              data['${effectivePrefix}mwl_last_updated']))!,
+              data['${effectivePrefix}mwl_last_updated'])!),
     );
   }
   @override
@@ -2117,52 +2133,51 @@ class NrdbData extends DataClass implements Insertable<NrdbData> {
     map['id'] = Variable<bool>(id);
     {
       final converter = Nrdb.$converter0;
-      map['expires'] = Variable<int>(converter.mapToSql(expires)!);
+      map['expires'] = Variable<int>(converter.toSql(expires));
     }
     {
       final converter = Nrdb.$converter1;
       map['cycle_last_updated'] =
-          Variable<int>(converter.mapToSql(cycleLastUpdated)!);
+          Variable<int>(converter.toSql(cycleLastUpdated));
     }
     {
       final converter = Nrdb.$converter2;
       map['pack_last_updated'] =
-          Variable<int>(converter.mapToSql(packLastUpdated)!);
+          Variable<int>(converter.toSql(packLastUpdated));
     }
     {
       final converter = Nrdb.$converter3;
       map['side_last_updated'] =
-          Variable<int>(converter.mapToSql(sideLastUpdated)!);
+          Variable<int>(converter.toSql(sideLastUpdated));
     }
     {
       final converter = Nrdb.$converter4;
       map['faction_last_updated'] =
-          Variable<int>(converter.mapToSql(factionLastUpdated)!);
+          Variable<int>(converter.toSql(factionLastUpdated));
     }
     {
       final converter = Nrdb.$converter5;
       map['type_last_updated'] =
-          Variable<int>(converter.mapToSql(typeLastUpdated)!);
+          Variable<int>(converter.toSql(typeLastUpdated));
     }
     {
       final converter = Nrdb.$converter6;
       map['card_last_updated'] =
-          Variable<int>(converter.mapToSql(cardLastUpdated)!);
+          Variable<int>(converter.toSql(cardLastUpdated));
     }
     {
       final converter = Nrdb.$converter7;
       map['format_last_updated'] =
-          Variable<int>(converter.mapToSql(formatLastUpdated)!);
+          Variable<int>(converter.toSql(formatLastUpdated));
     }
     {
       final converter = Nrdb.$converter8;
       map['rotation_last_updated'] =
-          Variable<int>(converter.mapToSql(rotationLastUpdated)!);
+          Variable<int>(converter.toSql(rotationLastUpdated));
     }
     {
       final converter = Nrdb.$converter9;
-      map['mwl_last_updated'] =
-          Variable<int>(converter.mapToSql(mwlLastUpdated)!);
+      map['mwl_last_updated'] = Variable<int>(converter.toSql(mwlLastUpdated));
     }
     return map;
   }
@@ -2188,20 +2203,26 @@ class NrdbData extends DataClass implements Insertable<NrdbData> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return NrdbData(
       id: serializer.fromJson<bool>(json['id']),
-      expires: serializer.fromJson<DateTime>(json['expires']),
-      cycleLastUpdated:
-          serializer.fromJson<DateTime>(json['cycle_last_updated']),
-      packLastUpdated: serializer.fromJson<DateTime>(json['pack_last_updated']),
-      sideLastUpdated: serializer.fromJson<DateTime>(json['side_last_updated']),
-      factionLastUpdated:
-          serializer.fromJson<DateTime>(json['faction_last_updated']),
-      typeLastUpdated: serializer.fromJson<DateTime>(json['type_last_updated']),
-      cardLastUpdated: serializer.fromJson<DateTime>(json['card_last_updated']),
-      formatLastUpdated:
-          serializer.fromJson<DateTime>(json['format_last_updated']),
-      rotationLastUpdated:
-          serializer.fromJson<DateTime>(json['rotation_last_updated']),
-      mwlLastUpdated: serializer.fromJson<DateTime>(json['mwl_last_updated']),
+      expires:
+          Nrdb.$converter0.fromJson(serializer.fromJson<int>(json['expires'])),
+      cycleLastUpdated: Nrdb.$converter1
+          .fromJson(serializer.fromJson<int>(json['cycle_last_updated'])),
+      packLastUpdated: Nrdb.$converter2
+          .fromJson(serializer.fromJson<int>(json['pack_last_updated'])),
+      sideLastUpdated: Nrdb.$converter3
+          .fromJson(serializer.fromJson<int>(json['side_last_updated'])),
+      factionLastUpdated: Nrdb.$converter4
+          .fromJson(serializer.fromJson<int>(json['faction_last_updated'])),
+      typeLastUpdated: Nrdb.$converter5
+          .fromJson(serializer.fromJson<int>(json['type_last_updated'])),
+      cardLastUpdated: Nrdb.$converter6
+          .fromJson(serializer.fromJson<int>(json['card_last_updated'])),
+      formatLastUpdated: Nrdb.$converter7
+          .fromJson(serializer.fromJson<int>(json['format_last_updated'])),
+      rotationLastUpdated: Nrdb.$converter8
+          .fromJson(serializer.fromJson<int>(json['rotation_last_updated'])),
+      mwlLastUpdated: Nrdb.$converter9
+          .fromJson(serializer.fromJson<int>(json['mwl_last_updated'])),
     );
   }
   @override
@@ -2209,16 +2230,25 @@ class NrdbData extends DataClass implements Insertable<NrdbData> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<bool>(id),
-      'expires': serializer.toJson<DateTime>(expires),
-      'cycle_last_updated': serializer.toJson<DateTime>(cycleLastUpdated),
-      'pack_last_updated': serializer.toJson<DateTime>(packLastUpdated),
-      'side_last_updated': serializer.toJson<DateTime>(sideLastUpdated),
-      'faction_last_updated': serializer.toJson<DateTime>(factionLastUpdated),
-      'type_last_updated': serializer.toJson<DateTime>(typeLastUpdated),
-      'card_last_updated': serializer.toJson<DateTime>(cardLastUpdated),
-      'format_last_updated': serializer.toJson<DateTime>(formatLastUpdated),
-      'rotation_last_updated': serializer.toJson<DateTime>(rotationLastUpdated),
-      'mwl_last_updated': serializer.toJson<DateTime>(mwlLastUpdated),
+      'expires': serializer.toJson<int?>(Nrdb.$converter0.toJson(expires)),
+      'cycle_last_updated':
+          serializer.toJson<int?>(Nrdb.$converter1.toJson(cycleLastUpdated)),
+      'pack_last_updated':
+          serializer.toJson<int?>(Nrdb.$converter2.toJson(packLastUpdated)),
+      'side_last_updated':
+          serializer.toJson<int?>(Nrdb.$converter3.toJson(sideLastUpdated)),
+      'faction_last_updated':
+          serializer.toJson<int?>(Nrdb.$converter4.toJson(factionLastUpdated)),
+      'type_last_updated':
+          serializer.toJson<int?>(Nrdb.$converter5.toJson(typeLastUpdated)),
+      'card_last_updated':
+          serializer.toJson<int?>(Nrdb.$converter6.toJson(cardLastUpdated)),
+      'format_last_updated':
+          serializer.toJson<int?>(Nrdb.$converter7.toJson(formatLastUpdated)),
+      'rotation_last_updated':
+          serializer.toJson<int?>(Nrdb.$converter8.toJson(rotationLastUpdated)),
+      'mwl_last_updated':
+          serializer.toJson<int?>(Nrdb.$converter9.toJson(mwlLastUpdated)),
     };
   }
 
@@ -2407,52 +2437,52 @@ class NrdbCompanion extends UpdateCompanion<NrdbData> {
     }
     if (expires.present) {
       final converter = Nrdb.$converter0;
-      map['expires'] = Variable<int>(converter.mapToSql(expires.value)!);
+      map['expires'] = Variable<int>(converter.toSql(expires.value));
     }
     if (cycleLastUpdated.present) {
       final converter = Nrdb.$converter1;
       map['cycle_last_updated'] =
-          Variable<int>(converter.mapToSql(cycleLastUpdated.value)!);
+          Variable<int>(converter.toSql(cycleLastUpdated.value));
     }
     if (packLastUpdated.present) {
       final converter = Nrdb.$converter2;
       map['pack_last_updated'] =
-          Variable<int>(converter.mapToSql(packLastUpdated.value)!);
+          Variable<int>(converter.toSql(packLastUpdated.value));
     }
     if (sideLastUpdated.present) {
       final converter = Nrdb.$converter3;
       map['side_last_updated'] =
-          Variable<int>(converter.mapToSql(sideLastUpdated.value)!);
+          Variable<int>(converter.toSql(sideLastUpdated.value));
     }
     if (factionLastUpdated.present) {
       final converter = Nrdb.$converter4;
       map['faction_last_updated'] =
-          Variable<int>(converter.mapToSql(factionLastUpdated.value)!);
+          Variable<int>(converter.toSql(factionLastUpdated.value));
     }
     if (typeLastUpdated.present) {
       final converter = Nrdb.$converter5;
       map['type_last_updated'] =
-          Variable<int>(converter.mapToSql(typeLastUpdated.value)!);
+          Variable<int>(converter.toSql(typeLastUpdated.value));
     }
     if (cardLastUpdated.present) {
       final converter = Nrdb.$converter6;
       map['card_last_updated'] =
-          Variable<int>(converter.mapToSql(cardLastUpdated.value)!);
+          Variable<int>(converter.toSql(cardLastUpdated.value));
     }
     if (formatLastUpdated.present) {
       final converter = Nrdb.$converter7;
       map['format_last_updated'] =
-          Variable<int>(converter.mapToSql(formatLastUpdated.value)!);
+          Variable<int>(converter.toSql(formatLastUpdated.value));
     }
     if (rotationLastUpdated.present) {
       final converter = Nrdb.$converter8;
       map['rotation_last_updated'] =
-          Variable<int>(converter.mapToSql(rotationLastUpdated.value)!);
+          Variable<int>(converter.toSql(rotationLastUpdated.value));
     }
     if (mwlLastUpdated.present) {
       final converter = Nrdb.$converter9;
       map['mwl_last_updated'] =
-          Variable<int>(converter.mapToSql(mwlLastUpdated.value)!);
+          Variable<int>(converter.toSql(mwlLastUpdated.value));
     }
     return map;
   }
@@ -2623,25 +2653,25 @@ class Nrdb extends Table with TableInfo<Nrdb, NrdbData> {
     return Nrdb(attachedDatabase, alias);
   }
 
-  static TypeConverter<DateTime, int> $converter0 =
+  static JsonTypeConverter<DateTime, int> $converter0 =
       const DateTimeUtcConverter();
-  static TypeConverter<DateTime, int> $converter1 =
+  static JsonTypeConverter<DateTime, int> $converter1 =
       const DateTimeUtcConverter();
-  static TypeConverter<DateTime, int> $converter2 =
+  static JsonTypeConverter<DateTime, int> $converter2 =
       const DateTimeUtcConverter();
-  static TypeConverter<DateTime, int> $converter3 =
+  static JsonTypeConverter<DateTime, int> $converter3 =
       const DateTimeUtcConverter();
-  static TypeConverter<DateTime, int> $converter4 =
+  static JsonTypeConverter<DateTime, int> $converter4 =
       const DateTimeUtcConverter();
-  static TypeConverter<DateTime, int> $converter5 =
+  static JsonTypeConverter<DateTime, int> $converter5 =
       const DateTimeUtcConverter();
-  static TypeConverter<DateTime, int> $converter6 =
+  static JsonTypeConverter<DateTime, int> $converter6 =
       const DateTimeUtcConverter();
-  static TypeConverter<DateTime, int> $converter7 =
+  static JsonTypeConverter<DateTime, int> $converter7 =
       const DateTimeUtcConverter();
-  static TypeConverter<DateTime, int> $converter8 =
+  static JsonTypeConverter<DateTime, int> $converter8 =
       const DateTimeUtcConverter();
-  static TypeConverter<DateTime, int> $converter9 =
+  static JsonTypeConverter<DateTime, int> $converter9 =
       const DateTimeUtcConverter();
   @override
   List<String> get customConstraints =>
@@ -2677,8 +2707,8 @@ class MwlData extends DataClass implements Insertable<MwlData> {
           .mapFromDatabaseResponse(data['${effectivePrefix}format_code'])!,
       name: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
-      dateStart: Mwl.$converter0.mapToDart(const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}date_start']))!,
+      dateStart: Mwl.$converter0.fromSql(const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}date_start'])!),
       active: const BoolType()
           .mapFromDatabaseResponse(data['${effectivePrefix}active'])!,
       latest: const BoolType()
@@ -2697,7 +2727,7 @@ class MwlData extends DataClass implements Insertable<MwlData> {
     map['name'] = Variable<String>(name);
     {
       final converter = Mwl.$converter0;
-      map['date_start'] = Variable<int>(converter.mapToSql(dateStart)!);
+      map['date_start'] = Variable<int>(converter.toSql(dateStart));
     }
     map['active'] = Variable<bool>(active);
     map['latest'] = Variable<bool>(latest);
@@ -2734,7 +2764,8 @@ class MwlData extends DataClass implements Insertable<MwlData> {
       code: serializer.fromJson<String>(json['code']),
       formatCode: serializer.fromJson<String>(json['format_code']),
       name: serializer.fromJson<String>(json['name']),
-      dateStart: serializer.fromJson<DateTime>(json['date_start']),
+      dateStart: Mwl.$converter0
+          .fromJson(serializer.fromJson<int>(json['date_start'])),
       active: serializer.fromJson<bool>(json['active']),
       latest: serializer.fromJson<bool>(json['latest']),
       runnerPoints: serializer.fromJson<int?>(json['runner_points']),
@@ -2748,7 +2779,7 @@ class MwlData extends DataClass implements Insertable<MwlData> {
       'code': serializer.toJson<String>(code),
       'format_code': serializer.toJson<String>(formatCode),
       'name': serializer.toJson<String>(name),
-      'date_start': serializer.toJson<DateTime>(dateStart),
+      'date_start': serializer.toJson<int?>(Mwl.$converter0.toJson(dateStart)),
       'active': serializer.toJson<bool>(active),
       'latest': serializer.toJson<bool>(latest),
       'runner_points': serializer.toJson<int?>(runnerPoints),
@@ -2899,7 +2930,7 @@ class MwlCompanion extends UpdateCompanion<MwlData> {
     }
     if (dateStart.present) {
       final converter = Mwl.$converter0;
-      map['date_start'] = Variable<int>(converter.mapToSql(dateStart.value)!);
+      map['date_start'] = Variable<int>(converter.toSql(dateStart.value));
     }
     if (active.present) {
       map['active'] = Variable<bool>(active.value);
@@ -3068,7 +3099,7 @@ class Mwl extends Table with TableInfo<Mwl, MwlData> {
     return Mwl(attachedDatabase, alias);
   }
 
-  static TypeConverter<DateTime, int> $converter0 =
+  static JsonTypeConverter<DateTime, int> $converter0 =
       const DateTimeUtcConverter();
   @override
   bool get dontWriteConstraints => true;
@@ -3703,8 +3734,8 @@ class FactionData extends DataClass implements Insertable<FactionData> {
           .mapFromDatabaseResponse(data['${effectivePrefix}side_code'])!,
       name: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
-      color: Faction.$converter0.mapToDart(const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}color']))!,
+      color: Faction.$converter0.fromSql(const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}color'])!),
       isMini: const BoolType()
           .mapFromDatabaseResponse(data['${effectivePrefix}is_mini'])!,
     );
@@ -3717,7 +3748,7 @@ class FactionData extends DataClass implements Insertable<FactionData> {
     map['name'] = Variable<String>(name);
     {
       final converter = Faction.$converter0;
-      map['color'] = Variable<int>(converter.mapToSql(color)!);
+      map['color'] = Variable<int>(converter.toSql(color));
     }
     map['is_mini'] = Variable<bool>(isMini);
     return map;
@@ -3740,7 +3771,8 @@ class FactionData extends DataClass implements Insertable<FactionData> {
       code: serializer.fromJson<String>(json['code']),
       sideCode: serializer.fromJson<String>(json['side_code']),
       name: serializer.fromJson<String>(json['name']),
-      color: serializer.fromJson<Color>(json['color']),
+      color:
+          Faction.$converter0.fromJson(serializer.fromJson<int>(json['color'])),
       isMini: serializer.fromJson<bool>(json['is_mini']),
     );
   }
@@ -3751,7 +3783,7 @@ class FactionData extends DataClass implements Insertable<FactionData> {
       'code': serializer.toJson<String>(code),
       'side_code': serializer.toJson<String>(sideCode),
       'name': serializer.toJson<String>(name),
-      'color': serializer.toJson<Color>(color),
+      'color': serializer.toJson<int?>(Faction.$converter0.toJson(color)),
       'is_mini': serializer.toJson<bool>(isMini),
     };
   }
@@ -3863,7 +3895,7 @@ class FactionCompanion extends UpdateCompanion<FactionData> {
     }
     if (color.present) {
       final converter = Faction.$converter0;
-      map['color'] = Variable<int>(converter.mapToSql(color.value)!);
+      map['color'] = Variable<int>(converter.toSql(color.value));
     }
     if (isMini.present) {
       map['is_mini'] = Variable<bool>(isMini.value);
@@ -3972,7 +4004,7 @@ class Faction extends Table with TableInfo<Faction, FactionData> {
     return Faction(attachedDatabase, alias);
   }
 
-  static TypeConverter<Color, int> $converter0 = const ColorConverter();
+  static JsonTypeConverter<Color, int> $converter0 = const ColorConverter();
   @override
   bool get dontWriteConstraints => true;
 }
@@ -4020,15 +4052,15 @@ class DeckData extends DataClass implements Insertable<DeckData> {
           .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
       description: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}description'])!,
-      created: Deck.$converter0.mapToDart(const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}created']))!,
-      updated: Deck.$converter1.mapToDart(const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}updated']))!,
+      created: Deck.$converter0.fromSql(const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}created'])!),
+      updated: Deck.$converter1.fromSql(const IntType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}updated'])!),
       deleted: const BoolType()
           .mapFromDatabaseResponse(data['${effectivePrefix}deleted'])!,
-      remoteUpdated: Deck.$converter2.mapToDart(const IntType()
+      remoteUpdated: Deck.$converter2n.fromSql(const IntType()
           .mapFromDatabaseResponse(data['${effectivePrefix}remote_updated'])),
-      synced: Deck.$converter3.mapToDart(const IntType()
+      synced: Deck.$converter3n.fromSql(const IntType()
           .mapFromDatabaseResponse(data['${effectivePrefix}synced'])),
     );
   }
@@ -4050,20 +4082,20 @@ class DeckData extends DataClass implements Insertable<DeckData> {
     map['description'] = Variable<String>(description);
     {
       final converter = Deck.$converter0;
-      map['created'] = Variable<int>(converter.mapToSql(created)!);
+      map['created'] = Variable<int>(converter.toSql(created));
     }
     {
       final converter = Deck.$converter1;
-      map['updated'] = Variable<int>(converter.mapToSql(updated)!);
+      map['updated'] = Variable<int>(converter.toSql(updated));
     }
     map['deleted'] = Variable<bool>(deleted);
     if (!nullToAbsent || remoteUpdated != null) {
-      final converter = Deck.$converter2;
-      map['remote_updated'] = Variable<int?>(converter.mapToSql(remoteUpdated));
+      final converter = Deck.$converter2n;
+      map['remote_updated'] = Variable<int?>(converter.toSql(remoteUpdated));
     }
     if (!nullToAbsent || synced != null) {
-      final converter = Deck.$converter3;
-      map['synced'] = Variable<int?>(converter.mapToSql(synced));
+      final converter = Deck.$converter3n;
+      map['synced'] = Variable<int?>(converter.toSql(synced));
     }
     return map;
   }
@@ -4105,11 +4137,15 @@ class DeckData extends DataClass implements Insertable<DeckData> {
       mwlCode: serializer.fromJson<String?>(json['mwl_code']),
       name: serializer.fromJson<String>(json['name']),
       description: serializer.fromJson<String>(json['description']),
-      created: serializer.fromJson<DateTime>(json['created']),
-      updated: serializer.fromJson<DateTime>(json['updated']),
+      created:
+          Deck.$converter0.fromJson(serializer.fromJson<int>(json['created'])),
+      updated:
+          Deck.$converter1.fromJson(serializer.fromJson<int>(json['updated'])),
       deleted: serializer.fromJson<bool>(json['deleted']),
-      remoteUpdated: serializer.fromJson<DateTime?>(json['remote_updated']),
-      synced: serializer.fromJson<DateTime?>(json['synced']),
+      remoteUpdated: Deck.$converter2n
+          .fromJson(serializer.fromJson<int?>(json['remote_updated'])),
+      synced:
+          Deck.$converter3n.fromJson(serializer.fromJson<int?>(json['synced'])),
     );
   }
   @override
@@ -4123,11 +4159,12 @@ class DeckData extends DataClass implements Insertable<DeckData> {
       'mwl_code': serializer.toJson<String?>(mwlCode),
       'name': serializer.toJson<String>(name),
       'description': serializer.toJson<String>(description),
-      'created': serializer.toJson<DateTime>(created),
-      'updated': serializer.toJson<DateTime>(updated),
+      'created': serializer.toJson<int?>(Deck.$converter0.toJson(created)),
+      'updated': serializer.toJson<int?>(Deck.$converter1.toJson(updated)),
       'deleted': serializer.toJson<bool>(deleted),
-      'remote_updated': serializer.toJson<DateTime?>(remoteUpdated),
-      'synced': serializer.toJson<DateTime?>(synced),
+      'remote_updated':
+          serializer.toJson<int?>(Deck.$converter2n.toJson(remoteUpdated)),
+      'synced': serializer.toJson<int?>(Deck.$converter3n.toJson(synced)),
     };
   }
 
@@ -4343,23 +4380,23 @@ class DeckCompanion extends UpdateCompanion<DeckData> {
     }
     if (created.present) {
       final converter = Deck.$converter0;
-      map['created'] = Variable<int>(converter.mapToSql(created.value)!);
+      map['created'] = Variable<int>(converter.toSql(created.value));
     }
     if (updated.present) {
       final converter = Deck.$converter1;
-      map['updated'] = Variable<int>(converter.mapToSql(updated.value)!);
+      map['updated'] = Variable<int>(converter.toSql(updated.value));
     }
     if (deleted.present) {
       map['deleted'] = Variable<bool>(deleted.value);
     }
     if (remoteUpdated.present) {
-      final converter = Deck.$converter2;
+      final converter = Deck.$converter2n;
       map['remote_updated'] =
-          Variable<int?>(converter.mapToSql(remoteUpdated.value));
+          Variable<int?>(converter.toSql(remoteUpdated.value));
     }
     if (synced.present) {
-      final converter = Deck.$converter3;
-      map['synced'] = Variable<int?>(converter.mapToSql(synced.value));
+      final converter = Deck.$converter3n;
+      map['synced'] = Variable<int?>(converter.toSql(synced.value));
     }
     return map;
   }
@@ -4456,19 +4493,19 @@ class Deck extends Table with TableInfo<Deck, DeckData> {
       $customConstraints: 'NOT NULL');
   final VerificationMeta _remoteUpdatedMeta =
       const VerificationMeta('remoteUpdated');
-  late final GeneratedColumnWithTypeConverter<DateTime, int?> remoteUpdated =
+  late final GeneratedColumnWithTypeConverter<DateTime?, int?> remoteUpdated =
       GeneratedColumn<int?>('remote_updated', aliasedName, true,
               type: const IntType(),
               requiredDuringInsert: false,
               $customConstraints: '')
-          .withConverter<DateTime>(Deck.$converter2);
+          .withConverter<DateTime?>(Deck.$converter2n);
   final VerificationMeta _syncedMeta = const VerificationMeta('synced');
-  late final GeneratedColumnWithTypeConverter<DateTime, int?> synced =
+  late final GeneratedColumnWithTypeConverter<DateTime?, int?> synced =
       GeneratedColumn<int?>('synced', aliasedName, true,
               type: const IntType(),
               requiredDuringInsert: false,
               $customConstraints: '')
-          .withConverter<DateTime>(Deck.$converter3);
+          .withConverter<DateTime?>(Deck.$converter3n);
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -4562,14 +4599,18 @@ class Deck extends Table with TableInfo<Deck, DeckData> {
     return Deck(attachedDatabase, alias);
   }
 
-  static TypeConverter<DateTime, int> $converter0 =
+  static JsonTypeConverter<DateTime, int> $converter0 =
       const DateTimeUtcConverter();
-  static TypeConverter<DateTime, int> $converter1 =
+  static JsonTypeConverter<DateTime, int> $converter1 =
       const DateTimeUtcConverter();
-  static TypeConverter<DateTime, int> $converter2 =
+  static JsonTypeConverter<DateTime, int> $converter2 =
       const DateTimeUtcConverter();
-  static TypeConverter<DateTime, int> $converter3 =
+  static JsonTypeConverter<DateTime, int> $converter3 =
       const DateTimeUtcConverter();
+  static JsonTypeConverter<DateTime?, int?> $converter2n =
+      JsonTypeConverter.asNullable($converter2);
+  static JsonTypeConverter<DateTime?, int?> $converter3n =
+      JsonTypeConverter.asNullable($converter3);
   @override
   bool get dontWriteConstraints => true;
 }
@@ -5438,6 +5479,7 @@ class CardData extends DataClass implements Insertable<CardData> {
   final int? minimumDeckSize;
   final String? flavor;
   final String? illustrator;
+  final String imageUrl;
   CardData(
       {required this.code,
       required this.packCode,
@@ -5463,7 +5505,8 @@ class CardData extends DataClass implements Insertable<CardData> {
       this.influenceLimit,
       this.minimumDeckSize,
       this.flavor,
-      this.illustrator});
+      this.illustrator,
+      required this.imageUrl});
   factory CardData.fromData(Map<String, dynamic> data, {String? prefix}) {
     final effectivePrefix = prefix ?? '';
     return CardData(
@@ -5517,6 +5560,8 @@ class CardData extends DataClass implements Insertable<CardData> {
           .mapFromDatabaseResponse(data['${effectivePrefix}flavor']),
       illustrator: const StringType()
           .mapFromDatabaseResponse(data['${effectivePrefix}illustrator']),
+      imageUrl: const StringType()
+          .mapFromDatabaseResponse(data['${effectivePrefix}image_url'])!,
     );
   }
   @override
@@ -5575,6 +5620,7 @@ class CardData extends DataClass implements Insertable<CardData> {
     if (!nullToAbsent || illustrator != null) {
       map['illustrator'] = Variable<String?>(illustrator);
     }
+    map['image_url'] = Variable<String>(imageUrl);
     return map;
   }
 
@@ -5628,6 +5674,7 @@ class CardData extends DataClass implements Insertable<CardData> {
       illustrator: illustrator == null && nullToAbsent
           ? const Value.absent()
           : Value(illustrator),
+      imageUrl: Value(imageUrl),
     );
   }
 
@@ -5660,6 +5707,7 @@ class CardData extends DataClass implements Insertable<CardData> {
       minimumDeckSize: serializer.fromJson<int?>(json['minimum_deck_size']),
       flavor: serializer.fromJson<String?>(json['flavor']),
       illustrator: serializer.fromJson<String?>(json['illustrator']),
+      imageUrl: serializer.fromJson<String>(json['image_url']),
     );
   }
   @override
@@ -5691,6 +5739,7 @@ class CardData extends DataClass implements Insertable<CardData> {
       'minimum_deck_size': serializer.toJson<int?>(minimumDeckSize),
       'flavor': serializer.toJson<String?>(flavor),
       'illustrator': serializer.toJson<String?>(illustrator),
+      'image_url': serializer.toJson<String>(imageUrl),
     };
   }
 
@@ -5719,7 +5768,8 @@ class CardData extends DataClass implements Insertable<CardData> {
           Value<int?> influenceLimit = const Value.absent(),
           Value<int?> minimumDeckSize = const Value.absent(),
           Value<String?> flavor = const Value.absent(),
-          Value<String?> illustrator = const Value.absent()}) =>
+          Value<String?> illustrator = const Value.absent(),
+          String? imageUrl}) =>
       CardData(
         code: code ?? this.code,
         packCode: packCode ?? this.packCode,
@@ -5753,6 +5803,7 @@ class CardData extends DataClass implements Insertable<CardData> {
             : this.minimumDeckSize,
         flavor: flavor.present ? flavor.value : this.flavor,
         illustrator: illustrator.present ? illustrator.value : this.illustrator,
+        imageUrl: imageUrl ?? this.imageUrl,
       );
   @override
   String toString() {
@@ -5781,7 +5832,8 @@ class CardData extends DataClass implements Insertable<CardData> {
           ..write('influenceLimit: $influenceLimit, ')
           ..write('minimumDeckSize: $minimumDeckSize, ')
           ..write('flavor: $flavor, ')
-          ..write('illustrator: $illustrator')
+          ..write('illustrator: $illustrator, ')
+          ..write('imageUrl: $imageUrl')
           ..write(')'))
         .toString();
   }
@@ -5812,7 +5864,8 @@ class CardData extends DataClass implements Insertable<CardData> {
         influenceLimit,
         minimumDeckSize,
         flavor,
-        illustrator
+        illustrator,
+        imageUrl
       ]);
   @override
   bool operator ==(Object other) =>
@@ -5842,7 +5895,8 @@ class CardData extends DataClass implements Insertable<CardData> {
           other.influenceLimit == this.influenceLimit &&
           other.minimumDeckSize == this.minimumDeckSize &&
           other.flavor == this.flavor &&
-          other.illustrator == this.illustrator);
+          other.illustrator == this.illustrator &&
+          other.imageUrl == this.imageUrl);
 }
 
 class CardCompanion extends UpdateCompanion<CardData> {
@@ -5871,6 +5925,7 @@ class CardCompanion extends UpdateCompanion<CardData> {
   final Value<int?> minimumDeckSize;
   final Value<String?> flavor;
   final Value<String?> illustrator;
+  final Value<String> imageUrl;
   const CardCompanion({
     this.code = const Value.absent(),
     this.packCode = const Value.absent(),
@@ -5897,6 +5952,7 @@ class CardCompanion extends UpdateCompanion<CardData> {
     this.minimumDeckSize = const Value.absent(),
     this.flavor = const Value.absent(),
     this.illustrator = const Value.absent(),
+    this.imageUrl = const Value.absent(),
   });
   CardCompanion.insert({
     required String code,
@@ -5924,6 +5980,7 @@ class CardCompanion extends UpdateCompanion<CardData> {
     this.minimumDeckSize = const Value.absent(),
     this.flavor = const Value.absent(),
     this.illustrator = const Value.absent(),
+    required String imageUrl,
   })  : code = Value(code),
         packCode = Value(packCode),
         factionCode = Value(factionCode),
@@ -5934,7 +5991,8 @@ class CardCompanion extends UpdateCompanion<CardData> {
         quantity = Value(quantity),
         deckLimit = Value(deckLimit),
         factionCost = Value(factionCost),
-        uniqueness = Value(uniqueness);
+        uniqueness = Value(uniqueness),
+        imageUrl = Value(imageUrl);
   static Insertable<CardData> custom({
     Expression<String>? code,
     Expression<String>? packCode,
@@ -5961,6 +6019,7 @@ class CardCompanion extends UpdateCompanion<CardData> {
     Expression<int?>? minimumDeckSize,
     Expression<String?>? flavor,
     Expression<String?>? illustrator,
+    Expression<String>? imageUrl,
   }) {
     return RawValuesInsertable({
       if (code != null) 'code': code,
@@ -5988,6 +6047,7 @@ class CardCompanion extends UpdateCompanion<CardData> {
       if (minimumDeckSize != null) 'minimum_deck_size': minimumDeckSize,
       if (flavor != null) 'flavor': flavor,
       if (illustrator != null) 'illustrator': illustrator,
+      if (imageUrl != null) 'image_url': imageUrl,
     });
   }
 
@@ -6016,7 +6076,8 @@ class CardCompanion extends UpdateCompanion<CardData> {
       Value<int?>? influenceLimit,
       Value<int?>? minimumDeckSize,
       Value<String?>? flavor,
-      Value<String?>? illustrator}) {
+      Value<String?>? illustrator,
+      Value<String>? imageUrl}) {
     return CardCompanion(
       code: code ?? this.code,
       packCode: packCode ?? this.packCode,
@@ -6043,6 +6104,7 @@ class CardCompanion extends UpdateCompanion<CardData> {
       minimumDeckSize: minimumDeckSize ?? this.minimumDeckSize,
       flavor: flavor ?? this.flavor,
       illustrator: illustrator ?? this.illustrator,
+      imageUrl: imageUrl ?? this.imageUrl,
     );
   }
 
@@ -6124,6 +6186,9 @@ class CardCompanion extends UpdateCompanion<CardData> {
     if (illustrator.present) {
       map['illustrator'] = Variable<String?>(illustrator.value);
     }
+    if (imageUrl.present) {
+      map['image_url'] = Variable<String>(imageUrl.value);
+    }
     return map;
   }
 
@@ -6154,7 +6219,8 @@ class CardCompanion extends UpdateCompanion<CardData> {
           ..write('influenceLimit: $influenceLimit, ')
           ..write('minimumDeckSize: $minimumDeckSize, ')
           ..write('flavor: $flavor, ')
-          ..write('illustrator: $illustrator')
+          ..write('illustrator: $illustrator, ')
+          ..write('imageUrl: $imageUrl')
           ..write(')'))
         .toString();
   }
@@ -6324,6 +6390,12 @@ class Card extends Table with TableInfo<Card, CardData> {
       type: const StringType(),
       requiredDuringInsert: false,
       $customConstraints: '');
+  final VerificationMeta _imageUrlMeta = const VerificationMeta('imageUrl');
+  late final GeneratedColumn<String?> imageUrl = GeneratedColumn<String?>(
+      'image_url', aliasedName, false,
+      type: const StringType(),
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
   @override
   List<GeneratedColumn> get $columns => [
         code,
@@ -6350,7 +6422,8 @@ class Card extends Table with TableInfo<Card, CardData> {
         influenceLimit,
         minimumDeckSize,
         flavor,
-        illustrator
+        illustrator,
+        imageUrl
       ];
   @override
   String get aliasedName => _alias ?? 'card';
@@ -6504,6 +6577,12 @@ class Card extends Table with TableInfo<Card, CardData> {
           _illustratorMeta,
           illustrator.isAcceptableOrUnknown(
               data['illustrator']!, _illustratorMeta));
+    }
+    if (data.containsKey('image_url')) {
+      context.handle(_imageUrlMeta,
+          imageUrl.isAcceptableOrUnknown(data['image_url']!, _imageUrlMeta));
+    } else if (isInserting) {
+      context.missing(_imageUrlMeta);
     }
     return context;
   }
@@ -6676,7 +6755,7 @@ abstract class _$Database extends GeneratedDatabase {
         $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT"format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name","rotation"."code" AS "nested_1.code", "rotation"."format_code" AS "nested_1.format_code", "rotation"."name" AS "nested_1.name", "rotation"."date_start" AS "nested_1.date_start", "rotation"."current" AS "nested_1.current", "rotation"."latest" AS "nested_1.latest","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated","card"."code" AS "nested_4.code", "card"."pack_code" AS "nested_4.pack_code", "card"."faction_code" AS "nested_4.faction_code", "card"."type_code" AS "nested_4.type_code", "card"."position" AS "nested_4.position", "card"."title" AS "nested_4.title", "card"."stripped_title" AS "nested_4.stripped_title", "card"."body" AS "nested_4.body", "card"."stripped_body" AS "nested_4.stripped_body", "card"."keywords" AS "nested_4.keywords", "card"."quantity" AS "nested_4.quantity", "card"."cost" AS "nested_4.cost", "card"."deck_limit" AS "nested_4.deck_limit", "card"."faction_cost" AS "nested_4.faction_cost", "card"."uniqueness" AS "nested_4.uniqueness", "card"."strength" AS "nested_4.strength", "card"."agenda_points" AS "nested_4.agenda_points", "card"."memory_cost" AS "nested_4.memory_cost", "card"."advancement_cost" AS "nested_4.advancement_cost", "card"."trash_cost" AS "nested_4.trash_cost", "card"."base_link" AS "nested_4.base_link", "card"."influence_limit" AS "nested_4.influence_limit", "card"."minimum_deck_size" AS "nested_4.minimum_deck_size", "card"."flavor" AS "nested_4.flavor", "card"."illustrator" AS "nested_4.illustrator" FROM rotation INNER JOIN format ON format.code = rotation.format_code LEFT JOIN rotation_cycle ON rotation_cycle.rotation_code = rotation.code INNER JOIN cycle ON cycle.code = rotation_cycle.cycle_code INNER JOIN pack ON pack.cycle_code = cycle.code INNER JOIN card ON card.pack_code = pack.code WHERE ${generatedwhere.sql} ORDER BY rotation.date_start DESC, cycle.position DESC, pack.position, card.position',
+        'SELECT"format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name","rotation"."code" AS "nested_1.code", "rotation"."format_code" AS "nested_1.format_code", "rotation"."name" AS "nested_1.name", "rotation"."date_start" AS "nested_1.date_start", "rotation"."current" AS "nested_1.current", "rotation"."latest" AS "nested_1.latest","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated","card"."code" AS "nested_4.code", "card"."pack_code" AS "nested_4.pack_code", "card"."faction_code" AS "nested_4.faction_code", "card"."type_code" AS "nested_4.type_code", "card"."position" AS "nested_4.position", "card"."title" AS "nested_4.title", "card"."stripped_title" AS "nested_4.stripped_title", "card"."body" AS "nested_4.body", "card"."stripped_body" AS "nested_4.stripped_body", "card"."keywords" AS "nested_4.keywords", "card"."quantity" AS "nested_4.quantity", "card"."cost" AS "nested_4.cost", "card"."deck_limit" AS "nested_4.deck_limit", "card"."faction_cost" AS "nested_4.faction_cost", "card"."uniqueness" AS "nested_4.uniqueness", "card"."strength" AS "nested_4.strength", "card"."agenda_points" AS "nested_4.agenda_points", "card"."memory_cost" AS "nested_4.memory_cost", "card"."advancement_cost" AS "nested_4.advancement_cost", "card"."trash_cost" AS "nested_4.trash_cost", "card"."base_link" AS "nested_4.base_link", "card"."influence_limit" AS "nested_4.influence_limit", "card"."minimum_deck_size" AS "nested_4.minimum_deck_size", "card"."flavor" AS "nested_4.flavor", "card"."illustrator" AS "nested_4.illustrator", "card"."image_url" AS "nested_4.image_url" FROM rotation INNER JOIN format ON format.code = rotation.format_code LEFT JOIN rotation_cycle ON rotation_cycle.rotation_code = rotation.code INNER JOIN cycle ON cycle.code = rotation_cycle.cycle_code INNER JOIN pack ON pack.cycle_code = cycle.code INNER JOIN card ON card.pack_code = pack.code WHERE ${generatedwhere.sql} ORDER BY rotation.date_start DESC, cycle.position DESC, pack.position, card.position',
         variables: [
           ...generatedwhere.introducedVariables
         ],
@@ -6880,7 +6959,7 @@ abstract class _$Database extends GeneratedDatabase {
         $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT"deck"."id" AS "nested_0.id", "deck"."identity_code" AS "nested_0.identity_code", "deck"."format_code" AS "nested_0.format_code", "deck"."rotation_code" AS "nested_0.rotation_code", "deck"."mwl_code" AS "nested_0.mwl_code", "deck"."name" AS "nested_0.name", "deck"."description" AS "nested_0.description", "deck"."created" AS "nested_0.created", "deck"."updated" AS "nested_0.updated", "deck"."deleted" AS "nested_0.deleted", "deck"."remote_updated" AS "nested_0.remote_updated", "deck"."synced" AS "nested_0.synced","identity"."code" AS "nested_1.code", "identity"."pack_code" AS "nested_1.pack_code", "identity"."faction_code" AS "nested_1.faction_code", "identity"."type_code" AS "nested_1.type_code", "identity"."position" AS "nested_1.position", "identity"."title" AS "nested_1.title", "identity"."stripped_title" AS "nested_1.stripped_title", "identity"."body" AS "nested_1.body", "identity"."stripped_body" AS "nested_1.stripped_body", "identity"."keywords" AS "nested_1.keywords", "identity"."quantity" AS "nested_1.quantity", "identity"."cost" AS "nested_1.cost", "identity"."deck_limit" AS "nested_1.deck_limit", "identity"."faction_cost" AS "nested_1.faction_cost", "identity"."uniqueness" AS "nested_1.uniqueness", "identity"."strength" AS "nested_1.strength", "identity"."agenda_points" AS "nested_1.agenda_points", "identity"."memory_cost" AS "nested_1.memory_cost", "identity"."advancement_cost" AS "nested_1.advancement_cost", "identity"."trash_cost" AS "nested_1.trash_cost", "identity"."base_link" AS "nested_1.base_link", "identity"."influence_limit" AS "nested_1.influence_limit", "identity"."minimum_deck_size" AS "nested_1.minimum_deck_size", "identity"."flavor" AS "nested_1.flavor", "identity"."illustrator" AS "nested_1.illustrator","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated","faction"."code" AS "nested_4.code", "faction"."side_code" AS "nested_4.side_code", "faction"."name" AS "nested_4.name", "faction"."color" AS "nested_4.color", "faction"."is_mini" AS "nested_4.is_mini","side"."code" AS "nested_5.code", "side"."name" AS "nested_5.name","type"."code" AS "nested_6.code", "type"."side_code" AS "nested_6.side_code", "type"."position" AS "nested_6.position", "type"."name" AS "nested_6.name", "type"."is_subtype" AS "nested_6.is_subtype","subtype"."code" AS "nested_7.code", "subtype"."side_code" AS "nested_7.side_code", "subtype"."position" AS "nested_7.position", "subtype"."name" AS "nested_7.name", "subtype"."is_subtype" AS "nested_7.is_subtype","format"."id" AS "nested_8.id", "format"."code" AS "nested_8.code", "format"."name" AS "nested_8.name","rotation"."code" AS "nested_9.code", "rotation"."format_code" AS "nested_9.format_code", "rotation"."name" AS "nested_9.name", "rotation"."date_start" AS "nested_9.date_start", "rotation"."current" AS "nested_9.current", "rotation"."latest" AS "nested_9.latest","mwl"."code" AS "nested_10.code", "mwl"."format_code" AS "nested_10.format_code", "mwl"."name" AS "nested_10.name", "mwl"."date_start" AS "nested_10.date_start", "mwl"."active" AS "nested_10.active", "mwl"."latest" AS "nested_10.latest", "mwl"."runner_points" AS "nested_10.runner_points", "mwl"."corp_points" AS "nested_10.corp_points" FROM deck INNER JOIN card AS identity ON identity.code = deck.identity_code INNER JOIN pack ON pack.code = identity.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = identity.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = identity.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = identity.keywords OR identity.keywords LIKE(subtype.name || \' - %\'))LEFT JOIN format ON format.code = deck.format_code LEFT JOIN rotation ON rotation.code = deck.rotation_code LEFT JOIN mwl ON mwl.code = deck.mwl_code WHERE ${generatedwhere.sql}',
+        'SELECT"deck"."id" AS "nested_0.id", "deck"."identity_code" AS "nested_0.identity_code", "deck"."format_code" AS "nested_0.format_code", "deck"."rotation_code" AS "nested_0.rotation_code", "deck"."mwl_code" AS "nested_0.mwl_code", "deck"."name" AS "nested_0.name", "deck"."description" AS "nested_0.description", "deck"."created" AS "nested_0.created", "deck"."updated" AS "nested_0.updated", "deck"."deleted" AS "nested_0.deleted", "deck"."remote_updated" AS "nested_0.remote_updated", "deck"."synced" AS "nested_0.synced","identity"."code" AS "nested_1.code", "identity"."pack_code" AS "nested_1.pack_code", "identity"."faction_code" AS "nested_1.faction_code", "identity"."type_code" AS "nested_1.type_code", "identity"."position" AS "nested_1.position", "identity"."title" AS "nested_1.title", "identity"."stripped_title" AS "nested_1.stripped_title", "identity"."body" AS "nested_1.body", "identity"."stripped_body" AS "nested_1.stripped_body", "identity"."keywords" AS "nested_1.keywords", "identity"."quantity" AS "nested_1.quantity", "identity"."cost" AS "nested_1.cost", "identity"."deck_limit" AS "nested_1.deck_limit", "identity"."faction_cost" AS "nested_1.faction_cost", "identity"."uniqueness" AS "nested_1.uniqueness", "identity"."strength" AS "nested_1.strength", "identity"."agenda_points" AS "nested_1.agenda_points", "identity"."memory_cost" AS "nested_1.memory_cost", "identity"."advancement_cost" AS "nested_1.advancement_cost", "identity"."trash_cost" AS "nested_1.trash_cost", "identity"."base_link" AS "nested_1.base_link", "identity"."influence_limit" AS "nested_1.influence_limit", "identity"."minimum_deck_size" AS "nested_1.minimum_deck_size", "identity"."flavor" AS "nested_1.flavor", "identity"."illustrator" AS "nested_1.illustrator", "identity"."image_url" AS "nested_1.image_url","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated","faction"."code" AS "nested_4.code", "faction"."side_code" AS "nested_4.side_code", "faction"."name" AS "nested_4.name", "faction"."color" AS "nested_4.color", "faction"."is_mini" AS "nested_4.is_mini","side"."code" AS "nested_5.code", "side"."name" AS "nested_5.name","type"."code" AS "nested_6.code", "type"."side_code" AS "nested_6.side_code", "type"."position" AS "nested_6.position", "type"."name" AS "nested_6.name", "type"."is_subtype" AS "nested_6.is_subtype","subtype"."code" AS "nested_7.code", "subtype"."side_code" AS "nested_7.side_code", "subtype"."position" AS "nested_7.position", "subtype"."name" AS "nested_7.name", "subtype"."is_subtype" AS "nested_7.is_subtype","format"."id" AS "nested_8.id", "format"."code" AS "nested_8.code", "format"."name" AS "nested_8.name","rotation"."code" AS "nested_9.code", "rotation"."format_code" AS "nested_9.format_code", "rotation"."name" AS "nested_9.name", "rotation"."date_start" AS "nested_9.date_start", "rotation"."current" AS "nested_9.current", "rotation"."latest" AS "nested_9.latest","mwl"."code" AS "nested_10.code", "mwl"."format_code" AS "nested_10.format_code", "mwl"."name" AS "nested_10.name", "mwl"."date_start" AS "nested_10.date_start", "mwl"."active" AS "nested_10.active", "mwl"."latest" AS "nested_10.latest", "mwl"."runner_points" AS "nested_10.runner_points", "mwl"."corp_points" AS "nested_10.corp_points" FROM deck INNER JOIN card AS identity ON identity.code = deck.identity_code INNER JOIN pack ON pack.code = identity.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = identity.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = identity.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = identity.keywords OR identity.keywords LIKE(subtype.name || \' - %\'))LEFT JOIN format ON format.code = deck.format_code LEFT JOIN rotation ON rotation.code = deck.rotation_code LEFT JOIN mwl ON mwl.code = deck.mwl_code WHERE ${generatedwhere.sql}',
         variables: [
           ...generatedwhere.introducedVariables
         ],
@@ -6931,6 +7010,45 @@ abstract class _$Database extends GeneratedDatabase {
       updates: {deck},
       updateKind: UpdateKind.delete,
     );
+  }
+
+  Selectable<GetDeckFromDataResult> getDeckFromData(
+      {String? formatCode,
+      String? rotationCode,
+      String? mwlCode,
+      required String identityCode}) {
+    return customSelect(
+        'SELECT"identity"."code" AS "nested_0.code", "identity"."pack_code" AS "nested_0.pack_code", "identity"."faction_code" AS "nested_0.faction_code", "identity"."type_code" AS "nested_0.type_code", "identity"."position" AS "nested_0.position", "identity"."title" AS "nested_0.title", "identity"."stripped_title" AS "nested_0.stripped_title", "identity"."body" AS "nested_0.body", "identity"."stripped_body" AS "nested_0.stripped_body", "identity"."keywords" AS "nested_0.keywords", "identity"."quantity" AS "nested_0.quantity", "identity"."cost" AS "nested_0.cost", "identity"."deck_limit" AS "nested_0.deck_limit", "identity"."faction_cost" AS "nested_0.faction_cost", "identity"."uniqueness" AS "nested_0.uniqueness", "identity"."strength" AS "nested_0.strength", "identity"."agenda_points" AS "nested_0.agenda_points", "identity"."memory_cost" AS "nested_0.memory_cost", "identity"."advancement_cost" AS "nested_0.advancement_cost", "identity"."trash_cost" AS "nested_0.trash_cost", "identity"."base_link" AS "nested_0.base_link", "identity"."influence_limit" AS "nested_0.influence_limit", "identity"."minimum_deck_size" AS "nested_0.minimum_deck_size", "identity"."flavor" AS "nested_0.flavor", "identity"."illustrator" AS "nested_0.illustrator", "identity"."image_url" AS "nested_0.image_url","pack"."code" AS "nested_1.code", "pack"."cycle_code" AS "nested_1.cycle_code", "pack"."position" AS "nested_1.position", "pack"."name" AS "nested_1.name", "pack"."date_release" AS "nested_1.date_release", "pack"."size" AS "nested_1.size","cycle"."code" AS "nested_2.code", "cycle"."position" AS "nested_2.position", "cycle"."name" AS "nested_2.name", "cycle"."size" AS "nested_2.size", "cycle"."rotated" AS "nested_2.rotated","faction"."code" AS "nested_3.code", "faction"."side_code" AS "nested_3.side_code", "faction"."name" AS "nested_3.name", "faction"."color" AS "nested_3.color", "faction"."is_mini" AS "nested_3.is_mini","side"."code" AS "nested_4.code", "side"."name" AS "nested_4.name","type"."code" AS "nested_5.code", "type"."side_code" AS "nested_5.side_code", "type"."position" AS "nested_5.position", "type"."name" AS "nested_5.name", "type"."is_subtype" AS "nested_5.is_subtype","subtype"."code" AS "nested_6.code", "subtype"."side_code" AS "nested_6.side_code", "subtype"."position" AS "nested_6.position", "subtype"."name" AS "nested_6.name", "subtype"."is_subtype" AS "nested_6.is_subtype","format"."id" AS "nested_7.id", "format"."code" AS "nested_7.code", "format"."name" AS "nested_7.name","rotation"."code" AS "nested_8.code", "rotation"."format_code" AS "nested_8.format_code", "rotation"."name" AS "nested_8.name", "rotation"."date_start" AS "nested_8.date_start", "rotation"."current" AS "nested_8.current", "rotation"."latest" AS "nested_8.latest","mwl"."code" AS "nested_9.code", "mwl"."format_code" AS "nested_9.format_code", "mwl"."name" AS "nested_9.name", "mwl"."date_start" AS "nested_9.date_start", "mwl"."active" AS "nested_9.active", "mwl"."latest" AS "nested_9.latest", "mwl"."runner_points" AS "nested_9.runner_points", "mwl"."corp_points" AS "nested_9.corp_points" FROM card AS identity INNER JOIN pack ON pack.code = identity.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = identity.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = identity.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = identity.keywords OR identity.keywords LIKE(subtype.name || \' - %\'))LEFT JOIN format ON format.code = ?1 LEFT JOIN rotation ON rotation.code = ?2 LEFT JOIN mwl ON mwl.code = ?3 WHERE identity.code = ?4',
+        variables: [
+          Variable<String?>(formatCode),
+          Variable<String?>(rotationCode),
+          Variable<String?>(mwlCode),
+          Variable<String>(identityCode)
+        ],
+        readsFrom: {
+          card,
+          pack,
+          cycle,
+          faction,
+          side,
+          type,
+          format,
+          rotation,
+          mwl,
+        }).map((QueryRow row) {
+      return GetDeckFromDataResult(
+        identity: card.mapFromRow(row, tablePrefix: 'nested_0'),
+        pack: pack.mapFromRow(row, tablePrefix: 'nested_1'),
+        cycle: cycle.mapFromRow(row, tablePrefix: 'nested_2'),
+        faction: faction.mapFromRow(row, tablePrefix: 'nested_3'),
+        side: side.mapFromRow(row, tablePrefix: 'nested_4'),
+        type: type.mapFromRow(row, tablePrefix: 'nested_5'),
+        subtype: type.mapFromRowOrNull(row, tablePrefix: 'nested_6'),
+        format: format.mapFromRowOrNull(row, tablePrefix: 'nested_7'),
+        rotation: rotation.mapFromRowOrNull(row, tablePrefix: 'nested_8'),
+        mwl: mwl.mapFromRowOrNull(row, tablePrefix: 'nested_9'),
+      );
+    });
   }
 
   Selectable<DeckTagData> listDeckTags(
@@ -6997,7 +7115,7 @@ abstract class _$Database extends GeneratedDatabase {
         $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT"deck_card"."deck_id" AS "nested_0.deck_id", "deck_card"."card_code" AS "nested_0.card_code", "deck_card"."quantity" AS "nested_0.quantity","card"."code" AS "nested_1.code", "card"."pack_code" AS "nested_1.pack_code", "card"."faction_code" AS "nested_1.faction_code", "card"."type_code" AS "nested_1.type_code", "card"."position" AS "nested_1.position", "card"."title" AS "nested_1.title", "card"."stripped_title" AS "nested_1.stripped_title", "card"."body" AS "nested_1.body", "card"."stripped_body" AS "nested_1.stripped_body", "card"."keywords" AS "nested_1.keywords", "card"."quantity" AS "nested_1.quantity", "card"."cost" AS "nested_1.cost", "card"."deck_limit" AS "nested_1.deck_limit", "card"."faction_cost" AS "nested_1.faction_cost", "card"."uniqueness" AS "nested_1.uniqueness", "card"."strength" AS "nested_1.strength", "card"."agenda_points" AS "nested_1.agenda_points", "card"."memory_cost" AS "nested_1.memory_cost", "card"."advancement_cost" AS "nested_1.advancement_cost", "card"."trash_cost" AS "nested_1.trash_cost", "card"."base_link" AS "nested_1.base_link", "card"."influence_limit" AS "nested_1.influence_limit", "card"."minimum_deck_size" AS "nested_1.minimum_deck_size", "card"."flavor" AS "nested_1.flavor", "card"."illustrator" AS "nested_1.illustrator","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated","faction"."code" AS "nested_4.code", "faction"."side_code" AS "nested_4.side_code", "faction"."name" AS "nested_4.name", "faction"."color" AS "nested_4.color", "faction"."is_mini" AS "nested_4.is_mini","side"."code" AS "nested_5.code", "side"."name" AS "nested_5.name","type"."code" AS "nested_6.code", "type"."side_code" AS "nested_6.side_code", "type"."position" AS "nested_6.position", "type"."name" AS "nested_6.name", "type"."is_subtype" AS "nested_6.is_subtype","subtype"."code" AS "nested_7.code", "subtype"."side_code" AS "nested_7.side_code", "subtype"."position" AS "nested_7.position", "subtype"."name" AS "nested_7.name", "subtype"."is_subtype" AS "nested_7.is_subtype" FROM deck_card INNER JOIN card ON card.code = deck_card.card_code INNER JOIN pack ON pack.code = card.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = card.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = card.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = card.keywords OR card.keywords LIKE(subtype.name || \' - %\'))WHERE ${generatedwhere.sql}',
+        'SELECT"deck_card"."deck_id" AS "nested_0.deck_id", "deck_card"."card_code" AS "nested_0.card_code", "deck_card"."quantity" AS "nested_0.quantity","card"."code" AS "nested_1.code", "card"."pack_code" AS "nested_1.pack_code", "card"."faction_code" AS "nested_1.faction_code", "card"."type_code" AS "nested_1.type_code", "card"."position" AS "nested_1.position", "card"."title" AS "nested_1.title", "card"."stripped_title" AS "nested_1.stripped_title", "card"."body" AS "nested_1.body", "card"."stripped_body" AS "nested_1.stripped_body", "card"."keywords" AS "nested_1.keywords", "card"."quantity" AS "nested_1.quantity", "card"."cost" AS "nested_1.cost", "card"."deck_limit" AS "nested_1.deck_limit", "card"."faction_cost" AS "nested_1.faction_cost", "card"."uniqueness" AS "nested_1.uniqueness", "card"."strength" AS "nested_1.strength", "card"."agenda_points" AS "nested_1.agenda_points", "card"."memory_cost" AS "nested_1.memory_cost", "card"."advancement_cost" AS "nested_1.advancement_cost", "card"."trash_cost" AS "nested_1.trash_cost", "card"."base_link" AS "nested_1.base_link", "card"."influence_limit" AS "nested_1.influence_limit", "card"."minimum_deck_size" AS "nested_1.minimum_deck_size", "card"."flavor" AS "nested_1.flavor", "card"."illustrator" AS "nested_1.illustrator", "card"."image_url" AS "nested_1.image_url","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated","faction"."code" AS "nested_4.code", "faction"."side_code" AS "nested_4.side_code", "faction"."name" AS "nested_4.name", "faction"."color" AS "nested_4.color", "faction"."is_mini" AS "nested_4.is_mini","side"."code" AS "nested_5.code", "side"."name" AS "nested_5.name","type"."code" AS "nested_6.code", "type"."side_code" AS "nested_6.side_code", "type"."position" AS "nested_6.position", "type"."name" AS "nested_6.name", "type"."is_subtype" AS "nested_6.is_subtype","subtype"."code" AS "nested_7.code", "subtype"."side_code" AS "nested_7.side_code", "subtype"."position" AS "nested_7.position", "subtype"."name" AS "nested_7.name", "subtype"."is_subtype" AS "nested_7.is_subtype" FROM deck_card INNER JOIN card ON card.code = deck_card.card_code INNER JOIN pack ON pack.code = card.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = card.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = card.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = card.keywords OR card.keywords LIKE(subtype.name || \' - %\'))WHERE ${generatedwhere.sql}',
         variables: [
           ...generatedwhere.introducedVariables
         ],
@@ -7089,7 +7207,7 @@ abstract class _$Database extends GeneratedDatabase {
         $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT"card"."code" AS "nested_0.code", "card"."pack_code" AS "nested_0.pack_code", "card"."faction_code" AS "nested_0.faction_code", "card"."type_code" AS "nested_0.type_code", "card"."position" AS "nested_0.position", "card"."title" AS "nested_0.title", "card"."stripped_title" AS "nested_0.stripped_title", "card"."body" AS "nested_0.body", "card"."stripped_body" AS "nested_0.stripped_body", "card"."keywords" AS "nested_0.keywords", "card"."quantity" AS "nested_0.quantity", "card"."cost" AS "nested_0.cost", "card"."deck_limit" AS "nested_0.deck_limit", "card"."faction_cost" AS "nested_0.faction_cost", "card"."uniqueness" AS "nested_0.uniqueness", "card"."strength" AS "nested_0.strength", "card"."agenda_points" AS "nested_0.agenda_points", "card"."memory_cost" AS "nested_0.memory_cost", "card"."advancement_cost" AS "nested_0.advancement_cost", "card"."trash_cost" AS "nested_0.trash_cost", "card"."base_link" AS "nested_0.base_link", "card"."influence_limit" AS "nested_0.influence_limit", "card"."minimum_deck_size" AS "nested_0.minimum_deck_size", "card"."flavor" AS "nested_0.flavor", "card"."illustrator" AS "nested_0.illustrator","pack"."code" AS "nested_1.code", "pack"."cycle_code" AS "nested_1.cycle_code", "pack"."position" AS "nested_1.position", "pack"."name" AS "nested_1.name", "pack"."date_release" AS "nested_1.date_release", "pack"."size" AS "nested_1.size","cycle"."code" AS "nested_2.code", "cycle"."position" AS "nested_2.position", "cycle"."name" AS "nested_2.name", "cycle"."size" AS "nested_2.size", "cycle"."rotated" AS "nested_2.rotated","faction"."code" AS "nested_3.code", "faction"."side_code" AS "nested_3.side_code", "faction"."name" AS "nested_3.name", "faction"."color" AS "nested_3.color", "faction"."is_mini" AS "nested_3.is_mini","side"."code" AS "nested_4.code", "side"."name" AS "nested_4.name","type"."code" AS "nested_5.code", "type"."side_code" AS "nested_5.side_code", "type"."position" AS "nested_5.position", "type"."name" AS "nested_5.name", "type"."is_subtype" AS "nested_5.is_subtype","subtype"."code" AS "nested_6.code", "subtype"."side_code" AS "nested_6.side_code", "subtype"."position" AS "nested_6.position", "subtype"."name" AS "nested_6.name", "subtype"."is_subtype" AS "nested_6.is_subtype" FROM card INNER JOIN pack ON pack.code = card.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = card.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = card.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = card.keywords OR card.keywords LIKE(subtype.name || \' - %\'))LEFT JOIN mwl_card ON mwl_card.mwl_code = ?1 AND mwl_card.card_code = card.code WHERE ${generatedwhere.sql}',
+        'SELECT"card"."code" AS "nested_0.code", "card"."pack_code" AS "nested_0.pack_code", "card"."faction_code" AS "nested_0.faction_code", "card"."type_code" AS "nested_0.type_code", "card"."position" AS "nested_0.position", "card"."title" AS "nested_0.title", "card"."stripped_title" AS "nested_0.stripped_title", "card"."body" AS "nested_0.body", "card"."stripped_body" AS "nested_0.stripped_body", "card"."keywords" AS "nested_0.keywords", "card"."quantity" AS "nested_0.quantity", "card"."cost" AS "nested_0.cost", "card"."deck_limit" AS "nested_0.deck_limit", "card"."faction_cost" AS "nested_0.faction_cost", "card"."uniqueness" AS "nested_0.uniqueness", "card"."strength" AS "nested_0.strength", "card"."agenda_points" AS "nested_0.agenda_points", "card"."memory_cost" AS "nested_0.memory_cost", "card"."advancement_cost" AS "nested_0.advancement_cost", "card"."trash_cost" AS "nested_0.trash_cost", "card"."base_link" AS "nested_0.base_link", "card"."influence_limit" AS "nested_0.influence_limit", "card"."minimum_deck_size" AS "nested_0.minimum_deck_size", "card"."flavor" AS "nested_0.flavor", "card"."illustrator" AS "nested_0.illustrator", "card"."image_url" AS "nested_0.image_url","pack"."code" AS "nested_1.code", "pack"."cycle_code" AS "nested_1.cycle_code", "pack"."position" AS "nested_1.position", "pack"."name" AS "nested_1.name", "pack"."date_release" AS "nested_1.date_release", "pack"."size" AS "nested_1.size","cycle"."code" AS "nested_2.code", "cycle"."position" AS "nested_2.position", "cycle"."name" AS "nested_2.name", "cycle"."size" AS "nested_2.size", "cycle"."rotated" AS "nested_2.rotated","faction"."code" AS "nested_3.code", "faction"."side_code" AS "nested_3.side_code", "faction"."name" AS "nested_3.name", "faction"."color" AS "nested_3.color", "faction"."is_mini" AS "nested_3.is_mini","side"."code" AS "nested_4.code", "side"."name" AS "nested_4.name","type"."code" AS "nested_5.code", "type"."side_code" AS "nested_5.side_code", "type"."position" AS "nested_5.position", "type"."name" AS "nested_5.name", "type"."is_subtype" AS "nested_5.is_subtype","subtype"."code" AS "nested_6.code", "subtype"."side_code" AS "nested_6.side_code", "subtype"."position" AS "nested_6.position", "subtype"."name" AS "nested_6.name", "subtype"."is_subtype" AS "nested_6.is_subtype" FROM card INNER JOIN pack ON pack.code = card.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = card.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = card.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = card.keywords OR card.keywords LIKE(subtype.name || \' - %\'))LEFT JOIN mwl_card ON mwl_card.mwl_code = ?1 AND mwl_card.card_code = card.code WHERE ${generatedwhere.sql}',
         variables: [
           Variable<String?>(mwlCode),
           ...generatedwhere.introducedVariables
@@ -7508,6 +7626,64 @@ class DeckResult {
   String toString() {
     return (StringBuffer('DeckResult(')
           ..write('deck: $deck, ')
+          ..write('identity: $identity, ')
+          ..write('pack: $pack, ')
+          ..write('cycle: $cycle, ')
+          ..write('faction: $faction, ')
+          ..write('side: $side, ')
+          ..write('type: $type, ')
+          ..write('subtype: $subtype, ')
+          ..write('format: $format, ')
+          ..write('rotation: $rotation, ')
+          ..write('mwl: $mwl')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class GetDeckFromDataResult {
+  final CardData identity;
+  final PackData pack;
+  final CycleData cycle;
+  final FactionData faction;
+  final SideData side;
+  final TypeData type;
+  final TypeData? subtype;
+  final FormatData? format;
+  final RotationData? rotation;
+  final MwlData? mwl;
+  GetDeckFromDataResult({
+    required this.identity,
+    required this.pack,
+    required this.cycle,
+    required this.faction,
+    required this.side,
+    required this.type,
+    this.subtype,
+    this.format,
+    this.rotation,
+    this.mwl,
+  });
+  @override
+  int get hashCode => Object.hash(identity, pack, cycle, faction, side, type,
+      subtype, format, rotation, mwl);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is GetDeckFromDataResult &&
+          other.identity == this.identity &&
+          other.pack == this.pack &&
+          other.cycle == this.cycle &&
+          other.faction == this.faction &&
+          other.side == this.side &&
+          other.type == this.type &&
+          other.subtype == this.subtype &&
+          other.format == this.format &&
+          other.rotation == this.rotation &&
+          other.mwl == this.mwl);
+  @override
+  String toString() {
+    return (StringBuffer('GetDeckFromDataResult(')
           ..write('identity: $identity, ')
           ..write('pack: $pack, ')
           ..write('cycle: $cycle, ')

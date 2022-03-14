@@ -2,6 +2,7 @@
 
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -76,7 +77,7 @@ class NrdbDeck {
 }
 
 class AuthStateNotifier extends StateNotifier<AuthState> {
-  AuthStateNotifier(AuthState state) : super(state);
+  AuthStateNotifier(super.state);
 }
 
 @freezed
@@ -105,7 +106,7 @@ class AuthState with _$AuthState {
     StateNotifierProviderRef<AuthStateNotifier, AuthState> ref,
   ) = UnauthenticatedAuthState;
 
-  static final FlutterAppAuth appAuth = FlutterAppAuth();
+  static const FlutterAppAuth appAuth = FlutterAppAuth();
   static const refreshTokenKey = 'refresh_token';
   static const FlutterSecureStorage secureStorage = FlutterSecureStorage();
 
@@ -125,12 +126,12 @@ class AuthState with _$AuthState {
     try {
       final token = await AuthState.appAuth.authorizeAndExchangeCode(
         AuthorizationTokenRequest(
-          Env.nrdbClientId,
-          Env.nrdbRedirectUrl,
-          clientSecret: Env.nrdbClientSecret,
+          EnvData.nrdbClientId,
+          EnvData.nrdbRedirectUrl,
+          clientSecret: EnvData.nrdbClientSecret,
           serviceConfiguration: const AuthorizationServiceConfiguration(
-            authorizationEndpoint: Env.nrdbAuthUrl,
-            tokenEndpoint: Env.nrdbTokenUrl,
+            authorizationEndpoint: EnvData.nrdbAuthUrl,
+            tokenEndpoint: EnvData.nrdbTokenUrl,
           ),
         ),
       );
@@ -191,13 +192,13 @@ class AuthState with _$AuthState {
     try {
       final token = await AuthState.appAuth.token(
         TokenRequest(
-          Env.nrdbClientId,
-          Env.nrdbRedirectUrl,
-          clientSecret: Env.nrdbClientSecret,
+          EnvData.nrdbClientId,
+          EnvData.nrdbRedirectUrl,
+          clientSecret: EnvData.nrdbClientSecret,
           refreshToken: refreshToken,
           serviceConfiguration: const AuthorizationServiceConfiguration(
-            authorizationEndpoint: Env.nrdbAuthUrl,
-            tokenEndpoint: Env.nrdbTokenUrl,
+            authorizationEndpoint: EnvData.nrdbAuthUrl,
+            tokenEndpoint: EnvData.nrdbTokenUrl,
           ),
         ),
       );
@@ -309,16 +310,20 @@ extension OnlineAuthStateEx on OnlineAuthState {
     return HttpResult.success(NrdbDeck.fromJson(result.cast<String, dynamic>()));
   }
 
-  Future<HttpResult<NrdbDeck>> saveDeck(DeckResult2 deck) async {
-    print('saveDeck: ${deck.deck.name}');
+  Future<HttpResult<NrdbDeck>> saveDeck(DeckMiniResult deck) async {
+    print('saveDeck: ${deck.name}');
     final response = await http.post(
       saveDeckEndpoint,
       headers: authHeaders,
       body: json.encode({
-        'deck_id': deck.deck.remoteUpdated == null ? null : deck.deck.id,
-        'name': deck.deck.name,
-        'description': deck.deck.description,
-        'content': deck.cards.map((key, value) => MapEntry(key.code, value))..[deck.deck.identityCode] = 1,
+        'deck_id': deck.remoteUpdated == null ? null : deck.id,
+        'name': deck.name,
+        'description': deck.description,
+        'content': {
+          deck.identityCode: 1,
+          for (final entry in deck.cards.entries)
+            if (entry.value > 0) entry.key: entry.value,
+        },
         'tags': deck.tags.join(' '),
       }),
     );
@@ -333,15 +338,15 @@ extension OnlineAuthStateEx on OnlineAuthState {
   }
 
   Future<void> syncDecks(Database db, List<NrdbDeck> decks) async {
-    final lastSync = ref.read(lastSyncProvider.state);
-    lastSync.state = DateTime.now();
+    final lastSync = ref.read(lastSyncProvider);
+    lastSync.value = DateTime.now();
 
-    final deckList = await db.listDecks2(where: db.deck.id.isIn(decks.map((e) => e.id))).first;
-    final updateLocalDecks = <NrdbDeck, DeckResult2?>{};
-    final updateRemoteDecks = <DeckResult2>[];
+    final deckList = await db.listMiniDecks(where: db.deck.id.isIn(decks.map((e) => e.id))).first;
+    final updateLocalDecks = <NrdbDeck, DeckMiniResult?>{};
+    final updateRemoteDecks = <DeckMiniResult>[];
     final updateRemoteDecksStatus = <NrdbDeck>[];
     for (final remoteDeck in decks) {
-      final localDeck = deckList.firstWhereOrNull((e) => e.deck.id == remoteDeck.id);
+      final localDeck = deckList.firstWhereOrNull((e) => e.id == remoteDeck.id);
       if (localDeck == null) {
         updateLocalDecks[remoteDeck] = null;
       } else {
@@ -377,8 +382,8 @@ extension OnlineAuthStateEx on OnlineAuthState {
     });
   }
 
-  Future<void> forceUpload(Database db, Iterable<DeckResult2> localDecks) async {
-    final decks = <NrdbDeck, DeckResult2>{};
+  Future<void> forceUpload(Database db, Iterable<DeckMiniResult> localDecks) async {
+    final decks = <NrdbDeck, DeckMiniResult>{};
     for (final localDeck in localDecks) {
       final saveDeckResult = await saveDeck(localDeck);
       if (saveDeckResult is SuccessHttpResult<NrdbDeck>) {
@@ -390,13 +395,13 @@ extension OnlineAuthStateEx on OnlineAuthState {
     });
   }
 
-  Future<void> forceDownload(Database db, Iterable<DeckResult2> localDecks) async {
+  Future<void> forceDownload(Database db, Iterable<DeckMiniResult> localDecks) async {
     final listDecksResult = await listDecks();
     if (listDecksResult is! SuccessHttpResult<List<NrdbDeck>>) return;
 
-    final decks = <NrdbDeck, DeckResult2>{};
+    final decks = <NrdbDeck, DeckMiniResult>{};
     for (final remoteDeck in listDecksResult.value) {
-      final localDeck = localDecks.firstWhereOrNull((e) => e.deck.id == remoteDeck.id);
+      final localDeck = localDecks.firstWhereOrNull((e) => e.id == remoteDeck.id);
       if (localDeck != null) {
         decks[remoteDeck] = localDeck;
       }
@@ -406,7 +411,7 @@ extension OnlineAuthStateEx on OnlineAuthState {
     });
   }
 
-  Future<void> syncWithLocalDecks(Database db, Map<NrdbDeck, DeckResult2?> decks) async {
+  Future<void> syncWithLocalDecks(Database db, Map<NrdbDeck, DeckMiniResult?> decks) async {
     await db.batch((batch) async {
       final deleteDeckIds = <String>[];
       for (final deck in decks.entries) {
@@ -416,12 +421,12 @@ extension OnlineAuthStateEx on OnlineAuthState {
           db,
           batch,
           remoteDeck,
-          formatCode: drift.Value(localDeck?.format?.code),
-          rotationCode: drift.Value(localDeck?.rotation?.code),
-          mwlCode: drift.Value(localDeck?.mwl?.code),
+          formatCode: drift.Value(localDeck?.formatCode),
+          rotationCode: drift.Value(localDeck?.rotationCode),
+          mwlCode: drift.Value(localDeck?.mwlCode),
         );
-        if (localDeck != null && remoteDeck.id != localDeck.deck.id) {
-          deleteDeckIds.add(localDeck.deck.id);
+        if (localDeck != null && remoteDeck.id != localDeck.id) {
+          deleteDeckIds.add(localDeck.id);
         }
       }
       await db.deleteDecks(deckIds: deleteDeckIds);

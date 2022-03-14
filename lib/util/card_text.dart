@@ -22,40 +22,32 @@ class CardInfluenceSpan extends TextSpan {
   factory CardInfluenceSpan(CardResult card, {FactionData? faction, MwlCardData? mwlCard, TextStyle? style}) {
     final factionCost = mwlCard?.universalFactionCost ?? (card.faction == faction ? 0 : card.card.factionCost);
     return CardInfluenceSpan._(
-      [
+      children: [
         TextSpan(text: '●' * factionCost),
         TextSpan(text: '○' * (5 - factionCost)),
       ],
-      (style ?? const TextStyle()).copyWith(color: card.faction.color),
+      style: (style ?? const TextStyle()).copyWith(color: card.faction.color),
     );
   }
 
-  const CardInfluenceSpan._(List<TextSpan> children, TextStyle style)
-      : super(
-          children: children,
-          style: style,
-        );
+  const CardInfluenceSpan._({super.children, super.style});
 }
 
 class CardPointsSpan extends TextSpan {
   factory CardPointsSpan(MwlCardData mwlCard, {TextStyle? style}) {
     final points = mwlCard.points;
-    if (points == null) return const CardPointsSpan._([], TextStyle());
+    if (points == null) return const CardPointsSpan._(children: [], style: TextStyle());
 
     return CardPointsSpan._(
-      [
+      children: [
         TextSpan(text: '●' * points),
         TextSpan(text: '○' * (3 - points)),
       ],
-      style ?? const TextStyle(),
+      style: style ?? const TextStyle(),
     );
   }
 
-  const CardPointsSpan._(List<TextSpan> children, TextStyle style)
-      : super(
-          children: children,
-          style: style,
-        );
+  const CardPointsSpan._({super.children, super.style});
 }
 
 TextSpan cardType(CardResult card) {
@@ -115,7 +107,7 @@ TextSpan cardInfo(CardResult card) {
 }
 
 class CloseAngleBracketParser extends TextParser {
-  CloseAngleBracketParser(TextIterator text, this.tag) : super(text);
+  CloseAngleBracketParser(super.text, this.tag);
 
   final String tag;
 
@@ -185,7 +177,7 @@ class CloseAngleBracketParser extends TextParser {
 }
 
 class OpenAngleBracketParser extends TextParser {
-  OpenAngleBracketParser(TextIterator text) : super(text);
+  OpenAngleBracketParser(super.text);
 
   @override
   InlineSpan parse() {
@@ -208,7 +200,7 @@ class OpenAngleBracketParser extends TextParser {
 }
 
 class SquareBracketParser extends TextParser {
-  SquareBracketParser(TextIterator text) : super(text);
+  SquareBracketParser(super.text);
 
   InlineSpan toSpan(String value) {
     if (value == 'X' || int.tryParse(value) != null) {

@@ -1,4 +1,4 @@
-import '../types.dart';
+import '/db/types.dart';
 
 import 'format.drift';
 import 'pack.drift';
@@ -10,7 +10,7 @@ CREATE TABLE rotation(
   code TEXT NOT NULL PRIMARY KEY,
   format_code TEXT NOT NULL,
   name TEXT NOT NULL,
-  date_start INT MAPPED BY `const DateTimeUtcConverter()` NOT NULL,
+  date_start INT NOT NULL MAPPED BY `const DateTimeUtcConverter()`,
   "current" BOOLEAN NOT NULL,
   latest BOOLEAN NOT NULL
 );

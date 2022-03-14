@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 class HeaderListTile extends StatelessWidget {
   const HeaderListTile({
-    Key? key,
     required this.child,
-  }) : super(key: key);
+    super.key,
+  });
 
   HeaderListTile.title({
-    Key? key,
     required String title,
+    Key? key,
   }) : this(
           child: ListTile(
             visualDensity: VisualDensity.compact,
@@ -18,9 +18,9 @@ class HeaderListTile extends StatelessWidget {
         );
 
   HeaderListTile.titleCount({
-    Key? key,
     required String title,
     required int count,
+    Key? key,
   }) : this.title(key: key, title: '$title ($count)');
 
   final Widget child;

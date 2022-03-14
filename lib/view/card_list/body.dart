@@ -4,6 +4,7 @@ import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 
 import '/db/database.dart';
 import '/providers.dart';
+import '/util.dart';
 import '/util/header_list.dart';
 import '/view/async_value_builder.dart';
 import '/view/filter_chips.dart';
@@ -12,7 +13,7 @@ import '/view/header_list_tile.dart';
 typedef OnCardTap = void Function(BuildContext context, WidgetRef ref, int index, CardResult card);
 
 class CardListFilters extends ConsumerWidget {
-  const CardListFilters({Key? key}) : super(key: key);
+  const CardListFilters({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -48,7 +49,7 @@ class CardListFilters extends ConsumerWidget {
 }
 
 class CardHeader extends ConsumerWidget {
-  const CardHeader(this.indexOffset, this.headerList, {Key? key}) : super(key: key);
+  const CardHeader(this.indexOffset, this.headerList, {super.key});
 
   final int indexOffset;
   final HeaderItems<CardResult> headerList;
@@ -59,16 +60,10 @@ class CardHeader extends ConsumerWidget {
     return SliverStickyHeader(
       header: HeaderListTile.titleCount(title: headerList.header, count: headerList.length),
       sliver: SliverList(
-        delegate: SliverChildBuilderDelegate(
-          (context, index) {
-            if (index.isEven) {
-              final realIndex = index ~/ 2;
-              return cardItemBuilder(context, ref, indexOffset + realIndex, headerList[realIndex]);
-            } else {
-              return const Divider();
-            }
-          },
-          childCount: headerList.length * 2,
+        delegate: SliverChildSeperatedBuilderDelegate(
+          (context, index) => cardItemBuilder(context, ref, indexOffset + index, headerList[index]),
+          (context, index) => const Divider(),
+          childCount: headerList.length,
         ),
       ),
     );
@@ -76,7 +71,7 @@ class CardHeader extends ConsumerWidget {
 }
 
 class CardListList extends ConsumerWidget {
-  const CardListList({Key? key}) : super(key: key);
+  const CardListList({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -89,7 +84,7 @@ class CardListList extends ConsumerWidget {
         }
         return CustomScrollView(
           controller: ScrollController(),
-          slivers: data.map((item) => CardHeader(data.sumUntilItem(item), item)).toList(),
+          slivers: data.mapItems(CardHeader.new).toList(),
         );
       },
     );
@@ -97,7 +92,7 @@ class CardListList extends ConsumerWidget {
 }
 
 class CardListBody extends ConsumerWidget {
-  const CardListBody({Key? key}) : super(key: key);
+  const CardListBody({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -118,14 +113,16 @@ class CardListBody extends ConsumerWidget {
 }
 
 class CardListLoading extends ConsumerWidget {
-  const CardListLoading({Key? key}) : super(key: key);
+  const CardListLoading({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isLoading = ref.watch(groupedCardListProvider.select((value) => value.maybeMap(
-          data: (data) => data.isLoading,
-          orElse: () => false,
-        )));
+    final isLoading = ref.watch(groupedCardListProvider.select((value) {
+      return value.maybeMap(
+        data: (data) => data.isLoading,
+        orElse: () => false,
+      );
+    }));
     if (!isLoading) return const SizedBox.shrink();
 
     return const LinearProgressIndicator();

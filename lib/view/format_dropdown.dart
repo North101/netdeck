@@ -4,14 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/db/database.dart';
 import '/providers.dart';
-import 'async_value_builder.dart';
 
 class FormatDropdown extends ConsumerWidget {
-  const FormatDropdown({Key? key, required this.onChanged}) : super(key: key);
+  const FormatDropdown({required this.onChanged, super.key});
 
-  static withOverrides({
+  static Widget withOverrides({
     required FormatData? format,
-    required void Function(FormatResult? value) onChanged,
+    required void Function(FormatResult? value)? onChanged,
   }) {
     return ProviderScope(
       overrides: [
@@ -21,25 +20,26 @@ class FormatDropdown extends ConsumerWidget {
     );
   }
 
-  final void Function(FormatResult? value) onChanged;
+  final void Function(FormatResult? value)? onChanged;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final format = ref.watch(formatProvider);
     final formatList = ref.watch(formatListProvider);
-    return AsyncValueBuilder<List<FormatResult>>(
-      value: formatList,
-      data: (items) => DropdownButtonFormField<FormatResult>(
-        isExpanded: true,
-        value: items.firstWhereOrNull((e) => e.format == format),
-        decoration: const InputDecoration(
-          labelText: 'Format',
-        ),
-        onChanged: (value) {
-          FocusScope.of(context).requestFocus(FocusNode());
-          onChanged(value);
-        },
-        selectedItemBuilder: (context) => items
+    return DropdownButtonFormField<FormatResult>(
+      isExpanded: true,
+      value: formatList.whenOrNull<FormatResult?>(
+        data: (items) => items.firstWhereOrNull((e) => e.format == format),
+      ),
+      decoration: const InputDecoration(
+        labelText: 'Format',
+      ),
+      onChanged: formatList.whenOrNull<void Function(FormatResult?)?>(
+        data: (items) => onChanged,
+      ),
+      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      selectedItemBuilder: formatList.maybeWhen(
+        data: (items) => (context) => items
             .map(
               (item) => Row(
                 children: [
@@ -49,13 +49,16 @@ class FormatDropdown extends ConsumerWidget {
                     color: Theme.of(context).iconTheme.color,
                     iconSize: 16,
                     icon: const Icon(Icons.clear),
-                    onPressed: () => onChanged(null),
+                    onPressed: onChanged != null ? () => onChanged!(null) : null,
                   ),
                 ],
               ),
             )
             .toList(),
-        items: items
+        orElse: () => null,
+      ),
+      items: formatList.maybeWhen(
+        data: (items) => items
             .map(
               (item) => DropdownMenuItem(
                 value: item,
@@ -63,6 +66,7 @@ class FormatDropdown extends ConsumerWidget {
               ),
             )
             .toList(),
+        orElse: () => const [],
       ),
     );
   }

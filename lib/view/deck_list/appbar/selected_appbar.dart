@@ -7,15 +7,17 @@ import '/view/deck_compare/page.dart';
 import '/view/search_theme.dart';
 
 class DeckSelectedActions extends ConsumerWidget {
-  const DeckSelectedActions({Key? key}) : super(key: key);
+  const DeckSelectedActions({super.key});
 
   Future<void> compare(BuildContext context, WidgetRef ref) async {
-    final selectedDecks = ref.read(selectedDecksProvider);
-    Navigator.of(context).push(MaterialPageRoute(builder: (context) {
-      return DeckComparePage.withOverrides(
-        deckList: selectedDecks,
-      );
-    }));
+    final navigator = Navigator.of(context);
+    final db = ref.read(dbProvider);
+    final selectedDeckIds = ref.read(selectedDeckIdsProvider).value;
+    final selectedDecks = await db.listMicroDecks(where: db.deck.id.isIn(selectedDeckIds)).first;
+    navigator.restorablePush(
+      openDeckComparePage,
+      arguments: DeckCompareArguments(selectedDecks.toSet()).toJson(),
+    );
   }
 
   Future<void> upload(BuildContext context, WidgetRef ref) async {
@@ -51,9 +53,10 @@ class DeckSelectedActions extends ConsumerWidget {
     if (result != true) return;
 
     final db = ref.read(dbProvider);
-    final selectedDecksState = ref.read(selectedDecksProvider.state);
-    await authState.forceUpload(db, selectedDecksState.state);
-    selectedDecksState.state = {};
+    final selectedDeckIds = ref.read(selectedDeckIdsProvider);
+    final selectedDecks = await db.listMiniDecks(where: db.deck.id.isIn(selectedDeckIds.value)).first;
+    await authState.forceUpload(db, selectedDecks);
+    selectedDeckIds.value = {};
   }
 
   Future<void> download(BuildContext context, WidgetRef ref) async {
@@ -61,8 +64,14 @@ class DeckSelectedActions extends ConsumerWidget {
     if (authState == null) {
       await showDialog(
         context: context,
-        builder: (context) => const SimpleDialog(
-          title: Text('Not online'),
+        builder: (context) => AlertDialog(
+          title: const Text('Not online'),
+          actions: [
+            MaterialButton(
+              child: const Text('OK'),
+              onPressed: () => Navigator.of(context).pop(null),
+            ),
+          ],
         ),
       );
       return;
@@ -88,23 +97,25 @@ class DeckSelectedActions extends ConsumerWidget {
     if (result != true) return;
 
     final db = ref.read(dbProvider);
-    final selectedDecksState = ref.read(selectedDecksProvider.state);
-    await authState.forceDownload(db, selectedDecksState.state);
-    selectedDecksState.state = {};
+    final selectedDeckIds = ref.read(selectedDeckIdsProvider);
+    final selectedDecks = await db.listMiniDecks(where: db.deck.id.isIn(selectedDeckIds.value)).first;
+    await authState.forceDownload(db, selectedDecks);
+    selectedDeckIds.value = {};
   }
 
   Future<void> copy(BuildContext context, WidgetRef ref) async {
     final db = ref.read(dbProvider);
-    final selectedDecksState = ref.read(selectedDecksProvider.state);
+    final selectedDeckIds = ref.read(selectedDeckIdsProvider);
+    final selectedDecks = await db.listMiniDecks(where: db.deck.id.isIn(selectedDeckIds.value)).first;
     await db.transaction(() async {
       final now = DateTime.now().toUtc();
-      for (final selectedDeck in selectedDecksState.state) {
-        final newDeck = await db.copyDeck(selectedDeck.deck, now: now);
-        await db.copyDeckCards(newDeckId: newDeck.id, oldDeckId: selectedDeck.deck.id);
-        await db.copyDeckTags(newDeckId: newDeck.id, oldDeckId: selectedDeck.deck.id);
+      for (final selectedDeck in selectedDecks) {
+        final newDeck = await db.copyDeck(selectedDeck, now: now);
+        await db.copyDeckCards(newDeckId: newDeck.id, oldDeckId: selectedDeck.id);
+        await db.copyDeckTags(newDeckId: newDeck.id, oldDeckId: selectedDeck.id);
       }
     });
-    selectedDecksState.state = {};
+    selectedDeckIds.value = {};
   }
 
   Future<void> delete(BuildContext context, WidgetRef ref) async {
@@ -128,14 +139,14 @@ class DeckSelectedActions extends ConsumerWidget {
     if (result != true) return;
 
     final db = ref.read(dbProvider);
-    final selectedDecksState = ref.read(selectedDecksProvider.state);
-    final selectedDecks = selectedDecksState.state.map((e) => e.deck.id).toList();
+    final selectedDecksState = ref.read(selectedDeckIdsProvider);
+    final selectedDeckIds = selectedDecksState.value.toList();
     await db.transaction(() async {
-      await db.deleteDecks(deckIds: selectedDecks);
-      await db.deleteDeckCards(deckIds: selectedDecks);
-      await db.deleteDeckTags(deckIds: selectedDecks);
+      await db.deleteDecks(deckIds: selectedDeckIds);
+      await db.deleteDeckCards(deckIds: selectedDeckIds);
+      await db.deleteDeckTags(deckIds: selectedDeckIds);
     });
-    selectedDecksState.state = {};
+    selectedDecksState.value = {};
   }
 
   @override
@@ -178,27 +189,25 @@ class DeckSelectedActions extends ConsumerWidget {
 }
 
 class DeckSelectedAppBar extends ConsumerWidget implements PreferredSizeWidget {
-  const DeckSelectedAppBar({Key? key})
-      : preferredSize = const Size.fromHeight(kToolbarHeight),
-        super(key: key);
+  const DeckSelectedAppBar({super.key}) : preferredSize = const Size.fromHeight(kToolbarHeight);
 
   @override
   final Size preferredSize;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedDecks = ref.watch(selectedDecksProvider.state);
+    final selectedDecks = ref.watch(selectedDeckIdsProvider);
     final theme = SearchTheme.of(context);
     return WillPopScope(
       onWillPop: () async {
-        selectedDecks.state = {};
+        selectedDecks.value = {};
         return false;
       },
       child: Theme(
         data: theme,
         child: AppBar(
           leading: const BackButton(),
-          title: Text('${selectedDecks.state.length} selected'),
+          title: Text('${selectedDecks.value.length} selected'),
           actions: const [
             DeckSelectedActions(),
           ],

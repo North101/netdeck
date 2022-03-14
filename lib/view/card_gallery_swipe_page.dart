@@ -7,12 +7,14 @@ import 'package:url_launcher/url_launcher.dart';
 import '/db/database.dart' hide Card;
 import '/providers.dart';
 import '/util/assets.gen.dart';
+import '/util/header_list.dart';
+import 'async_value_builder.dart';
 import 'card_tile.dart';
 
 class CardGallerySwipePage extends ConsumerWidget {
-  const CardGallerySwipePage({Key? key}) : super(key: key);
+  const CardGallerySwipePage({super.key});
 
-  Future<void> onSelected(BuildContext context, WidgetRef ref, CardGalleryView value) async {
+  Future<void> onSelected(BuildContext context, WidgetRef ref, CardGalleryPageView value) async {
     final db = ref.read(dbProvider);
     await db.update(db.settings).write(SettingsCompanion(
           cardGalleryView: drift.Value(value),
@@ -25,65 +27,68 @@ class CardGallerySwipePage extends ConsumerWidget {
       return value.whenOrNull(data: (data) => data.settings.cardGalleryView);
     }));
 
-    final groupedCardList = ref.watch(cardGalleryGroupedCardListProvider);
-    final index = ref.watch(cardGalleryIndexProvider) ?? 0;
-    final currentCard = groupedCardList.allItems[index];
+    final groupedCardListStream = ref.watch(cardGalleryGroupedCardListProvider);
+    final index = ref.watch(cardGalleryIndexProvider).value ?? 0;
+    final currentCard = groupedCardListStream.whenOrNull(data: (value) => value.allItems[index]);
     return WillPopScope(
       onWillPop: () async {
-        final index = ref.read(cardGalleryIndexProvider.state);
-        index.state = null;
+        final index = ref.read(cardGalleryIndexProvider);
+        index.value = null;
         return false;
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(currentCard.card.title),
+          title: Text(currentCard?.card.title ?? 'Card Gallery'),
           actions: [
             IconButton(
               icon: const Icon(Icons.public),
-              onPressed: () => launch('https://netrunnerdb.com/en/card/${currentCard.card.code}'),
+              onPressed: currentCard != null ? () => launchUrl(currentCard.card.url) : null,
             ),
             if (cardGalleryView != null)
               IconButton(
-                  icon: cardGalleryView == CardGalleryView.image
+                  icon: cardGalleryView == CardGalleryPageView.image
                       ? const Icon(Icons.text_fields)
                       : const Icon(Icons.image),
                   onPressed: () async {
                     switch (cardGalleryView) {
-                      case CardGalleryView.image:
-                        return onSelected(context, ref, CardGalleryView.text);
-                      case CardGalleryView.text:
-                        return onSelected(context, ref, CardGalleryView.image);
+                      case CardGalleryPageView.image:
+                        return onSelected(context, ref, CardGalleryPageView.text);
+                      case CardGalleryPageView.text:
+                        return onSelected(context, ref, CardGalleryPageView.image);
                     }
                   }),
             IconButton(
               icon: const Icon(Icons.view_comfortable),
               onPressed: () {
-                final index = ref.read(cardGalleryIndexProvider.state);
-                index.state = null;
+                final index = ref.read(cardGalleryIndexProvider);
+                index.value = null;
               },
             ),
           ],
         ),
-        body: PageView.builder(
-          controller: PageController(initialPage: index),
-          scrollDirection: Axis.horizontal,
-          itemCount: groupedCardList.allItems.length,
-          itemBuilder: (context, index) {
-            final card = groupedCardList.allItems[index];
-            return Material(
-              color: Theme.of(context).splashColor,
-              child: Column(
-                children: [
-                  Expanded(child: CardPage(card)),
-                  DeckCardCount(card),
-                ],
-              ),
-            );
-          },
-          onPageChanged: (value) {
-            final index = ref.read(cardGalleryIndexProvider.state);
-            index.state = value;
-          },
+        body: AsyncValueBuilder<HeaderList<CardResult>>(
+          value: groupedCardListStream,
+          data: (groupedCardList) => PageView.builder(
+            controller: PageController(initialPage: index),
+            scrollDirection: Axis.horizontal,
+            itemCount: groupedCardList.allItems.length,
+            itemBuilder: (context, index) {
+              final card = groupedCardList.allItems[index];
+              return Material(
+                color: Theme.of(context).splashColor,
+                child: Column(
+                  children: [
+                    Expanded(child: CardPage(card)),
+                    DeckCardCount(card),
+                  ],
+                ),
+              );
+            },
+            onPageChanged: (value) {
+              final index = ref.read(cardGalleryIndexProvider);
+              index.value = value;
+            },
+          ),
         ),
       ),
     );
@@ -91,7 +96,7 @@ class CardGallerySwipePage extends ConsumerWidget {
 }
 
 class CardPage extends ConsumerWidget {
-  const CardPage(this.card, {Key? key}) : super(key: key);
+  const CardPage(this.card, {super.key});
 
   final CardResult card;
 
@@ -101,7 +106,7 @@ class CardPage extends ConsumerWidget {
       return value.whenOrNull(data: (data) => data.settings.cardGalleryView);
     }));
     switch (cardGalleryView) {
-      case CardGalleryView.image:
+      case CardGalleryPageView.image:
         return Padding(
           padding: const EdgeInsets.all(8),
           child: CachedNetworkImage(
@@ -121,7 +126,7 @@ class CardPage extends ConsumerWidget {
             },
           ),
         );
-      case CardGalleryView.text:
+      case CardGalleryPageView.text:
         return Padding(
           padding: const EdgeInsets.all(8),
           child: CardTile(card, logo: false, body: true),
@@ -133,17 +138,17 @@ class CardPage extends ConsumerWidget {
 }
 
 class DeckCardCount extends ConsumerWidget {
-  const DeckCardCount(this.card, {Key? key}) : super(key: key);
+  const DeckCardCount(this.card, {super.key});
 
   final CardResult card;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final deckNotifier = ref.watch(cardGalleryDeckProvider.notifier);
-    if (deckNotifier.value == null) return const SizedBox.shrink();
+    final count = ref.watch(cardGalleryDeckCardCodesProvider.select((value) {
+      return value?.getCard(card);
+    }));
+    if (count == null || card.type.code == 'identity') return const SizedBox.shrink();
 
-    final deckCardList = deckNotifier.value!.cards;
-    final count = deckCardList[card] ?? 0;
     return Padding(
       padding: const EdgeInsets.all(8),
       child: Card(
@@ -153,24 +158,26 @@ class DeckCardCount extends ConsumerWidget {
           children: [
             if (count > 0)
               IconButton(
-                  constraints: const BoxConstraints(),
-                  visualDensity: VisualDensity.compact,
-                  icon: const Icon(Icons.remove_outlined),
-                  iconSize: 36,
-                  onPressed: () {
-                    deckNotifier.decCard(card);
-                    ref.refresh(cardGalleryDeckProvider);
-                  }),
-            if (count > 0) Text('$count', style: const TextStyle(fontSize: 36)),
-            IconButton(
                 constraints: const BoxConstraints(),
                 visualDensity: VisualDensity.compact,
-                icon: const Icon(Icons.add_outlined),
+                icon: const Icon(Icons.remove_outlined),
                 iconSize: 36,
                 onPressed: () {
-                  deckNotifier.incCard(card);
-                  ref.refresh(cardGalleryDeckProvider);
-                }),
+                  final deckCardsNotifier = ref.read(cardGalleryDeckCardCodesProvider);
+                  deckCardsNotifier?.decCard(card);
+                },
+              ),
+            if (count > 0) Text('$count', style: const TextStyle(fontSize: 36)),
+            IconButton(
+              constraints: const BoxConstraints(),
+              visualDensity: VisualDensity.compact,
+              icon: const Icon(Icons.add_outlined),
+              iconSize: 36,
+              onPressed: () {
+                final deckCardsNotifier = ref.read(cardGalleryDeckCardCodesProvider);
+                deckCardsNotifier?.incCard(card);
+              },
+            ),
           ],
         ),
       ),

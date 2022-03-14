@@ -8,9 +8,7 @@ import '/view/search_theme.dart';
 import 'actions.dart';
 
 class CardSearchAppBar extends ConsumerWidget implements PreferredSizeWidget {
-  CardSearchAppBar({Key? key})
-      : preferredSize = const Size.fromHeight(kToolbarHeight),
-        super(key: key);
+  CardSearchAppBar({super.key}) : preferredSize = const Size.fromHeight(kToolbarHeight);
 
   @override
   final Size preferredSize;
@@ -18,27 +16,28 @@ class CardSearchAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final focusNode = FocusNode();
   final controller = TextEditingController();
 
-  void _clearSearchQuery(BuildContext context, WidgetRef ref) {
+  void _clearSearchQuery(WidgetRef ref) {
     controller.clear();
-    _updateSearchQuery(context, ref, '');
+    _updateSearchQuery(ref, '');
   }
 
-  void _updateSearchQuery(BuildContext context, WidgetRef ref, String newQuery) {
-    final cardQuery = ref.read(filterQueryProvider.state);
-    cardQuery.state = tryParseQuery(newQuery);
+  void _updateSearchQuery(WidgetRef ref, String newQuery) {
+    final cardQuery = ref.read(filterQueryProvider);
+    cardQuery.value = tryParseQuery(newQuery);
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final db = ref.watch(dbProvider);
     final theme = SearchTheme.of(context);
     final queryBuilder = ref.watch(cardQueryBuilderProvider);
     return WillPopScope(
       onWillPop: () async {
-        final isSearching = ref.read(filterSearchingProvider.state);
-        isSearching.state = false;
+        final isSearching = ref.read(filterSearchingProvider);
+        isSearching.value = false;
 
-        final cardQuery = ref.read(filterQueryProvider.state);
-        cardQuery.state = null;
+        final cardQuery = ref.read(filterQueryProvider);
+        cardQuery.value = null;
         return false;
       },
       child: Theme(
@@ -46,34 +45,36 @@ class CardSearchAppBar extends ConsumerWidget implements PreferredSizeWidget {
         child: AppBar(
           leading: const BackButton(),
           title: QueryBuilderAutocomplete(
+            db: db,
             focusNode: focusNode,
             textEditingController: controller,
             queryBuilder: queryBuilder,
             fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
-              return TextField(
+              return TextFormField(
                 autofocus: true,
                 focusNode: focusNode,
                 controller: controller,
                 style: theme.textTheme.headline6,
                 textInputAction: TextInputAction.search,
                 decoration: const InputDecoration(hintText: 'Search'),
-                onChanged: (newQuery) => _updateSearchQuery(context, ref, newQuery),
+                onChanged: (newQuery) => _updateSearchQuery(ref, newQuery),
               );
             },
+            onSelected: (Option option) => _updateSearchQuery(ref, option.replacement),
           ),
           actions: [
             IconButton(
               icon: const Icon(Icons.clear),
               onPressed: () {
                 if (controller.text.isEmpty) {
-                  final isSearching = ref.read(filterSearchingProvider.state);
-                  isSearching.state = false;
+                  final isSearching = ref.read(filterSearchingProvider);
+                  isSearching.value = false;
 
-                  final cardQuery = ref.read(filterQueryProvider.state);
-                  cardQuery.state = null;
+                  final cardQuery = ref.read(filterQueryProvider);
+                  cardQuery.value = null;
                   return;
                 }
-                _clearSearchQuery(context, ref);
+                _clearSearchQuery(ref);
               },
             ),
             const CardListMoreActions(),

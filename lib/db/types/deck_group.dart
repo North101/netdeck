@@ -1,5 +1,4 @@
 import 'package:collection/collection.dart';
-import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 
 import '/db/database.dart';
@@ -183,15 +182,14 @@ extension DeckGroupEx on DeckGroup {
   }
 }
 
-class DeckGroupConverter extends NullAwareTypeConverter<DeckGroup, String> {
+class DeckGroupConverter extends MyTypeConverter<DeckGroup, String> {
   const DeckGroupConverter(this.defaultValue);
 
   final DeckGroup defaultValue;
 
   @override
-  DeckGroup requireMapToDart(String fromDb) =>
-      DeckGroup.values.firstWhereOrNull((e) => requireMapToSql(e) == fromDb) ?? defaultValue;
+  DeckGroup fromSql(String fromDb) => DeckGroup.values.firstWhereOrNull((e) => toSql(e) == fromDb) ?? defaultValue;
 
   @override
-  String requireMapToSql(DeckGroup value) => value.toString();
+  String toSql(DeckGroup value) => value.toString();
 }

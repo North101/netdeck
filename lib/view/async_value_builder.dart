@@ -3,12 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AsyncValueBuilder<T> extends StatelessWidget {
   const AsyncValueBuilder({
-    Key? key,
     required this.value,
     required this.data,
     this.loading,
     this.error,
-  }) : super(key: key);
+    super.key,
+  });
 
   final AsyncValue<T> value;
   final Widget Function(T) data;
@@ -19,12 +19,15 @@ class AsyncValueBuilder<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return value.when(
       loading: loading ?? () => const Center(child: CircularProgressIndicator()),
-      error: error ?? (error, stackTrace) => Center(
-        child: Text(
-          error.toString(),
-          style: Theme.of(context).textTheme.headline6!.copyWith(color: Colors.red),
-        ),
-      ),
+      error: error ??
+          (error, stackTrace) {
+            return Center(
+              child: Text(
+                stackTrace.toString(),
+                style: Theme.of(context).textTheme.headline6!.copyWith(color: Colors.red),
+              ),
+            );
+          },
       data: data,
     );
   }

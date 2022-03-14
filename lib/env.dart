@@ -1,12 +1,12 @@
-import 'package:envify/envify.dart';
+import 'package:dotenv_gen/dotenv_gen.dart';
 
 part 'env.g.dart';
 
-@Envify()
+@DotEnvGen()
 abstract class Env {
-  static const nrdbClientId = _Env.nrdbClientId;
-  static const nrdbClientSecret = _Env.nrdbClientSecret;
-  static const nrdbRedirectUrl = _Env.nrdbRedirectUrl;
-  static const nrdbAuthUrl = _Env.nrdbAuthUrl;
-  static const nrdbTokenUrl = _Env.nrdbTokenUrl;
+  String get nrdbClientId;
+  String get nrdbClientSecret;
+  String get nrdbRedirectUrl;
+  String get nrdbAuthUrl;
+  String get nrdbTokenUrl;
 }

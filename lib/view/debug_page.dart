@@ -1,9 +1,12 @@
+// ignore_for_file: depend_on_referenced_packages
+
+import 'package:drift_dev/api/migrations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:drift_dev/api/migrations.dart';
-import 'package:netrunner_deckbuilder/view/async_value_builder.dart';
 
 import '/db/database.dart';
+import '/providers.dart';
+import 'async_value_builder.dart';
 
 abstract class DatabaseResult {}
 
@@ -25,32 +28,22 @@ final dbStateProvider = FutureProvider((ref) async {
   final dbFile = await Database.dbFilename();
   if (!await dbFile.exists()) return const NoneDatabaseResult();
 
-  final db = Database();
+  final db = ref.watch(dbProvider);
   try {
     await db.validateDatabaseSchema();
     return const ValidDatabaseResult();
   } on SchemaMismatch catch (exception) {
     return InvalidDatabaseResult(exception);
-  } finally {
-    await db.close();
   }
 });
 
 class DebugPage extends ConsumerWidget {
   const DebugPage({
-    required this.home,
-    Key? key,
-  }) : super(key: key);
+    required this.route,
+    super.key,
+  });
 
-  final Widget home;
-
-  Future<void> openPage(BuildContext context) {
-    return Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (context) => home,
-      ),
-    );
-  }
+  final Route<void> Function(BuildContext context, Object? argument) route;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -75,7 +68,7 @@ class DebugPage extends ConsumerWidget {
                               backgroundColor: MaterialStateProperty.all(Colors.red),
                             )
                           : null,
-                      onPressed: () => openPage(context),
+                      onPressed: () => Navigator.of(context).restorablePushReplacement(route),
                       child: state is NoneDatabaseResult ? const Text('New Database') : const Text('Keep Database'),
                     ),
                   ),
@@ -85,7 +78,7 @@ class DebugPage extends ConsumerWidget {
                       onPressed: state is! NoneDatabaseResult
                           ? () async {
                               await Database.deleteDatabase();
-                              ref.refresh(dbStateProvider);
+                              ref.refresh(dbProvider);
                             }
                           : null,
                       child: const Text('Delete Database'),

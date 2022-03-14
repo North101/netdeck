@@ -1,33 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:netrunner_deckbuilder/view/async_value_builder.dart';
 
 import '/providers.dart';
 import '/util/assets.gen.dart';
+import '/util/nrdb/public.dart';
 import 'main_page.dart';
 
-class LoadingPage extends ConsumerWidget {
-  const LoadingPage({Key? key}) : super(key: key);
+class LoadingPage extends ConsumerStatefulWidget {
+  const LoadingPage({super.key});
 
   @override
-  Widget build(context, ref) {
-    final lastChecked = ref.watch(nrdbPublicApiProvider).whenOrNull(data: (value) => value);
-    if (lastChecked != null) return const MainPage();
-
-    final data = ref.watch(nrdbPublicApiProvider);
-    return AsyncValueBuilder<DateTime>(
-      value: data,
-      loading: () => const LoadingWidget(),
-      data: (_) => const MainPage(),
-    );
-  }
+  LoadingPageState createState() => LoadingPageState();
 }
 
-class LoadingWidget extends StatelessWidget {
-  const LoadingWidget({Key? key}) : super(key: key);
+class LoadingPageState extends ConsumerState<LoadingPage> {
+  static Route<void> openMainPageRoute(BuildContext context, Object? arguments) {
+    return MaterialPageRoute(builder: (context) {
+      return MainPage.withOverrides();
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    final nrdbPublicApi = ref.read(nrdbPublicApiProvider);
+    nrdbPublicApi.update();
+  }
+
+  void checkValue(DateTime? value) {
+    if (value == null) return;
+
+    Future.delayed(const Duration(), () {
+      Navigator.of(context).restorablePushReplacement(openMainPageRoute);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<NrdbPublicApiNotifier>(nrdbPublicApiProvider, (previous, next) {
+      checkValue(next.value);
+    });
+
     return Scaffold(
       appBar: AppBar(title: const Text('Netdeck')),
       body: Container(

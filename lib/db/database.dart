@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:collection/collection.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:flutter/foundation.dart';
@@ -10,8 +9,10 @@ import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
 
+import '/db/extensions.dart';
+import '/providers/deck.dart';
 import '/util/extensions.dart';
-import 'extensions/deck_card_result.dart';
+import 'extensions.dart';
 import 'types.dart';
 import 'util.dart';
 
@@ -63,7 +64,7 @@ class Database extends _$Database {
   }
 
   @override
-  int schemaVersion = 3;
+  int schemaVersion = 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -75,6 +76,11 @@ class Database extends _$Database {
             await m.addColumn(mwl, mwl.runnerPoints);
             await m.addColumn(mwl, mwl.corpPoints);
             await m.addColumn(mwlCard, mwlCard.points);
+          }
+          if (from < 4) {
+            await m.drop(card);
+            await m.createTable(card);
+            await (delete(nrdb)..where((tbl) => trueExpression)).go();
           }
         },
       );
@@ -94,7 +100,7 @@ class Database extends _$Database {
     return newDeck;
   }
 
-  Stream<List<DeckResult2>> listDecks2({Expression<bool?> where = trueExpression}) {
+  Stream<List<DeckFullResult>> listDecks2({Expression<bool?> where = trueExpression}) {
     final deckListStream = listDecks(where: where).watch();
     final cardListStream = deckListStream.flatMap((deckList) {
       return listDeckCards(where: deckCard.deckId.isIn(deckList.map((e) => e.deck.id))).watch();
@@ -102,7 +108,8 @@ class Database extends _$Database {
     final tagListStream = deckListStream.flatMap((deckList) {
       return listDeckTags(where: deckTag.deckId.isIn(deckList.map((e) => e.deck.id))).watch();
     });
-    return CombineLatestStream.combine3<List<DeckResult>, List<DeckCardResult>, List<DeckTagData>, List<DeckResult2>>(
+    return CombineLatestStream.combine3<List<DeckResult>, List<DeckCardResult>, List<DeckTagData>,
+        List<DeckFullResult>>(
       deckListStream,
       cardListStream,
       tagListStream,
@@ -112,18 +119,7 @@ class Database extends _$Database {
         tagList,
       ) {
         return deckList.map((deck) {
-          return DeckResult2(
-            deck: deck.deck,
-            identity: deck.identity,
-            pack: deck.pack,
-            cycle: deck.cycle,
-            faction: deck.faction,
-            side: deck.side,
-            type: deck.type,
-            subtype: deck.subtype,
-            format: deck.format,
-            rotation: deck.rotation,
-            mwl: deck.mwl,
+          return deck.toFullResult(
             cards: cardList
                 .where((e) => e.deckCard.deckId == deck.deck.id)
                 .map((e) => MapEntry(e.toCard(), e.deckCard.quantity))
@@ -134,95 +130,87 @@ class Database extends _$Database {
       },
     );
   }
-}
 
-class DeckResult2 extends DeckResult {
-  DeckResult2({
-    required DeckData deck,
-    required CardData identity,
-    required PackData pack,
-    required CycleData cycle,
-    required FactionData faction,
-    required SideData side,
-    required TypeData type,
-    TypeData? subtype,
-    FormatData? format,
-    RotationData? rotation,
-    MwlData? mwl,
-    required this.cards,
-    required this.tags,
-  }) : super(
-          deck: deck,
-          identity: identity,
-          pack: pack,
-          cycle: cycle,
-          faction: faction,
-          side: side,
-          type: type,
-          subtype: subtype,
-          format: format,
-          rotation: rotation,
-          mwl: mwl,
-        );
-
-  final Map<CardResult, int> cards;
-  final List<String> tags;
-
-  DeckResult2 copyWith({
-    DeckData? deck,
-    CardData? identity,
-    Value<FormatData?> format = const Value.absent(),
-    Value<RotationData?> rotation = const Value.absent(),
-    Value<MwlData?> mwl = const Value.absent(),
-    Map<CardResult, int>? cards,
-    List<String>? tags,
-  }) {
-    return DeckResult2(
-      deck: (deck ?? this.deck).copyWith(
-        formatCode: format.present ? Value(format.value?.code) : const Value.absent(),
-        rotationCode: rotation.present ? Value(rotation.value?.code) : const Value.absent(),
-        mwlCode: mwl.present ? Value(mwl.value?.code) : const Value.absent(),
-      ),
-      identity: identity ?? this.identity,
-      pack: pack,
-      cycle: cycle,
-      faction: faction,
-      side: side,
-      type: type,
-      subtype: subtype,
-      format: format.present ? format.value : this.format,
-      rotation: rotation.present ? rotation.value : this.rotation,
-      mwl: mwl.present ? mwl.value : this.mwl,
-      cards: cards ?? this.cards,
-      tags: tags ?? this.tags,
+  Stream<List<DeckNotifierResult>> listMiniDecks({Expression<bool?> where = trueExpression}) {
+    final deckListStream = listDecks(where: where).watch();
+    final cardListStream = deckListStream.flatMap((deckList) {
+      return listDeckCards(where: deckCard.deckId.isIn(deckList.map((e) => e.deck.id))).watch();
+    });
+    final tagListStream = deckListStream.flatMap((deckList) {
+      return listDeckTags(where: deckTag.deckId.isIn(deckList.map((e) => e.deck.id))).watch();
+    });
+    return CombineLatestStream.combine3<List<DeckResult>, List<DeckCardResult>, List<DeckTagData>,
+        List<DeckNotifierResult>>(
+      deckListStream,
+      cardListStream,
+      tagListStream,
+      (
+        deckList,
+        cardList,
+        tagList,
+      ) {
+        return deckList.map((deck) {
+          return DeckNotifierResult(
+            id: deck.deck.id,
+            identityCode: deck.deck.identityCode,
+            formatCode: deck.deck.formatCode,
+            rotationCode: deck.deck.rotationCode,
+            mwlCode: deck.deck.mwlCode,
+            name: deck.deck.name,
+            description: deck.deck.description,
+            created: deck.deck.created,
+            updated: deck.deck.updated,
+            deleted: deck.deck.deleted,
+            remoteUpdated: deck.deck.remoteUpdated,
+            synced: deck.deck.synced,
+            cards: cardList
+                .where((e) => e.deckCard.deckId == deck.deck.id)
+                .map((e) => MapEntry(e.cardCode, e.deckCard.quantity))
+                .toMap(),
+            tags: tagList.where((e) => e.deckId == deck.deck.id).map((e) => e.tag).toList(),
+            state: DeckSaveState.isSaved,
+          );
+        }).toList();
+      },
     );
   }
 
-  @override
-  int get hashCode =>
-      Object.hash(deck, identity, pack, cycle, faction, side, type, subtype, format, rotation, mwl, cards, tags);
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is DeckResult2 &&
-          other.deck == deck &&
-          other.identity == identity &&
-          other.pack == pack &&
-          other.cycle == cycle &&
-          other.faction == faction &&
-          other.side == side &&
-          other.type == type &&
-          other.subtype == subtype &&
-          other.format == format &&
-          other.rotation == rotation &&
-          other.mwl == mwl &&
-          const MapEquality().equals(other.cards, cards) &&
-          const ListEquality().equals(other.tags, tags));
+  Stream<List<DeckMicroResult>> listMicroDecks({Expression<bool?> where = trueExpression}) {
+    final deckListStream = listDecks(where: where).watch();
+    final cardListStream = deckListStream.flatMap((deckList) {
+      return listDeckCards(where: deckCard.deckId.isIn(deckList.map((e) => e.deck.id))).watch();
+    });
+    return CombineLatestStream.combine2<List<DeckResult>, List<DeckCardResult>, List<DeckMicroResult>>(
+      deckListStream,
+      cardListStream,
+      (deckList, cardList) {
+        return deckList.map((deck) {
+          return DeckMicroResult(
+            id: deck.deck.id,
+            name: deck.deck.name,
+            cards: cardList
+                .where((e) => e.deckCard.deckId == deck.deck.id)
+                .map((e) => MapEntry(e.cardCode, e.deckCard.quantity))
+                .toMap(),
+          );
+        }).toList();
+      },
+    );
+  }
 }
 
 extension BatchEx on Batch {
   void deleteAll<T extends Table, D>(TableInfo<T, D> table) {
     return deleteWhere<T, D>(table, (tbl) => trueExpression);
   }
+}
+
+abstract class MyTypeConverter<D, S extends Object> extends TypeConverter<D, S> implements JsonTypeConverter<D, S> {
+  const MyTypeConverter();
+
+  @override
+  D fromJson(S json) => fromSql(json);
+
+  @override
+  S toJson(D value) => toSql(value);
 }
