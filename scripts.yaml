@@ -17,3 +17,7 @@ build:
     - $update_data
     - $migrations
     - flutter build appbundle
+  ios:
+    - $update_data
+    - $migrations
+    - flutter build ios
