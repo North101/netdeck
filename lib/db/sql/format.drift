@@ -19,19 +19,19 @@ FROM format
 
 LEFT JOIN rotation AS current_rotation
   ON current_rotation.format_code = format.code
-  AND current_rotation."current"
+  AND current_rotation.type = 'current'
 
 LEFT JOIN rotation AS latest_rotation
   ON latest_rotation.format_code = format.code
-  AND latest_rotation.latest
+  AND latest_rotation.type = 'latest'
 
 LEFT JOIN mwl AS active_mwl
   ON active_mwl.format_code = format.code
-  AND active_mwl.active
+  AND active_mwl.type = 'active'
 
 LEFT JOIN mwl AS latest_mwl
   ON latest_mwl.format_code = format.code
-  AND latest_mwl.latest
+  AND latest_mwl.type = 'latest'
 
 WHERE $where
 

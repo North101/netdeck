@@ -10,9 +10,8 @@ CREATE TABLE rotation(
   code TEXT NOT NULL PRIMARY KEY,
   format_code TEXT NOT NULL,
   name TEXT NOT NULL,
-  date_start INT NOT NULL MAPPED BY `const DateTimeUtcConverter()`,
-  "current" BOOLEAN NOT NULL,
-  latest BOOLEAN NOT NULL
+  date_start INT MAPPED BY `const DateTimeUtcConverter()`,
+  type TEXT MAPPED BY `const RotationTypeConverter()`
 );
 
 CREATE TABLE rotation_cycle(
@@ -35,8 +34,8 @@ WHERE $where
 
 ORDER BY
   format.id,
-  rotation.latest,
-  rotation.current,
+  rotation.type = 'latest',
+  rotation.type = 'current',
   rotation.date_start DESC;
 
 listRotationPacks($where = TRUE) AS RotationPackResult:
@@ -63,8 +62,8 @@ WHERE $where
 
 ORDER BY
   format.id,
-  rotation.latest,
-  rotation.current,
+  rotation.type = 'latest',
+  rotation.type = 'current',
   rotation.date_start DESC,
   cycle.position DESC,
   pack.position;
@@ -82,7 +81,7 @@ INNER JOIN format
 
 INNER JOIN rotation
   ON rotation.format_code = format.code
-  AND rotation.current
+  AND rotation.type = 'current'
 
 LEFT JOIN rotation_cycle
   ON rotation_cycle.rotation_code = rotation.code

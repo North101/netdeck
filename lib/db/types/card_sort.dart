@@ -72,7 +72,7 @@ extension CardSortEx on CardSort {
     }
   }
 
-  String get name {
+  String get title {
     switch (this) {
       case CardSort.name:
         return 'Name';
@@ -101,5 +101,5 @@ class CardSortConverter extends MyTypeConverter<CardSort, String> {
   CardSort fromSql(String fromDb) => CardSort.values.firstWhereOrNull((e) => toSql(e) == fromDb) ?? defaultValue;
 
   @override
-  String toSql(CardSort value) => value.toString();
+  String toSql(CardSort value) => value.title;
 }

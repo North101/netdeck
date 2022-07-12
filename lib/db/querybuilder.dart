@@ -211,7 +211,6 @@ abstract class QueryBuilder<T extends drift.TableInfo> {
     return [
       ...await listQuerySpecialOptions(db, text, query, op),
       ...select.map((e) {
-        print(e.read(queryOption()));
         return Option.replace(text, query.startIndex, query.endIndex, e.read(queryOption()).toString());
       }),
     ];
@@ -506,8 +505,7 @@ class DateTimeQueryBuilder<T extends drift.TableInfo>
     return DateTime(now.year + 1, 0);
   }
 
-  drift.Expression<String?> datetime() =>
-      column.dartCast<DateTime?>().datetime;
+  drift.Expression<String?> datetime() => column.dartCast<DateTime?>().datetime;
 
   @override
   Future<Iterable<Option>> listQuerySpecialOptions(Database db, String text, TextQuery query, String op) async {
@@ -638,6 +636,8 @@ class CardQueryBuilder extends CodeNameQueryBuilder<Card> {
       'side': SideQueryBuilder(db, table: db.side, extraFields: extraFields, help: 'side code or name'),
       'faction': FactionQueryBuilder(db, table: db.faction, extraFields: extraFields, help: 'faction code or name'),
       'type': TypeQueryBuilder(db, table: db.type, extraFields: extraFields, help: 'type code or name'),
+      'rotation': CardRotationQueryBuilder(db, table: db.rotation, extraFields: extraFields, help: 'card rotation'),
+      'mwl': CardMwlQueryBuilder(db, table: db.mwl, extraFields: extraFields, help: 'card mwl'),
     });
     return CardQueryBuilder._(db, table: db.card, extraFields: extraFields, help: 'card title');
   }
@@ -672,12 +672,16 @@ class DeckQueryBuilder extends ContainsStringQueryBuilder<Deck> {
       'deck': DeckQueryBuilder._(db, table: db.deck, extraFields: extraFields, help: 'deck name'),
       'identity': CardQueryBuilder._(db,
           table: db.card.createAlias('identity'), extraFields: extraFields, help: 'identity name'),
-      'cycle': CycleQueryBuilder(db, table: db.cycle, extraFields: extraFields, help: 'cycle code or name'),
-      'pack': PackQueryBuilder(db, table: db.pack, extraFields: extraFields, help: 'pack code or name'),
-      'side': SideQueryBuilder(db, table: db.side, extraFields: extraFields, help: 'side code or name'),
-      'faction': FactionQueryBuilder(db, table: db.faction, extraFields: extraFields, help: 'faction code or name'),
+      'cycle': CycleQueryBuilder(db, table: db.cycle, extraFields: extraFields, help: 'identity cycle code or name'),
+      'pack': PackQueryBuilder(db, table: db.pack, extraFields: extraFields, help: 'identity pack code or name'),
+      'side': SideQueryBuilder(db, table: db.side, extraFields: extraFields, help: 'identity side code or name'),
+      'faction':
+          FactionQueryBuilder(db, table: db.faction, extraFields: extraFields, help: 'identity faction code or name'),
       'card': DeckCardsQueryBuilder(db, table: db.deckCard, extraFields: extraFields, help: 'deck card'),
       'tag': DeckTagsQueryBuilder(db, table: db.deckTag, extraFields: extraFields, help: 'deck tag'),
+      'format': FormatQueryBuilder(db, table: db.format, extraFields: extraFields, help: 'deck format'),
+      'rotation': RotationQueryBuilder(db, table: db.rotation, extraFields: extraFields, help: 'deck rotation'),
+      'mwl': MwlQueryBuilder(db, table: db.mwl, extraFields: extraFields, help: 'deck mwl'),
     });
     return DeckQueryBuilder._(db, table: db.deck, extraFields: extraFields, help: 'deck name');
   }
@@ -798,11 +802,33 @@ class RotationQueryBuilder extends CodeNameQueryBuilder<Rotation> {
           fields: {
             'code': StringQueryBuilder(table: table, column: table.code, help: 'rotation code'),
             'name': ContainsStringQueryBuilder(table: table, column: table.name, help: 'rotation name'),
-            'current': BoolQueryBuilder(table: table, column: table.current, help: 'rotation current'),
-            'latest': BoolQueryBuilder(table: table, column: table.latest, help: 'rotation latest'),
+            'type': StringQueryBuilder(table: table, column: table.type, help: 'rotation type'),
             'start': DateTimeQueryBuilder(table: table, column: table.dateStart, help: 'rotation start date'),
           },
         );
+}
+
+class CardRotationQueryBuilder extends RotationQueryBuilder {
+  CardRotationQueryBuilder(
+    this.db, {
+    required super.table,
+    super.extraFields,
+    required super.help,
+  }) : super(db);
+
+  final Database db;
+
+  @override
+  drift.Expression<bool?> call(String? op, TextQuery query) {
+    final inQuery = db.selectOnly(db.rotation, includeJoinedTableColumns: false).join([
+      drift.innerJoin(db.rotationCycle, db.rotationCycle.rotationCode.equalsExp(db.rotation.code)),
+      drift.innerJoin(db.pack, db.pack.cycleCode.equalsExp(db.rotationCycle.cycleCode)),
+    ])
+      ..addColumns([db.pack.code])
+      ..where(super.call(op, query));
+
+    return db.pack.code.isInQuery(inQuery);
+  }
 }
 
 class MwlQueryBuilder extends CodeNameQueryBuilder<Mwl> {
@@ -817,9 +843,31 @@ class MwlQueryBuilder extends CodeNameQueryBuilder<Mwl> {
           fields: {
             'code': StringQueryBuilder(table: table, column: table.code, help: 'mwl code'),
             'name': ContainsStringQueryBuilder(table: table, column: table.name, help: 'mwl name'),
-            'active': BoolQueryBuilder(table: table, column: table.active, help: 'mwl active'),
-            'latest': BoolQueryBuilder(table: table, column: table.latest, help: 'mwl latest'),
+            'type': StringQueryBuilder(table: table, column: table.type, help: 'mwl type'),
             'start': DateTimeQueryBuilder(table: table, column: table.dateStart, help: 'mwl start date'),
           },
         );
+}
+
+class CardMwlQueryBuilder extends MwlQueryBuilder {
+  CardMwlQueryBuilder(
+    this.db, {
+    required super.table,
+    super.extraFields,
+    required super.help,
+  }) : super(db);
+
+  final Database db;
+
+  @override
+  drift.Expression<bool?> call(String? op, TextQuery query) {
+    final inQuery = db.selectOnly(db.card, includeJoinedTableColumns: false).join([
+      drift.crossJoin(db.mwl),
+      drift.leftOuterJoin(db.mwlCard, db.mwlCard.mwlCode.equalsExp(db.mwl.code) & db.mwlCard.cardCode.equalsExp(db.card.code)),
+    ])
+      ..addColumns([db.card.code])
+      ..where(super.call(op, query) & (db.mwlCard.deckLimit.isNull() | db.mwlCard.deckLimit.isBiggerThanValue(0)));
+
+    return db.card.code.isInQuery(inQuery);
+  }
 }

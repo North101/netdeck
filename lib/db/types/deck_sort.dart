@@ -94,5 +94,5 @@ class DeckSortConverter extends MyTypeConverter<DeckSort, String> {
   DeckSort fromSql(String fromDb) => DeckSort.values.firstWhereOrNull((e) => toSql(e) == fromDb) ?? defaultValue;
 
   @override
-  String toSql(DeckSort value) => value.toString();
+  String toSql(DeckSort value) => value.name;
 }

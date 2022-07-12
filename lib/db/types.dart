@@ -10,6 +10,8 @@ export 'types/deck_micro_result.dart';
 export 'types/deck_mini_result.dart';
 export 'types/deck_result2.dart';
 export 'types/deck_sort.dart';
+export 'types/mwl_type.dart';
+export 'types/rotation_type.dart';
 
 String relativeDate(DateTime value) {
   final now = DateTime.now();

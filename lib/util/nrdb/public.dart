@@ -47,6 +47,22 @@ extension DateTimeUtc on DateTime {
 int? tryParseDateTime(String? value) =>
     value != null ? const DateTimeUtcConverter().toJson(DateTimeUtc.parseUtc(value)) : null;
 
+String currentRotationCode(String formatCode) => '$formatCode@current';
+
+String currentRotationName(String? name) => 'Current (${name ?? 'None'})';
+
+String latestRotationCode(String formatCode) => '$formatCode@latest';
+
+String latestRotationName(String? name) => 'Latest (${name ?? 'None'})';
+
+String latestMwlCode(String formatCode) => '$formatCode@latest';
+
+String latestMwlName(String? name) => 'Latest (${name ?? 'None'})';
+
+String activeMwlCode(String formatCode) => '$formatCode@active';
+
+String activeMwlName(String? name) => 'Active (${name ?? 'None'})';
+
 @freezed
 class ApiResult with _$ApiResult {
   const factory ApiResult.unmodified(DateTime lastUpdated) = UnmodifiedApiResult;
@@ -127,18 +143,15 @@ class NrdbPublicApi {
     return ApiResult.fromJson(results);
   }
 
-  Future<ApiResult> fetchData(Uri url, DateTime lastModified) async {
+  Future<ApiResult> fetchData(Uri url, DateTime lastModified, [bool force = false]) async {
     final response = await http.get(url, headers: {
-      headerIfNotModifiedSince: lastModified.toIso8601String(),
+      if (!force) headerIfNotModifiedSince: lastModified.toIso8601String(),
     });
-    if (response.statusCode == 304) {
-      return ApiResult.unmodified(lastModified);
-    }
+    if (response.statusCode == 304) return ApiResult.unmodified(lastModified);
+
     final data = json.decode(response.body);
     final lastUpdated = DateTime.parse(data['last_updated']);
-    if (!lastUpdated.isAfter(lastModified)) {
-      return ApiResult.unmodified(lastModified);
-    }
+    if (!lastUpdated.isAfter(lastModified)) return ApiResult.unmodified(lastModified);
 
     return ApiResult.fromJson(data);
   }
@@ -341,8 +354,8 @@ class NrdbPublicApi {
     return data;
   }
 
-  Future<ApiResult> fetchRotations(DateTime lastUpdated) async {
-    final data = await fetchData(fetchRotationsEndpoint, lastUpdated);
+  Future<ApiResult> fetchRotations(DateTime lastUpdated, [bool force = false]) async {
+    final data = await fetchData(fetchRotationsEndpoint, lastUpdated, force);
     if (data is! ModifiedApiResult) return data;
 
     await updateRotations(data);
@@ -350,27 +363,42 @@ class NrdbPublicApi {
   }
 
   Future<void> updateRotations(ModifiedApiResult result) async {
-    final rotations = [
-      ...result.data.where((e) => e['current']).map((e) => {
+    final formats = await _db.listFormats().map((e) => e.format).get();
+    final rotations = {
+      for (final format in formats)
+        currentRotationCode(format.code): {
+          'code': currentRotationCode(format.code),
+          'format_code': format.code,
+          'name': currentRotationName(null),
+          'type': const RotationTypeConverter().toJson(RotationType.current),
+          'rotated': [],
+        },
+      for (final e in result.data)
+        if (e['current'])
+          currentRotationCode(e['format_code']): {
             ...e,
-            'code': '${e['format_code']}@current',
-            'name': 'Current (${e['name']})',
-            'current': true,
-            'latest': false,
-          }),
-      ...result.data.where((e) => e['latest']).map((e) => {
+            'code': currentRotationCode(e['format_code']),
+            'name': currentRotationName(e['name']!),
+            'type': const RotationTypeConverter().toJson(RotationType.current),
+          },
+      for (final format in formats)
+        latestRotationCode(format.code): {
+          'code': latestRotationCode(format.code),
+          'format_code': format.code,
+          'name': latestRotationName(null),
+          'type': const RotationTypeConverter().toJson(RotationType.latest),
+          'rotated': [],
+        },
+      for (final e in result.data)
+        if (e['latest'])
+          latestRotationCode(e['format_code']): {
             ...e,
-            'code': '${e['format_code']}@latest',
-            'name': 'Latest (${e['name']})',
-            'current': false,
-            'latest': true,
-          }),
-      ...result.data.map((e) => {
-            ...e,
-            'current': false,
-            'latest': false,
-          })
-    ];
+            'code': latestRotationCode(e['format_code']),
+            'name': latestRotationName(e['name']!),
+            'type': const RotationTypeConverter().toJson(RotationType.latest),
+          },
+      for (final e in result.data) e['code']: e,
+    }.values;
     await _db.batch((b) async {
       b.deleteAll<Rotation, RotationData>(_db.rotation);
       b.insertAll<Rotation, RotationData>(
@@ -387,7 +415,6 @@ class NrdbPublicApi {
         final rotationCode = result['code'] as String;
         return MapEntry(rotationCode, (result['rotated'] as List).cast<String>());
       }).toMap();
-
       b.deleteAll<RotationCycle, RotationCycleData>(_db.rotationCycle);
       b.insertAll(
         _db.rotationCycle,
@@ -410,8 +437,8 @@ class NrdbPublicApi {
     return data;
   }
 
-  Future<ApiResult> fetchMwl(DateTime lastUpdated) async {
-    final data = await fetchData(fetchMwlEndpoint, lastUpdated);
+  Future<ApiResult> fetchMwl(DateTime lastUpdated, [bool force = false]) async {
+    final data = await fetchData(fetchMwlEndpoint, lastUpdated, force);
     if (data is! ModifiedApiResult) return data;
 
     await updateMwl(data);
@@ -419,27 +446,42 @@ class NrdbPublicApi {
   }
 
   Future<void> updateMwl(ModifiedApiResult result) async {
-    final mwl = [
-      ...result.data.where((e) => e['active']).map((e) => {
+    final formats = await _db.listFormats().map((e) => e.format).get();
+    final mwl = {
+      for (final format in formats)
+        activeMwlCode(format.code): {
+          'code': activeMwlCode(format.code),
+          'format_code': format.code,
+          'name': activeMwlName(null),
+          'type': const MwlTypeConverter().toJson(MwlType.active),
+          'cards': {},
+        },
+      for (final e in result.data)
+        if (e['active'])
+          activeMwlCode(e['format_code']): {
             ...e,
-            'code': '${e['format_code']}@active',
-            'name': 'Active (${e['name']})',
-            'active': true,
-            'latest': false,
-          }),
-      ...result.data.where((e) => e['latest']).map((e) => {
+            'code': activeMwlCode(e['format_code']),
+            'name': activeMwlName(e['name']!),
+            'type': const MwlTypeConverter().toJson(MwlType.active),
+          },
+      for (final format in formats)
+        latestRotationCode(format.code): {
+          'code': latestRotationCode(format.code),
+          'format_code': format.code,
+          'name': latestRotationName(null),
+          'type': const MwlTypeConverter().toJson(MwlType.latest),
+          'cards': {},
+        },
+      for (final e in result.data)
+        if (e['latest'])
+          latestRotationCode(e['format_code']): {
             ...e,
-            'code': '${e['format_code']}@latest',
-            'name': 'Latest (${e['name']})',
-            'active': false,
-            'latest': true,
-          }),
-      ...result.data.map((e) => {
-            ...e,
-            'active': false,
-            'latest': false,
-          })
-    ];
+            'code': latestRotationCode(e['format_code']),
+            'name': latestRotationName(e['name']!),
+            'type': const MwlTypeConverter().toJson(MwlType.latest),
+          },
+      for (final e in result.data) e['code']: e,
+    }.values;
     await _db.batch((b) {
       b.deleteAll<Mwl, MwlData>(_db.mwl);
       b.insertAll<Mwl, MwlData>(
@@ -453,16 +495,19 @@ class NrdbPublicApi {
         }).toList(),
       );
 
+      final mwlCards = mwl.map((result) {
+        final mwlCode = result['code'] as String;
+        return MapEntry(mwlCode, (result['cards'] as Map).cast<String, Map>());
+      }).toMap();
       b.deleteAll<MwlCard, MwlCardData>(_db.mwlCard);
       b.insertAll(
         _db.mwlCard,
-        mwl
-            .map<Iterable<MwlCardData>>((result) {
-              final mwlCode = result['code'];
-              return (result['cards'] as Map).cast<String, Map>().entries.map<MwlCardData>((e) {
+        mwlCards.entries
+            .map<Iterable<MwlCardData>>((mwl) {
+              return mwl.value.cast<String, Map>().entries.map<MwlCardData>((e) {
                 return MwlCardData.fromJson({
                   ...e.value,
-                  'mwl_code': mwlCode,
+                  'mwl_code': mwl.key,
                   'card_code': e.key,
                   'is_restricted': e.value['is_restricted'] == 1,
                 });
@@ -529,10 +574,11 @@ class NrdbPublicApi {
       final formatResult = await fetchFormats(nrdb.formatLastUpdated).catchError((e) {
         return ApiResult.unmodified(nrdb.formatLastUpdated);
       });
-      final rotationResult = await fetchRotations(nrdb.rotationLastUpdated).catchError((e) {
+      final formatChanged = formatResult.map(unmodified: (v) => false, modified: (v) => true);
+      final rotationResult = await fetchRotations(nrdb.rotationLastUpdated, formatChanged).catchError((e) {
         return ApiResult.unmodified(nrdb.rotationLastUpdated);
       });
-      final mwlResult = await fetchMwl(nrdb.mwlLastUpdated).catchError((e) {
+      final mwlResult = await fetchMwl(nrdb.mwlLastUpdated, formatChanged).catchError((e) {
         return ApiResult.unmodified(nrdb.mwlLastUpdated);
       });
 

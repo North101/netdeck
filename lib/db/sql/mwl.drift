@@ -6,9 +6,8 @@ CREATE TABLE mwl(
   code TEXT NOT NULL PRIMARY KEY,
   format_code TEXT NOT NULL,
   name TEXT NOT NULL,
-  date_start INT NOT NULL MAPPED BY `const DateTimeUtcConverter()`,
-  active BOOLEAN NOT NULL,
-  latest BOOLEAN NOT NULL,
+  date_start INT MAPPED BY `const DateTimeUtcConverter()`,
+  type TEXT MAPPED BY `const MwlTypeConverter()`,
   runner_points INT,
   corp_points INT
 );
@@ -25,6 +24,6 @@ WHERE $where
 
 ORDER BY
   format.id,
-  mwl.latest,
-  mwl.active,
+  mwl.type = 'latest',
+  mwl.type = 'active',
   mwl.date_start DESC;

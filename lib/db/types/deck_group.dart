@@ -151,7 +151,7 @@ extension DeckGroupEx on DeckGroup {
     }
   }
 
-  String get name {
+  String get title {
     switch (this) {
       case DeckGroup.name:
         return 'Name';
@@ -191,5 +191,5 @@ class DeckGroupConverter extends MyTypeConverter<DeckGroup, String> {
   DeckGroup fromSql(String fromDb) => DeckGroup.values.firstWhereOrNull((e) => toSql(e) == fromDb) ?? defaultValue;
 
   @override
-  String toSql(DeckGroup value) => value.toString();
+  String toSql(DeckGroup value) => value.name;
 }

@@ -36,7 +36,7 @@ class CardListGroupMenu extends ConsumerWidget {
           (v) => CheckedPopupMenuItem(
             checked: v == cardGroup,
             value: v,
-            child: Text(v.name(context)),
+            child: Text(v.title),
           ),
         ),
       ],
@@ -74,7 +74,7 @@ class CardListSortMenu extends ConsumerWidget {
           (v) => CheckedPopupMenuItem(
             checked: v == cardSort,
             value: v,
-            child: Text(v.name),
+            child: Text(v.title),
           ),
         ),
       ],

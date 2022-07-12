@@ -135,7 +135,7 @@ extension CardGroupEx on CardGroup {
         .sortedByCompare<CardResult>((e) => e.first, sorted));
   }
 
-  String name(BuildContext context) {
+  String get title {
     switch (this) {
       case CardGroup.name:
         return 'Name';
@@ -164,5 +164,5 @@ class CardGroupConverter extends MyTypeConverter<CardGroup, String> {
   CardGroup fromSql(String fromDb) => CardGroup.values.firstWhereOrNull((e) => toSql(e) == fromDb) ?? defaultValue;
 
   @override
-  String toSql(CardGroup value) => value.toString();
+  String toSql(CardGroup value) => value.name;
 }

@@ -64,7 +64,7 @@ class Database extends _$Database {
   }
 
   @override
-  int schemaVersion = 4;
+  int schemaVersion = 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -80,7 +80,14 @@ class Database extends _$Database {
           if (from < 4) {
             await m.drop(card);
             await m.createTable(card);
-            await (delete(nrdb)..where((tbl) => trueExpression)).go();
+            await delete(nrdb).go();
+          }
+          if (from < 5) {
+            await m.drop(rotation);
+            await m.createTable(rotation);
+            await m.drop(mwl);
+            await m.createTable(mwl);
+            await delete(nrdb).go();
           }
         },
       );

@@ -17,5 +17,5 @@ class CardGalleryViewConverter extends MyTypeConverter<CardGalleryPageView, Stri
       CardGalleryPageView.values.firstWhereOrNull((e) => toSql(e) == fromDb) ?? defaultValue;
 
   @override
-  String toSql(CardGalleryPageView value) => value.toString();
+  String toSql(CardGalleryPageView value) => value.name;
 }

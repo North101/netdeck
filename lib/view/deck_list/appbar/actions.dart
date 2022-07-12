@@ -36,7 +36,7 @@ class DeckListGroupMenu extends ConsumerWidget {
           (v) => CheckedPopupMenuItem(
             checked: v == deckGroup,
             value: v,
-            child: Text(v.name),
+            child: Text(v.title),
           ),
         ),
       ],
