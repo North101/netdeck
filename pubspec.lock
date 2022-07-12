@@ -293,7 +293,7 @@ packages:
     description:
       path: drift
       ref: develop
-      resolved-ref: "38f343c5e74ae51fa1be798431f21277e2fc9333"
+      resolved-ref: a3109b4a6bce7e9d55dc76d195a1c53cef03d970
       url: "https://github.com/simolus3/drift.git"
     source: git
     version: "2.0.0-dev"
@@ -302,7 +302,7 @@ packages:
     description:
       path: drift_dev
       ref: develop
-      resolved-ref: "38f343c5e74ae51fa1be798431f21277e2fc9333"
+      resolved-ref: a3109b4a6bce7e9d55dc76d195a1c53cef03d970
       url: "https://github.com/simolus3/drift.git"
     source: git
     version: "1.7.0"
@@ -455,7 +455,7 @@ packages:
       name: freezed
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.4"
+    version: "2.0.5"
   freezed_annotation:
     dependency: "direct main"
     description:
@@ -818,7 +818,7 @@ packages:
     description:
       path: sqlparser
       ref: develop
-      resolved-ref: "38f343c5e74ae51fa1be798431f21277e2fc9333"
+      resolved-ref: a3109b4a6bce7e9d55dc76d195a1c53cef03d970
       url: "https://github.com/simolus3/drift.git"
     source: git
     version: "0.22.0"
