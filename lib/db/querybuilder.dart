@@ -52,78 +52,6 @@ abstract class QueryBuilder<T extends drift.TableInfo> {
   final FieldMap extraFields;
   final String help;
 
-  Future<Iterable<Option>> options(Database db, String text, Query? query, int position, [String? op]) async {
-    if (query == null) {
-      return listFieldOptions(text, position, position, op: ':');
-      //
-    } else if (!query.within(position)) {
-      return const [];
-      //
-    } else if (query is TextQuery) {
-      return [
-        ...listFieldOptions(text, query.startIndex, query.endIndex, search: query.text, op: ':'),
-        ...await listQueryOptions(db, text, query, op ?? '='),
-      ];
-      //
-    } else if (query is FieldCompareQuery) {
-      if (query.field.within(position)) {
-        return listFieldOptions(text, query.field.startIndex, query.field.endIndex, search: query.field.text);
-      }
-
-      final field = fields[query.field.text] ?? extraFields[query.field.text];
-      if (field == null) return const [];
-
-      return field.options(db, text, query.text, position, query.operator.text);
-      //
-    } else if (query is FieldScope) {
-      if (query.field.within(position)) {
-        return listFieldOptions(text, query.field.startIndex, query.field.endIndex, search: query.field.text);
-      }
-
-      final field = fields[query.field.text] ?? extraFields[query.field.text];
-      if (field == null) return const [];
-
-      final child = query.child;
-      if (child is TextQuery) return await field.listQueryOptions(db, text, child, '=');
-
-      return field.options(db, text, child, position, '=');
-      //
-    } else if (query is GroupQuery) {
-      return options(db, text, query.child, position, op);
-      //
-    } else if (query is NotQuery) {
-      return options(db, text, query.child, position, op);
-      //
-    } else if (query is AndQuery) {
-      final children = query.children.reversed.where((e) => e.within(position));
-      for (final child in children) {
-        final result = await options(db, text, child, position, op);
-        if (result.isNotEmpty) return result;
-      }
-      return const [];
-      //
-    } else if (query is OrQuery) {
-      final children = query.children.reversed.where((e) => e.within(position));
-      for (final child in children) {
-        final result = await options(db, text, child, position, op);
-        if (result.isNotEmpty) return result;
-      }
-      return const [];
-      //
-    } else if (query is RangeQuery) {
-      if (query.start.within(position)) {
-        return options(db, text, query.start, position, '=');
-      } else if (query.end.within(position)) {
-        return options(db, text, query.end, position, '=');
-      }
-
-      return const [];
-      //
-    }
-
-    return const [];
-  }
-
   drift.Expression<bool?> build(Query? query) {
     if (query == null) {
       return falseExpression;
@@ -197,7 +125,79 @@ abstract class QueryBuilder<T extends drift.TableInfo> {
 
   drift.Expression<bool?> moreThanEqual(TextQuery query) => falseExpression;
 
-  Iterable<Option> listFieldOptions(String text, int start, int stop, {String? search, String op = ''}) {
+  Future<Iterable<Option>> options(Database db, String text, Query? query, int position, [String? op]) async {
+    if (query == null) {
+      return listFields(text, position, position, op: ':');
+      //
+    } else if (!query.within(position)) {
+      return const [];
+      //
+    } else if (query is TextQuery) {
+      return [
+        ...listFields(text, query.startIndex, query.endIndex, search: query.text, op: ':'),
+        ...await listOptions(db, text, query, op ?? '='),
+      ];
+      //
+    } else if (query is FieldCompareQuery) {
+      if (query.field.within(position)) {
+        return listFields(text, query.field.startIndex, query.field.endIndex, search: query.field.text);
+      }
+
+      final field = fields[query.field.text] ?? extraFields[query.field.text];
+      if (field == null) return const [];
+
+      return field.options(db, text, query.text, position, query.operator.text);
+      //
+    } else if (query is FieldScope) {
+      if (query.field.within(position)) {
+        return listFields(text, query.field.startIndex, query.field.endIndex, search: query.field.text);
+      }
+
+      final field = fields[query.field.text] ?? extraFields[query.field.text];
+      if (field == null) return const [];
+
+      final child = query.child;
+      if (child is TextQuery) return await field.listOptions(db, text, child, '=');
+
+      return field.options(db, text, child, position, '=');
+      //
+    } else if (query is GroupQuery) {
+      return options(db, text, query.child, position, op);
+      //
+    } else if (query is NotQuery) {
+      return options(db, text, query.child, position, op);
+      //
+    } else if (query is AndQuery) {
+      final children = query.children.reversed.where((e) => e.within(position));
+      for (final child in children) {
+        final result = await options(db, text, child, position, op);
+        if (result.isNotEmpty) return result;
+      }
+      return const [];
+      //
+    } else if (query is OrQuery) {
+      final children = query.children.reversed.where((e) => e.within(position));
+      for (final child in children) {
+        final result = await options(db, text, child, position, op);
+        if (result.isNotEmpty) return result;
+      }
+      return const [];
+      //
+    } else if (query is RangeQuery) {
+      if (query.start.within(position)) {
+        return options(db, text, query.start, position, '=');
+      } else if (query.end.within(position)) {
+        return options(db, text, query.end, position, '=');
+      }
+
+      return const [];
+      //
+    }
+
+    return const [];
+  }
+
+  Iterable<Option> listFields(String text, int start, int stop, {String? search, String op = ''}) {
     var options = fields.entries.followedBy(extraFields.entries);
     if (search != null) {
       options = options.where((e) => e.key.toLowerCase().contains(search.toLowerCase()));
@@ -206,29 +206,31 @@ abstract class QueryBuilder<T extends drift.TableInfo> {
     return options.map((e) => Option.replace(text, start, stop, '${e.key}$op', e.value.help));
   }
 
-  Future<Iterable<Option>> listQueryOptions(Database db, String text, TextQuery query, String op) async {
-    final select = await buildQueryOptionsStatement(db, query, op).get();
+  Future<Iterable<Option>> listOptions(Database db, String text, TextQuery query, String op) async {
+    final select = await buildOptionsQuery(db, query, op).get();
     return [
-      ...await listQuerySpecialOptions(db, text, query, op),
+      ...await listSpecialOptions(db, text, query, op),
       ...select.map((e) {
-        return Option.replace(text, query.startIndex, query.endIndex, e.read(queryOption()).toString());
+        return Option.replace(text, query.startIndex, query.endIndex, e.read(optionColumn).toString());
       }),
     ];
   }
 
-  Future<Iterable<Option>> listQuerySpecialOptions(Database db, String text, TextQuery query, String op) async =>
-      const [];
+  Future<Iterable<Option>> listSpecialOptions(Database db, String text, TextQuery query, String op) async => const [];
 
-  drift.Selectable<drift.TypedResult> buildQueryOptionsStatement(Database db, TextQuery query, String op) {
-    return db.selectOnly(table, distinct: true)
-      ..addColumns([queryOption()])
-      ..where((query.text.isEmpty ? trueExpression : call(op, query)) & queryOption().isNotNull())
-      ..orderBy([drift.OrderingTerm(expression: queryOption(), mode: queryOptionOrder())]);
+  drift.Selectable<drift.TypedResult> buildOptionsQuery(Database db, TextQuery query, String op) {
+    return db.selectOnly(table, distinct: true).also((q) {
+      q.addColumns([optionColumn]);
+      q.where((query.text.isEmpty ? trueExpression : call(op, query)) & optionColumn.isNotNull());
+      q.orderBy(optionOrderBy);
+    });
   }
 
-  drift.Expression queryOption();
+  drift.Expression get optionColumn;
 
-  drift.OrderingMode queryOptionOrder() => drift.OrderingMode.asc;
+  List<drift.OrderingTerm> get optionOrderBy => [
+        drift.OrderingTerm(expression: optionColumn, mode: drift.OrderingMode.asc),
+      ];
 }
 
 abstract class ColumnQueryBuilder<T extends drift.TableInfo, C extends drift.GeneratedColumn> extends QueryBuilder<T> {
@@ -243,7 +245,7 @@ abstract class ColumnQueryBuilder<T extends drift.TableInfo, C extends drift.Gen
   final C column;
 
   @override
-  drift.Expression queryOption() => column;
+  drift.Expression get optionColumn => column;
 }
 
 class StringQueryBuilder<T extends drift.TableInfo> extends ColumnQueryBuilder<T, drift.GeneratedColumn<String?>> {
@@ -313,7 +315,7 @@ class CodeNameQueryBuilder<T extends drift.TableInfo> extends QueryBuilder<T> {
   }
 
   @override
-  drift.Expression queryOption() => name;
+  drift.Expression get optionColumn => name;
 }
 
 class IntQueryBuilder<T extends drift.TableInfo> extends ColumnQueryBuilder<T, drift.GeneratedColumn<int?>> {
@@ -508,7 +510,7 @@ class DateTimeQueryBuilder<T extends drift.TableInfo>
   drift.Expression<String?> datetime() => column.dartCast<DateTime?>().datetime;
 
   @override
-  Future<Iterable<Option>> listQuerySpecialOptions(Database db, String text, TextQuery query, String op) async {
+  Future<Iterable<Option>> listSpecialOptions(Database db, String text, TextQuery query, String op) async {
     return [
       for (final extra in const ['today', 'yesterday', 'month', 'year'])
         if (extra.startsWith(query.text)) Option.replace(text, query.startIndex, query.endIndex, extra),
@@ -516,18 +518,12 @@ class DateTimeQueryBuilder<T extends drift.TableInfo>
   }
 
   @override
-  drift.Selectable<drift.TypedResult> buildQueryOptionsStatement(Database db, TextQuery query, String op) {
-    return db.selectOnly(table, distinct: true, includeJoinedTableColumns: false)
-      ..addColumns([queryOption()])
-      ..where((query.text.isEmpty ? trueExpression : call(op, query)) & queryOption().isNotNull())
-      ..orderBy([drift.OrderingTerm(expression: queryOption(), mode: queryOptionOrder())]);
-  }
+  drift.Expression<String?> get optionColumn => column.dartCast<DateTime?>().date;
 
   @override
-  drift.Expression<String?> queryOption() => column.dartCast<DateTime?>().date;
-
-  @override
-  drift.OrderingMode queryOptionOrder() => drift.OrderingMode.desc;
+  List<drift.OrderingTerm> get optionOrderBy => [
+        drift.OrderingTerm(expression: optionColumn, mode: drift.OrderingMode.desc),
+      ];
 }
 
 class DeckTagsQueryBuilder extends QueryBuilder<DeckTag> {
@@ -552,7 +548,7 @@ class DeckTagsQueryBuilder extends QueryBuilder<DeckTag> {
   }
 
   @override
-  drift.Expression queryOption() => table.tag;
+  drift.Expression get optionColumn => table.tag;
 }
 
 class DeckCardsQueryBuilder extends CodeNameQueryBuilder<DeckCard> {
@@ -579,18 +575,19 @@ class DeckCardsQueryBuilder extends CodeNameQueryBuilder<DeckCard> {
   }
 
   @override
-  drift.Selectable<drift.TypedResult> buildQueryOptionsStatement(Database db, TextQuery query, String op) {
+  drift.Selectable<drift.TypedResult> buildOptionsQuery(Database db, TextQuery query, String op) {
     return db.selectOnly(db.deck, distinct: true, includeJoinedTableColumns: false).join([
       drift.innerJoin(table, table.deckId.equalsExp(db.deck.id)),
       drift.innerJoin(db.card, db.card.code.equalsExp(table.cardCode)),
-    ])
-      ..addColumns([queryOption()])
-      ..where((query.text.isEmpty ? trueExpression : super.call(op, query)) & queryOption().isNotNull())
-      ..orderBy([drift.OrderingTerm(expression: queryOption())]);
+    ]).also((q) {
+      q.addColumns([optionColumn]);
+      q.where((query.text.isEmpty ? trueExpression : super.call(op, query)) & optionColumn.isNotNull());
+      q.orderBy([drift.OrderingTerm(expression: optionColumn)]);
+    });
   }
 
   @override
-  drift.Expression queryOption() => db.card.title;
+  drift.Expression get optionColumn => db.card.title;
 }
 
 class CardQueryBuilder extends CodeNameQueryBuilder<Card> {
@@ -643,7 +640,7 @@ class CardQueryBuilder extends CodeNameQueryBuilder<Card> {
   }
 
   @override
-  drift.Expression queryOption() => table.strippedTitle;
+  drift.Expression get optionColumn => table.strippedTitle;
 }
 
 class DeckQueryBuilder extends ContainsStringQueryBuilder<Deck> {
@@ -792,7 +789,7 @@ class FormatQueryBuilder extends CodeNameQueryBuilder<Format> {
 
 class RotationQueryBuilder extends CodeNameQueryBuilder<Rotation> {
   RotationQueryBuilder(
-    Database db, {
+    this.db, {
     required super.table,
     super.extraFields,
     required super.help,
@@ -806,26 +803,48 @@ class RotationQueryBuilder extends CodeNameQueryBuilder<Rotation> {
             'start': DateTimeQueryBuilder(table: table, column: table.dateStart, help: 'rotation start date'),
           },
         );
+
+  final Database db;
+
+  @override
+  drift.Selectable<drift.TypedResult> buildOptionsQuery(Database db, TextQuery query, String op) {
+    return db.selectOnly(table, distinct: true, includeJoinedTableColumns: false).join([
+      drift.innerJoin(db.format, db.format.code.equalsExp(table.formatCode)),
+    ]).also((q) {
+      q.addColumns([optionColumn]);
+      q.where((query.text.isEmpty ? trueExpression : call(op, query)) & optionColumn.isNotNull());
+      q.orderBy(optionOrderBy);
+    });
+  }
+
+  @override
+  List<drift.OrderingTerm> get optionOrderBy => [
+        drift.OrderingTerm(expression: db.format.id, mode: drift.OrderingMode.asc),
+        drift.OrderingTerm(
+            expression: db.rotation.type.equalsValue(RotationType.current), mode: drift.OrderingMode.desc),
+        drift.OrderingTerm(
+            expression: db.rotation.type.equalsValue(RotationType.latest), mode: drift.OrderingMode.desc),
+        drift.OrderingTerm(expression: db.rotation.dateStart, mode: drift.OrderingMode.desc),
+      ];
 }
 
 class CardRotationQueryBuilder extends RotationQueryBuilder {
   CardRotationQueryBuilder(
-    this.db, {
+    super.db, {
     required super.table,
     super.extraFields,
     required super.help,
-  }) : super(db);
-
-  final Database db;
+  });
 
   @override
   drift.Expression<bool?> call(String? op, TextQuery query) {
     final inQuery = db.selectOnly(db.rotation, includeJoinedTableColumns: false).join([
       drift.innerJoin(db.rotationCycle, db.rotationCycle.rotationCode.equalsExp(db.rotation.code)),
       drift.innerJoin(db.pack, db.pack.cycleCode.equalsExp(db.rotationCycle.cycleCode)),
-    ])
-      ..addColumns([db.pack.code])
-      ..where(super.call(op, query));
+    ]).also((q) {
+      q.addColumns([db.pack.code]);
+      q.where(super.call(op, query));
+    });
 
     return db.pack.code.isInQuery(inQuery);
   }
@@ -833,7 +852,7 @@ class CardRotationQueryBuilder extends RotationQueryBuilder {
 
 class MwlQueryBuilder extends CodeNameQueryBuilder<Mwl> {
   MwlQueryBuilder(
-    Database db, {
+    this.db, {
     required super.table,
     super.extraFields,
     required super.help,
@@ -847,26 +866,47 @@ class MwlQueryBuilder extends CodeNameQueryBuilder<Mwl> {
             'start': DateTimeQueryBuilder(table: table, column: table.dateStart, help: 'mwl start date'),
           },
         );
+
+  final Database db;
+
+  @override
+  drift.Selectable<drift.TypedResult> buildOptionsQuery(Database db, TextQuery query, String op) {
+    return db.selectOnly(table, distinct: true, includeJoinedTableColumns: false).join([
+      drift.innerJoin(db.format, db.format.code.equalsExp(table.formatCode)),
+    ]).also((q) {
+      q.addColumns([optionColumn]);
+      q.where((query.text.isEmpty ? trueExpression : call(op, query)) & optionColumn.isNotNull());
+      q.orderBy(optionOrderBy);
+    });
+  }
+
+  @override
+  List<drift.OrderingTerm> get optionOrderBy => [
+        drift.OrderingTerm(expression: db.format.id, mode: drift.OrderingMode.asc),
+        drift.OrderingTerm(expression: db.mwl.type.equalsValue(MwlType.active), mode: drift.OrderingMode.desc),
+        drift.OrderingTerm(expression: db.mwl.type.equalsValue(MwlType.latest), mode: drift.OrderingMode.asc),
+        drift.OrderingTerm(expression: db.mwl.dateStart, mode: drift.OrderingMode.desc),
+      ];
 }
 
 class CardMwlQueryBuilder extends MwlQueryBuilder {
   CardMwlQueryBuilder(
-    this.db, {
+    super.db, {
     required super.table,
     super.extraFields,
     required super.help,
-  }) : super(db);
-
-  final Database db;
+  });
 
   @override
   drift.Expression<bool?> call(String? op, TextQuery query) {
     final inQuery = db.selectOnly(db.card, includeJoinedTableColumns: false).join([
       drift.crossJoin(db.mwl),
-      drift.leftOuterJoin(db.mwlCard, db.mwlCard.mwlCode.equalsExp(db.mwl.code) & db.mwlCard.cardCode.equalsExp(db.card.code)),
-    ])
-      ..addColumns([db.card.code])
-      ..where(super.call(op, query) & (db.mwlCard.deckLimit.isNull() | db.mwlCard.deckLimit.isBiggerThanValue(0)));
+      drift.leftOuterJoin(
+          db.mwlCard, db.mwlCard.mwlCode.equalsExp(db.mwl.code) & db.mwlCard.cardCode.equalsExp(db.card.code)),
+    ]).also((q) {
+      q.addColumns([db.card.code]);
+      q.where(super.call(op, query) & (db.mwlCard.deckLimit.isNull() | db.mwlCard.deckLimit.isBiggerThanValue(0)));
+    });
 
     return db.card.code.isInQuery(inQuery);
   }

@@ -24,6 +24,6 @@ WHERE $where
 
 ORDER BY
   format.id,
-  mwl.type = 'latest',
-  mwl.type = 'active',
+  mwl.type = 'latest' DESC,
+  mwl.type = 'active' DESC,
   mwl.date_start DESC;

@@ -34,8 +34,8 @@ WHERE $where
 
 ORDER BY
   format.id,
-  rotation.type = 'latest',
-  rotation.type = 'current',
+  rotation.type = 'latest' DESC,
+  rotation.type = 'current' DESC,
   rotation.date_start DESC;
 
 listRotationPacks($where = TRUE) AS RotationPackResult:

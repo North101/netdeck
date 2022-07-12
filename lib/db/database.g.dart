@@ -6621,7 +6621,7 @@ abstract class _$Database extends GeneratedDatabase {
         $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT rotation.* FROM rotation INNER JOIN format ON format.code = rotation.format_code WHERE ${generatedwhere.sql} ORDER BY format.id, rotation.type = \'latest\', rotation.type = \'current\', rotation.date_start DESC',
+        'SELECT rotation.* FROM rotation INNER JOIN format ON format.code = rotation.format_code WHERE ${generatedwhere.sql} ORDER BY format.id, rotation.type = \'latest\' DESC, rotation.type = \'current\' DESC, rotation.date_start DESC',
         variables: [
           ...generatedwhere.introducedVariables
         ],
@@ -6808,7 +6808,7 @@ abstract class _$Database extends GeneratedDatabase {
         $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT mwl.* FROM mwl INNER JOIN format ON format.code = mwl.format_code WHERE ${generatedwhere.sql} ORDER BY format.id, mwl.type = \'latest\', mwl.type = \'active\', mwl.date_start DESC',
+        'SELECT mwl.* FROM mwl INNER JOIN format ON format.code = mwl.format_code WHERE ${generatedwhere.sql} ORDER BY format.id, mwl.type = \'latest\' DESC, mwl.type = \'active\' DESC, mwl.date_start DESC',
         variables: [
           ...generatedwhere.introducedVariables
         ],
