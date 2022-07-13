@@ -76,6 +76,7 @@ class DeckFloatingActionBarState extends ConsumerState<DeckFloatingActionBar> wi
         filterSides: result.filterSides,
         filterFactions: result.filterFactions,
         filterTypes: result.filterTypes,
+        deck: result.deck,
         deckCards: result.deckCards,
         itemBuilder: (context, ref, index, card) => DeckCardListTile(
           index: index,
