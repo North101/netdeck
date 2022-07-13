@@ -565,7 +565,7 @@ class DeckCardsQueryBuilder extends CodeNameQueryBuilder<DeckCard> {
   @override
   drift.Expression<bool?> call(String? op, TextQuery query) {
     return db.deck.id.isInQuery(
-      db.selectOnly(table, includeJoinedTableColumns: false).join([
+      db.selectOnly(table).join([
         drift.innerJoin(db.card, table.cardCode.equalsExp(db.card.code)),
       ]).also((e) {
         e.addColumns([table.deckId]);
@@ -576,7 +576,7 @@ class DeckCardsQueryBuilder extends CodeNameQueryBuilder<DeckCard> {
 
   @override
   drift.Selectable<drift.TypedResult> buildOptionsQuery(Database db, TextQuery query, String op) {
-    return db.selectOnly(db.deck, distinct: true, includeJoinedTableColumns: false).join([
+    return db.selectOnly(db.deck, distinct: true).join([
       drift.innerJoin(table, table.deckId.equalsExp(db.deck.id)),
       drift.innerJoin(db.card, db.card.code.equalsExp(table.cardCode)),
     ]).also((q) {
@@ -808,7 +808,7 @@ class RotationQueryBuilder extends CodeNameQueryBuilder<Rotation> {
 
   @override
   drift.Selectable<drift.TypedResult> buildOptionsQuery(Database db, TextQuery query, String op) {
-    return db.selectOnly(table, distinct: true, includeJoinedTableColumns: false).join([
+    return db.selectOnly(table, distinct: true).join([
       drift.innerJoin(db.format, db.format.code.equalsExp(table.formatCode)),
     ]).also((q) {
       q.addColumns([optionColumn]);
@@ -838,7 +838,7 @@ class CardRotationQueryBuilder extends RotationQueryBuilder {
 
   @override
   drift.Expression<bool?> call(String? op, TextQuery query) {
-    final inQuery = db.selectOnly(db.rotation, includeJoinedTableColumns: false).join([
+    final inQuery = db.selectOnly(db.rotation).join([
       drift.innerJoin(db.rotationCycle, db.rotationCycle.rotationCode.equalsExp(db.rotation.code)),
       drift.innerJoin(db.pack, db.pack.cycleCode.equalsExp(db.rotationCycle.cycleCode)),
     ]).also((q) {
@@ -871,7 +871,7 @@ class MwlQueryBuilder extends CodeNameQueryBuilder<Mwl> {
 
   @override
   drift.Selectable<drift.TypedResult> buildOptionsQuery(Database db, TextQuery query, String op) {
-    return db.selectOnly(table, distinct: true, includeJoinedTableColumns: false).join([
+    return db.selectOnly(table, distinct: true).join([
       drift.innerJoin(db.format, db.format.code.equalsExp(table.formatCode)),
     ]).also((q) {
       q.addColumns([optionColumn]);
@@ -899,7 +899,7 @@ class CardMwlQueryBuilder extends MwlQueryBuilder {
 
   @override
   drift.Expression<bool?> call(String? op, TextQuery query) {
-    final inQuery = db.selectOnly(db.card, includeJoinedTableColumns: false).join([
+    final inQuery = db.selectOnly(db.card).join([
       drift.crossJoin(db.mwl),
       drift.leftOuterJoin(
           db.mwlCard, db.mwlCard.mwlCode.equalsExp(db.mwl.code) & db.mwlCard.cardCode.equalsExp(db.card.code)),
