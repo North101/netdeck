@@ -159,7 +159,7 @@ class DeckValidator {
     if (mwlPointsError != null) yield mwlPointsError!;
   }
 
-  drift.Expression<bool?> filter(Database db) {
+  drift.Expression<bool> filter(Database db) {
     return trueExpression;
   }
 }
@@ -215,7 +215,7 @@ class ApexDeckValidator extends RunnerDeckValidator {
   static const identityCode = '09029';
 
   @override
-  drift.Expression<bool?> filter(Database db) {
+  drift.Expression<bool> filter(Database db) {
     if (!settings.settings.apexResources) return super.filter(db);
 
     return buildAnd([
@@ -260,7 +260,7 @@ class CorpDeckValidator extends DeckValidator {
   }
 
   @override
-  drift.Expression<bool?> filter(Database db) {
+  drift.Expression<bool> filter(Database db) {
     return buildOr([
       db.type.code.equals('agenda').not(),
       db.faction.code.equals(deck.faction.code),
@@ -289,7 +289,7 @@ class CustomBioticsDeckValidator extends CorpDeckValidator {
   }
 
   @override
-  drift.Expression<bool?> filter(Database db) {
+  drift.Expression<bool> filter(Database db) {
     return buildAnd([
       super.filter(db),
       db.faction.code.equals('jinteki').not(),

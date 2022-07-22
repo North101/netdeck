@@ -39,7 +39,7 @@ final hasDeckFilterProvider = Provider((ref) {
   filterTagsProvider,
 ]);
 
-final deckFilterProvider = Provider.family<drift.Expression<bool?>, CardFilterState>((ref, state) {
+final deckFilterProvider = Provider.family<drift.Expression<bool>, CardFilterState>((ref, state) {
   final deckQueryBuilder = ref.watch(deckQueryBuilderProvider);
   final parsedQuery = ref.watch(filterQueryProvider).value;
   final rotationFilter = ref.watch(filterRotationFilterProvider);

@@ -1,6 +1,6 @@
 import 'dart:math';
 
-import 'package:drift/drift.dart';
+import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -130,8 +130,8 @@ class DeckNotifierResult extends DeckMiniResult {
     required this.state,
   });
 
-  factory DeckNotifierResult.fromJson(Map<String, dynamic> json, {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
+  factory DeckNotifierResult.fromJson(Map<String, dynamic> json, {drift.ValueSerializer? serializer}) {
+    serializer ??= drift.driftRuntimeOptions.defaultSerializer;
     return DeckNotifierResult(
       id: serializer.fromJson<String>(json['id']),
       identityCode: serializer.fromJson<String>(json['identity_code']),
@@ -152,8 +152,8 @@ class DeckNotifierResult extends DeckMiniResult {
   }
 
   @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
+  Map<String, dynamic> toJson({drift.ValueSerializer? serializer}) {
+    serializer ??= drift.driftRuntimeOptions.defaultSerializer;
     return {
       ...super.toJson(),
       'state': state.name,
@@ -166,16 +166,16 @@ class DeckNotifierResult extends DeckMiniResult {
   DeckNotifierResult copyWith({
     String? id,
     String? identityCode,
-    Value<String?> formatCode = const Value.absent(),
-    Value<String?> rotationCode = const Value.absent(),
-    Value<String?> mwlCode = const Value.absent(),
+    drift.Value<String?> formatCode = const drift.Value.absent(),
+    drift.Value<String?> rotationCode = const drift.Value.absent(),
+    drift.Value<String?> mwlCode = const drift.Value.absent(),
     String? name,
     String? description,
     DateTime? created,
     DateTime? updated,
     bool? deleted,
-    Value<DateTime?> remoteUpdated = const Value.absent(),
-    Value<DateTime?> synced = const Value.absent(),
+    drift.Value<DateTime?> remoteUpdated = const drift.Value.absent(),
+    drift.Value<DateTime?> synced = const drift.Value.absent(),
     Map<String, int>? cards,
     List<String>? tags,
     DeckSaveState? state,
@@ -270,7 +270,7 @@ final deckRotationCardListProvider = StreamProvider.family<List<RotationCardResu
       .listRotationCards(
         where: buildAnd([
           db.card.code.isIn(deck.cards.keys.map((e) => e.code).toList()),
-          db.rotation.code.equals(deck.rotation?.code),
+          db.rotation.code.equalsExp(drift.Variable(deck.rotation?.code)),
         ]),
       )
       .watch();
@@ -281,7 +281,7 @@ final deckRotationCardListProvider = StreamProvider.family<List<RotationCardResu
 final deckMwlCardListProvider = StreamProvider.family<List<MwlCardData>, DeckFullResult>((ref, deck) {
   final db = ref.watch(dbProvider);
   return db //
-      .listMwlCard(where: db.mwlCard.mwlCode.equals(deck.mwl?.code)) //
+      .listMwlCard(where: db.mwlCard.mwlCode.equalsExp(drift.Variable(deck.mwl?.code))) //
       .watch();
 }, dependencies: [
   dbProvider,

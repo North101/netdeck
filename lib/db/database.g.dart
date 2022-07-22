@@ -13,33 +13,18 @@ class TypeData extends DataClass implements Insertable<TypeData> {
   final int position;
   final String name;
   final bool isSubtype;
-  TypeData(
+  const TypeData(
       {required this.code,
       this.sideCode,
       required this.position,
       required this.name,
       required this.isSubtype});
-  factory TypeData.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return TypeData(
-      code: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}code'])!,
-      sideCode: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}side_code']),
-      position: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}position'])!,
-      name: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
-      isSubtype: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}is_subtype'])!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['code'] = Variable<String>(code);
     if (!nullToAbsent || sideCode != null) {
-      map['side_code'] = Variable<String?>(sideCode);
+      map['side_code'] = Variable<String>(sideCode);
     }
     map['position'] = Variable<int>(position);
     map['name'] = Variable<String>(name);
@@ -145,7 +130,7 @@ class TypeCompanion extends UpdateCompanion<TypeData> {
         isSubtype = Value(isSubtype);
   static Insertable<TypeData> custom({
     Expression<String>? code,
-    Expression<String?>? sideCode,
+    Expression<String>? sideCode,
     Expression<int>? position,
     Expression<String>? name,
     Expression<bool>? isSubtype,
@@ -181,7 +166,7 @@ class TypeCompanion extends UpdateCompanion<TypeData> {
       map['code'] = Variable<String>(code.value);
     }
     if (sideCode.present) {
-      map['side_code'] = Variable<String?>(sideCode.value);
+      map['side_code'] = Variable<String>(sideCode.value);
     }
     if (position.present) {
       map['position'] = Variable<int>(position.value);
@@ -214,33 +199,33 @@ class Type extends Table with TableInfo<Type, TypeData> {
   final String? _alias;
   Type(this.attachedDatabase, [this._alias]);
   final VerificationMeta _codeMeta = const VerificationMeta('code');
-  late final GeneratedColumn<String?> code = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
       'code', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'PRIMARY KEY NOT NULL');
   final VerificationMeta _sideCodeMeta = const VerificationMeta('sideCode');
-  late final GeneratedColumn<String?> sideCode = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> sideCode = GeneratedColumn<String>(
       'side_code', aliasedName, true,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _positionMeta = const VerificationMeta('position');
-  late final GeneratedColumn<int?> position = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
       'position', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _nameMeta = const VerificationMeta('name');
-  late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _isSubtypeMeta = const VerificationMeta('isSubtype');
-  late final GeneratedColumn<bool?> isSubtype = GeneratedColumn<bool?>(
+  late final GeneratedColumn<bool> isSubtype = GeneratedColumn<bool>(
       'is_subtype', aliasedName, false,
-      type: const BoolType(),
+      type: DriftSqlType.bool,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   @override
@@ -290,8 +275,19 @@ class Type extends Table with TableInfo<Type, TypeData> {
   Set<GeneratedColumn> get $primaryKey => {code};
   @override
   TypeData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return TypeData.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TypeData(
+      code: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
+      sideCode: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}side_code']),
+      position: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}position'])!,
+      name: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      isSubtype: attachedDatabase.options.types
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_subtype'])!,
+    );
   }
 
   @override
@@ -306,16 +302,7 @@ class Type extends Table with TableInfo<Type, TypeData> {
 class SideData extends DataClass implements Insertable<SideData> {
   final String code;
   final String name;
-  SideData({required this.code, required this.name});
-  factory SideData.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return SideData(
-      code: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}code'])!,
-      name: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
-    );
-  }
+  const SideData({required this.code, required this.name});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -426,15 +413,15 @@ class Side extends Table with TableInfo<Side, SideData> {
   final String? _alias;
   Side(this.attachedDatabase, [this._alias]);
   final VerificationMeta _codeMeta = const VerificationMeta('code');
-  late final GeneratedColumn<String?> code = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
       'code', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'PRIMARY KEY NOT NULL');
   final VerificationMeta _nameMeta = const VerificationMeta('name');
-  late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   @override
@@ -467,8 +454,13 @@ class Side extends Table with TableInfo<Side, SideData> {
   Set<GeneratedColumn> get $primaryKey => {code};
   @override
   SideData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return SideData.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SideData(
+      code: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
+      name: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+    );
   }
 
   @override
@@ -495,7 +487,7 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
   final CardSort compareCardSort;
   final bool apexResources;
   final CardGalleryPageView cardGalleryView;
-  SettingsData(
+  const SettingsData(
       {required this.id,
       this.filterFormatCode,
       this.filterRotationCode,
@@ -510,53 +502,18 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       required this.compareCardSort,
       required this.apexResources,
       required this.cardGalleryView});
-  factory SettingsData.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return SettingsData(
-      id: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      filterFormatCode: const StringType().mapFromDatabaseResponse(
-          data['${effectivePrefix}filter_format_code']),
-      filterRotationCode: const StringType().mapFromDatabaseResponse(
-          data['${effectivePrefix}filter_rotation_code']),
-      filterMwlCode: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}filter_mwl_code']),
-      filterCollection: const BoolType().mapFromDatabaseResponse(
-          data['${effectivePrefix}filter_collection'])!,
-      cardSort: Settings.$converter0.fromSql(const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}card_sort'])!),
-      cardGroup: Settings.$converter1.fromSql(const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}card_group'])!),
-      deckSort: Settings.$converter2.fromSql(const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}deck_sort'])!),
-      deckGroup: Settings.$converter3.fromSql(const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}deck_group'])!),
-      deckCardSort: Settings.$converter4.fromSql(const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}deck_card_sort'])!),
-      deckCardGroup: Settings.$converter5.fromSql(const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}deck_card_group'])!),
-      compareCardSort: Settings.$converter6.fromSql(const StringType()
-          .mapFromDatabaseResponse(
-              data['${effectivePrefix}compare_card_sort'])!),
-      apexResources: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}apex_resources'])!,
-      cardGalleryView: Settings.$converter7.fromSql(const StringType()
-          .mapFromDatabaseResponse(
-              data['${effectivePrefix}card_gallery_view'])!),
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<bool>(id);
     if (!nullToAbsent || filterFormatCode != null) {
-      map['filter_format_code'] = Variable<String?>(filterFormatCode);
+      map['filter_format_code'] = Variable<String>(filterFormatCode);
     }
     if (!nullToAbsent || filterRotationCode != null) {
-      map['filter_rotation_code'] = Variable<String?>(filterRotationCode);
+      map['filter_rotation_code'] = Variable<String>(filterRotationCode);
     }
     if (!nullToAbsent || filterMwlCode != null) {
-      map['filter_mwl_code'] = Variable<String?>(filterMwlCode);
+      map['filter_mwl_code'] = Variable<String>(filterMwlCode);
     }
     map['filter_collection'] = Variable<bool>(filterCollection);
     {
@@ -823,19 +780,19 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
   });
   static Insertable<SettingsData> custom({
     Expression<bool>? id,
-    Expression<String?>? filterFormatCode,
-    Expression<String?>? filterRotationCode,
-    Expression<String?>? filterMwlCode,
+    Expression<String>? filterFormatCode,
+    Expression<String>? filterRotationCode,
+    Expression<String>? filterMwlCode,
     Expression<bool>? filterCollection,
-    Expression<CardSort>? cardSort,
-    Expression<CardGroup>? cardGroup,
-    Expression<DeckSort>? deckSort,
-    Expression<DeckGroup>? deckGroup,
-    Expression<CardSort>? deckCardSort,
-    Expression<CardGroup>? deckCardGroup,
-    Expression<CardSort>? compareCardSort,
+    Expression<String>? cardSort,
+    Expression<String>? cardGroup,
+    Expression<String>? deckSort,
+    Expression<String>? deckGroup,
+    Expression<String>? deckCardSort,
+    Expression<String>? deckCardGroup,
+    Expression<String>? compareCardSort,
     Expression<bool>? apexResources,
-    Expression<CardGalleryPageView>? cardGalleryView,
+    Expression<String>? cardGalleryView,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -896,13 +853,13 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       map['id'] = Variable<bool>(id.value);
     }
     if (filterFormatCode.present) {
-      map['filter_format_code'] = Variable<String?>(filterFormatCode.value);
+      map['filter_format_code'] = Variable<String>(filterFormatCode.value);
     }
     if (filterRotationCode.present) {
-      map['filter_rotation_code'] = Variable<String?>(filterRotationCode.value);
+      map['filter_rotation_code'] = Variable<String>(filterRotationCode.value);
     }
     if (filterMwlCode.present) {
-      map['filter_mwl_code'] = Variable<String?>(filterMwlCode.value);
+      map['filter_mwl_code'] = Variable<String>(filterMwlCode.value);
     }
     if (filterCollection.present) {
       map['filter_collection'] = Variable<bool>(filterCollection.value);
@@ -977,119 +934,118 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
   final String? _alias;
   Settings(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
-  late final GeneratedColumn<bool?> id = GeneratedColumn<bool?>(
+  late final GeneratedColumn<bool> id = GeneratedColumn<bool>(
       'id', aliasedName, false,
-      type: const BoolType(),
+      type: DriftSqlType.bool,
       requiredDuringInsert: false,
       $customConstraints: 'PRIMARY KEY NOT NULL DEFAULT TRUE',
       defaultValue: const CustomExpression<bool>('TRUE'));
   final VerificationMeta _filterFormatCodeMeta =
       const VerificationMeta('filterFormatCode');
-  late final GeneratedColumn<String?> filterFormatCode =
-      GeneratedColumn<String?>('filter_format_code', aliasedName, true,
-          type: const StringType(),
-          requiredDuringInsert: false,
-          $customConstraints: 'DEFAULT NULL',
-          defaultValue: const CustomExpression<String>('NULL'));
+  late final GeneratedColumn<String> filterFormatCode = GeneratedColumn<String>(
+      'filter_format_code', aliasedName, true,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      $customConstraints: 'DEFAULT NULL',
+      defaultValue: const CustomExpression<String>('NULL'));
   final VerificationMeta _filterRotationCodeMeta =
       const VerificationMeta('filterRotationCode');
-  late final GeneratedColumn<String?> filterRotationCode =
-      GeneratedColumn<String?>('filter_rotation_code', aliasedName, true,
-          type: const StringType(),
+  late final GeneratedColumn<String> filterRotationCode =
+      GeneratedColumn<String>('filter_rotation_code', aliasedName, true,
+          type: DriftSqlType.string,
           requiredDuringInsert: false,
           $customConstraints: 'DEFAULT NULL',
           defaultValue: const CustomExpression<String>('NULL'));
   final VerificationMeta _filterMwlCodeMeta =
       const VerificationMeta('filterMwlCode');
-  late final GeneratedColumn<String?> filterMwlCode = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> filterMwlCode = GeneratedColumn<String>(
       'filter_mwl_code', aliasedName, true,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: false,
       $customConstraints: 'DEFAULT NULL',
       defaultValue: const CustomExpression<String>('NULL'));
   final VerificationMeta _filterCollectionMeta =
       const VerificationMeta('filterCollection');
-  late final GeneratedColumn<bool?> filterCollection = GeneratedColumn<bool?>(
+  late final GeneratedColumn<bool> filterCollection = GeneratedColumn<bool>(
       'filter_collection', aliasedName, false,
-      type: const BoolType(),
+      type: DriftSqlType.bool,
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL DEFAULT FALSE',
       defaultValue: const CustomExpression<bool>('FALSE'));
   final VerificationMeta _cardSortMeta = const VerificationMeta('cardSort');
-  late final GeneratedColumnWithTypeConverter<CardSort, String?> cardSort =
-      GeneratedColumn<String?>('card_sort', aliasedName, false,
-              type: const StringType(),
+  late final GeneratedColumnWithTypeConverter<CardSort, String> cardSort =
+      GeneratedColumn<String>('card_sort', aliasedName, false,
+              type: DriftSqlType.string,
               requiredDuringInsert: false,
               $customConstraints: 'NOT NULL DEFAULT \'\'',
               defaultValue: const CustomExpression<String>('\'\''))
           .withConverter<CardSort>(Settings.$converter0);
   final VerificationMeta _cardGroupMeta = const VerificationMeta('cardGroup');
-  late final GeneratedColumnWithTypeConverter<CardGroup, String?> cardGroup =
-      GeneratedColumn<String?>('card_group', aliasedName, false,
-              type: const StringType(),
+  late final GeneratedColumnWithTypeConverter<CardGroup, String> cardGroup =
+      GeneratedColumn<String>('card_group', aliasedName, false,
+              type: DriftSqlType.string,
               requiredDuringInsert: false,
               $customConstraints: 'NOT NULL DEFAULT \'\'',
               defaultValue: const CustomExpression<String>('\'\''))
           .withConverter<CardGroup>(Settings.$converter1);
   final VerificationMeta _deckSortMeta = const VerificationMeta('deckSort');
-  late final GeneratedColumnWithTypeConverter<DeckSort, String?> deckSort =
-      GeneratedColumn<String?>('deck_sort', aliasedName, false,
-              type: const StringType(),
+  late final GeneratedColumnWithTypeConverter<DeckSort, String> deckSort =
+      GeneratedColumn<String>('deck_sort', aliasedName, false,
+              type: DriftSqlType.string,
               requiredDuringInsert: false,
               $customConstraints: 'NOT NULL DEFAULT \'\'',
               defaultValue: const CustomExpression<String>('\'\''))
           .withConverter<DeckSort>(Settings.$converter2);
   final VerificationMeta _deckGroupMeta = const VerificationMeta('deckGroup');
-  late final GeneratedColumnWithTypeConverter<DeckGroup, String?> deckGroup =
-      GeneratedColumn<String?>('deck_group', aliasedName, false,
-              type: const StringType(),
+  late final GeneratedColumnWithTypeConverter<DeckGroup, String> deckGroup =
+      GeneratedColumn<String>('deck_group', aliasedName, false,
+              type: DriftSqlType.string,
               requiredDuringInsert: false,
               $customConstraints: 'NOT NULL DEFAULT \'\'',
               defaultValue: const CustomExpression<String>('\'\''))
           .withConverter<DeckGroup>(Settings.$converter3);
   final VerificationMeta _deckCardSortMeta =
       const VerificationMeta('deckCardSort');
-  late final GeneratedColumnWithTypeConverter<CardSort, String?> deckCardSort =
-      GeneratedColumn<String?>('deck_card_sort', aliasedName, false,
-              type: const StringType(),
+  late final GeneratedColumnWithTypeConverter<CardSort, String> deckCardSort =
+      GeneratedColumn<String>('deck_card_sort', aliasedName, false,
+              type: DriftSqlType.string,
               requiredDuringInsert: false,
               $customConstraints: 'NOT NULL DEFAULT \'\'',
               defaultValue: const CustomExpression<String>('\'\''))
           .withConverter<CardSort>(Settings.$converter4);
   final VerificationMeta _deckCardGroupMeta =
       const VerificationMeta('deckCardGroup');
-  late final GeneratedColumnWithTypeConverter<CardGroup, String?>
-      deckCardGroup = GeneratedColumn<String?>(
-              'deck_card_group', aliasedName, false,
-              type: const StringType(),
+  late final GeneratedColumnWithTypeConverter<CardGroup, String> deckCardGroup =
+      GeneratedColumn<String>('deck_card_group', aliasedName, false,
+              type: DriftSqlType.string,
               requiredDuringInsert: false,
               $customConstraints: 'NOT NULL DEFAULT \'\'',
               defaultValue: const CustomExpression<String>('\'\''))
           .withConverter<CardGroup>(Settings.$converter5);
   final VerificationMeta _compareCardSortMeta =
       const VerificationMeta('compareCardSort');
-  late final GeneratedColumnWithTypeConverter<CardSort, String?>
-      compareCardSort = GeneratedColumn<String?>(
+  late final GeneratedColumnWithTypeConverter<CardSort, String>
+      compareCardSort = GeneratedColumn<String>(
               'compare_card_sort', aliasedName, false,
-              type: const StringType(),
+              type: DriftSqlType.string,
               requiredDuringInsert: false,
               $customConstraints: 'NOT NULL DEFAULT \'\'',
               defaultValue: const CustomExpression<String>('\'\''))
           .withConverter<CardSort>(Settings.$converter6);
   final VerificationMeta _apexResourcesMeta =
       const VerificationMeta('apexResources');
-  late final GeneratedColumn<bool?> apexResources = GeneratedColumn<bool?>(
+  late final GeneratedColumn<bool> apexResources = GeneratedColumn<bool>(
       'apex_resources', aliasedName, false,
-      type: const BoolType(),
+      type: DriftSqlType.bool,
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL DEFAULT FALSE',
       defaultValue: const CustomExpression<bool>('FALSE'));
   final VerificationMeta _cardGalleryViewMeta =
       const VerificationMeta('cardGalleryView');
-  late final GeneratedColumnWithTypeConverter<CardGalleryPageView, String?>
-      cardGalleryView = GeneratedColumn<String?>(
+  late final GeneratedColumnWithTypeConverter<CardGalleryPageView, String>
+      cardGalleryView = GeneratedColumn<String>(
               'card_gallery_view', aliasedName, false,
-              type: const StringType(),
+              type: DriftSqlType.string,
               requiredDuringInsert: false,
               $customConstraints: 'NOT NULL DEFAULT \'\'',
               defaultValue: const CustomExpression<String>('\'\''))
@@ -1168,8 +1124,41 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   SettingsData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return SettingsData.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SettingsData(
+      id: attachedDatabase.options.types
+          .read(DriftSqlType.bool, data['${effectivePrefix}id'])!,
+      filterFormatCode: attachedDatabase.options.types.read(
+          DriftSqlType.string, data['${effectivePrefix}filter_format_code']),
+      filterRotationCode: attachedDatabase.options.types.read(
+          DriftSqlType.string, data['${effectivePrefix}filter_rotation_code']),
+      filterMwlCode: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}filter_mwl_code']),
+      filterCollection: attachedDatabase.options.types.read(
+          DriftSqlType.bool, data['${effectivePrefix}filter_collection'])!,
+      cardSort: Settings.$converter0.fromSql(attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}card_sort'])!),
+      cardGroup: Settings.$converter1.fromSql(attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}card_group'])!),
+      deckSort: Settings.$converter2.fromSql(attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}deck_sort'])!),
+      deckGroup: Settings.$converter3.fromSql(attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}deck_group'])!),
+      deckCardSort: Settings.$converter4.fromSql(attachedDatabase.options.types
+          .read(
+              DriftSqlType.string, data['${effectivePrefix}deck_card_sort'])!),
+      deckCardGroup: Settings.$converter5.fromSql(attachedDatabase.options.types
+          .read(
+              DriftSqlType.string, data['${effectivePrefix}deck_card_group'])!),
+      compareCardSort: Settings.$converter6.fromSql(
+          attachedDatabase.options.types.read(DriftSqlType.string,
+              data['${effectivePrefix}compare_card_sort'])!),
+      apexResources: attachedDatabase.options.types
+          .read(DriftSqlType.bool, data['${effectivePrefix}apex_resources'])!,
+      cardGalleryView: Settings.$converter7.fromSql(
+          attachedDatabase.options.types.read(DriftSqlType.string,
+              data['${effectivePrefix}card_gallery_view'])!),
+    );
   }
 
   @override
@@ -1206,27 +1195,12 @@ class RotationData extends DataClass implements Insertable<RotationData> {
   final String name;
   final DateTime? dateStart;
   final RotationType? type;
-  RotationData(
+  const RotationData(
       {required this.code,
       required this.formatCode,
       required this.name,
       this.dateStart,
       this.type});
-  factory RotationData.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return RotationData(
-      code: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}code'])!,
-      formatCode: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}format_code'])!,
-      name: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
-      dateStart: Rotation.$converter0n.fromSql(const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}date_start'])),
-      type: Rotation.$converter1n.fromSql(const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}type'])),
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1235,11 +1209,11 @@ class RotationData extends DataClass implements Insertable<RotationData> {
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || dateStart != null) {
       final converter = Rotation.$converter0n;
-      map['date_start'] = Variable<int?>(converter.toSql(dateStart));
+      map['date_start'] = Variable<int>(converter.toSql(dateStart));
     }
     if (!nullToAbsent || type != null) {
       final converter = Rotation.$converter1n;
-      map['type'] = Variable<String?>(converter.toSql(type));
+      map['type'] = Variable<String>(converter.toSql(type));
     }
     return map;
   }
@@ -1346,8 +1320,8 @@ class RotationCompanion extends UpdateCompanion<RotationData> {
     Expression<String>? code,
     Expression<String>? formatCode,
     Expression<String>? name,
-    Expression<DateTime?>? dateStart,
-    Expression<RotationType?>? type,
+    Expression<int>? dateStart,
+    Expression<String>? type,
   }) {
     return RawValuesInsertable({
       if (code != null) 'code': code,
@@ -1387,11 +1361,11 @@ class RotationCompanion extends UpdateCompanion<RotationData> {
     }
     if (dateStart.present) {
       final converter = Rotation.$converter0n;
-      map['date_start'] = Variable<int?>(converter.toSql(dateStart.value));
+      map['date_start'] = Variable<int>(converter.toSql(dateStart.value));
     }
     if (type.present) {
       final converter = Rotation.$converter1n;
-      map['type'] = Variable<String?>(converter.toSql(type.value));
+      map['type'] = Variable<String>(converter.toSql(type.value));
     }
     return map;
   }
@@ -1415,34 +1389,34 @@ class Rotation extends Table with TableInfo<Rotation, RotationData> {
   final String? _alias;
   Rotation(this.attachedDatabase, [this._alias]);
   final VerificationMeta _codeMeta = const VerificationMeta('code');
-  late final GeneratedColumn<String?> code = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
       'code', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL PRIMARY KEY');
   final VerificationMeta _formatCodeMeta = const VerificationMeta('formatCode');
-  late final GeneratedColumn<String?> formatCode = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> formatCode = GeneratedColumn<String>(
       'format_code', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _nameMeta = const VerificationMeta('name');
-  late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _dateStartMeta = const VerificationMeta('dateStart');
-  late final GeneratedColumnWithTypeConverter<DateTime?, int?> dateStart =
-      GeneratedColumn<int?>('date_start', aliasedName, true,
-              type: const IntType(),
+  late final GeneratedColumnWithTypeConverter<DateTime?, int> dateStart =
+      GeneratedColumn<int>('date_start', aliasedName, true,
+              type: DriftSqlType.int,
               requiredDuringInsert: false,
               $customConstraints: '')
           .withConverter<DateTime?>(Rotation.$converter0n);
   final VerificationMeta _typeMeta = const VerificationMeta('type');
-  late final GeneratedColumnWithTypeConverter<RotationType?, String?> type =
-      GeneratedColumn<String?>('type', aliasedName, true,
-              type: const StringType(),
+  late final GeneratedColumnWithTypeConverter<RotationType?, String> type =
+      GeneratedColumn<String>('type', aliasedName, true,
+              type: DriftSqlType.string,
               requiredDuringInsert: false,
               $customConstraints: '')
           .withConverter<RotationType?>(Rotation.$converter1n);
@@ -1487,8 +1461,19 @@ class Rotation extends Table with TableInfo<Rotation, RotationData> {
   Set<GeneratedColumn> get $primaryKey => {code};
   @override
   RotationData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return RotationData.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RotationData(
+      code: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
+      formatCode: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}format_code'])!,
+      name: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      dateStart: Rotation.$converter0n.fromSql(attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}date_start'])),
+      type: Rotation.$converter1n.fromSql(attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}type'])),
+    );
   }
 
   @override
@@ -1512,17 +1497,8 @@ class RotationCycleData extends DataClass
     implements Insertable<RotationCycleData> {
   final String rotationCode;
   final String cycleCode;
-  RotationCycleData({required this.rotationCode, required this.cycleCode});
-  factory RotationCycleData.fromData(Map<String, dynamic> data,
-      {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return RotationCycleData(
-      rotationCode: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}rotation_code'])!,
-      cycleCode: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}cycle_code'])!,
-    );
-  }
+  const RotationCycleData(
+      {required this.rotationCode, required this.cycleCode});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1639,15 +1615,15 @@ class RotationCycle extends Table
   RotationCycle(this.attachedDatabase, [this._alias]);
   final VerificationMeta _rotationCodeMeta =
       const VerificationMeta('rotationCode');
-  late final GeneratedColumn<String?> rotationCode = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> rotationCode = GeneratedColumn<String>(
       'rotation_code', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _cycleCodeMeta = const VerificationMeta('cycleCode');
-  late final GeneratedColumn<String?> cycleCode = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> cycleCode = GeneratedColumn<String>(
       'cycle_code', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   @override
@@ -1682,8 +1658,13 @@ class RotationCycle extends Table
   Set<GeneratedColumn> get $primaryKey => {rotationCode, cycleCode};
   @override
   RotationCycleData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return RotationCycleData.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RotationCycleData(
+      rotationCode: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}rotation_code'])!,
+      cycleCode: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}cycle_code'])!,
+    );
   }
 
   @override
@@ -1705,30 +1686,13 @@ class PackData extends DataClass implements Insertable<PackData> {
   final String name;
   final DateTime? dateRelease;
   final int? size;
-  PackData(
+  const PackData(
       {required this.code,
       required this.cycleCode,
       required this.position,
       required this.name,
       this.dateRelease,
       this.size});
-  factory PackData.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return PackData(
-      code: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}code'])!,
-      cycleCode: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}cycle_code'])!,
-      position: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}position'])!,
-      name: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
-      dateRelease: Pack.$converter0n.fromSql(const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}date_release'])),
-      size: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}size']),
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1738,10 +1702,10 @@ class PackData extends DataClass implements Insertable<PackData> {
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || dateRelease != null) {
       final converter = Pack.$converter0n;
-      map['date_release'] = Variable<int?>(converter.toSql(dateRelease));
+      map['date_release'] = Variable<int>(converter.toSql(dateRelease));
     }
     if (!nullToAbsent || size != null) {
-      map['size'] = Variable<int?>(size);
+      map['size'] = Variable<int>(size);
     }
     return map;
   }
@@ -1860,8 +1824,8 @@ class PackCompanion extends UpdateCompanion<PackData> {
     Expression<String>? cycleCode,
     Expression<int>? position,
     Expression<String>? name,
-    Expression<DateTime?>? dateRelease,
-    Expression<int?>? size,
+    Expression<int>? dateRelease,
+    Expression<int>? size,
   }) {
     return RawValuesInsertable({
       if (code != null) 'code': code,
@@ -1907,10 +1871,10 @@ class PackCompanion extends UpdateCompanion<PackData> {
     }
     if (dateRelease.present) {
       final converter = Pack.$converter0n;
-      map['date_release'] = Variable<int?>(converter.toSql(dateRelease.value));
+      map['date_release'] = Variable<int>(converter.toSql(dateRelease.value));
     }
     if (size.present) {
-      map['size'] = Variable<int?>(size.value);
+      map['size'] = Variable<int>(size.value);
     }
     return map;
   }
@@ -1935,41 +1899,41 @@ class Pack extends Table with TableInfo<Pack, PackData> {
   final String? _alias;
   Pack(this.attachedDatabase, [this._alias]);
   final VerificationMeta _codeMeta = const VerificationMeta('code');
-  late final GeneratedColumn<String?> code = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
       'code', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'PRIMARY KEY NOT NULL');
   final VerificationMeta _cycleCodeMeta = const VerificationMeta('cycleCode');
-  late final GeneratedColumn<String?> cycleCode = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> cycleCode = GeneratedColumn<String>(
       'cycle_code', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _positionMeta = const VerificationMeta('position');
-  late final GeneratedColumn<int?> position = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
       'position', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _nameMeta = const VerificationMeta('name');
-  late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _dateReleaseMeta =
       const VerificationMeta('dateRelease');
-  late final GeneratedColumnWithTypeConverter<DateTime?, int?> dateRelease =
-      GeneratedColumn<int?>('date_release', aliasedName, true,
-              type: const IntType(),
+  late final GeneratedColumnWithTypeConverter<DateTime?, int> dateRelease =
+      GeneratedColumn<int>('date_release', aliasedName, true,
+              type: DriftSqlType.int,
               requiredDuringInsert: false,
               $customConstraints: '')
           .withConverter<DateTime?>(Pack.$converter0n);
   final VerificationMeta _sizeMeta = const VerificationMeta('size');
-  late final GeneratedColumn<int?> size = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> size = GeneratedColumn<int>(
       'size', aliasedName, true,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: '');
   @override
@@ -2020,8 +1984,21 @@ class Pack extends Table with TableInfo<Pack, PackData> {
   Set<GeneratedColumn> get $primaryKey => {code};
   @override
   PackData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return PackData.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return PackData(
+      code: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
+      cycleCode: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}cycle_code'])!,
+      position: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}position'])!,
+      name: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      dateRelease: Pack.$converter0n.fromSql(attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}date_release'])),
+      size: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}size']),
+    );
   }
 
   @override
@@ -2049,7 +2026,7 @@ class NrdbData extends DataClass implements Insertable<NrdbData> {
   final DateTime formatLastUpdated;
   final DateTime rotationLastUpdated;
   final DateTime mwlLastUpdated;
-  NrdbData(
+  const NrdbData(
       {required this.id,
       required this.expires,
       required this.cycleLastUpdated,
@@ -2061,42 +2038,6 @@ class NrdbData extends DataClass implements Insertable<NrdbData> {
       required this.formatLastUpdated,
       required this.rotationLastUpdated,
       required this.mwlLastUpdated});
-  factory NrdbData.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return NrdbData(
-      id: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      expires: Nrdb.$converter0.fromSql(const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}expires'])!),
-      cycleLastUpdated: Nrdb.$converter1.fromSql(const IntType()
-          .mapFromDatabaseResponse(
-              data['${effectivePrefix}cycle_last_updated'])!),
-      packLastUpdated: Nrdb.$converter2.fromSql(const IntType()
-          .mapFromDatabaseResponse(
-              data['${effectivePrefix}pack_last_updated'])!),
-      sideLastUpdated: Nrdb.$converter3.fromSql(const IntType()
-          .mapFromDatabaseResponse(
-              data['${effectivePrefix}side_last_updated'])!),
-      factionLastUpdated: Nrdb.$converter4.fromSql(const IntType()
-          .mapFromDatabaseResponse(
-              data['${effectivePrefix}faction_last_updated'])!),
-      typeLastUpdated: Nrdb.$converter5.fromSql(const IntType()
-          .mapFromDatabaseResponse(
-              data['${effectivePrefix}type_last_updated'])!),
-      cardLastUpdated: Nrdb.$converter6.fromSql(const IntType()
-          .mapFromDatabaseResponse(
-              data['${effectivePrefix}card_last_updated'])!),
-      formatLastUpdated: Nrdb.$converter7.fromSql(const IntType()
-          .mapFromDatabaseResponse(
-              data['${effectivePrefix}format_last_updated'])!),
-      rotationLastUpdated: Nrdb.$converter8.fromSql(const IntType()
-          .mapFromDatabaseResponse(
-              data['${effectivePrefix}rotation_last_updated'])!),
-      mwlLastUpdated: Nrdb.$converter9.fromSql(const IntType()
-          .mapFromDatabaseResponse(
-              data['${effectivePrefix}mwl_last_updated'])!),
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -2344,16 +2285,16 @@ class NrdbCompanion extends UpdateCompanion<NrdbData> {
         mwlLastUpdated = Value(mwlLastUpdated);
   static Insertable<NrdbData> custom({
     Expression<bool>? id,
-    Expression<DateTime>? expires,
-    Expression<DateTime>? cycleLastUpdated,
-    Expression<DateTime>? packLastUpdated,
-    Expression<DateTime>? sideLastUpdated,
-    Expression<DateTime>? factionLastUpdated,
-    Expression<DateTime>? typeLastUpdated,
-    Expression<DateTime>? cardLastUpdated,
-    Expression<DateTime>? formatLastUpdated,
-    Expression<DateTime>? rotationLastUpdated,
-    Expression<DateTime>? mwlLastUpdated,
+    Expression<int>? expires,
+    Expression<int>? cycleLastUpdated,
+    Expression<int>? packLastUpdated,
+    Expression<int>? sideLastUpdated,
+    Expression<int>? factionLastUpdated,
+    Expression<int>? typeLastUpdated,
+    Expression<int>? cardLastUpdated,
+    Expression<int>? formatLastUpdated,
+    Expression<int>? rotationLastUpdated,
+    Expression<int>? mwlLastUpdated,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2482,91 +2423,90 @@ class Nrdb extends Table with TableInfo<Nrdb, NrdbData> {
   final String? _alias;
   Nrdb(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
-  late final GeneratedColumn<bool?> id = GeneratedColumn<bool?>(
+  late final GeneratedColumn<bool> id = GeneratedColumn<bool>(
       'id', aliasedName, false,
-      type: const BoolType(),
+      type: DriftSqlType.bool,
       requiredDuringInsert: false,
       $customConstraints: 'PRIMARY KEY NOT NULL DEFAULT TRUE',
       defaultValue: const CustomExpression<bool>('TRUE'));
   final VerificationMeta _expiresMeta = const VerificationMeta('expires');
-  late final GeneratedColumnWithTypeConverter<DateTime, int?> expires =
-      GeneratedColumn<int?>('expires', aliasedName, false,
-              type: const IntType(),
+  late final GeneratedColumnWithTypeConverter<DateTime, int> expires =
+      GeneratedColumn<int>('expires', aliasedName, false,
+              type: DriftSqlType.int,
               requiredDuringInsert: true,
               $customConstraints: 'NOT NULL')
           .withConverter<DateTime>(Nrdb.$converter0);
   final VerificationMeta _cycleLastUpdatedMeta =
       const VerificationMeta('cycleLastUpdated');
-  late final GeneratedColumnWithTypeConverter<DateTime, int?> cycleLastUpdated =
-      GeneratedColumn<int?>('cycle_last_updated', aliasedName, false,
-              type: const IntType(),
+  late final GeneratedColumnWithTypeConverter<DateTime, int> cycleLastUpdated =
+      GeneratedColumn<int>('cycle_last_updated', aliasedName, false,
+              type: DriftSqlType.int,
               requiredDuringInsert: true,
               $customConstraints: 'NOT NULL')
           .withConverter<DateTime>(Nrdb.$converter1);
   final VerificationMeta _packLastUpdatedMeta =
       const VerificationMeta('packLastUpdated');
-  late final GeneratedColumnWithTypeConverter<DateTime, int?> packLastUpdated =
-      GeneratedColumn<int?>('pack_last_updated', aliasedName, false,
-              type: const IntType(),
+  late final GeneratedColumnWithTypeConverter<DateTime, int> packLastUpdated =
+      GeneratedColumn<int>('pack_last_updated', aliasedName, false,
+              type: DriftSqlType.int,
               requiredDuringInsert: true,
               $customConstraints: 'NOT NULL')
           .withConverter<DateTime>(Nrdb.$converter2);
   final VerificationMeta _sideLastUpdatedMeta =
       const VerificationMeta('sideLastUpdated');
-  late final GeneratedColumnWithTypeConverter<DateTime, int?> sideLastUpdated =
-      GeneratedColumn<int?>('side_last_updated', aliasedName, false,
-              type: const IntType(),
+  late final GeneratedColumnWithTypeConverter<DateTime, int> sideLastUpdated =
+      GeneratedColumn<int>('side_last_updated', aliasedName, false,
+              type: DriftSqlType.int,
               requiredDuringInsert: true,
               $customConstraints: 'NOT NULL')
           .withConverter<DateTime>(Nrdb.$converter3);
   final VerificationMeta _factionLastUpdatedMeta =
       const VerificationMeta('factionLastUpdated');
-  late final GeneratedColumnWithTypeConverter<DateTime, int?>
-      factionLastUpdated = GeneratedColumn<int?>(
+  late final GeneratedColumnWithTypeConverter<DateTime, int>
+      factionLastUpdated = GeneratedColumn<int>(
               'faction_last_updated', aliasedName, false,
-              type: const IntType(),
+              type: DriftSqlType.int,
               requiredDuringInsert: true,
               $customConstraints: 'NOT NULL')
           .withConverter<DateTime>(Nrdb.$converter4);
   final VerificationMeta _typeLastUpdatedMeta =
       const VerificationMeta('typeLastUpdated');
-  late final GeneratedColumnWithTypeConverter<DateTime, int?> typeLastUpdated =
-      GeneratedColumn<int?>('type_last_updated', aliasedName, false,
-              type: const IntType(),
+  late final GeneratedColumnWithTypeConverter<DateTime, int> typeLastUpdated =
+      GeneratedColumn<int>('type_last_updated', aliasedName, false,
+              type: DriftSqlType.int,
               requiredDuringInsert: true,
               $customConstraints: 'NOT NULL')
           .withConverter<DateTime>(Nrdb.$converter5);
   final VerificationMeta _cardLastUpdatedMeta =
       const VerificationMeta('cardLastUpdated');
-  late final GeneratedColumnWithTypeConverter<DateTime, int?> cardLastUpdated =
-      GeneratedColumn<int?>('card_last_updated', aliasedName, false,
-              type: const IntType(),
+  late final GeneratedColumnWithTypeConverter<DateTime, int> cardLastUpdated =
+      GeneratedColumn<int>('card_last_updated', aliasedName, false,
+              type: DriftSqlType.int,
               requiredDuringInsert: true,
               $customConstraints: 'NOT NULL')
           .withConverter<DateTime>(Nrdb.$converter6);
   final VerificationMeta _formatLastUpdatedMeta =
       const VerificationMeta('formatLastUpdated');
-  late final GeneratedColumnWithTypeConverter<DateTime, int?>
-      formatLastUpdated = GeneratedColumn<int?>(
-              'format_last_updated', aliasedName, false,
-              type: const IntType(),
+  late final GeneratedColumnWithTypeConverter<DateTime, int> formatLastUpdated =
+      GeneratedColumn<int>('format_last_updated', aliasedName, false,
+              type: DriftSqlType.int,
               requiredDuringInsert: true,
               $customConstraints: 'NOT NULL')
           .withConverter<DateTime>(Nrdb.$converter7);
   final VerificationMeta _rotationLastUpdatedMeta =
       const VerificationMeta('rotationLastUpdated');
-  late final GeneratedColumnWithTypeConverter<DateTime, int?>
-      rotationLastUpdated = GeneratedColumn<int?>(
+  late final GeneratedColumnWithTypeConverter<DateTime, int>
+      rotationLastUpdated = GeneratedColumn<int>(
               'rotation_last_updated', aliasedName, false,
-              type: const IntType(),
+              type: DriftSqlType.int,
               requiredDuringInsert: true,
               $customConstraints: 'NOT NULL')
           .withConverter<DateTime>(Nrdb.$converter8);
   final VerificationMeta _mwlLastUpdatedMeta =
       const VerificationMeta('mwlLastUpdated');
-  late final GeneratedColumnWithTypeConverter<DateTime, int?> mwlLastUpdated =
-      GeneratedColumn<int?>('mwl_last_updated', aliasedName, false,
-              type: const IntType(),
+  late final GeneratedColumnWithTypeConverter<DateTime, int> mwlLastUpdated =
+      GeneratedColumn<int>('mwl_last_updated', aliasedName, false,
+              type: DriftSqlType.int,
               requiredDuringInsert: true,
               $customConstraints: 'NOT NULL')
           .withConverter<DateTime>(Nrdb.$converter9);
@@ -2614,8 +2554,39 @@ class Nrdb extends Table with TableInfo<Nrdb, NrdbData> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   NrdbData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return NrdbData.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return NrdbData(
+      id: attachedDatabase.options.types
+          .read(DriftSqlType.bool, data['${effectivePrefix}id'])!,
+      expires: Nrdb.$converter0.fromSql(attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}expires'])!),
+      cycleLastUpdated: Nrdb.$converter1.fromSql(attachedDatabase.options.types
+          .read(
+              DriftSqlType.int, data['${effectivePrefix}cycle_last_updated'])!),
+      packLastUpdated: Nrdb.$converter2.fromSql(attachedDatabase.options.types
+          .read(
+              DriftSqlType.int, data['${effectivePrefix}pack_last_updated'])!),
+      sideLastUpdated: Nrdb.$converter3.fromSql(attachedDatabase.options.types
+          .read(
+              DriftSqlType.int, data['${effectivePrefix}side_last_updated'])!),
+      factionLastUpdated: Nrdb.$converter4.fromSql(
+          attachedDatabase.options.types.read(DriftSqlType.int,
+              data['${effectivePrefix}faction_last_updated'])!),
+      typeLastUpdated: Nrdb.$converter5.fromSql(attachedDatabase.options.types
+          .read(
+              DriftSqlType.int, data['${effectivePrefix}type_last_updated'])!),
+      cardLastUpdated: Nrdb.$converter6.fromSql(attachedDatabase.options.types
+          .read(
+              DriftSqlType.int, data['${effectivePrefix}card_last_updated'])!),
+      formatLastUpdated: Nrdb.$converter7.fromSql(attachedDatabase.options.types
+          .read(DriftSqlType.int,
+              data['${effectivePrefix}format_last_updated'])!),
+      rotationLastUpdated: Nrdb.$converter8.fromSql(
+          attachedDatabase.options.types.read(DriftSqlType.int,
+              data['${effectivePrefix}rotation_last_updated'])!),
+      mwlLastUpdated: Nrdb.$converter9.fromSql(attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}mwl_last_updated'])!),
+    );
   }
 
   @override
@@ -2658,7 +2629,7 @@ class MwlData extends DataClass implements Insertable<MwlData> {
   final MwlType? type;
   final int? runnerPoints;
   final int? corpPoints;
-  MwlData(
+  const MwlData(
       {required this.code,
       required this.formatCode,
       required this.name,
@@ -2666,25 +2637,6 @@ class MwlData extends DataClass implements Insertable<MwlData> {
       this.type,
       this.runnerPoints,
       this.corpPoints});
-  factory MwlData.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return MwlData(
-      code: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}code'])!,
-      formatCode: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}format_code'])!,
-      name: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
-      dateStart: Mwl.$converter0n.fromSql(const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}date_start'])),
-      type: Mwl.$converter1n.fromSql(const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}type'])),
-      runnerPoints: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}runner_points']),
-      corpPoints: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}corp_points']),
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -2693,17 +2645,17 @@ class MwlData extends DataClass implements Insertable<MwlData> {
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || dateStart != null) {
       final converter = Mwl.$converter0n;
-      map['date_start'] = Variable<int?>(converter.toSql(dateStart));
+      map['date_start'] = Variable<int>(converter.toSql(dateStart));
     }
     if (!nullToAbsent || type != null) {
       final converter = Mwl.$converter1n;
-      map['type'] = Variable<String?>(converter.toSql(type));
+      map['type'] = Variable<String>(converter.toSql(type));
     }
     if (!nullToAbsent || runnerPoints != null) {
-      map['runner_points'] = Variable<int?>(runnerPoints);
+      map['runner_points'] = Variable<int>(runnerPoints);
     }
     if (!nullToAbsent || corpPoints != null) {
-      map['corp_points'] = Variable<int?>(corpPoints);
+      map['corp_points'] = Variable<int>(corpPoints);
     }
     return map;
   }
@@ -2835,10 +2787,10 @@ class MwlCompanion extends UpdateCompanion<MwlData> {
     Expression<String>? code,
     Expression<String>? formatCode,
     Expression<String>? name,
-    Expression<DateTime?>? dateStart,
-    Expression<MwlType?>? type,
-    Expression<int?>? runnerPoints,
-    Expression<int?>? corpPoints,
+    Expression<int>? dateStart,
+    Expression<String>? type,
+    Expression<int>? runnerPoints,
+    Expression<int>? corpPoints,
   }) {
     return RawValuesInsertable({
       if (code != null) 'code': code,
@@ -2884,17 +2836,17 @@ class MwlCompanion extends UpdateCompanion<MwlData> {
     }
     if (dateStart.present) {
       final converter = Mwl.$converter0n;
-      map['date_start'] = Variable<int?>(converter.toSql(dateStart.value));
+      map['date_start'] = Variable<int>(converter.toSql(dateStart.value));
     }
     if (type.present) {
       final converter = Mwl.$converter1n;
-      map['type'] = Variable<String?>(converter.toSql(type.value));
+      map['type'] = Variable<String>(converter.toSql(type.value));
     }
     if (runnerPoints.present) {
-      map['runner_points'] = Variable<int?>(runnerPoints.value);
+      map['runner_points'] = Variable<int>(runnerPoints.value);
     }
     if (corpPoints.present) {
-      map['corp_points'] = Variable<int?>(corpPoints.value);
+      map['corp_points'] = Variable<int>(corpPoints.value);
     }
     return map;
   }
@@ -2920,48 +2872,48 @@ class Mwl extends Table with TableInfo<Mwl, MwlData> {
   final String? _alias;
   Mwl(this.attachedDatabase, [this._alias]);
   final VerificationMeta _codeMeta = const VerificationMeta('code');
-  late final GeneratedColumn<String?> code = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
       'code', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL PRIMARY KEY');
   final VerificationMeta _formatCodeMeta = const VerificationMeta('formatCode');
-  late final GeneratedColumn<String?> formatCode = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> formatCode = GeneratedColumn<String>(
       'format_code', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _nameMeta = const VerificationMeta('name');
-  late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _dateStartMeta = const VerificationMeta('dateStart');
-  late final GeneratedColumnWithTypeConverter<DateTime?, int?> dateStart =
-      GeneratedColumn<int?>('date_start', aliasedName, true,
-              type: const IntType(),
+  late final GeneratedColumnWithTypeConverter<DateTime?, int> dateStart =
+      GeneratedColumn<int>('date_start', aliasedName, true,
+              type: DriftSqlType.int,
               requiredDuringInsert: false,
               $customConstraints: '')
           .withConverter<DateTime?>(Mwl.$converter0n);
   final VerificationMeta _typeMeta = const VerificationMeta('type');
-  late final GeneratedColumnWithTypeConverter<MwlType?, String?> type =
-      GeneratedColumn<String?>('type', aliasedName, true,
-              type: const StringType(),
+  late final GeneratedColumnWithTypeConverter<MwlType?, String> type =
+      GeneratedColumn<String>('type', aliasedName, true,
+              type: DriftSqlType.string,
               requiredDuringInsert: false,
               $customConstraints: '')
           .withConverter<MwlType?>(Mwl.$converter1n);
   final VerificationMeta _runnerPointsMeta =
       const VerificationMeta('runnerPoints');
-  late final GeneratedColumn<int?> runnerPoints = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> runnerPoints = GeneratedColumn<int>(
       'runner_points', aliasedName, true,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _corpPointsMeta = const VerificationMeta('corpPoints');
-  late final GeneratedColumn<int?> corpPoints = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> corpPoints = GeneratedColumn<int>(
       'corp_points', aliasedName, true,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: '');
   @override
@@ -3017,8 +2969,23 @@ class Mwl extends Table with TableInfo<Mwl, MwlData> {
   Set<GeneratedColumn> get $primaryKey => {code};
   @override
   MwlData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return MwlData.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MwlData(
+      code: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
+      formatCode: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}format_code'])!,
+      name: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      dateStart: Mwl.$converter0n.fromSql(attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}date_start'])),
+      type: Mwl.$converter1n.fromSql(attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}type'])),
+      runnerPoints: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}runner_points']),
+      corpPoints: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}corp_points']),
+    );
   }
 
   @override
@@ -3046,7 +3013,7 @@ class MwlCardData extends DataClass implements Insertable<MwlCardData> {
   final int? universalFactionCost;
   final int? deckLimit;
   final int? points;
-  MwlCardData(
+  const MwlCardData(
       {required this.mwlCode,
       required this.cardCode,
       required this.isRestricted,
@@ -3054,25 +3021,6 @@ class MwlCardData extends DataClass implements Insertable<MwlCardData> {
       this.universalFactionCost,
       this.deckLimit,
       this.points});
-  factory MwlCardData.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return MwlCardData(
-      mwlCode: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}mwl_code'])!,
-      cardCode: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}card_code'])!,
-      isRestricted: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}is_restricted'])!,
-      globalPenalty: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}global_penalty']),
-      universalFactionCost: const IntType().mapFromDatabaseResponse(
-          data['${effectivePrefix}universal_faction_cost']),
-      deckLimit: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}deck_limit']),
-      points: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}points']),
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -3080,16 +3028,16 @@ class MwlCardData extends DataClass implements Insertable<MwlCardData> {
     map['card_code'] = Variable<String>(cardCode);
     map['is_restricted'] = Variable<bool>(isRestricted);
     if (!nullToAbsent || globalPenalty != null) {
-      map['global_penalty'] = Variable<int?>(globalPenalty);
+      map['global_penalty'] = Variable<int>(globalPenalty);
     }
     if (!nullToAbsent || universalFactionCost != null) {
-      map['universal_faction_cost'] = Variable<int?>(universalFactionCost);
+      map['universal_faction_cost'] = Variable<int>(universalFactionCost);
     }
     if (!nullToAbsent || deckLimit != null) {
-      map['deck_limit'] = Variable<int?>(deckLimit);
+      map['deck_limit'] = Variable<int>(deckLimit);
     }
     if (!nullToAbsent || points != null) {
-      map['points'] = Variable<int?>(points);
+      map['points'] = Variable<int>(points);
     }
     return map;
   }
@@ -3223,10 +3171,10 @@ class MwlCardCompanion extends UpdateCompanion<MwlCardData> {
     Expression<String>? mwlCode,
     Expression<String>? cardCode,
     Expression<bool>? isRestricted,
-    Expression<int?>? globalPenalty,
-    Expression<int?>? universalFactionCost,
-    Expression<int?>? deckLimit,
-    Expression<int?>? points,
+    Expression<int>? globalPenalty,
+    Expression<int>? universalFactionCost,
+    Expression<int>? deckLimit,
+    Expression<int>? points,
   }) {
     return RawValuesInsertable({
       if (mwlCode != null) 'mwl_code': mwlCode,
@@ -3272,17 +3220,16 @@ class MwlCardCompanion extends UpdateCompanion<MwlCardData> {
       map['is_restricted'] = Variable<bool>(isRestricted.value);
     }
     if (globalPenalty.present) {
-      map['global_penalty'] = Variable<int?>(globalPenalty.value);
+      map['global_penalty'] = Variable<int>(globalPenalty.value);
     }
     if (universalFactionCost.present) {
-      map['universal_faction_cost'] =
-          Variable<int?>(universalFactionCost.value);
+      map['universal_faction_cost'] = Variable<int>(universalFactionCost.value);
     }
     if (deckLimit.present) {
-      map['deck_limit'] = Variable<int?>(deckLimit.value);
+      map['deck_limit'] = Variable<int>(deckLimit.value);
     }
     if (points.present) {
-      map['points'] = Variable<int?>(points.value);
+      map['points'] = Variable<int>(points.value);
     }
     return map;
   }
@@ -3308,48 +3255,48 @@ class MwlCard extends Table with TableInfo<MwlCard, MwlCardData> {
   final String? _alias;
   MwlCard(this.attachedDatabase, [this._alias]);
   final VerificationMeta _mwlCodeMeta = const VerificationMeta('mwlCode');
-  late final GeneratedColumn<String?> mwlCode = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> mwlCode = GeneratedColumn<String>(
       'mwl_code', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _cardCodeMeta = const VerificationMeta('cardCode');
-  late final GeneratedColumn<String?> cardCode = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> cardCode = GeneratedColumn<String>(
       'card_code', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _isRestrictedMeta =
       const VerificationMeta('isRestricted');
-  late final GeneratedColumn<bool?> isRestricted = GeneratedColumn<bool?>(
+  late final GeneratedColumn<bool> isRestricted = GeneratedColumn<bool>(
       'is_restricted', aliasedName, false,
-      type: const BoolType(),
+      type: DriftSqlType.bool,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _globalPenaltyMeta =
       const VerificationMeta('globalPenalty');
-  late final GeneratedColumn<int?> globalPenalty = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> globalPenalty = GeneratedColumn<int>(
       'global_penalty', aliasedName, true,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _universalFactionCostMeta =
       const VerificationMeta('universalFactionCost');
-  late final GeneratedColumn<int?> universalFactionCost = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> universalFactionCost = GeneratedColumn<int>(
       'universal_faction_cost', aliasedName, true,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _deckLimitMeta = const VerificationMeta('deckLimit');
-  late final GeneratedColumn<int?> deckLimit = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> deckLimit = GeneratedColumn<int>(
       'deck_limit', aliasedName, true,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _pointsMeta = const VerificationMeta('points');
-  late final GeneratedColumn<int?> points = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> points = GeneratedColumn<int>(
       'points', aliasedName, true,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: '');
   @override
@@ -3418,8 +3365,23 @@ class MwlCard extends Table with TableInfo<MwlCard, MwlCardData> {
   Set<GeneratedColumn> get $primaryKey => {mwlCode, cardCode};
   @override
   MwlCardData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return MwlCardData.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MwlCardData(
+      mwlCode: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}mwl_code'])!,
+      cardCode: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}card_code'])!,
+      isRestricted: attachedDatabase.options.types
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_restricted'])!,
+      globalPenalty: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}global_penalty']),
+      universalFactionCost: attachedDatabase.options.types.read(
+          DriftSqlType.int, data['${effectivePrefix}universal_faction_cost']),
+      deckLimit: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}deck_limit']),
+      points: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}points']),
+    );
   }
 
   @override
@@ -3438,18 +3400,7 @@ class FormatData extends DataClass implements Insertable<FormatData> {
   final int id;
   final String code;
   final String name;
-  FormatData({required this.id, required this.code, required this.name});
-  factory FormatData.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return FormatData(
-      id: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      code: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}code'])!,
-      name: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
-    );
-  }
+  const FormatData({required this.id, required this.code, required this.name});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -3581,21 +3532,21 @@ class Format extends Table with TableInfo<Format, FormatData> {
   final String? _alias;
   Format(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
-  late final GeneratedColumn<int?> id = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
       'id', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _codeMeta = const VerificationMeta('code');
-  late final GeneratedColumn<String?> code = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
       'code', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'PRIMARY KEY NOT NULL');
   final VerificationMeta _nameMeta = const VerificationMeta('name');
-  late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   @override
@@ -3633,8 +3584,15 @@ class Format extends Table with TableInfo<Format, FormatData> {
   Set<GeneratedColumn> get $primaryKey => {code};
   @override
   FormatData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return FormatData.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FormatData(
+      id: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      code: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
+      name: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+    );
   }
 
   @override
@@ -3652,27 +3610,12 @@ class FactionData extends DataClass implements Insertable<FactionData> {
   final String name;
   final Color color;
   final bool isMini;
-  FactionData(
+  const FactionData(
       {required this.code,
       required this.sideCode,
       required this.name,
       required this.color,
       required this.isMini});
-  factory FactionData.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return FactionData(
-      code: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}code'])!,
-      sideCode: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}side_code'])!,
-      name: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
-      color: Faction.$converter0.fromSql(const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}color'])!),
-      isMini: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}is_mini'])!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -3787,7 +3730,7 @@ class FactionCompanion extends UpdateCompanion<FactionData> {
     Expression<String>? code,
     Expression<String>? sideCode,
     Expression<String>? name,
-    Expression<Color>? color,
+    Expression<int>? color,
     Expression<bool>? isMini,
   }) {
     return RawValuesInsertable({
@@ -3855,34 +3798,34 @@ class Faction extends Table with TableInfo<Faction, FactionData> {
   final String? _alias;
   Faction(this.attachedDatabase, [this._alias]);
   final VerificationMeta _codeMeta = const VerificationMeta('code');
-  late final GeneratedColumn<String?> code = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
       'code', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'PRIMARY KEY NOT NULL');
   final VerificationMeta _sideCodeMeta = const VerificationMeta('sideCode');
-  late final GeneratedColumn<String?> sideCode = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> sideCode = GeneratedColumn<String>(
       'side_code', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _nameMeta = const VerificationMeta('name');
-  late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _colorMeta = const VerificationMeta('color');
-  late final GeneratedColumnWithTypeConverter<Color, int?> color =
-      GeneratedColumn<int?>('color', aliasedName, false,
-              type: const IntType(),
+  late final GeneratedColumnWithTypeConverter<Color, int> color =
+      GeneratedColumn<int>('color', aliasedName, false,
+              type: DriftSqlType.int,
               requiredDuringInsert: true,
               $customConstraints: 'NOT NULL')
           .withConverter<Color>(Faction.$converter0);
   final VerificationMeta _isMiniMeta = const VerificationMeta('isMini');
-  late final GeneratedColumn<bool?> isMini = GeneratedColumn<bool?>(
+  late final GeneratedColumn<bool> isMini = GeneratedColumn<bool>(
       'is_mini', aliasedName, false,
-      type: const BoolType(),
+      type: DriftSqlType.bool,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   @override
@@ -3928,8 +3871,19 @@ class Faction extends Table with TableInfo<Faction, FactionData> {
   Set<GeneratedColumn> get $primaryKey => {code};
   @override
   FactionData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return FactionData.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FactionData(
+      code: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
+      sideCode: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}side_code'])!,
+      name: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      color: Faction.$converter0.fromSql(attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}color'])!),
+      isMini: attachedDatabase.options.types
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_mini'])!,
+    );
   }
 
   @override
@@ -3955,7 +3909,7 @@ class DeckData extends DataClass implements Insertable<DeckData> {
   final bool deleted;
   final DateTime? remoteUpdated;
   final DateTime? synced;
-  DeckData(
+  const DeckData(
       {required this.id,
       required this.identityCode,
       this.formatCode,
@@ -3968,48 +3922,19 @@ class DeckData extends DataClass implements Insertable<DeckData> {
       required this.deleted,
       this.remoteUpdated,
       this.synced});
-  factory DeckData.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return DeckData(
-      id: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}id'])!,
-      identityCode: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}identity_code'])!,
-      formatCode: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}format_code']),
-      rotationCode: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}rotation_code']),
-      mwlCode: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}mwl_code']),
-      name: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
-      description: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}description'])!,
-      created: Deck.$converter0.fromSql(const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}created'])!),
-      updated: Deck.$converter1.fromSql(const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}updated'])!),
-      deleted: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}deleted'])!,
-      remoteUpdated: Deck.$converter2n.fromSql(const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}remote_updated'])),
-      synced: Deck.$converter3n.fromSql(const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}synced'])),
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
     map['identity_code'] = Variable<String>(identityCode);
     if (!nullToAbsent || formatCode != null) {
-      map['format_code'] = Variable<String?>(formatCode);
+      map['format_code'] = Variable<String>(formatCode);
     }
     if (!nullToAbsent || rotationCode != null) {
-      map['rotation_code'] = Variable<String?>(rotationCode);
+      map['rotation_code'] = Variable<String>(rotationCode);
     }
     if (!nullToAbsent || mwlCode != null) {
-      map['mwl_code'] = Variable<String?>(mwlCode);
+      map['mwl_code'] = Variable<String>(mwlCode);
     }
     map['name'] = Variable<String>(name);
     map['description'] = Variable<String>(description);
@@ -4024,11 +3949,11 @@ class DeckData extends DataClass implements Insertable<DeckData> {
     map['deleted'] = Variable<bool>(deleted);
     if (!nullToAbsent || remoteUpdated != null) {
       final converter = Deck.$converter2n;
-      map['remote_updated'] = Variable<int?>(converter.toSql(remoteUpdated));
+      map['remote_updated'] = Variable<int>(converter.toSql(remoteUpdated));
     }
     if (!nullToAbsent || synced != null) {
       final converter = Deck.$converter3n;
-      map['synced'] = Variable<int?>(converter.toSql(synced));
+      map['synced'] = Variable<int>(converter.toSql(synced));
     }
     return map;
   }
@@ -4231,16 +4156,16 @@ class DeckCompanion extends UpdateCompanion<DeckData> {
   static Insertable<DeckData> custom({
     Expression<String>? id,
     Expression<String>? identityCode,
-    Expression<String?>? formatCode,
-    Expression<String?>? rotationCode,
-    Expression<String?>? mwlCode,
+    Expression<String>? formatCode,
+    Expression<String>? rotationCode,
+    Expression<String>? mwlCode,
     Expression<String>? name,
     Expression<String>? description,
-    Expression<DateTime>? created,
-    Expression<DateTime>? updated,
+    Expression<int>? created,
+    Expression<int>? updated,
     Expression<bool>? deleted,
-    Expression<DateTime?>? remoteUpdated,
-    Expression<DateTime?>? synced,
+    Expression<int>? remoteUpdated,
+    Expression<int>? synced,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -4297,13 +4222,13 @@ class DeckCompanion extends UpdateCompanion<DeckData> {
       map['identity_code'] = Variable<String>(identityCode.value);
     }
     if (formatCode.present) {
-      map['format_code'] = Variable<String?>(formatCode.value);
+      map['format_code'] = Variable<String>(formatCode.value);
     }
     if (rotationCode.present) {
-      map['rotation_code'] = Variable<String?>(rotationCode.value);
+      map['rotation_code'] = Variable<String>(rotationCode.value);
     }
     if (mwlCode.present) {
-      map['mwl_code'] = Variable<String?>(mwlCode.value);
+      map['mwl_code'] = Variable<String>(mwlCode.value);
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
@@ -4325,11 +4250,11 @@ class DeckCompanion extends UpdateCompanion<DeckData> {
     if (remoteUpdated.present) {
       final converter = Deck.$converter2n;
       map['remote_updated'] =
-          Variable<int?>(converter.toSql(remoteUpdated.value));
+          Variable<int>(converter.toSql(remoteUpdated.value));
     }
     if (synced.present) {
       final converter = Deck.$converter3n;
-      map['synced'] = Variable<int?>(converter.toSql(synced.value));
+      map['synced'] = Variable<int>(converter.toSql(synced.value));
     }
     return map;
   }
@@ -4360,82 +4285,82 @@ class Deck extends Table with TableInfo<Deck, DeckData> {
   final String? _alias;
   Deck(this.attachedDatabase, [this._alias]);
   final VerificationMeta _idMeta = const VerificationMeta('id');
-  late final GeneratedColumn<String?> id = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
       'id', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'PRIMARY KEY NOT NULL');
   final VerificationMeta _identityCodeMeta =
       const VerificationMeta('identityCode');
-  late final GeneratedColumn<String?> identityCode = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> identityCode = GeneratedColumn<String>(
       'identity_code', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _formatCodeMeta = const VerificationMeta('formatCode');
-  late final GeneratedColumn<String?> formatCode = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> formatCode = GeneratedColumn<String>(
       'format_code', aliasedName, true,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _rotationCodeMeta =
       const VerificationMeta('rotationCode');
-  late final GeneratedColumn<String?> rotationCode = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> rotationCode = GeneratedColumn<String>(
       'rotation_code', aliasedName, true,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _mwlCodeMeta = const VerificationMeta('mwlCode');
-  late final GeneratedColumn<String?> mwlCode = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> mwlCode = GeneratedColumn<String>(
       'mwl_code', aliasedName, true,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _nameMeta = const VerificationMeta('name');
-  late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _descriptionMeta =
       const VerificationMeta('description');
-  late final GeneratedColumn<String?> description = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
       'description', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _createdMeta = const VerificationMeta('created');
-  late final GeneratedColumnWithTypeConverter<DateTime, int?> created =
-      GeneratedColumn<int?>('created', aliasedName, false,
-              type: const IntType(),
+  late final GeneratedColumnWithTypeConverter<DateTime, int> created =
+      GeneratedColumn<int>('created', aliasedName, false,
+              type: DriftSqlType.int,
               requiredDuringInsert: true,
               $customConstraints: 'NOT NULL')
           .withConverter<DateTime>(Deck.$converter0);
   final VerificationMeta _updatedMeta = const VerificationMeta('updated');
-  late final GeneratedColumnWithTypeConverter<DateTime, int?> updated =
-      GeneratedColumn<int?>('updated', aliasedName, false,
-              type: const IntType(),
+  late final GeneratedColumnWithTypeConverter<DateTime, int> updated =
+      GeneratedColumn<int>('updated', aliasedName, false,
+              type: DriftSqlType.int,
               requiredDuringInsert: true,
               $customConstraints: 'NOT NULL')
           .withConverter<DateTime>(Deck.$converter1);
   final VerificationMeta _deletedMeta = const VerificationMeta('deleted');
-  late final GeneratedColumn<bool?> deleted = GeneratedColumn<bool?>(
+  late final GeneratedColumn<bool> deleted = GeneratedColumn<bool>(
       'deleted', aliasedName, false,
-      type: const BoolType(),
+      type: DriftSqlType.bool,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _remoteUpdatedMeta =
       const VerificationMeta('remoteUpdated');
-  late final GeneratedColumnWithTypeConverter<DateTime?, int?> remoteUpdated =
-      GeneratedColumn<int?>('remote_updated', aliasedName, true,
-              type: const IntType(),
+  late final GeneratedColumnWithTypeConverter<DateTime?, int> remoteUpdated =
+      GeneratedColumn<int>('remote_updated', aliasedName, true,
+              type: DriftSqlType.int,
               requiredDuringInsert: false,
               $customConstraints: '')
           .withConverter<DateTime?>(Deck.$converter2n);
   final VerificationMeta _syncedMeta = const VerificationMeta('synced');
-  late final GeneratedColumnWithTypeConverter<DateTime?, int?> synced =
-      GeneratedColumn<int?>('synced', aliasedName, true,
-              type: const IntType(),
+  late final GeneratedColumnWithTypeConverter<DateTime?, int> synced =
+      GeneratedColumn<int>('synced', aliasedName, true,
+              type: DriftSqlType.int,
               requiredDuringInsert: false,
               $customConstraints: '')
           .withConverter<DateTime?>(Deck.$converter3n);
@@ -4523,8 +4448,33 @@ class Deck extends Table with TableInfo<Deck, DeckData> {
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
   DeckData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return DeckData.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DeckData(
+      id: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      identityCode: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}identity_code'])!,
+      formatCode: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}format_code']),
+      rotationCode: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}rotation_code']),
+      mwlCode: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}mwl_code']),
+      name: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      description: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
+      created: Deck.$converter0.fromSql(attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}created'])!),
+      updated: Deck.$converter1.fromSql(attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}updated'])!),
+      deleted: attachedDatabase.options.types
+          .read(DriftSqlType.bool, data['${effectivePrefix}deleted'])!,
+      remoteUpdated: Deck.$converter2n.fromSql(attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}remote_updated'])),
+      synced: Deck.$converter3n.fromSql(attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}synced'])),
+    );
   }
 
   @override
@@ -4551,16 +4501,7 @@ class Deck extends Table with TableInfo<Deck, DeckData> {
 class DeckTagData extends DataClass implements Insertable<DeckTagData> {
   final String deckId;
   final String tag;
-  DeckTagData({required this.deckId, required this.tag});
-  factory DeckTagData.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return DeckTagData(
-      deckId: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}deck_id'])!,
-      tag: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}tag'])!,
-    );
-  }
+  const DeckTagData({required this.deckId, required this.tag});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -4673,15 +4614,15 @@ class DeckTag extends Table with TableInfo<DeckTag, DeckTagData> {
   final String? _alias;
   DeckTag(this.attachedDatabase, [this._alias]);
   final VerificationMeta _deckIdMeta = const VerificationMeta('deckId');
-  late final GeneratedColumn<String?> deckId = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> deckId = GeneratedColumn<String>(
       'deck_id', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _tagMeta = const VerificationMeta('tag');
-  late final GeneratedColumn<String?> tag = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> tag = GeneratedColumn<String>(
       'tag', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   @override
@@ -4714,8 +4655,13 @@ class DeckTag extends Table with TableInfo<DeckTag, DeckTagData> {
   Set<GeneratedColumn> get $primaryKey => {deckId, tag};
   @override
   DeckTagData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return DeckTagData.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DeckTagData(
+      deckId: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}deck_id'])!,
+      tag: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}tag'])!,
+    );
   }
 
   @override
@@ -4733,19 +4679,8 @@ class DeckCardData extends DataClass implements Insertable<DeckCardData> {
   final String deckId;
   final String cardCode;
   final int quantity;
-  DeckCardData(
+  const DeckCardData(
       {required this.deckId, required this.cardCode, required this.quantity});
-  factory DeckCardData.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return DeckCardData(
-      deckId: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}deck_id'])!,
-      cardCode: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}card_code'])!,
-      quantity: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}quantity'])!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -4878,21 +4813,21 @@ class DeckCard extends Table with TableInfo<DeckCard, DeckCardData> {
   final String? _alias;
   DeckCard(this.attachedDatabase, [this._alias]);
   final VerificationMeta _deckIdMeta = const VerificationMeta('deckId');
-  late final GeneratedColumn<String?> deckId = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> deckId = GeneratedColumn<String>(
       'deck_id', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _cardCodeMeta = const VerificationMeta('cardCode');
-  late final GeneratedColumn<String?> cardCode = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> cardCode = GeneratedColumn<String>(
       'card_code', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _quantityMeta = const VerificationMeta('quantity');
-  late final GeneratedColumn<int?> quantity = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> quantity = GeneratedColumn<int>(
       'quantity', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   @override
@@ -4931,8 +4866,15 @@ class DeckCard extends Table with TableInfo<DeckCard, DeckCardData> {
   Set<GeneratedColumn> get $primaryKey => {deckId, cardCode};
   @override
   DeckCardData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return DeckCardData.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DeckCardData(
+      deckId: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}deck_id'])!,
+      cardCode: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}card_code'])!,
+      quantity: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}quantity'])!,
+    );
   }
 
   @override
@@ -4953,27 +4895,12 @@ class CycleData extends DataClass implements Insertable<CycleData> {
   final String name;
   final int size;
   final bool rotated;
-  CycleData(
+  const CycleData(
       {required this.code,
       required this.position,
       required this.name,
       required this.size,
       required this.rotated});
-  factory CycleData.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return CycleData(
-      code: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}code'])!,
-      position: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}position'])!,
-      name: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}name'])!,
-      size: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}size'])!,
-      rotated: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}rotated'])!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -5151,33 +5078,33 @@ class Cycle extends Table with TableInfo<Cycle, CycleData> {
   final String? _alias;
   Cycle(this.attachedDatabase, [this._alias]);
   final VerificationMeta _codeMeta = const VerificationMeta('code');
-  late final GeneratedColumn<String?> code = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
       'code', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'PRIMARY KEY NOT NULL');
   final VerificationMeta _positionMeta = const VerificationMeta('position');
-  late final GeneratedColumn<int?> position = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
       'position', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _nameMeta = const VerificationMeta('name');
-  late final GeneratedColumn<String?> name = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _sizeMeta = const VerificationMeta('size');
-  late final GeneratedColumn<int?> size = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> size = GeneratedColumn<int>(
       'size', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _rotatedMeta = const VerificationMeta('rotated');
-  late final GeneratedColumn<bool?> rotated = GeneratedColumn<bool?>(
+  late final GeneratedColumn<bool> rotated = GeneratedColumn<bool>(
       'rotated', aliasedName, false,
-      type: const BoolType(),
+      type: DriftSqlType.bool,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   @override
@@ -5228,8 +5155,19 @@ class Cycle extends Table with TableInfo<Cycle, CycleData> {
   Set<GeneratedColumn> get $primaryKey => {code};
   @override
   CycleData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return CycleData.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CycleData(
+      code: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
+      position: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}position'])!,
+      name: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      size: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}size'])!,
+      rotated: attachedDatabase.options.types
+          .read(DriftSqlType.bool, data['${effectivePrefix}rotated'])!,
+    );
   }
 
   @override
@@ -5243,14 +5181,7 @@ class Cycle extends Table with TableInfo<Cycle, CycleData> {
 
 class CollectionData extends DataClass implements Insertable<CollectionData> {
   final String packCode;
-  CollectionData({required this.packCode});
-  factory CollectionData.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return CollectionData(
-      packCode: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}pack_code'])!,
-    );
-  }
+  const CollectionData({required this.packCode});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -5344,9 +5275,9 @@ class Collection extends Table with TableInfo<Collection, CollectionData> {
   final String? _alias;
   Collection(this.attachedDatabase, [this._alias]);
   final VerificationMeta _packCodeMeta = const VerificationMeta('packCode');
-  late final GeneratedColumn<String?> packCode = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> packCode = GeneratedColumn<String>(
       'pack_code', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL PRIMARY KEY');
   @override
@@ -5373,8 +5304,11 @@ class Collection extends Table with TableInfo<Collection, CollectionData> {
   Set<GeneratedColumn> get $primaryKey => {packCode};
   @override
   CollectionData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return CollectionData.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CollectionData(
+      packCode: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}pack_code'])!,
+    );
   }
 
   @override
@@ -5413,7 +5347,7 @@ class CardData extends DataClass implements Insertable<CardData> {
   final String? flavor;
   final String? illustrator;
   final String imageUrl;
-  CardData(
+  const CardData(
       {required this.code,
       required this.packCode,
       required this.factionCode,
@@ -5440,63 +5374,6 @@ class CardData extends DataClass implements Insertable<CardData> {
       this.flavor,
       this.illustrator,
       required this.imageUrl});
-  factory CardData.fromData(Map<String, dynamic> data, {String? prefix}) {
-    final effectivePrefix = prefix ?? '';
-    return CardData(
-      code: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}code'])!,
-      packCode: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}pack_code'])!,
-      factionCode: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}faction_code'])!,
-      typeCode: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}type_code'])!,
-      position: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}position'])!,
-      title: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}title'])!,
-      strippedTitle: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}stripped_title'])!,
-      body: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}body']),
-      strippedBody: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}stripped_body']),
-      keywords: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}keywords']),
-      quantity: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}quantity'])!,
-      cost: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}cost']),
-      deckLimit: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}deck_limit'])!,
-      factionCost: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}faction_cost'])!,
-      uniqueness: const BoolType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}uniqueness'])!,
-      strength: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}strength']),
-      agendaPoints: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}agenda_points']),
-      memoryCost: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}memory_cost']),
-      advancementCost: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}advancement_cost']),
-      trashCost: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}trash_cost']),
-      baseLink: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}base_link']),
-      influenceLimit: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}influence_limit']),
-      minimumDeckSize: const IntType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}minimum_deck_size']),
-      flavor: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}flavor']),
-      illustrator: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}illustrator']),
-      imageUrl: const StringType()
-          .mapFromDatabaseResponse(data['${effectivePrefix}image_url'])!,
-    );
-  }
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -5508,50 +5385,50 @@ class CardData extends DataClass implements Insertable<CardData> {
     map['title'] = Variable<String>(title);
     map['stripped_title'] = Variable<String>(strippedTitle);
     if (!nullToAbsent || body != null) {
-      map['body'] = Variable<String?>(body);
+      map['body'] = Variable<String>(body);
     }
     if (!nullToAbsent || strippedBody != null) {
-      map['stripped_body'] = Variable<String?>(strippedBody);
+      map['stripped_body'] = Variable<String>(strippedBody);
     }
     if (!nullToAbsent || keywords != null) {
-      map['keywords'] = Variable<String?>(keywords);
+      map['keywords'] = Variable<String>(keywords);
     }
     map['quantity'] = Variable<int>(quantity);
     if (!nullToAbsent || cost != null) {
-      map['cost'] = Variable<int?>(cost);
+      map['cost'] = Variable<int>(cost);
     }
     map['deck_limit'] = Variable<int>(deckLimit);
     map['faction_cost'] = Variable<int>(factionCost);
     map['uniqueness'] = Variable<bool>(uniqueness);
     if (!nullToAbsent || strength != null) {
-      map['strength'] = Variable<int?>(strength);
+      map['strength'] = Variable<int>(strength);
     }
     if (!nullToAbsent || agendaPoints != null) {
-      map['agenda_points'] = Variable<int?>(agendaPoints);
+      map['agenda_points'] = Variable<int>(agendaPoints);
     }
     if (!nullToAbsent || memoryCost != null) {
-      map['memory_cost'] = Variable<int?>(memoryCost);
+      map['memory_cost'] = Variable<int>(memoryCost);
     }
     if (!nullToAbsent || advancementCost != null) {
-      map['advancement_cost'] = Variable<int?>(advancementCost);
+      map['advancement_cost'] = Variable<int>(advancementCost);
     }
     if (!nullToAbsent || trashCost != null) {
-      map['trash_cost'] = Variable<int?>(trashCost);
+      map['trash_cost'] = Variable<int>(trashCost);
     }
     if (!nullToAbsent || baseLink != null) {
-      map['base_link'] = Variable<int?>(baseLink);
+      map['base_link'] = Variable<int>(baseLink);
     }
     if (!nullToAbsent || influenceLimit != null) {
-      map['influence_limit'] = Variable<int?>(influenceLimit);
+      map['influence_limit'] = Variable<int>(influenceLimit);
     }
     if (!nullToAbsent || minimumDeckSize != null) {
-      map['minimum_deck_size'] = Variable<int?>(minimumDeckSize);
+      map['minimum_deck_size'] = Variable<int>(minimumDeckSize);
     }
     if (!nullToAbsent || flavor != null) {
-      map['flavor'] = Variable<String?>(flavor);
+      map['flavor'] = Variable<String>(flavor);
     }
     if (!nullToAbsent || illustrator != null) {
-      map['illustrator'] = Variable<String?>(illustrator);
+      map['illustrator'] = Variable<String>(illustrator);
     }
     map['image_url'] = Variable<String>(imageUrl);
     return map;
@@ -5934,24 +5811,24 @@ class CardCompanion extends UpdateCompanion<CardData> {
     Expression<int>? position,
     Expression<String>? title,
     Expression<String>? strippedTitle,
-    Expression<String?>? body,
-    Expression<String?>? strippedBody,
-    Expression<String?>? keywords,
+    Expression<String>? body,
+    Expression<String>? strippedBody,
+    Expression<String>? keywords,
     Expression<int>? quantity,
-    Expression<int?>? cost,
+    Expression<int>? cost,
     Expression<int>? deckLimit,
     Expression<int>? factionCost,
     Expression<bool>? uniqueness,
-    Expression<int?>? strength,
-    Expression<int?>? agendaPoints,
-    Expression<int?>? memoryCost,
-    Expression<int?>? advancementCost,
-    Expression<int?>? trashCost,
-    Expression<int?>? baseLink,
-    Expression<int?>? influenceLimit,
-    Expression<int?>? minimumDeckSize,
-    Expression<String?>? flavor,
-    Expression<String?>? illustrator,
+    Expression<int>? strength,
+    Expression<int>? agendaPoints,
+    Expression<int>? memoryCost,
+    Expression<int>? advancementCost,
+    Expression<int>? trashCost,
+    Expression<int>? baseLink,
+    Expression<int>? influenceLimit,
+    Expression<int>? minimumDeckSize,
+    Expression<String>? flavor,
+    Expression<String>? illustrator,
     Expression<String>? imageUrl,
   }) {
     return RawValuesInsertable({
@@ -6066,19 +5943,19 @@ class CardCompanion extends UpdateCompanion<CardData> {
       map['stripped_title'] = Variable<String>(strippedTitle.value);
     }
     if (body.present) {
-      map['body'] = Variable<String?>(body.value);
+      map['body'] = Variable<String>(body.value);
     }
     if (strippedBody.present) {
-      map['stripped_body'] = Variable<String?>(strippedBody.value);
+      map['stripped_body'] = Variable<String>(strippedBody.value);
     }
     if (keywords.present) {
-      map['keywords'] = Variable<String?>(keywords.value);
+      map['keywords'] = Variable<String>(keywords.value);
     }
     if (quantity.present) {
       map['quantity'] = Variable<int>(quantity.value);
     }
     if (cost.present) {
-      map['cost'] = Variable<int?>(cost.value);
+      map['cost'] = Variable<int>(cost.value);
     }
     if (deckLimit.present) {
       map['deck_limit'] = Variable<int>(deckLimit.value);
@@ -6090,34 +5967,34 @@ class CardCompanion extends UpdateCompanion<CardData> {
       map['uniqueness'] = Variable<bool>(uniqueness.value);
     }
     if (strength.present) {
-      map['strength'] = Variable<int?>(strength.value);
+      map['strength'] = Variable<int>(strength.value);
     }
     if (agendaPoints.present) {
-      map['agenda_points'] = Variable<int?>(agendaPoints.value);
+      map['agenda_points'] = Variable<int>(agendaPoints.value);
     }
     if (memoryCost.present) {
-      map['memory_cost'] = Variable<int?>(memoryCost.value);
+      map['memory_cost'] = Variable<int>(memoryCost.value);
     }
     if (advancementCost.present) {
-      map['advancement_cost'] = Variable<int?>(advancementCost.value);
+      map['advancement_cost'] = Variable<int>(advancementCost.value);
     }
     if (trashCost.present) {
-      map['trash_cost'] = Variable<int?>(trashCost.value);
+      map['trash_cost'] = Variable<int>(trashCost.value);
     }
     if (baseLink.present) {
-      map['base_link'] = Variable<int?>(baseLink.value);
+      map['base_link'] = Variable<int>(baseLink.value);
     }
     if (influenceLimit.present) {
-      map['influence_limit'] = Variable<int?>(influenceLimit.value);
+      map['influence_limit'] = Variable<int>(influenceLimit.value);
     }
     if (minimumDeckSize.present) {
-      map['minimum_deck_size'] = Variable<int?>(minimumDeckSize.value);
+      map['minimum_deck_size'] = Variable<int>(minimumDeckSize.value);
     }
     if (flavor.present) {
-      map['flavor'] = Variable<String?>(flavor.value);
+      map['flavor'] = Variable<String>(flavor.value);
     }
     if (illustrator.present) {
-      map['illustrator'] = Variable<String?>(illustrator.value);
+      map['illustrator'] = Variable<String>(illustrator.value);
     }
     if (imageUrl.present) {
       map['image_url'] = Variable<String>(imageUrl.value);
@@ -6165,168 +6042,168 @@ class Card extends Table with TableInfo<Card, CardData> {
   final String? _alias;
   Card(this.attachedDatabase, [this._alias]);
   final VerificationMeta _codeMeta = const VerificationMeta('code');
-  late final GeneratedColumn<String?> code = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
       'code', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'PRIMARY KEY NOT NULL');
   final VerificationMeta _packCodeMeta = const VerificationMeta('packCode');
-  late final GeneratedColumn<String?> packCode = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> packCode = GeneratedColumn<String>(
       'pack_code', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _factionCodeMeta =
       const VerificationMeta('factionCode');
-  late final GeneratedColumn<String?> factionCode = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> factionCode = GeneratedColumn<String>(
       'faction_code', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _typeCodeMeta = const VerificationMeta('typeCode');
-  late final GeneratedColumn<String?> typeCode = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> typeCode = GeneratedColumn<String>(
       'type_code', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _positionMeta = const VerificationMeta('position');
-  late final GeneratedColumn<int?> position = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
       'position', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _titleMeta = const VerificationMeta('title');
-  late final GeneratedColumn<String?> title = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
       'title', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _strippedTitleMeta =
       const VerificationMeta('strippedTitle');
-  late final GeneratedColumn<String?> strippedTitle = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> strippedTitle = GeneratedColumn<String>(
       'stripped_title', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _bodyMeta = const VerificationMeta('body');
-  late final GeneratedColumn<String?> body = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> body = GeneratedColumn<String>(
       'body', aliasedName, true,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _strippedBodyMeta =
       const VerificationMeta('strippedBody');
-  late final GeneratedColumn<String?> strippedBody = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> strippedBody = GeneratedColumn<String>(
       'stripped_body', aliasedName, true,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _keywordsMeta = const VerificationMeta('keywords');
-  late final GeneratedColumn<String?> keywords = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> keywords = GeneratedColumn<String>(
       'keywords', aliasedName, true,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _quantityMeta = const VerificationMeta('quantity');
-  late final GeneratedColumn<int?> quantity = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> quantity = GeneratedColumn<int>(
       'quantity', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _costMeta = const VerificationMeta('cost');
-  late final GeneratedColumn<int?> cost = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> cost = GeneratedColumn<int>(
       'cost', aliasedName, true,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _deckLimitMeta = const VerificationMeta('deckLimit');
-  late final GeneratedColumn<int?> deckLimit = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> deckLimit = GeneratedColumn<int>(
       'deck_limit', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _factionCostMeta =
       const VerificationMeta('factionCost');
-  late final GeneratedColumn<int?> factionCost = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> factionCost = GeneratedColumn<int>(
       'faction_cost', aliasedName, false,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _uniquenessMeta = const VerificationMeta('uniqueness');
-  late final GeneratedColumn<bool?> uniqueness = GeneratedColumn<bool?>(
+  late final GeneratedColumn<bool> uniqueness = GeneratedColumn<bool>(
       'uniqueness', aliasedName, false,
-      type: const BoolType(),
+      type: DriftSqlType.bool,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _strengthMeta = const VerificationMeta('strength');
-  late final GeneratedColumn<int?> strength = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> strength = GeneratedColumn<int>(
       'strength', aliasedName, true,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _agendaPointsMeta =
       const VerificationMeta('agendaPoints');
-  late final GeneratedColumn<int?> agendaPoints = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> agendaPoints = GeneratedColumn<int>(
       'agenda_points', aliasedName, true,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _memoryCostMeta = const VerificationMeta('memoryCost');
-  late final GeneratedColumn<int?> memoryCost = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> memoryCost = GeneratedColumn<int>(
       'memory_cost', aliasedName, true,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _advancementCostMeta =
       const VerificationMeta('advancementCost');
-  late final GeneratedColumn<int?> advancementCost = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> advancementCost = GeneratedColumn<int>(
       'advancement_cost', aliasedName, true,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _trashCostMeta = const VerificationMeta('trashCost');
-  late final GeneratedColumn<int?> trashCost = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> trashCost = GeneratedColumn<int>(
       'trash_cost', aliasedName, true,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _baseLinkMeta = const VerificationMeta('baseLink');
-  late final GeneratedColumn<int?> baseLink = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> baseLink = GeneratedColumn<int>(
       'base_link', aliasedName, true,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _influenceLimitMeta =
       const VerificationMeta('influenceLimit');
-  late final GeneratedColumn<int?> influenceLimit = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> influenceLimit = GeneratedColumn<int>(
       'influence_limit', aliasedName, true,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _minimumDeckSizeMeta =
       const VerificationMeta('minimumDeckSize');
-  late final GeneratedColumn<int?> minimumDeckSize = GeneratedColumn<int?>(
+  late final GeneratedColumn<int> minimumDeckSize = GeneratedColumn<int>(
       'minimum_deck_size', aliasedName, true,
-      type: const IntType(),
+      type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _flavorMeta = const VerificationMeta('flavor');
-  late final GeneratedColumn<String?> flavor = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> flavor = GeneratedColumn<String>(
       'flavor', aliasedName, true,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _illustratorMeta =
       const VerificationMeta('illustrator');
-  late final GeneratedColumn<String?> illustrator = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> illustrator = GeneratedColumn<String>(
       'illustrator', aliasedName, true,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: false,
       $customConstraints: '');
   final VerificationMeta _imageUrlMeta = const VerificationMeta('imageUrl');
-  late final GeneratedColumn<String?> imageUrl = GeneratedColumn<String?>(
+  late final GeneratedColumn<String> imageUrl = GeneratedColumn<String>(
       'image_url', aliasedName, false,
-      type: const StringType(),
+      type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   @override
@@ -6524,8 +6401,61 @@ class Card extends Table with TableInfo<Card, CardData> {
   Set<GeneratedColumn> get $primaryKey => {code};
   @override
   CardData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    return CardData.fromData(data,
-        prefix: tablePrefix != null ? '$tablePrefix.' : null);
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CardData(
+      code: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
+      packCode: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}pack_code'])!,
+      factionCode: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}faction_code'])!,
+      typeCode: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}type_code'])!,
+      position: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}position'])!,
+      title: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
+      strippedTitle: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}stripped_title'])!,
+      body: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}body']),
+      strippedBody: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}stripped_body']),
+      keywords: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}keywords']),
+      quantity: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}quantity'])!,
+      cost: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}cost']),
+      deckLimit: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}deck_limit'])!,
+      factionCost: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}faction_cost'])!,
+      uniqueness: attachedDatabase.options.types
+          .read(DriftSqlType.bool, data['${effectivePrefix}uniqueness'])!,
+      strength: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}strength']),
+      agendaPoints: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}agenda_points']),
+      memoryCost: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}memory_cost']),
+      advancementCost: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}advancement_cost']),
+      trashCost: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}trash_cost']),
+      baseLink: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}base_link']),
+      influenceLimit: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}influence_limit']),
+      minimumDeckSize: attachedDatabase.options.types
+          .read(DriftSqlType.int, data['${effectivePrefix}minimum_deck_size']),
+      flavor: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}flavor']),
+      illustrator: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}illustrator']),
+      imageUrl: attachedDatabase.options.types
+          .read(DriftSqlType.string, data['${effectivePrefix}image_url'])!,
+    );
   }
 
   @override
@@ -6538,7 +6468,7 @@ class Card extends Table with TableInfo<Card, CardData> {
 }
 
 abstract class _$Database extends GeneratedDatabase {
-  _$Database(QueryExecutor e) : super(SqlTypeSystem.defaultInstance, e);
+  _$Database(QueryExecutor e) : super(e);
   _$Database.connect(DatabaseConnection c) : super.connect(c);
   late final Type type = Type(this);
   late final Side side = Side(this);
@@ -6558,7 +6488,7 @@ abstract class _$Database extends GeneratedDatabase {
   late final Collection collection = Collection(this);
   late final Card card = Card(this);
   Selectable<TypeResult> listTypes(
-      {Expression<bool?> where = const CustomExpression('(TRUE)')}) {
+      {Expression<bool> where = const CustomExpression('(TRUE)')}) {
     var $arrayStartIndex = 1;
     final generatedwhere =
         $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
@@ -6581,7 +6511,7 @@ abstract class _$Database extends GeneratedDatabase {
   }
 
   Selectable<SideData> listSides(
-      {Expression<bool?> where = const CustomExpression('(TRUE)')}) {
+      {Expression<bool> where = const CustomExpression('(TRUE)')}) {
     var $arrayStartIndex = 1;
     final generatedwhere = $write(where, startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
@@ -6615,7 +6545,7 @@ abstract class _$Database extends GeneratedDatabase {
   }
 
   Selectable<RotationData> listRotations(
-      {Expression<bool?> where = const CustomExpression('(TRUE)')}) {
+      {Expression<bool> where = const CustomExpression('(TRUE)')}) {
     var $arrayStartIndex = 1;
     final generatedwhere =
         $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
@@ -6633,7 +6563,7 @@ abstract class _$Database extends GeneratedDatabase {
   }
 
   Selectable<RotationPackResult> listRotationPacks(
-      {Expression<bool?> where = const CustomExpression('(TRUE)')}) {
+      {Expression<bool> where = const CustomExpression('(TRUE)')}) {
     var $arrayStartIndex = 1;
     final generatedwhere =
         $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
@@ -6682,7 +6612,7 @@ abstract class _$Database extends GeneratedDatabase {
   }
 
   Selectable<RotationCardResult> listRotationCards(
-      {Expression<bool?> where = const CustomExpression('(TRUE)')}) {
+      {Expression<bool> where = const CustomExpression('(TRUE)')}) {
     var $arrayStartIndex = 1;
     final generatedwhere =
         $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
@@ -6712,12 +6642,12 @@ abstract class _$Database extends GeneratedDatabase {
   }
 
   Selectable<CountStuffResult> countStuff(
-      {Expression<bool?> cards = const CustomExpression('(TRUE)'),
-      Expression<bool?> cycles = const CustomExpression('(TRUE)'),
-      Expression<bool?> packs = const CustomExpression('(TRUE)'),
-      Expression<bool?> sides = const CustomExpression('(TRUE)'),
-      Expression<bool?> factions = const CustomExpression('(TRUE)'),
-      Expression<bool?> types = const CustomExpression('(TRUE)')}) {
+      {Expression<bool> cards = const CustomExpression('(TRUE)'),
+      Expression<bool> cycles = const CustomExpression('(TRUE)'),
+      Expression<bool> packs = const CustomExpression('(TRUE)'),
+      Expression<bool> sides = const CustomExpression('(TRUE)'),
+      Expression<bool> factions = const CustomExpression('(TRUE)'),
+      Expression<bool> types = const CustomExpression('(TRUE)')}) {
     var $arrayStartIndex = 1;
     final generatedcards =
         $write(cards, hasMultipleTables: true, startIndex: $arrayStartIndex);
@@ -6773,7 +6703,7 @@ abstract class _$Database extends GeneratedDatabase {
   }
 
   Selectable<PackResult> listPacks(
-      {Expression<bool?> where = const CustomExpression('(TRUE)')}) {
+      {Expression<bool> where = const CustomExpression('(TRUE)')}) {
     var $arrayStartIndex = 1;
     final generatedwhere =
         $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
@@ -6802,7 +6732,7 @@ abstract class _$Database extends GeneratedDatabase {
   }
 
   Selectable<MwlData> listMwl(
-      {Expression<bool?> where = const CustomExpression('(TRUE)')}) {
+      {Expression<bool> where = const CustomExpression('(TRUE)')}) {
     var $arrayStartIndex = 1;
     final generatedwhere =
         $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
@@ -6820,7 +6750,7 @@ abstract class _$Database extends GeneratedDatabase {
   }
 
   Selectable<MwlCardData> listMwlCard(
-      {Expression<bool?> where = const CustomExpression('(TRUE)')}) {
+      {Expression<bool> where = const CustomExpression('(TRUE)')}) {
     var $arrayStartIndex = 1;
     final generatedwhere = $write(where, startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
@@ -6835,7 +6765,7 @@ abstract class _$Database extends GeneratedDatabase {
   }
 
   Selectable<FormatResult> listFormats(
-      {Expression<bool?> where = const CustomExpression('(TRUE)')}) {
+      {Expression<bool> where = const CustomExpression('(TRUE)')}) {
     var $arrayStartIndex = 1;
     final generatedwhere =
         $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
@@ -6863,7 +6793,7 @@ abstract class _$Database extends GeneratedDatabase {
   }
 
   Selectable<FactionResult> listFactions(
-      {Expression<bool?> where = const CustomExpression('(TRUE)')}) {
+      {Expression<bool> where = const CustomExpression('(TRUE)')}) {
     var $arrayStartIndex = 1;
     final generatedwhere =
         $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
@@ -6886,7 +6816,7 @@ abstract class _$Database extends GeneratedDatabase {
   }
 
   Selectable<DeckResult> listDecks(
-      {Expression<bool?> where = const CustomExpression('(TRUE)')}) {
+      {Expression<bool> where = const CustomExpression('(TRUE)')}) {
     var $arrayStartIndex = 1;
     final generatedwhere =
         $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
@@ -6953,9 +6883,9 @@ abstract class _$Database extends GeneratedDatabase {
     return customSelect(
         'SELECT"identity"."code" AS "nested_0.code", "identity"."pack_code" AS "nested_0.pack_code", "identity"."faction_code" AS "nested_0.faction_code", "identity"."type_code" AS "nested_0.type_code", "identity"."position" AS "nested_0.position", "identity"."title" AS "nested_0.title", "identity"."stripped_title" AS "nested_0.stripped_title", "identity"."body" AS "nested_0.body", "identity"."stripped_body" AS "nested_0.stripped_body", "identity"."keywords" AS "nested_0.keywords", "identity"."quantity" AS "nested_0.quantity", "identity"."cost" AS "nested_0.cost", "identity"."deck_limit" AS "nested_0.deck_limit", "identity"."faction_cost" AS "nested_0.faction_cost", "identity"."uniqueness" AS "nested_0.uniqueness", "identity"."strength" AS "nested_0.strength", "identity"."agenda_points" AS "nested_0.agenda_points", "identity"."memory_cost" AS "nested_0.memory_cost", "identity"."advancement_cost" AS "nested_0.advancement_cost", "identity"."trash_cost" AS "nested_0.trash_cost", "identity"."base_link" AS "nested_0.base_link", "identity"."influence_limit" AS "nested_0.influence_limit", "identity"."minimum_deck_size" AS "nested_0.minimum_deck_size", "identity"."flavor" AS "nested_0.flavor", "identity"."illustrator" AS "nested_0.illustrator", "identity"."image_url" AS "nested_0.image_url","pack"."code" AS "nested_1.code", "pack"."cycle_code" AS "nested_1.cycle_code", "pack"."position" AS "nested_1.position", "pack"."name" AS "nested_1.name", "pack"."date_release" AS "nested_1.date_release", "pack"."size" AS "nested_1.size","cycle"."code" AS "nested_2.code", "cycle"."position" AS "nested_2.position", "cycle"."name" AS "nested_2.name", "cycle"."size" AS "nested_2.size", "cycle"."rotated" AS "nested_2.rotated","faction"."code" AS "nested_3.code", "faction"."side_code" AS "nested_3.side_code", "faction"."name" AS "nested_3.name", "faction"."color" AS "nested_3.color", "faction"."is_mini" AS "nested_3.is_mini","side"."code" AS "nested_4.code", "side"."name" AS "nested_4.name","type"."code" AS "nested_5.code", "type"."side_code" AS "nested_5.side_code", "type"."position" AS "nested_5.position", "type"."name" AS "nested_5.name", "type"."is_subtype" AS "nested_5.is_subtype","subtype"."code" AS "nested_6.code", "subtype"."side_code" AS "nested_6.side_code", "subtype"."position" AS "nested_6.position", "subtype"."name" AS "nested_6.name", "subtype"."is_subtype" AS "nested_6.is_subtype","format"."id" AS "nested_7.id", "format"."code" AS "nested_7.code", "format"."name" AS "nested_7.name","rotation"."code" AS "nested_8.code", "rotation"."format_code" AS "nested_8.format_code", "rotation"."name" AS "nested_8.name", "rotation"."date_start" AS "nested_8.date_start", "rotation"."type" AS "nested_8.type","mwl"."code" AS "nested_9.code", "mwl"."format_code" AS "nested_9.format_code", "mwl"."name" AS "nested_9.name", "mwl"."date_start" AS "nested_9.date_start", "mwl"."type" AS "nested_9.type", "mwl"."runner_points" AS "nested_9.runner_points", "mwl"."corp_points" AS "nested_9.corp_points" FROM card AS identity INNER JOIN pack ON pack.code = identity.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = identity.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = identity.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = identity.keywords OR identity.keywords LIKE(subtype.name || \' - %\'))LEFT JOIN format ON format.code = ?1 LEFT JOIN rotation ON rotation.code = ?2 LEFT JOIN mwl ON mwl.code = ?3 WHERE identity.code = ?4',
         variables: [
-          Variable<String?>(formatCode),
-          Variable<String?>(rotationCode),
-          Variable<String?>(mwlCode),
+          Variable<String>(formatCode),
+          Variable<String>(rotationCode),
+          Variable<String>(mwlCode),
           Variable<String>(identityCode)
         ],
         readsFrom: {
@@ -6985,7 +6915,7 @@ abstract class _$Database extends GeneratedDatabase {
   }
 
   Selectable<DeckTagData> listDeckTags(
-      {Expression<bool?> where = const CustomExpression('(TRUE)')}) {
+      {Expression<bool> where = const CustomExpression('(TRUE)')}) {
     var $arrayStartIndex = 1;
     final generatedwhere =
         $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
@@ -7003,7 +6933,7 @@ abstract class _$Database extends GeneratedDatabase {
   }
 
   Selectable<String> listDistinctDeckTags(
-      {Expression<bool?> where = const CustomExpression('(TRUE)')}) {
+      {Expression<bool> where = const CustomExpression('(TRUE)')}) {
     var $arrayStartIndex = 1;
     final generatedwhere =
         $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
@@ -7042,7 +6972,7 @@ abstract class _$Database extends GeneratedDatabase {
   }
 
   Selectable<DeckCardResult> listDeckCards(
-      {Expression<bool?> where = const CustomExpression('(TRUE)')}) {
+      {Expression<bool> where = const CustomExpression('(TRUE)')}) {
     var $arrayStartIndex = 1;
     final generatedwhere =
         $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
@@ -7134,7 +7064,7 @@ abstract class _$Database extends GeneratedDatabase {
 
   Selectable<CardResult> listCards(
       {String? mwlCode,
-      Expression<bool?> where = const CustomExpression('(TRUE)')}) {
+      Expression<bool> where = const CustomExpression('(TRUE)')}) {
     var $arrayStartIndex = 2;
     final generatedwhere =
         $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
@@ -7142,7 +7072,7 @@ abstract class _$Database extends GeneratedDatabase {
     return customSelect(
         'SELECT"card"."code" AS "nested_0.code", "card"."pack_code" AS "nested_0.pack_code", "card"."faction_code" AS "nested_0.faction_code", "card"."type_code" AS "nested_0.type_code", "card"."position" AS "nested_0.position", "card"."title" AS "nested_0.title", "card"."stripped_title" AS "nested_0.stripped_title", "card"."body" AS "nested_0.body", "card"."stripped_body" AS "nested_0.stripped_body", "card"."keywords" AS "nested_0.keywords", "card"."quantity" AS "nested_0.quantity", "card"."cost" AS "nested_0.cost", "card"."deck_limit" AS "nested_0.deck_limit", "card"."faction_cost" AS "nested_0.faction_cost", "card"."uniqueness" AS "nested_0.uniqueness", "card"."strength" AS "nested_0.strength", "card"."agenda_points" AS "nested_0.agenda_points", "card"."memory_cost" AS "nested_0.memory_cost", "card"."advancement_cost" AS "nested_0.advancement_cost", "card"."trash_cost" AS "nested_0.trash_cost", "card"."base_link" AS "nested_0.base_link", "card"."influence_limit" AS "nested_0.influence_limit", "card"."minimum_deck_size" AS "nested_0.minimum_deck_size", "card"."flavor" AS "nested_0.flavor", "card"."illustrator" AS "nested_0.illustrator", "card"."image_url" AS "nested_0.image_url","pack"."code" AS "nested_1.code", "pack"."cycle_code" AS "nested_1.cycle_code", "pack"."position" AS "nested_1.position", "pack"."name" AS "nested_1.name", "pack"."date_release" AS "nested_1.date_release", "pack"."size" AS "nested_1.size","cycle"."code" AS "nested_2.code", "cycle"."position" AS "nested_2.position", "cycle"."name" AS "nested_2.name", "cycle"."size" AS "nested_2.size", "cycle"."rotated" AS "nested_2.rotated","faction"."code" AS "nested_3.code", "faction"."side_code" AS "nested_3.side_code", "faction"."name" AS "nested_3.name", "faction"."color" AS "nested_3.color", "faction"."is_mini" AS "nested_3.is_mini","side"."code" AS "nested_4.code", "side"."name" AS "nested_4.name","type"."code" AS "nested_5.code", "type"."side_code" AS "nested_5.side_code", "type"."position" AS "nested_5.position", "type"."name" AS "nested_5.name", "type"."is_subtype" AS "nested_5.is_subtype","subtype"."code" AS "nested_6.code", "subtype"."side_code" AS "nested_6.side_code", "subtype"."position" AS "nested_6.position", "subtype"."name" AS "nested_6.name", "subtype"."is_subtype" AS "nested_6.is_subtype" FROM card INNER JOIN pack ON pack.code = card.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = card.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = card.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = card.keywords OR card.keywords LIKE(subtype.name || \' - %\'))LEFT JOIN mwl_card ON mwl_card.mwl_code = ?1 AND mwl_card.card_code = card.code WHERE ${generatedwhere.sql}',
         variables: [
-          Variable<String?>(mwlCode),
+          Variable<String>(mwlCode),
           ...generatedwhere.introducedVariables
         ],
         readsFrom: {

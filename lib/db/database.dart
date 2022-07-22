@@ -107,7 +107,7 @@ class Database extends _$Database {
     return newDeck;
   }
 
-  Stream<List<DeckFullResult>> listDecks2({Expression<bool?> where = trueExpression}) {
+  Stream<List<DeckFullResult>> listDecks2({Expression<bool> where = trueExpression}) {
     final deckListStream = listDecks(where: where).watch();
     final cardListStream = deckListStream.flatMap((deckList) {
       return listDeckCards(where: deckCard.deckId.isIn(deckList.map((e) => e.deck.id))).watch();
@@ -138,7 +138,7 @@ class Database extends _$Database {
     );
   }
 
-  Stream<List<DeckNotifierResult>> listMiniDecks({Expression<bool?> where = trueExpression}) {
+  Stream<List<DeckNotifierResult>> listMiniDecks({Expression<bool> where = trueExpression}) {
     final deckListStream = listDecks(where: where).watch();
     final cardListStream = deckListStream.flatMap((deckList) {
       return listDeckCards(where: deckCard.deckId.isIn(deckList.map((e) => e.deck.id))).watch();
@@ -182,7 +182,7 @@ class Database extends _$Database {
     );
   }
 
-  Stream<List<DeckMicroResult>> listMicroDecks({Expression<bool?> where = trueExpression}) {
+  Stream<List<DeckMicroResult>> listMicroDecks({Expression<bool> where = trueExpression}) {
     final deckListStream = listDecks(where: where).watch();
     final cardListStream = deckListStream.flatMap((deckList) {
       return listDeckCards(where: deckCard.deckId.isIn(deckList.map((e) => e.deck.id))).watch();

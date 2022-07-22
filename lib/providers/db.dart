@@ -24,7 +24,7 @@ Future<DriftIsolate> _createDriftIsolate(Future<File> future) async {
 void _startBackground(_IsolateStartRequest request) {
   final executor = NativeDatabase(request.filename);
   final driftIsolate = DriftIsolate.inCurrent(
-    () => DatabaseConnection.fromExecutor(executor),
+    () => DatabaseConnection(executor),
   );
   request.sendDriftIsolate.send(driftIsolate);
 }

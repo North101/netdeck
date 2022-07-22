@@ -156,7 +156,7 @@ final filterCollectionFilterProvider = Provider((ref) {
   return db.pack.code.isInQuery(db.select(db.collection));
 }, dependencies: [dbProvider, filterCollectionProvider]);
 
-final filterPackFilterProvider = Provider.family<drift.Expression<bool?>, FilterState>((ref, state) {
+final filterPackFilterProvider = Provider.family<drift.Expression<bool>, FilterState>((ref, state) {
   final db = ref.watch(dbProvider);
   final packs = ref.watch(filterPacksProvider).value;
   return buildAnd([
@@ -166,7 +166,7 @@ final filterPackFilterProvider = Provider.family<drift.Expression<bool?>, Filter
   ]);
 }, dependencies: [dbProvider, filterPacksProvider]);
 
-final filterSideFilterProvider = Provider.family<drift.Expression<bool?>, FilterState>((ref, state) {
+final filterSideFilterProvider = Provider.family<drift.Expression<bool>, FilterState>((ref, state) {
   final db = ref.watch(dbProvider);
   final sides = ref.watch(filterSidesProvider).value;
   return buildAnd([
@@ -176,7 +176,7 @@ final filterSideFilterProvider = Provider.family<drift.Expression<bool?>, Filter
   ]);
 }, dependencies: [dbProvider, filterSidesProvider]);
 
-final filterFactionFilterProvider = Provider.family<drift.Expression<bool?>, FilterState>((ref, state) {
+final filterFactionFilterProvider = Provider.family<drift.Expression<bool>, FilterState>((ref, state) {
   final db = ref.watch(dbProvider);
   final factions = ref.watch(filterFactionsProvider).value;
   final sideFilter = ref.watch(filterSideFilterProvider(FilterState(
@@ -191,7 +191,7 @@ final filterFactionFilterProvider = Provider.family<drift.Expression<bool?>, Fil
   ]);
 }, dependencies: [dbProvider, filterFactionsProvider]);
 
-final filterTypeFilterProvider = Provider.family<drift.Expression<bool?>, TypeFilterState>((ref, state) {
+final filterTypeFilterProvider = Provider.family<drift.Expression<bool>, TypeFilterState>((ref, state) {
   final db = ref.watch(dbProvider);
   final types = ref.watch(filterTypesProvider).value;
   final sideFilter = ref.watch(filterSideFilterProvider(FilterState(

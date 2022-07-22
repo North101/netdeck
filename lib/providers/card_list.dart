@@ -15,7 +15,7 @@ import 'filters.dart';
 
 final cardListDeckProvider = Provider<DeckFullResult?>((ref) => null);
 
-final deckCardFilterProvider = StreamProvider<drift.Expression<bool?>>((ref) async* {
+final deckCardFilterProvider = StreamProvider<drift.Expression<bool>>((ref) async* {
   final deck = ref.watch(cardListDeckProvider);
   if (deck == null) {
     yield trueExpression;
@@ -106,7 +106,7 @@ final hasCardFilterProvider = Provider((ref) {
   filterTypesProvider,
 ]);
 
-final cardFilterProvider = Provider.family<drift.Expression<bool?>, CardFilterState>((ref, state) {
+final cardFilterProvider = Provider.family<drift.Expression<bool>, CardFilterState>((ref, state) {
   final cardQueryBuilder = ref.watch(cardQueryBuilderProvider);
   final parsedQuery = ref.watch(filterQueryProvider).value;
   final collectionFilter = ref.watch(filterCollectionFilterProvider);
@@ -185,7 +185,7 @@ final cardItemBuilderProvider =
 final mwlCardMapProvider = StreamProvider((ref) {
   final db = ref.watch(dbProvider);
   final mwl = ref.watch(filterMwlProvider).value;
-  final mwlCardList = db.listMwlCard(where: db.mwlCard.mwlCode.equals(mwl?.code)).watch();
+  final mwlCardList = db.listMwlCard(where: db.mwlCard.mwlCode.equalsExp(drift.Variable(mwl?.code))).watch();
   return mwlCardList.map((event) {
     return event.map((e) => MapEntry(e.cardCode, e)).toMap();
   });

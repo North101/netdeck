@@ -36,7 +36,7 @@ class Option {
 }
 
 extension on Query {
-  bool within(int position) => position >= startIndex && position <= endIndex;
+  bool within(int position) => position >= this.position.start && position <= this.position.end;
 }
 
 abstract class QueryBuilder<T extends drift.TableInfo> {
@@ -52,7 +52,7 @@ abstract class QueryBuilder<T extends drift.TableInfo> {
   final FieldMap extraFields;
   final String help;
 
-  drift.Expression<bool?> build(Query? query) {
+  drift.Expression<bool> build(Query? query) {
     if (query == null) {
       return falseExpression;
       //
@@ -91,7 +91,7 @@ abstract class QueryBuilder<T extends drift.TableInfo> {
     return falseExpression;
   }
 
-  drift.Expression<bool?> call(String? op, TextQuery query) {
+  drift.Expression<bool> call(String? op, TextQuery query) {
     if (op == null) {
       return fallback(query);
     } else if (op == '=') {
@@ -111,19 +111,19 @@ abstract class QueryBuilder<T extends drift.TableInfo> {
     return falseExpression;
   }
 
-  drift.Expression<bool?> fallback(TextQuery query) => equal(query);
+  drift.Expression<bool> fallback(TextQuery query) => equal(query);
 
-  drift.Expression<bool?> equal(TextQuery query) => falseExpression;
+  drift.Expression<bool> equal(TextQuery query) => falseExpression;
 
-  drift.Expression<bool?> notEqual(TextQuery query) => equal(query).not();
+  drift.Expression<bool> notEqual(TextQuery query) => equal(query).not();
 
-  drift.Expression<bool?> lessThan(TextQuery query) => falseExpression;
+  drift.Expression<bool> lessThan(TextQuery query) => falseExpression;
 
-  drift.Expression<bool?> lessThanEqual(TextQuery query) => falseExpression;
+  drift.Expression<bool> lessThanEqual(TextQuery query) => falseExpression;
 
-  drift.Expression<bool?> moreThan(TextQuery query) => falseExpression;
+  drift.Expression<bool> moreThan(TextQuery query) => falseExpression;
 
-  drift.Expression<bool?> moreThanEqual(TextQuery query) => falseExpression;
+  drift.Expression<bool> moreThanEqual(TextQuery query) => falseExpression;
 
   Future<Iterable<Option>> options(Database db, String text, Query? query, int position, [String? op]) async {
     if (query == null) {
@@ -134,13 +134,13 @@ abstract class QueryBuilder<T extends drift.TableInfo> {
       //
     } else if (query is TextQuery) {
       return [
-        ...listFields(text, query.startIndex, query.endIndex, search: query.text, op: ':'),
+        ...listFields(text, query.position.start, query.position.end, search: query.text, op: ':'),
         ...await listOptions(db, text, query, op ?? '='),
       ];
       //
     } else if (query is FieldCompareQuery) {
       if (query.field.within(position)) {
-        return listFields(text, query.field.startIndex, query.field.endIndex, search: query.field.text);
+        return listFields(text, query.field.position.start, query.field.position.end, search: query.field.text);
       }
 
       final field = fields[query.field.text] ?? extraFields[query.field.text];
@@ -150,7 +150,7 @@ abstract class QueryBuilder<T extends drift.TableInfo> {
       //
     } else if (query is FieldScope) {
       if (query.field.within(position)) {
-        return listFields(text, query.field.startIndex, query.field.endIndex, search: query.field.text);
+        return listFields(text, query.field.position.start, query.field.position.end, search: query.field.text);
       }
 
       final field = fields[query.field.text] ?? extraFields[query.field.text];
@@ -211,7 +211,7 @@ abstract class QueryBuilder<T extends drift.TableInfo> {
     return [
       ...await listSpecialOptions(db, text, query, op),
       ...select.map((e) {
-        return Option.replace(text, query.startIndex, query.endIndex, e.read(optionColumn).toString());
+        return Option.replace(text, query.position.start, query.position.end, e.read(optionColumn).toString());
       }),
     ];
   }
@@ -248,7 +248,7 @@ abstract class ColumnQueryBuilder<T extends drift.TableInfo, C extends drift.Gen
   drift.Expression get optionColumn => column;
 }
 
-class StringQueryBuilder<T extends drift.TableInfo> extends ColumnQueryBuilder<T, drift.GeneratedColumn<String?>> {
+class StringQueryBuilder<T extends drift.TableInfo> extends ColumnQueryBuilder<T, drift.GeneratedColumn<String>> {
   const StringQueryBuilder({
     required super.table,
     required super.column,
@@ -258,10 +258,10 @@ class StringQueryBuilder<T extends drift.TableInfo> extends ColumnQueryBuilder<T
     required super.help,
   });
 
-  final drift.Column<String?>? strippedColumn;
+  final drift.Column<String>? strippedColumn;
 
   @override
-  drift.Expression<bool?> equal(TextQuery query) {
+  drift.Expression<bool> equal(TextQuery query) {
     final text = query.text.toLowerCase();
     final result = column.lower().equals(text);
     if (strippedColumn == null) return result;
@@ -281,7 +281,7 @@ class ContainsStringQueryBuilder<T extends drift.TableInfo> extends StringQueryB
   });
 
   @override
-  drift.Expression<bool?> equal(TextQuery query) {
+  drift.Expression<bool> equal(TextQuery query) {
     final text = query.text.toLowerCase();
     final result = column.lower().contains(text);
     if (strippedColumn == null) return result;
@@ -301,12 +301,12 @@ class CodeNameQueryBuilder<T extends drift.TableInfo> extends QueryBuilder<T> {
     required super.help,
   });
 
-  final drift.GeneratedColumn<String?> code;
-  final drift.GeneratedColumn<String?> name;
-  final drift.GeneratedColumn<String?>? strippedName;
+  final drift.GeneratedColumn<String> code;
+  final drift.GeneratedColumn<String> name;
+  final drift.GeneratedColumn<String>? strippedName;
 
   @override
-  drift.Expression<bool?> equal(TextQuery query) {
+  drift.Expression<bool> equal(TextQuery query) {
     final text = query.text.toLowerCase();
     final result = code.lower().equals(text) | name.lower().contains(text);
     if (strippedName == null) return result;
@@ -318,7 +318,7 @@ class CodeNameQueryBuilder<T extends drift.TableInfo> extends QueryBuilder<T> {
   drift.Expression get optionColumn => name;
 }
 
-class IntQueryBuilder<T extends drift.TableInfo> extends ColumnQueryBuilder<T, drift.GeneratedColumn<int?>> {
+class IntQueryBuilder<T extends drift.TableInfo> extends ColumnQueryBuilder<T, drift.GeneratedColumn<int>> {
   const IntQueryBuilder({
     required super.table,
     required super.column,
@@ -328,34 +328,34 @@ class IntQueryBuilder<T extends drift.TableInfo> extends ColumnQueryBuilder<T, d
   });
 
   @override
-  drift.Expression<bool?> equal(TextQuery query) {
-    return column.equals(parse(query));
+  drift.Expression<bool> equal(TextQuery query) {
+    return column.equalsExp(parse(query));
   }
 
   @override
-  drift.Expression<bool?> lessThan(TextQuery query) {
-    return column.isSmallerThanValue(parse(query));
+  drift.Expression<bool> lessThan(TextQuery query) {
+    return column.isSmallerThan(parse(query));
   }
 
   @override
-  drift.Expression<bool?> lessThanEqual(TextQuery query) {
-    return column.isSmallerOrEqualValue(parse(query));
+  drift.Expression<bool> lessThanEqual(TextQuery query) {
+    return column.isSmallerOrEqual(parse(query));
   }
 
   @override
-  drift.Expression<bool?> moreThan(TextQuery query) {
-    return column.isBiggerThanValue(parse(query));
+  drift.Expression<bool> moreThan(TextQuery query) {
+    return column.isBiggerThan(parse(query));
   }
 
   @override
-  drift.Expression<bool?> moreThanEqual(TextQuery query) {
-    return column.isBiggerOrEqualValue(parse(query));
+  drift.Expression<bool> moreThanEqual(TextQuery query) {
+    return column.isBiggerOrEqual(parse(query));
   }
 
-  int? parse(TextQuery query) => int.tryParse(query.text);
+  drift.Variable<int> parse(TextQuery query) => drift.Variable(int.tryParse(query.text));
 }
 
-class BoolQueryBuilder<T extends drift.TableInfo> extends ColumnQueryBuilder<T, drift.GeneratedColumn<bool?>> {
+class BoolQueryBuilder<T extends drift.TableInfo> extends ColumnQueryBuilder<T, drift.GeneratedColumn<bool>> {
   const BoolQueryBuilder({
     required super.table,
     required super.column,
@@ -374,17 +374,17 @@ class BoolQueryBuilder<T extends drift.TableInfo> extends ColumnQueryBuilder<T, 
   };
 
   @override
-  drift.Expression<bool?> equal(TextQuery query) {
-    return column.equals(parse(query));
+  drift.Expression<bool> equal(TextQuery query) {
+    return column.equalsExp(parse(query));
   }
 
-  bool? parse(TextQuery query) {
-    return lookup[query.text];
+  drift.Variable<bool> parse(TextQuery query) {
+    return drift.Variable(lookup[query.text]);
   }
 }
 
 class DateTimeQueryBuilder<T extends drift.TableInfo>
-    extends ColumnQueryBuilder<T, drift.GeneratedColumnWithTypeConverter<DateTime?, int?>> {
+    extends ColumnQueryBuilder<T, drift.GeneratedColumnWithTypeConverter<DateTime?, int>> {
   const DateTimeQueryBuilder({
     required super.table,
     required super.column,
@@ -394,51 +394,51 @@ class DateTimeQueryBuilder<T extends drift.TableInfo>
   });
 
   @override
-  drift.Expression<bool?> equal(TextQuery query) {
+  drift.Expression<bool> equal(TextQuery query) {
     if (query.text == 'today') {
       final start = startOfToday;
       final end = endOfToday;
-      return column.isBetweenValues(convert(start), convert(end));
+      return column.isBetween(convert(start), convert(end));
     } else if (query.text == 'yesterday') {
       final start = startOfYesterday;
       final end = endOfYesterday;
-      return column.isBetweenValues(convert(start), convert(end));
+      return column.isBetween(convert(start), convert(end));
     } else if (query.text == 'month') {
       final start = startOfMonth;
       final end = endOfMonth;
-      return column.isBetweenValues(convert(start), convert(end));
+      return column.isBetween(convert(start), convert(end));
     } else if (query.text == 'year') {
       final start = startOfYear;
       final end = endOfYear;
-      return column.isBetweenValues(convert(start), convert(end));
+      return column.isBetween(convert(start), convert(end));
     }
 
     return datetime().like('${query.text}%');
   }
 
   @override
-  drift.Expression<bool?> lessThan(TextQuery query) {
+  drift.Expression<bool> lessThan(TextQuery query) {
     return datetime().isSmallerThanValue(parseStart(query)?.toIso8601String() ?? query.text);
   }
 
   @override
-  drift.Expression<bool?> lessThanEqual(TextQuery query) {
+  drift.Expression<bool> lessThanEqual(TextQuery query) {
     return datetime().isSmallerOrEqualValue(parseEnd(query)?.toIso8601String() ?? query.text);
   }
 
   @override
-  drift.Expression<bool?> moreThan(TextQuery query) {
+  drift.Expression<bool> moreThan(TextQuery query) {
     return datetime().isBiggerThanValue(parseEnd(query)?.toIso8601String() ?? query.text);
   }
 
   @override
-  drift.Expression<bool?> moreThanEqual(TextQuery query) {
+  drift.Expression<bool> moreThanEqual(TextQuery query) {
     return datetime().isBiggerOrEqualValue(parseStart(query)?.toIso8601String() ?? query.text);
   }
 
-  int? convert(DateTime? value) {
-    if (value == null) return null;
-    return column.converter.toSql(value);
+  drift.Variable<int> convert(DateTime? value) {
+    if (value == null) return const drift.Variable(null);
+    return drift.Variable(column.converter.toSql(value));
   }
 
   DateTime? parseStart(TextQuery query) {
@@ -507,18 +507,18 @@ class DateTimeQueryBuilder<T extends drift.TableInfo>
     return DateTime(now.year + 1, 0);
   }
 
-  drift.Expression<String?> datetime() => column.dartCast<DateTime?>().datetime;
+  drift.Expression<String> datetime() => column.dartCast<DateTime>().datetime;
 
   @override
   Future<Iterable<Option>> listSpecialOptions(Database db, String text, TextQuery query, String op) async {
     return [
       for (final extra in const ['today', 'yesterday', 'month', 'year'])
-        if (extra.startsWith(query.text)) Option.replace(text, query.startIndex, query.endIndex, extra),
+        if (extra.startsWith(query.text)) Option.replace(text, query.position.start, query.position.end, extra),
     ];
   }
 
   @override
-  drift.Expression<String?> get optionColumn => column.dartCast<DateTime?>().date;
+  drift.Expression<String> get optionColumn => column.dartCast<DateTime>().date;
 
   @override
   List<drift.OrderingTerm> get optionOrderBy => [
@@ -538,7 +538,7 @@ class DeckTagsQueryBuilder extends QueryBuilder<DeckTag> {
   final Database db;
 
   @override
-  drift.Expression<bool?> equal(TextQuery query) {
+  drift.Expression<bool> equal(TextQuery query) {
     return db.deck.id.isInQuery(
       db.selectOnly(table).also((e) {
         e.addColumns([table.deckId]);
@@ -563,7 +563,7 @@ class DeckCardsQueryBuilder extends CodeNameQueryBuilder<DeckCard> {
   final Database db;
 
   @override
-  drift.Expression<bool?> call(String? op, TextQuery query) {
+  drift.Expression<bool> call(String? op, TextQuery query) {
     return db.deck.id.isInQuery(
       db.selectOnly(table).join([
         drift.innerJoin(db.card, table.cardCode.equalsExp(db.card.code)),
@@ -837,7 +837,7 @@ class CardRotationQueryBuilder extends RotationQueryBuilder {
   });
 
   @override
-  drift.Expression<bool?> call(String? op, TextQuery query) {
+  drift.Expression<bool> call(String? op, TextQuery query) {
     final inQuery = db.selectOnly(db.rotation).join([
       drift.innerJoin(db.rotationCycle, db.rotationCycle.rotationCode.equalsExp(db.rotation.code)),
       drift.innerJoin(db.pack, db.pack.cycleCode.equalsExp(db.rotationCycle.cycleCode)),
@@ -898,7 +898,7 @@ class CardMwlQueryBuilder extends MwlQueryBuilder {
   });
 
   @override
-  drift.Expression<bool?> call(String? op, TextQuery query) {
+  drift.Expression<bool> call(String? op, TextQuery query) {
     final inQuery = db.selectOnly(db.card).join([
       drift.crossJoin(db.mwl),
       drift.leftOuterJoin(
