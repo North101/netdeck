@@ -45,7 +45,7 @@ extension DateTimeUtc on DateTime {
 }
 
 int? tryParseDateTime(String? value) =>
-    value != null ? const DateTimeUtcConverter().toJson(DateTimeUtc.parseUtc(value)) : null;
+    value != null ? DateTimeUtc.parseUtc(value).millisecondsSinceEpoch : null;
 
 String currentRotationCode(String formatCode) => '$formatCode@current';
 

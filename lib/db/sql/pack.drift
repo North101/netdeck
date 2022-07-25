@@ -9,7 +9,7 @@ CREATE TABLE pack(
   position INT NOT NULL,
 
   name TEXT NOT NULL,
-  date_release INT MAPPED BY `const DateTimeUtcConverter()`,
+  date_release DATETIME,
   size INT
 );
 

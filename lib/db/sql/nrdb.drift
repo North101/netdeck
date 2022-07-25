@@ -2,16 +2,16 @@ import '/db/types.dart';
 
 CREATE TABLE nrdb(
   id BOOLEAN PRIMARY KEY NOT NULL DEFAULT TRUE,
-  expires INT NOT NULL MAPPED BY `const DateTimeUtcConverter()`,
-  cycle_last_updated INT NOT NULL MAPPED BY `const DateTimeUtcConverter()`,
-  pack_last_updated INT NOT NULL MAPPED BY `const DateTimeUtcConverter()`,
-  side_last_updated INT NOT NULL MAPPED BY `const DateTimeUtcConverter()`,
-  faction_last_updated INT NOT NULL MAPPED BY `const DateTimeUtcConverter()`,
-  type_last_updated INT NOT NULL MAPPED BY `const DateTimeUtcConverter()`,
-  card_last_updated INT NOT NULL MAPPED BY `const DateTimeUtcConverter()`,
-  format_last_updated INT NOT NULL MAPPED BY `const DateTimeUtcConverter()`,
-  rotation_last_updated INT NOT NULL MAPPED BY `const DateTimeUtcConverter()`,
-  mwl_last_updated INT NOT NULL MAPPED BY `const DateTimeUtcConverter()`,
+  expires DATETIME NOT NULL,
+  cycle_last_updated DATETIME NOT NULL,
+  pack_last_updated DATETIME NOT NULL,
+  side_last_updated DATETIME NOT NULL,
+  faction_last_updated DATETIME NOT NULL,
+  type_last_updated DATETIME NOT NULL,
+  card_last_updated DATETIME NOT NULL,
+  format_last_updated DATETIME NOT NULL,
+  rotation_last_updated DATETIME NOT NULL,
+  mwl_last_updated DATETIME NOT NULL,
   CONSTRAINT settings_id CHECK (id = TRUE)
 );
 

@@ -384,7 +384,7 @@ class BoolQueryBuilder<T extends drift.TableInfo> extends ColumnQueryBuilder<T, 
 }
 
 class DateTimeQueryBuilder<T extends drift.TableInfo>
-    extends ColumnQueryBuilder<T, drift.GeneratedColumnWithTypeConverter<DateTime?, int>> {
+    extends ColumnQueryBuilder<T, drift.GeneratedColumn<DateTime>> {
   const DateTimeQueryBuilder({
     required super.table,
     required super.column,
@@ -436,9 +436,9 @@ class DateTimeQueryBuilder<T extends drift.TableInfo>
     return datetime().isBiggerOrEqualValue(parseStart(query)?.toIso8601String() ?? query.text);
   }
 
-  drift.Variable<int> convert(DateTime? value) {
+  drift.Variable<DateTime> convert(DateTime? value) {
     if (value == null) return const drift.Variable(null);
-    return drift.Variable(column.converter.toSql(value));
+    return drift.Variable(value);
   }
 
   DateTime? parseStart(TextQuery query) {
@@ -507,7 +507,7 @@ class DateTimeQueryBuilder<T extends drift.TableInfo>
     return DateTime(now.year + 1, 0);
   }
 
-  drift.Expression<String> datetime() => column.dartCast<DateTime>().datetime;
+  drift.Expression<String> datetime() => column.datetime;
 
   @override
   Future<Iterable<Option>> listSpecialOptions(Database db, String text, TextQuery query, String op) async {
@@ -518,7 +518,7 @@ class DateTimeQueryBuilder<T extends drift.TableInfo>
   }
 
   @override
-  drift.Expression<String> get optionColumn => column.dartCast<DateTime>().date;
+  drift.Expression<String> get optionColumn => column.date;
 
   @override
   List<drift.OrderingTerm> get optionOrderBy => [

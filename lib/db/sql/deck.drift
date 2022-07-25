@@ -16,11 +16,11 @@ CREATE TABLE deck(
 
   name TEXT NOT NULL,
   description TEXT NOT NULL,
-  created INT NOT NULL MAPPED BY `const DateTimeUtcConverter()`,
-  updated INT NOT NULL MAPPED BY `const DateTimeUtcConverter()`,
+  created DATETIME NOT NULL,
+  updated DATETIME NOT NULL,
   deleted BOOLEAN NOT NULL,
-  remote_updated INT MAPPED BY `const DateTimeUtcConverter()`,
-  synced INT MAPPED BY `const DateTimeUtcConverter()`
+  remote_updated DATETIME,
+  synced DATETIME
 );
 
 listDecks($where = TRUE) AS DeckResult:

@@ -10,7 +10,7 @@ CREATE TABLE rotation(
   code TEXT NOT NULL PRIMARY KEY,
   format_code TEXT NOT NULL,
   name TEXT NOT NULL,
-  date_start INT MAPPED BY `const DateTimeUtcConverter()`,
+  date_start DATETIME,
   type TEXT MAPPED BY `const RotationTypeConverter()`
 );
 

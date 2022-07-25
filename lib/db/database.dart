@@ -64,7 +64,7 @@ class Database extends _$Database {
   }
 
   @override
-  int schemaVersion = 5;
+  int schemaVersion = 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -89,8 +89,31 @@ class Database extends _$Database {
             await m.createTable(mwl);
             await delete(nrdb).go();
           }
+          if (from < 6) {
+            await migrateFromUnixTimestampsToText(m);
+          }
         },
       );
+
+  Future<void> migrateFromUnixTimestampsToText(Migrator m) async {
+    for (final table in allTables) {
+      final dateTimeColumns = table.$columns.where((c) => c.type == DriftSqlType.dateTime);
+
+      if (dateTimeColumns.isNotEmpty) {
+        // This table has dateTime columns which need to be migrated.
+        await m.alterTable(TableMigration(
+          table,
+          columnTransformer: {
+            for (final column in dateTimeColumns)
+              // We assume that the column in the database is an int (unix
+              // timestamp), use `fromUnixEpoch` to convert it to a date time.
+              // Note that the resulting value in the database is in UTC.
+              column: DateTimeExpressions.fromUnixEpoch(CustomExpression<int>('${column.escapedName} * 100')),
+          },
+        ));
+      }
+    }
+  }
 
   Future<DeckData> copyDeck(DeckData deck, {String? newDeckId, DateTime? now}) async {
     newDeckId ??= const Uuid().v4();

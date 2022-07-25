@@ -1208,11 +1208,10 @@ class RotationData extends DataClass implements Insertable<RotationData> {
     map['format_code'] = Variable<String>(formatCode);
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || dateStart != null) {
-      final converter = Rotation.$converter0n;
-      map['date_start'] = Variable<int>(converter.toSql(dateStart));
+      map['date_start'] = Variable<DateTime>(dateStart);
     }
     if (!nullToAbsent || type != null) {
-      final converter = Rotation.$converter1n;
+      final converter = Rotation.$converter0n;
       map['type'] = Variable<String>(converter.toSql(type));
     }
     return map;
@@ -1237,9 +1236,8 @@ class RotationData extends DataClass implements Insertable<RotationData> {
       code: serializer.fromJson<String>(json['code']),
       formatCode: serializer.fromJson<String>(json['format_code']),
       name: serializer.fromJson<String>(json['name']),
-      dateStart: Rotation.$converter0n
-          .fromJson(serializer.fromJson<int?>(json['date_start'])),
-      type: Rotation.$converter1n
+      dateStart: serializer.fromJson<DateTime?>(json['date_start']),
+      type: Rotation.$converter0n
           .fromJson(serializer.fromJson<String?>(json['type'])),
     );
   }
@@ -1250,9 +1248,8 @@ class RotationData extends DataClass implements Insertable<RotationData> {
       'code': serializer.toJson<String>(code),
       'format_code': serializer.toJson<String>(formatCode),
       'name': serializer.toJson<String>(name),
-      'date_start':
-          serializer.toJson<int?>(Rotation.$converter0n.toJson(dateStart)),
-      'type': serializer.toJson<String?>(Rotation.$converter1n.toJson(type)),
+      'date_start': serializer.toJson<DateTime?>(dateStart),
+      'type': serializer.toJson<String?>(Rotation.$converter0n.toJson(type)),
     };
   }
 
@@ -1320,7 +1317,7 @@ class RotationCompanion extends UpdateCompanion<RotationData> {
     Expression<String>? code,
     Expression<String>? formatCode,
     Expression<String>? name,
-    Expression<int>? dateStart,
+    Expression<DateTime>? dateStart,
     Expression<String>? type,
   }) {
     return RawValuesInsertable({
@@ -1360,11 +1357,10 @@ class RotationCompanion extends UpdateCompanion<RotationData> {
       map['name'] = Variable<String>(name.value);
     }
     if (dateStart.present) {
-      final converter = Rotation.$converter0n;
-      map['date_start'] = Variable<int>(converter.toSql(dateStart.value));
+      map['date_start'] = Variable<DateTime>(dateStart.value);
     }
     if (type.present) {
-      final converter = Rotation.$converter1n;
+      final converter = Rotation.$converter0n;
       map['type'] = Variable<String>(converter.toSql(type.value));
     }
     return map;
@@ -1407,19 +1403,18 @@ class Rotation extends Table with TableInfo<Rotation, RotationData> {
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _dateStartMeta = const VerificationMeta('dateStart');
-  late final GeneratedColumnWithTypeConverter<DateTime?, int> dateStart =
-      GeneratedColumn<int>('date_start', aliasedName, true,
-              type: DriftSqlType.int,
-              requiredDuringInsert: false,
-              $customConstraints: '')
-          .withConverter<DateTime?>(Rotation.$converter0n);
+  late final GeneratedColumn<DateTime> dateStart = GeneratedColumn<DateTime>(
+      'date_start', aliasedName, true,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      $customConstraints: '');
   final VerificationMeta _typeMeta = const VerificationMeta('type');
   late final GeneratedColumnWithTypeConverter<RotationType?, String> type =
       GeneratedColumn<String>('type', aliasedName, true,
               type: DriftSqlType.string,
               requiredDuringInsert: false,
               $customConstraints: '')
-          .withConverter<RotationType?>(Rotation.$converter1n);
+          .withConverter<RotationType?>(Rotation.$converter0n);
   @override
   List<GeneratedColumn> get $columns =>
       [code, formatCode, name, dateStart, type];
@@ -1452,7 +1447,10 @@ class Rotation extends Table with TableInfo<Rotation, RotationData> {
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
-    context.handle(_dateStartMeta, const VerificationResult.success());
+    if (data.containsKey('date_start')) {
+      context.handle(_dateStartMeta,
+          dateStart.isAcceptableOrUnknown(data['date_start']!, _dateStartMeta));
+    }
     context.handle(_typeMeta, const VerificationResult.success());
     return context;
   }
@@ -1469,9 +1467,9 @@ class Rotation extends Table with TableInfo<Rotation, RotationData> {
           .read(DriftSqlType.string, data['${effectivePrefix}format_code'])!,
       name: attachedDatabase.options.types
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      dateStart: Rotation.$converter0n.fromSql(attachedDatabase.options.types
-          .read(DriftSqlType.int, data['${effectivePrefix}date_start'])),
-      type: Rotation.$converter1n.fromSql(attachedDatabase.options.types
+      dateStart: attachedDatabase.options.types
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date_start']),
+      type: Rotation.$converter0n.fromSql(attachedDatabase.options.types
           .read(DriftSqlType.string, data['${effectivePrefix}type'])),
     );
   }
@@ -1481,14 +1479,10 @@ class Rotation extends Table with TableInfo<Rotation, RotationData> {
     return Rotation(attachedDatabase, alias);
   }
 
-  static JsonTypeConverter<DateTime, int> $converter0 =
-      const DateTimeUtcConverter();
-  static JsonTypeConverter<RotationType, String> $converter1 =
+  static JsonTypeConverter<RotationType, String> $converter0 =
       const RotationTypeConverter();
-  static JsonTypeConverter<DateTime?, int?> $converter0n =
+  static JsonTypeConverter<RotationType?, String?> $converter0n =
       JsonTypeConverter.asNullable($converter0);
-  static JsonTypeConverter<RotationType?, String?> $converter1n =
-      JsonTypeConverter.asNullable($converter1);
   @override
   bool get dontWriteConstraints => true;
 }
@@ -1701,8 +1695,7 @@ class PackData extends DataClass implements Insertable<PackData> {
     map['position'] = Variable<int>(position);
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || dateRelease != null) {
-      final converter = Pack.$converter0n;
-      map['date_release'] = Variable<int>(converter.toSql(dateRelease));
+      map['date_release'] = Variable<DateTime>(dateRelease);
     }
     if (!nullToAbsent || size != null) {
       map['size'] = Variable<int>(size);
@@ -1731,8 +1724,7 @@ class PackData extends DataClass implements Insertable<PackData> {
       cycleCode: serializer.fromJson<String>(json['cycle_code']),
       position: serializer.fromJson<int>(json['position']),
       name: serializer.fromJson<String>(json['name']),
-      dateRelease: Pack.$converter0n
-          .fromJson(serializer.fromJson<int?>(json['date_release'])),
+      dateRelease: serializer.fromJson<DateTime?>(json['date_release']),
       size: serializer.fromJson<int?>(json['size']),
     );
   }
@@ -1744,8 +1736,7 @@ class PackData extends DataClass implements Insertable<PackData> {
       'cycle_code': serializer.toJson<String>(cycleCode),
       'position': serializer.toJson<int>(position),
       'name': serializer.toJson<String>(name),
-      'date_release':
-          serializer.toJson<int?>(Pack.$converter0n.toJson(dateRelease)),
+      'date_release': serializer.toJson<DateTime?>(dateRelease),
       'size': serializer.toJson<int?>(size),
     };
   }
@@ -1824,7 +1815,7 @@ class PackCompanion extends UpdateCompanion<PackData> {
     Expression<String>? cycleCode,
     Expression<int>? position,
     Expression<String>? name,
-    Expression<int>? dateRelease,
+    Expression<DateTime>? dateRelease,
     Expression<int>? size,
   }) {
     return RawValuesInsertable({
@@ -1870,8 +1861,7 @@ class PackCompanion extends UpdateCompanion<PackData> {
       map['name'] = Variable<String>(name.value);
     }
     if (dateRelease.present) {
-      final converter = Pack.$converter0n;
-      map['date_release'] = Variable<int>(converter.toSql(dateRelease.value));
+      map['date_release'] = Variable<DateTime>(dateRelease.value);
     }
     if (size.present) {
       map['size'] = Variable<int>(size.value);
@@ -1924,12 +1914,11 @@ class Pack extends Table with TableInfo<Pack, PackData> {
       $customConstraints: 'NOT NULL');
   final VerificationMeta _dateReleaseMeta =
       const VerificationMeta('dateRelease');
-  late final GeneratedColumnWithTypeConverter<DateTime?, int> dateRelease =
-      GeneratedColumn<int>('date_release', aliasedName, true,
-              type: DriftSqlType.int,
-              requiredDuringInsert: false,
-              $customConstraints: '')
-          .withConverter<DateTime?>(Pack.$converter0n);
+  late final GeneratedColumn<DateTime> dateRelease = GeneratedColumn<DateTime>(
+      'date_release', aliasedName, true,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      $customConstraints: '');
   final VerificationMeta _sizeMeta = const VerificationMeta('size');
   late final GeneratedColumn<int> size = GeneratedColumn<int>(
       'size', aliasedName, true,
@@ -1972,7 +1961,12 @@ class Pack extends Table with TableInfo<Pack, PackData> {
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
-    context.handle(_dateReleaseMeta, const VerificationResult.success());
+    if (data.containsKey('date_release')) {
+      context.handle(
+          _dateReleaseMeta,
+          dateRelease.isAcceptableOrUnknown(
+              data['date_release']!, _dateReleaseMeta));
+    }
     if (data.containsKey('size')) {
       context.handle(
           _sizeMeta, size.isAcceptableOrUnknown(data['size']!, _sizeMeta));
@@ -1994,8 +1988,8 @@ class Pack extends Table with TableInfo<Pack, PackData> {
           .read(DriftSqlType.int, data['${effectivePrefix}position'])!,
       name: attachedDatabase.options.types
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      dateRelease: Pack.$converter0n.fromSql(attachedDatabase.options.types
-          .read(DriftSqlType.int, data['${effectivePrefix}date_release'])),
+      dateRelease: attachedDatabase.options.types
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date_release']),
       size: attachedDatabase.options.types
           .read(DriftSqlType.int, data['${effectivePrefix}size']),
     );
@@ -2006,10 +2000,6 @@ class Pack extends Table with TableInfo<Pack, PackData> {
     return Pack(attachedDatabase, alias);
   }
 
-  static JsonTypeConverter<DateTime, int> $converter0 =
-      const DateTimeUtcConverter();
-  static JsonTypeConverter<DateTime?, int?> $converter0n =
-      JsonTypeConverter.asNullable($converter0);
   @override
   bool get dontWriteConstraints => true;
 }
@@ -2042,54 +2032,16 @@ class NrdbData extends DataClass implements Insertable<NrdbData> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<bool>(id);
-    {
-      final converter = Nrdb.$converter0;
-      map['expires'] = Variable<int>(converter.toSql(expires));
-    }
-    {
-      final converter = Nrdb.$converter1;
-      map['cycle_last_updated'] =
-          Variable<int>(converter.toSql(cycleLastUpdated));
-    }
-    {
-      final converter = Nrdb.$converter2;
-      map['pack_last_updated'] =
-          Variable<int>(converter.toSql(packLastUpdated));
-    }
-    {
-      final converter = Nrdb.$converter3;
-      map['side_last_updated'] =
-          Variable<int>(converter.toSql(sideLastUpdated));
-    }
-    {
-      final converter = Nrdb.$converter4;
-      map['faction_last_updated'] =
-          Variable<int>(converter.toSql(factionLastUpdated));
-    }
-    {
-      final converter = Nrdb.$converter5;
-      map['type_last_updated'] =
-          Variable<int>(converter.toSql(typeLastUpdated));
-    }
-    {
-      final converter = Nrdb.$converter6;
-      map['card_last_updated'] =
-          Variable<int>(converter.toSql(cardLastUpdated));
-    }
-    {
-      final converter = Nrdb.$converter7;
-      map['format_last_updated'] =
-          Variable<int>(converter.toSql(formatLastUpdated));
-    }
-    {
-      final converter = Nrdb.$converter8;
-      map['rotation_last_updated'] =
-          Variable<int>(converter.toSql(rotationLastUpdated));
-    }
-    {
-      final converter = Nrdb.$converter9;
-      map['mwl_last_updated'] = Variable<int>(converter.toSql(mwlLastUpdated));
-    }
+    map['expires'] = Variable<DateTime>(expires);
+    map['cycle_last_updated'] = Variable<DateTime>(cycleLastUpdated);
+    map['pack_last_updated'] = Variable<DateTime>(packLastUpdated);
+    map['side_last_updated'] = Variable<DateTime>(sideLastUpdated);
+    map['faction_last_updated'] = Variable<DateTime>(factionLastUpdated);
+    map['type_last_updated'] = Variable<DateTime>(typeLastUpdated);
+    map['card_last_updated'] = Variable<DateTime>(cardLastUpdated);
+    map['format_last_updated'] = Variable<DateTime>(formatLastUpdated);
+    map['rotation_last_updated'] = Variable<DateTime>(rotationLastUpdated);
+    map['mwl_last_updated'] = Variable<DateTime>(mwlLastUpdated);
     return map;
   }
 
@@ -2114,26 +2066,20 @@ class NrdbData extends DataClass implements Insertable<NrdbData> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return NrdbData(
       id: serializer.fromJson<bool>(json['id']),
-      expires:
-          Nrdb.$converter0.fromJson(serializer.fromJson<int>(json['expires'])),
-      cycleLastUpdated: Nrdb.$converter1
-          .fromJson(serializer.fromJson<int>(json['cycle_last_updated'])),
-      packLastUpdated: Nrdb.$converter2
-          .fromJson(serializer.fromJson<int>(json['pack_last_updated'])),
-      sideLastUpdated: Nrdb.$converter3
-          .fromJson(serializer.fromJson<int>(json['side_last_updated'])),
-      factionLastUpdated: Nrdb.$converter4
-          .fromJson(serializer.fromJson<int>(json['faction_last_updated'])),
-      typeLastUpdated: Nrdb.$converter5
-          .fromJson(serializer.fromJson<int>(json['type_last_updated'])),
-      cardLastUpdated: Nrdb.$converter6
-          .fromJson(serializer.fromJson<int>(json['card_last_updated'])),
-      formatLastUpdated: Nrdb.$converter7
-          .fromJson(serializer.fromJson<int>(json['format_last_updated'])),
-      rotationLastUpdated: Nrdb.$converter8
-          .fromJson(serializer.fromJson<int>(json['rotation_last_updated'])),
-      mwlLastUpdated: Nrdb.$converter9
-          .fromJson(serializer.fromJson<int>(json['mwl_last_updated'])),
+      expires: serializer.fromJson<DateTime>(json['expires']),
+      cycleLastUpdated:
+          serializer.fromJson<DateTime>(json['cycle_last_updated']),
+      packLastUpdated: serializer.fromJson<DateTime>(json['pack_last_updated']),
+      sideLastUpdated: serializer.fromJson<DateTime>(json['side_last_updated']),
+      factionLastUpdated:
+          serializer.fromJson<DateTime>(json['faction_last_updated']),
+      typeLastUpdated: serializer.fromJson<DateTime>(json['type_last_updated']),
+      cardLastUpdated: serializer.fromJson<DateTime>(json['card_last_updated']),
+      formatLastUpdated:
+          serializer.fromJson<DateTime>(json['format_last_updated']),
+      rotationLastUpdated:
+          serializer.fromJson<DateTime>(json['rotation_last_updated']),
+      mwlLastUpdated: serializer.fromJson<DateTime>(json['mwl_last_updated']),
     );
   }
   @override
@@ -2141,25 +2087,16 @@ class NrdbData extends DataClass implements Insertable<NrdbData> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<bool>(id),
-      'expires': serializer.toJson<int?>(Nrdb.$converter0.toJson(expires)),
-      'cycle_last_updated':
-          serializer.toJson<int?>(Nrdb.$converter1.toJson(cycleLastUpdated)),
-      'pack_last_updated':
-          serializer.toJson<int?>(Nrdb.$converter2.toJson(packLastUpdated)),
-      'side_last_updated':
-          serializer.toJson<int?>(Nrdb.$converter3.toJson(sideLastUpdated)),
-      'faction_last_updated':
-          serializer.toJson<int?>(Nrdb.$converter4.toJson(factionLastUpdated)),
-      'type_last_updated':
-          serializer.toJson<int?>(Nrdb.$converter5.toJson(typeLastUpdated)),
-      'card_last_updated':
-          serializer.toJson<int?>(Nrdb.$converter6.toJson(cardLastUpdated)),
-      'format_last_updated':
-          serializer.toJson<int?>(Nrdb.$converter7.toJson(formatLastUpdated)),
-      'rotation_last_updated':
-          serializer.toJson<int?>(Nrdb.$converter8.toJson(rotationLastUpdated)),
-      'mwl_last_updated':
-          serializer.toJson<int?>(Nrdb.$converter9.toJson(mwlLastUpdated)),
+      'expires': serializer.toJson<DateTime>(expires),
+      'cycle_last_updated': serializer.toJson<DateTime>(cycleLastUpdated),
+      'pack_last_updated': serializer.toJson<DateTime>(packLastUpdated),
+      'side_last_updated': serializer.toJson<DateTime>(sideLastUpdated),
+      'faction_last_updated': serializer.toJson<DateTime>(factionLastUpdated),
+      'type_last_updated': serializer.toJson<DateTime>(typeLastUpdated),
+      'card_last_updated': serializer.toJson<DateTime>(cardLastUpdated),
+      'format_last_updated': serializer.toJson<DateTime>(formatLastUpdated),
+      'rotation_last_updated': serializer.toJson<DateTime>(rotationLastUpdated),
+      'mwl_last_updated': serializer.toJson<DateTime>(mwlLastUpdated),
     };
   }
 
@@ -2285,16 +2222,16 @@ class NrdbCompanion extends UpdateCompanion<NrdbData> {
         mwlLastUpdated = Value(mwlLastUpdated);
   static Insertable<NrdbData> custom({
     Expression<bool>? id,
-    Expression<int>? expires,
-    Expression<int>? cycleLastUpdated,
-    Expression<int>? packLastUpdated,
-    Expression<int>? sideLastUpdated,
-    Expression<int>? factionLastUpdated,
-    Expression<int>? typeLastUpdated,
-    Expression<int>? cardLastUpdated,
-    Expression<int>? formatLastUpdated,
-    Expression<int>? rotationLastUpdated,
-    Expression<int>? mwlLastUpdated,
+    Expression<DateTime>? expires,
+    Expression<DateTime>? cycleLastUpdated,
+    Expression<DateTime>? packLastUpdated,
+    Expression<DateTime>? sideLastUpdated,
+    Expression<DateTime>? factionLastUpdated,
+    Expression<DateTime>? typeLastUpdated,
+    Expression<DateTime>? cardLastUpdated,
+    Expression<DateTime>? formatLastUpdated,
+    Expression<DateTime>? rotationLastUpdated,
+    Expression<DateTime>? mwlLastUpdated,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2347,53 +2284,36 @@ class NrdbCompanion extends UpdateCompanion<NrdbData> {
       map['id'] = Variable<bool>(id.value);
     }
     if (expires.present) {
-      final converter = Nrdb.$converter0;
-      map['expires'] = Variable<int>(converter.toSql(expires.value));
+      map['expires'] = Variable<DateTime>(expires.value);
     }
     if (cycleLastUpdated.present) {
-      final converter = Nrdb.$converter1;
-      map['cycle_last_updated'] =
-          Variable<int>(converter.toSql(cycleLastUpdated.value));
+      map['cycle_last_updated'] = Variable<DateTime>(cycleLastUpdated.value);
     }
     if (packLastUpdated.present) {
-      final converter = Nrdb.$converter2;
-      map['pack_last_updated'] =
-          Variable<int>(converter.toSql(packLastUpdated.value));
+      map['pack_last_updated'] = Variable<DateTime>(packLastUpdated.value);
     }
     if (sideLastUpdated.present) {
-      final converter = Nrdb.$converter3;
-      map['side_last_updated'] =
-          Variable<int>(converter.toSql(sideLastUpdated.value));
+      map['side_last_updated'] = Variable<DateTime>(sideLastUpdated.value);
     }
     if (factionLastUpdated.present) {
-      final converter = Nrdb.$converter4;
       map['faction_last_updated'] =
-          Variable<int>(converter.toSql(factionLastUpdated.value));
+          Variable<DateTime>(factionLastUpdated.value);
     }
     if (typeLastUpdated.present) {
-      final converter = Nrdb.$converter5;
-      map['type_last_updated'] =
-          Variable<int>(converter.toSql(typeLastUpdated.value));
+      map['type_last_updated'] = Variable<DateTime>(typeLastUpdated.value);
     }
     if (cardLastUpdated.present) {
-      final converter = Nrdb.$converter6;
-      map['card_last_updated'] =
-          Variable<int>(converter.toSql(cardLastUpdated.value));
+      map['card_last_updated'] = Variable<DateTime>(cardLastUpdated.value);
     }
     if (formatLastUpdated.present) {
-      final converter = Nrdb.$converter7;
-      map['format_last_updated'] =
-          Variable<int>(converter.toSql(formatLastUpdated.value));
+      map['format_last_updated'] = Variable<DateTime>(formatLastUpdated.value);
     }
     if (rotationLastUpdated.present) {
-      final converter = Nrdb.$converter8;
       map['rotation_last_updated'] =
-          Variable<int>(converter.toSql(rotationLastUpdated.value));
+          Variable<DateTime>(rotationLastUpdated.value);
     }
     if (mwlLastUpdated.present) {
-      final converter = Nrdb.$converter9;
-      map['mwl_last_updated'] =
-          Variable<int>(converter.toSql(mwlLastUpdated.value));
+      map['mwl_last_updated'] = Variable<DateTime>(mwlLastUpdated.value);
     }
     return map;
   }
@@ -2430,86 +2350,74 @@ class Nrdb extends Table with TableInfo<Nrdb, NrdbData> {
       $customConstraints: 'PRIMARY KEY NOT NULL DEFAULT TRUE',
       defaultValue: const CustomExpression<bool>('TRUE'));
   final VerificationMeta _expiresMeta = const VerificationMeta('expires');
-  late final GeneratedColumnWithTypeConverter<DateTime, int> expires =
-      GeneratedColumn<int>('expires', aliasedName, false,
-              type: DriftSqlType.int,
-              requiredDuringInsert: true,
-              $customConstraints: 'NOT NULL')
-          .withConverter<DateTime>(Nrdb.$converter0);
+  late final GeneratedColumn<DateTime> expires = GeneratedColumn<DateTime>(
+      'expires', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
   final VerificationMeta _cycleLastUpdatedMeta =
       const VerificationMeta('cycleLastUpdated');
-  late final GeneratedColumnWithTypeConverter<DateTime, int> cycleLastUpdated =
-      GeneratedColumn<int>('cycle_last_updated', aliasedName, false,
-              type: DriftSqlType.int,
-              requiredDuringInsert: true,
-              $customConstraints: 'NOT NULL')
-          .withConverter<DateTime>(Nrdb.$converter1);
+  late final GeneratedColumn<DateTime> cycleLastUpdated =
+      GeneratedColumn<DateTime>('cycle_last_updated', aliasedName, false,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
   final VerificationMeta _packLastUpdatedMeta =
       const VerificationMeta('packLastUpdated');
-  late final GeneratedColumnWithTypeConverter<DateTime, int> packLastUpdated =
-      GeneratedColumn<int>('pack_last_updated', aliasedName, false,
-              type: DriftSqlType.int,
-              requiredDuringInsert: true,
-              $customConstraints: 'NOT NULL')
-          .withConverter<DateTime>(Nrdb.$converter2);
+  late final GeneratedColumn<DateTime> packLastUpdated =
+      GeneratedColumn<DateTime>('pack_last_updated', aliasedName, false,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
   final VerificationMeta _sideLastUpdatedMeta =
       const VerificationMeta('sideLastUpdated');
-  late final GeneratedColumnWithTypeConverter<DateTime, int> sideLastUpdated =
-      GeneratedColumn<int>('side_last_updated', aliasedName, false,
-              type: DriftSqlType.int,
-              requiredDuringInsert: true,
-              $customConstraints: 'NOT NULL')
-          .withConverter<DateTime>(Nrdb.$converter3);
+  late final GeneratedColumn<DateTime> sideLastUpdated =
+      GeneratedColumn<DateTime>('side_last_updated', aliasedName, false,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
   final VerificationMeta _factionLastUpdatedMeta =
       const VerificationMeta('factionLastUpdated');
-  late final GeneratedColumnWithTypeConverter<DateTime, int>
-      factionLastUpdated = GeneratedColumn<int>(
-              'faction_last_updated', aliasedName, false,
-              type: DriftSqlType.int,
-              requiredDuringInsert: true,
-              $customConstraints: 'NOT NULL')
-          .withConverter<DateTime>(Nrdb.$converter4);
+  late final GeneratedColumn<DateTime> factionLastUpdated =
+      GeneratedColumn<DateTime>('faction_last_updated', aliasedName, false,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
   final VerificationMeta _typeLastUpdatedMeta =
       const VerificationMeta('typeLastUpdated');
-  late final GeneratedColumnWithTypeConverter<DateTime, int> typeLastUpdated =
-      GeneratedColumn<int>('type_last_updated', aliasedName, false,
-              type: DriftSqlType.int,
-              requiredDuringInsert: true,
-              $customConstraints: 'NOT NULL')
-          .withConverter<DateTime>(Nrdb.$converter5);
+  late final GeneratedColumn<DateTime> typeLastUpdated =
+      GeneratedColumn<DateTime>('type_last_updated', aliasedName, false,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
   final VerificationMeta _cardLastUpdatedMeta =
       const VerificationMeta('cardLastUpdated');
-  late final GeneratedColumnWithTypeConverter<DateTime, int> cardLastUpdated =
-      GeneratedColumn<int>('card_last_updated', aliasedName, false,
-              type: DriftSqlType.int,
-              requiredDuringInsert: true,
-              $customConstraints: 'NOT NULL')
-          .withConverter<DateTime>(Nrdb.$converter6);
+  late final GeneratedColumn<DateTime> cardLastUpdated =
+      GeneratedColumn<DateTime>('card_last_updated', aliasedName, false,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
   final VerificationMeta _formatLastUpdatedMeta =
       const VerificationMeta('formatLastUpdated');
-  late final GeneratedColumnWithTypeConverter<DateTime, int> formatLastUpdated =
-      GeneratedColumn<int>('format_last_updated', aliasedName, false,
-              type: DriftSqlType.int,
-              requiredDuringInsert: true,
-              $customConstraints: 'NOT NULL')
-          .withConverter<DateTime>(Nrdb.$converter7);
+  late final GeneratedColumn<DateTime> formatLastUpdated =
+      GeneratedColumn<DateTime>('format_last_updated', aliasedName, false,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
   final VerificationMeta _rotationLastUpdatedMeta =
       const VerificationMeta('rotationLastUpdated');
-  late final GeneratedColumnWithTypeConverter<DateTime, int>
-      rotationLastUpdated = GeneratedColumn<int>(
-              'rotation_last_updated', aliasedName, false,
-              type: DriftSqlType.int,
-              requiredDuringInsert: true,
-              $customConstraints: 'NOT NULL')
-          .withConverter<DateTime>(Nrdb.$converter8);
+  late final GeneratedColumn<DateTime> rotationLastUpdated =
+      GeneratedColumn<DateTime>('rotation_last_updated', aliasedName, false,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
   final VerificationMeta _mwlLastUpdatedMeta =
       const VerificationMeta('mwlLastUpdated');
-  late final GeneratedColumnWithTypeConverter<DateTime, int> mwlLastUpdated =
-      GeneratedColumn<int>('mwl_last_updated', aliasedName, false,
-              type: DriftSqlType.int,
-              requiredDuringInsert: true,
-              $customConstraints: 'NOT NULL')
-          .withConverter<DateTime>(Nrdb.$converter9);
+  late final GeneratedColumn<DateTime> mwlLastUpdated =
+      GeneratedColumn<DateTime>('mwl_last_updated', aliasedName, false,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -2536,17 +2444,84 @@ class Nrdb extends Table with TableInfo<Nrdb, NrdbData> {
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    context.handle(_expiresMeta, const VerificationResult.success());
-    context.handle(_cycleLastUpdatedMeta, const VerificationResult.success());
-    context.handle(_packLastUpdatedMeta, const VerificationResult.success());
-    context.handle(_sideLastUpdatedMeta, const VerificationResult.success());
-    context.handle(_factionLastUpdatedMeta, const VerificationResult.success());
-    context.handle(_typeLastUpdatedMeta, const VerificationResult.success());
-    context.handle(_cardLastUpdatedMeta, const VerificationResult.success());
-    context.handle(_formatLastUpdatedMeta, const VerificationResult.success());
-    context.handle(
-        _rotationLastUpdatedMeta, const VerificationResult.success());
-    context.handle(_mwlLastUpdatedMeta, const VerificationResult.success());
+    if (data.containsKey('expires')) {
+      context.handle(_expiresMeta,
+          expires.isAcceptableOrUnknown(data['expires']!, _expiresMeta));
+    } else if (isInserting) {
+      context.missing(_expiresMeta);
+    }
+    if (data.containsKey('cycle_last_updated')) {
+      context.handle(
+          _cycleLastUpdatedMeta,
+          cycleLastUpdated.isAcceptableOrUnknown(
+              data['cycle_last_updated']!, _cycleLastUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_cycleLastUpdatedMeta);
+    }
+    if (data.containsKey('pack_last_updated')) {
+      context.handle(
+          _packLastUpdatedMeta,
+          packLastUpdated.isAcceptableOrUnknown(
+              data['pack_last_updated']!, _packLastUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_packLastUpdatedMeta);
+    }
+    if (data.containsKey('side_last_updated')) {
+      context.handle(
+          _sideLastUpdatedMeta,
+          sideLastUpdated.isAcceptableOrUnknown(
+              data['side_last_updated']!, _sideLastUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_sideLastUpdatedMeta);
+    }
+    if (data.containsKey('faction_last_updated')) {
+      context.handle(
+          _factionLastUpdatedMeta,
+          factionLastUpdated.isAcceptableOrUnknown(
+              data['faction_last_updated']!, _factionLastUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_factionLastUpdatedMeta);
+    }
+    if (data.containsKey('type_last_updated')) {
+      context.handle(
+          _typeLastUpdatedMeta,
+          typeLastUpdated.isAcceptableOrUnknown(
+              data['type_last_updated']!, _typeLastUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_typeLastUpdatedMeta);
+    }
+    if (data.containsKey('card_last_updated')) {
+      context.handle(
+          _cardLastUpdatedMeta,
+          cardLastUpdated.isAcceptableOrUnknown(
+              data['card_last_updated']!, _cardLastUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_cardLastUpdatedMeta);
+    }
+    if (data.containsKey('format_last_updated')) {
+      context.handle(
+          _formatLastUpdatedMeta,
+          formatLastUpdated.isAcceptableOrUnknown(
+              data['format_last_updated']!, _formatLastUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_formatLastUpdatedMeta);
+    }
+    if (data.containsKey('rotation_last_updated')) {
+      context.handle(
+          _rotationLastUpdatedMeta,
+          rotationLastUpdated.isAcceptableOrUnknown(
+              data['rotation_last_updated']!, _rotationLastUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_rotationLastUpdatedMeta);
+    }
+    if (data.containsKey('mwl_last_updated')) {
+      context.handle(
+          _mwlLastUpdatedMeta,
+          mwlLastUpdated.isAcceptableOrUnknown(
+              data['mwl_last_updated']!, _mwlLastUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_mwlLastUpdatedMeta);
+    }
     return context;
   }
 
@@ -2558,34 +2533,29 @@ class Nrdb extends Table with TableInfo<Nrdb, NrdbData> {
     return NrdbData(
       id: attachedDatabase.options.types
           .read(DriftSqlType.bool, data['${effectivePrefix}id'])!,
-      expires: Nrdb.$converter0.fromSql(attachedDatabase.options.types
-          .read(DriftSqlType.int, data['${effectivePrefix}expires'])!),
-      cycleLastUpdated: Nrdb.$converter1.fromSql(attachedDatabase.options.types
-          .read(
-              DriftSqlType.int, data['${effectivePrefix}cycle_last_updated'])!),
-      packLastUpdated: Nrdb.$converter2.fromSql(attachedDatabase.options.types
-          .read(
-              DriftSqlType.int, data['${effectivePrefix}pack_last_updated'])!),
-      sideLastUpdated: Nrdb.$converter3.fromSql(attachedDatabase.options.types
-          .read(
-              DriftSqlType.int, data['${effectivePrefix}side_last_updated'])!),
-      factionLastUpdated: Nrdb.$converter4.fromSql(
-          attachedDatabase.options.types.read(DriftSqlType.int,
-              data['${effectivePrefix}faction_last_updated'])!),
-      typeLastUpdated: Nrdb.$converter5.fromSql(attachedDatabase.options.types
-          .read(
-              DriftSqlType.int, data['${effectivePrefix}type_last_updated'])!),
-      cardLastUpdated: Nrdb.$converter6.fromSql(attachedDatabase.options.types
-          .read(
-              DriftSqlType.int, data['${effectivePrefix}card_last_updated'])!),
-      formatLastUpdated: Nrdb.$converter7.fromSql(attachedDatabase.options.types
-          .read(DriftSqlType.int,
-              data['${effectivePrefix}format_last_updated'])!),
-      rotationLastUpdated: Nrdb.$converter8.fromSql(
-          attachedDatabase.options.types.read(DriftSqlType.int,
-              data['${effectivePrefix}rotation_last_updated'])!),
-      mwlLastUpdated: Nrdb.$converter9.fromSql(attachedDatabase.options.types
-          .read(DriftSqlType.int, data['${effectivePrefix}mwl_last_updated'])!),
+      expires: attachedDatabase.options.types
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}expires'])!,
+      cycleLastUpdated: attachedDatabase.options.types.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}cycle_last_updated'])!,
+      packLastUpdated: attachedDatabase.options.types.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}pack_last_updated'])!,
+      sideLastUpdated: attachedDatabase.options.types.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}side_last_updated'])!,
+      factionLastUpdated: attachedDatabase.options.types.read(
+          DriftSqlType.dateTime,
+          data['${effectivePrefix}faction_last_updated'])!,
+      typeLastUpdated: attachedDatabase.options.types.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}type_last_updated'])!,
+      cardLastUpdated: attachedDatabase.options.types.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}card_last_updated'])!,
+      formatLastUpdated: attachedDatabase.options.types.read(
+          DriftSqlType.dateTime,
+          data['${effectivePrefix}format_last_updated'])!,
+      rotationLastUpdated: attachedDatabase.options.types.read(
+          DriftSqlType.dateTime,
+          data['${effectivePrefix}rotation_last_updated'])!,
+      mwlLastUpdated: attachedDatabase.options.types.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}mwl_last_updated'])!,
     );
   }
 
@@ -2594,26 +2564,6 @@ class Nrdb extends Table with TableInfo<Nrdb, NrdbData> {
     return Nrdb(attachedDatabase, alias);
   }
 
-  static JsonTypeConverter<DateTime, int> $converter0 =
-      const DateTimeUtcConverter();
-  static JsonTypeConverter<DateTime, int> $converter1 =
-      const DateTimeUtcConverter();
-  static JsonTypeConverter<DateTime, int> $converter2 =
-      const DateTimeUtcConverter();
-  static JsonTypeConverter<DateTime, int> $converter3 =
-      const DateTimeUtcConverter();
-  static JsonTypeConverter<DateTime, int> $converter4 =
-      const DateTimeUtcConverter();
-  static JsonTypeConverter<DateTime, int> $converter5 =
-      const DateTimeUtcConverter();
-  static JsonTypeConverter<DateTime, int> $converter6 =
-      const DateTimeUtcConverter();
-  static JsonTypeConverter<DateTime, int> $converter7 =
-      const DateTimeUtcConverter();
-  static JsonTypeConverter<DateTime, int> $converter8 =
-      const DateTimeUtcConverter();
-  static JsonTypeConverter<DateTime, int> $converter9 =
-      const DateTimeUtcConverter();
   @override
   List<String> get customConstraints =>
       const ['CONSTRAINT settings_id CHECK (id = TRUE)'];
@@ -2644,11 +2594,10 @@ class MwlData extends DataClass implements Insertable<MwlData> {
     map['format_code'] = Variable<String>(formatCode);
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || dateStart != null) {
-      final converter = Mwl.$converter0n;
-      map['date_start'] = Variable<int>(converter.toSql(dateStart));
+      map['date_start'] = Variable<DateTime>(dateStart);
     }
     if (!nullToAbsent || type != null) {
-      final converter = Mwl.$converter1n;
+      final converter = Mwl.$converter0n;
       map['type'] = Variable<String>(converter.toSql(type));
     }
     if (!nullToAbsent || runnerPoints != null) {
@@ -2685,10 +2634,9 @@ class MwlData extends DataClass implements Insertable<MwlData> {
       code: serializer.fromJson<String>(json['code']),
       formatCode: serializer.fromJson<String>(json['format_code']),
       name: serializer.fromJson<String>(json['name']),
-      dateStart: Mwl.$converter0n
-          .fromJson(serializer.fromJson<int?>(json['date_start'])),
+      dateStart: serializer.fromJson<DateTime?>(json['date_start']),
       type:
-          Mwl.$converter1n.fromJson(serializer.fromJson<String?>(json['type'])),
+          Mwl.$converter0n.fromJson(serializer.fromJson<String?>(json['type'])),
       runnerPoints: serializer.fromJson<int?>(json['runner_points']),
       corpPoints: serializer.fromJson<int?>(json['corp_points']),
     );
@@ -2700,8 +2648,8 @@ class MwlData extends DataClass implements Insertable<MwlData> {
       'code': serializer.toJson<String>(code),
       'format_code': serializer.toJson<String>(formatCode),
       'name': serializer.toJson<String>(name),
-      'date_start': serializer.toJson<int?>(Mwl.$converter0n.toJson(dateStart)),
-      'type': serializer.toJson<String?>(Mwl.$converter1n.toJson(type)),
+      'date_start': serializer.toJson<DateTime?>(dateStart),
+      'type': serializer.toJson<String?>(Mwl.$converter0n.toJson(type)),
       'runner_points': serializer.toJson<int?>(runnerPoints),
       'corp_points': serializer.toJson<int?>(corpPoints),
     };
@@ -2787,7 +2735,7 @@ class MwlCompanion extends UpdateCompanion<MwlData> {
     Expression<String>? code,
     Expression<String>? formatCode,
     Expression<String>? name,
-    Expression<int>? dateStart,
+    Expression<DateTime>? dateStart,
     Expression<String>? type,
     Expression<int>? runnerPoints,
     Expression<int>? corpPoints,
@@ -2835,11 +2783,10 @@ class MwlCompanion extends UpdateCompanion<MwlData> {
       map['name'] = Variable<String>(name.value);
     }
     if (dateStart.present) {
-      final converter = Mwl.$converter0n;
-      map['date_start'] = Variable<int>(converter.toSql(dateStart.value));
+      map['date_start'] = Variable<DateTime>(dateStart.value);
     }
     if (type.present) {
-      final converter = Mwl.$converter1n;
+      final converter = Mwl.$converter0n;
       map['type'] = Variable<String>(converter.toSql(type.value));
     }
     if (runnerPoints.present) {
@@ -2890,19 +2837,18 @@ class Mwl extends Table with TableInfo<Mwl, MwlData> {
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _dateStartMeta = const VerificationMeta('dateStart');
-  late final GeneratedColumnWithTypeConverter<DateTime?, int> dateStart =
-      GeneratedColumn<int>('date_start', aliasedName, true,
-              type: DriftSqlType.int,
-              requiredDuringInsert: false,
-              $customConstraints: '')
-          .withConverter<DateTime?>(Mwl.$converter0n);
+  late final GeneratedColumn<DateTime> dateStart = GeneratedColumn<DateTime>(
+      'date_start', aliasedName, true,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      $customConstraints: '');
   final VerificationMeta _typeMeta = const VerificationMeta('type');
   late final GeneratedColumnWithTypeConverter<MwlType?, String> type =
       GeneratedColumn<String>('type', aliasedName, true,
               type: DriftSqlType.string,
               requiredDuringInsert: false,
               $customConstraints: '')
-          .withConverter<MwlType?>(Mwl.$converter1n);
+          .withConverter<MwlType?>(Mwl.$converter0n);
   final VerificationMeta _runnerPointsMeta =
       const VerificationMeta('runnerPoints');
   late final GeneratedColumn<int> runnerPoints = GeneratedColumn<int>(
@@ -2948,7 +2894,10 @@ class Mwl extends Table with TableInfo<Mwl, MwlData> {
     } else if (isInserting) {
       context.missing(_nameMeta);
     }
-    context.handle(_dateStartMeta, const VerificationResult.success());
+    if (data.containsKey('date_start')) {
+      context.handle(_dateStartMeta,
+          dateStart.isAcceptableOrUnknown(data['date_start']!, _dateStartMeta));
+    }
     context.handle(_typeMeta, const VerificationResult.success());
     if (data.containsKey('runner_points')) {
       context.handle(
@@ -2977,9 +2926,9 @@ class Mwl extends Table with TableInfo<Mwl, MwlData> {
           .read(DriftSqlType.string, data['${effectivePrefix}format_code'])!,
       name: attachedDatabase.options.types
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      dateStart: Mwl.$converter0n.fromSql(attachedDatabase.options.types
-          .read(DriftSqlType.int, data['${effectivePrefix}date_start'])),
-      type: Mwl.$converter1n.fromSql(attachedDatabase.options.types
+      dateStart: attachedDatabase.options.types
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date_start']),
+      type: Mwl.$converter0n.fromSql(attachedDatabase.options.types
           .read(DriftSqlType.string, data['${effectivePrefix}type'])),
       runnerPoints: attachedDatabase.options.types
           .read(DriftSqlType.int, data['${effectivePrefix}runner_points']),
@@ -2993,14 +2942,10 @@ class Mwl extends Table with TableInfo<Mwl, MwlData> {
     return Mwl(attachedDatabase, alias);
   }
 
-  static JsonTypeConverter<DateTime, int> $converter0 =
-      const DateTimeUtcConverter();
-  static JsonTypeConverter<MwlType, String> $converter1 =
+  static JsonTypeConverter<MwlType, String> $converter0 =
       const MwlTypeConverter();
-  static JsonTypeConverter<DateTime?, int?> $converter0n =
+  static JsonTypeConverter<MwlType?, String?> $converter0n =
       JsonTypeConverter.asNullable($converter0);
-  static JsonTypeConverter<MwlType?, String?> $converter1n =
-      JsonTypeConverter.asNullable($converter1);
   @override
   bool get dontWriteConstraints => true;
 }
@@ -3938,22 +3883,14 @@ class DeckData extends DataClass implements Insertable<DeckData> {
     }
     map['name'] = Variable<String>(name);
     map['description'] = Variable<String>(description);
-    {
-      final converter = Deck.$converter0;
-      map['created'] = Variable<int>(converter.toSql(created));
-    }
-    {
-      final converter = Deck.$converter1;
-      map['updated'] = Variable<int>(converter.toSql(updated));
-    }
+    map['created'] = Variable<DateTime>(created);
+    map['updated'] = Variable<DateTime>(updated);
     map['deleted'] = Variable<bool>(deleted);
     if (!nullToAbsent || remoteUpdated != null) {
-      final converter = Deck.$converter2n;
-      map['remote_updated'] = Variable<int>(converter.toSql(remoteUpdated));
+      map['remote_updated'] = Variable<DateTime>(remoteUpdated);
     }
     if (!nullToAbsent || synced != null) {
-      final converter = Deck.$converter3n;
-      map['synced'] = Variable<int>(converter.toSql(synced));
+      map['synced'] = Variable<DateTime>(synced);
     }
     return map;
   }
@@ -3995,15 +3932,11 @@ class DeckData extends DataClass implements Insertable<DeckData> {
       mwlCode: serializer.fromJson<String?>(json['mwl_code']),
       name: serializer.fromJson<String>(json['name']),
       description: serializer.fromJson<String>(json['description']),
-      created:
-          Deck.$converter0.fromJson(serializer.fromJson<int>(json['created'])),
-      updated:
-          Deck.$converter1.fromJson(serializer.fromJson<int>(json['updated'])),
+      created: serializer.fromJson<DateTime>(json['created']),
+      updated: serializer.fromJson<DateTime>(json['updated']),
       deleted: serializer.fromJson<bool>(json['deleted']),
-      remoteUpdated: Deck.$converter2n
-          .fromJson(serializer.fromJson<int?>(json['remote_updated'])),
-      synced:
-          Deck.$converter3n.fromJson(serializer.fromJson<int?>(json['synced'])),
+      remoteUpdated: serializer.fromJson<DateTime?>(json['remote_updated']),
+      synced: serializer.fromJson<DateTime?>(json['synced']),
     );
   }
   @override
@@ -4017,12 +3950,11 @@ class DeckData extends DataClass implements Insertable<DeckData> {
       'mwl_code': serializer.toJson<String?>(mwlCode),
       'name': serializer.toJson<String>(name),
       'description': serializer.toJson<String>(description),
-      'created': serializer.toJson<int?>(Deck.$converter0.toJson(created)),
-      'updated': serializer.toJson<int?>(Deck.$converter1.toJson(updated)),
+      'created': serializer.toJson<DateTime>(created),
+      'updated': serializer.toJson<DateTime>(updated),
       'deleted': serializer.toJson<bool>(deleted),
-      'remote_updated':
-          serializer.toJson<int?>(Deck.$converter2n.toJson(remoteUpdated)),
-      'synced': serializer.toJson<int?>(Deck.$converter3n.toJson(synced)),
+      'remote_updated': serializer.toJson<DateTime?>(remoteUpdated),
+      'synced': serializer.toJson<DateTime?>(synced),
     };
   }
 
@@ -4161,11 +4093,11 @@ class DeckCompanion extends UpdateCompanion<DeckData> {
     Expression<String>? mwlCode,
     Expression<String>? name,
     Expression<String>? description,
-    Expression<int>? created,
-    Expression<int>? updated,
+    Expression<DateTime>? created,
+    Expression<DateTime>? updated,
     Expression<bool>? deleted,
-    Expression<int>? remoteUpdated,
-    Expression<int>? synced,
+    Expression<DateTime>? remoteUpdated,
+    Expression<DateTime>? synced,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -4237,24 +4169,19 @@ class DeckCompanion extends UpdateCompanion<DeckData> {
       map['description'] = Variable<String>(description.value);
     }
     if (created.present) {
-      final converter = Deck.$converter0;
-      map['created'] = Variable<int>(converter.toSql(created.value));
+      map['created'] = Variable<DateTime>(created.value);
     }
     if (updated.present) {
-      final converter = Deck.$converter1;
-      map['updated'] = Variable<int>(converter.toSql(updated.value));
+      map['updated'] = Variable<DateTime>(updated.value);
     }
     if (deleted.present) {
       map['deleted'] = Variable<bool>(deleted.value);
     }
     if (remoteUpdated.present) {
-      final converter = Deck.$converter2n;
-      map['remote_updated'] =
-          Variable<int>(converter.toSql(remoteUpdated.value));
+      map['remote_updated'] = Variable<DateTime>(remoteUpdated.value);
     }
     if (synced.present) {
-      final converter = Deck.$converter3n;
-      map['synced'] = Variable<int>(converter.toSql(synced.value));
+      map['synced'] = Variable<DateTime>(synced.value);
     }
     return map;
   }
@@ -4330,19 +4257,17 @@ class Deck extends Table with TableInfo<Deck, DeckData> {
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
   final VerificationMeta _createdMeta = const VerificationMeta('created');
-  late final GeneratedColumnWithTypeConverter<DateTime, int> created =
-      GeneratedColumn<int>('created', aliasedName, false,
-              type: DriftSqlType.int,
-              requiredDuringInsert: true,
-              $customConstraints: 'NOT NULL')
-          .withConverter<DateTime>(Deck.$converter0);
+  late final GeneratedColumn<DateTime> created = GeneratedColumn<DateTime>(
+      'created', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
   final VerificationMeta _updatedMeta = const VerificationMeta('updated');
-  late final GeneratedColumnWithTypeConverter<DateTime, int> updated =
-      GeneratedColumn<int>('updated', aliasedName, false,
-              type: DriftSqlType.int,
-              requiredDuringInsert: true,
-              $customConstraints: 'NOT NULL')
-          .withConverter<DateTime>(Deck.$converter1);
+  late final GeneratedColumn<DateTime> updated = GeneratedColumn<DateTime>(
+      'updated', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
   final VerificationMeta _deletedMeta = const VerificationMeta('deleted');
   late final GeneratedColumn<bool> deleted = GeneratedColumn<bool>(
       'deleted', aliasedName, false,
@@ -4351,19 +4276,17 @@ class Deck extends Table with TableInfo<Deck, DeckData> {
       $customConstraints: 'NOT NULL');
   final VerificationMeta _remoteUpdatedMeta =
       const VerificationMeta('remoteUpdated');
-  late final GeneratedColumnWithTypeConverter<DateTime?, int> remoteUpdated =
-      GeneratedColumn<int>('remote_updated', aliasedName, true,
-              type: DriftSqlType.int,
-              requiredDuringInsert: false,
-              $customConstraints: '')
-          .withConverter<DateTime?>(Deck.$converter2n);
+  late final GeneratedColumn<DateTime> remoteUpdated =
+      GeneratedColumn<DateTime>('remote_updated', aliasedName, true,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: false,
+          $customConstraints: '');
   final VerificationMeta _syncedMeta = const VerificationMeta('synced');
-  late final GeneratedColumnWithTypeConverter<DateTime?, int> synced =
-      GeneratedColumn<int>('synced', aliasedName, true,
-              type: DriftSqlType.int,
-              requiredDuringInsert: false,
-              $customConstraints: '')
-          .withConverter<DateTime?>(Deck.$converter3n);
+  late final GeneratedColumn<DateTime> synced = GeneratedColumn<DateTime>(
+      'synced', aliasedName, true,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      $customConstraints: '');
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -4431,16 +4354,34 @@ class Deck extends Table with TableInfo<Deck, DeckData> {
     } else if (isInserting) {
       context.missing(_descriptionMeta);
     }
-    context.handle(_createdMeta, const VerificationResult.success());
-    context.handle(_updatedMeta, const VerificationResult.success());
+    if (data.containsKey('created')) {
+      context.handle(_createdMeta,
+          created.isAcceptableOrUnknown(data['created']!, _createdMeta));
+    } else if (isInserting) {
+      context.missing(_createdMeta);
+    }
+    if (data.containsKey('updated')) {
+      context.handle(_updatedMeta,
+          updated.isAcceptableOrUnknown(data['updated']!, _updatedMeta));
+    } else if (isInserting) {
+      context.missing(_updatedMeta);
+    }
     if (data.containsKey('deleted')) {
       context.handle(_deletedMeta,
           deleted.isAcceptableOrUnknown(data['deleted']!, _deletedMeta));
     } else if (isInserting) {
       context.missing(_deletedMeta);
     }
-    context.handle(_remoteUpdatedMeta, const VerificationResult.success());
-    context.handle(_syncedMeta, const VerificationResult.success());
+    if (data.containsKey('remote_updated')) {
+      context.handle(
+          _remoteUpdatedMeta,
+          remoteUpdated.isAcceptableOrUnknown(
+              data['remote_updated']!, _remoteUpdatedMeta));
+    }
+    if (data.containsKey('synced')) {
+      context.handle(_syncedMeta,
+          synced.isAcceptableOrUnknown(data['synced']!, _syncedMeta));
+    }
     return context;
   }
 
@@ -4464,16 +4405,16 @@ class Deck extends Table with TableInfo<Deck, DeckData> {
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       description: attachedDatabase.options.types
           .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
-      created: Deck.$converter0.fromSql(attachedDatabase.options.types
-          .read(DriftSqlType.int, data['${effectivePrefix}created'])!),
-      updated: Deck.$converter1.fromSql(attachedDatabase.options.types
-          .read(DriftSqlType.int, data['${effectivePrefix}updated'])!),
+      created: attachedDatabase.options.types
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created'])!,
+      updated: attachedDatabase.options.types
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated'])!,
       deleted: attachedDatabase.options.types
           .read(DriftSqlType.bool, data['${effectivePrefix}deleted'])!,
-      remoteUpdated: Deck.$converter2n.fromSql(attachedDatabase.options.types
-          .read(DriftSqlType.int, data['${effectivePrefix}remote_updated'])),
-      synced: Deck.$converter3n.fromSql(attachedDatabase.options.types
-          .read(DriftSqlType.int, data['${effectivePrefix}synced'])),
+      remoteUpdated: attachedDatabase.options.types.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}remote_updated']),
+      synced: attachedDatabase.options.types
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}synced']),
     );
   }
 
@@ -4482,18 +4423,6 @@ class Deck extends Table with TableInfo<Deck, DeckData> {
     return Deck(attachedDatabase, alias);
   }
 
-  static JsonTypeConverter<DateTime, int> $converter0 =
-      const DateTimeUtcConverter();
-  static JsonTypeConverter<DateTime, int> $converter1 =
-      const DateTimeUtcConverter();
-  static JsonTypeConverter<DateTime, int> $converter2 =
-      const DateTimeUtcConverter();
-  static JsonTypeConverter<DateTime, int> $converter3 =
-      const DateTimeUtcConverter();
-  static JsonTypeConverter<DateTime?, int?> $converter2n =
-      JsonTypeConverter.asNullable($converter2);
-  static JsonTypeConverter<DateTime?, int?> $converter3n =
-      JsonTypeConverter.asNullable($converter3);
   @override
   bool get dontWriteConstraints => true;
 }
@@ -7148,6 +7077,9 @@ abstract class _$Database extends GeneratedDatabase {
         collection,
         card
       ];
+  @override
+  DriftDatabaseOptions get options =>
+      const DriftDatabaseOptions(storeDateTimeAsText: true);
 }
 
 class TypeResult {

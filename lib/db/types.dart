@@ -4,7 +4,6 @@ export 'types/card_gallery_view.dart';
 export 'types/card_group.dart';
 export 'types/card_sort.dart';
 export 'types/color.dart';
-export 'types/datetime_utc.dart';
 export 'types/deck_group.dart';
 export 'types/deck_micro_result.dart';
 export 'types/deck_mini_result.dart';
