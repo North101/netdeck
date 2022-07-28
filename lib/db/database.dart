@@ -1,8 +1,6 @@
 import 'dart:io';
 
 import 'package:drift/drift.dart';
-import 'package:drift/native.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' show Color;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -22,11 +20,8 @@ export 'util.dart';
 
 part 'database.g.dart';
 
-LazyDatabase _openConnection(Future<File> filename) {
-  return LazyDatabase(() async {
-    // ignore: dead_code
-    return NativeDatabase(await filename, logStatements: false && kDebugMode);
-  });
+extension RemoveDiacriticsExpression on Expression<String> {
+  Expression<String> removeDiacritics() => FunctionCallExpression('removeDiacritics', [this]);
 }
 
 @DriftDatabase(include: {
@@ -49,8 +44,6 @@ LazyDatabase _openConnection(Future<File> filename) {
   'sql/type.drift',
 })
 class Database extends _$Database {
-  Database() : super(_openConnection(dbFilename()));
-
   Database.connect(DatabaseConnection connection) : super.connect(connection);
 
   static Future<File> dbFilename() async {
@@ -90,6 +83,7 @@ class Database extends _$Database {
             await delete(nrdb).go();
           }
           if (from < 6) {
+            await m.alterTable(TableMigration(card));
             await migrateFromUnixTimestampsToText(m);
           }
         },
@@ -108,7 +102,7 @@ class Database extends _$Database {
               // We assume that the column in the database is an int (unix
               // timestamp), use `fromUnixEpoch` to convert it to a date time.
               // Note that the resulting value in the database is in UTC.
-              column: DateTimeExpressions.fromUnixEpoch(CustomExpression<int>('${column.escapedName} * 100')),
+              column: DateTimeExpressions.fromUnixEpoch(column.dartCast<int>() * const Constant(100)),
           },
         ));
       }

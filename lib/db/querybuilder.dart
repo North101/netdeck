@@ -252,21 +252,15 @@ class StringQueryBuilder<T extends drift.TableInfo> extends ColumnQueryBuilder<T
   const StringQueryBuilder({
     required super.table,
     required super.column,
-    this.strippedColumn,
     super.fields,
     super.extraFields,
     required super.help,
   });
 
-  final drift.Column<String>? strippedColumn;
-
   @override
   drift.Expression<bool> equal(TextQuery query) {
     final text = query.text.toLowerCase();
-    final result = column.lower().equals(text);
-    if (strippedColumn == null) return result;
-
-    return result | strippedColumn!.lower().equals(text);
+    return column.lower().equals(text) | column.removeDiacritics().lower().equals(text);
   }
 }
 
@@ -274,7 +268,6 @@ class ContainsStringQueryBuilder<T extends drift.TableInfo> extends StringQueryB
   const ContainsStringQueryBuilder({
     required super.table,
     required super.column,
-    super.strippedColumn,
     super.fields,
     super.extraFields,
     required super.help,
@@ -283,10 +276,7 @@ class ContainsStringQueryBuilder<T extends drift.TableInfo> extends StringQueryB
   @override
   drift.Expression<bool> equal(TextQuery query) {
     final text = query.text.toLowerCase();
-    final result = column.lower().contains(text);
-    if (strippedColumn == null) return result;
-
-    return result | strippedColumn!.lower().contains(text);
+    return column.lower().contains(text) | column.removeDiacritics().lower().contains(text);
   }
 }
 
@@ -294,7 +284,6 @@ class CodeNameQueryBuilder<T extends drift.TableInfo> extends QueryBuilder<T> {
   const CodeNameQueryBuilder(
     this.code,
     this.name, {
-    this.strippedName,
     required super.table,
     super.fields,
     super.extraFields,
@@ -303,15 +292,11 @@ class CodeNameQueryBuilder<T extends drift.TableInfo> extends QueryBuilder<T> {
 
   final drift.GeneratedColumn<String> code;
   final drift.GeneratedColumn<String> name;
-  final drift.GeneratedColumn<String>? strippedName;
 
   @override
   drift.Expression<bool> equal(TextQuery query) {
     final text = query.text.toLowerCase();
-    final result = code.lower().equals(text) | name.lower().contains(text);
-    if (strippedName == null) return result;
-
-    return result | strippedName!.lower().contains(text);
+    return code.lower().equals(text) | name.lower().contains(text) | name.removeDiacritics().lower().contains(text);
   }
 
   @override
@@ -383,8 +368,7 @@ class BoolQueryBuilder<T extends drift.TableInfo> extends ColumnQueryBuilder<T, 
   }
 }
 
-class DateTimeQueryBuilder<T extends drift.TableInfo>
-    extends ColumnQueryBuilder<T, drift.GeneratedColumn<DateTime>> {
+class DateTimeQueryBuilder<T extends drift.TableInfo> extends ColumnQueryBuilder<T, drift.GeneratedColumn<DateTime>> {
   const DateTimeQueryBuilder({
     required super.table,
     required super.column,
@@ -558,7 +542,7 @@ class DeckCardsQueryBuilder extends CodeNameQueryBuilder<DeckCard> {
     super.fields,
     super.extraFields,
     required super.help,
-  }) : super(db.card.code, db.card.title, strippedName: db.card.strippedTitle);
+  }) : super(db.card.code, db.card.title);
 
   final Database db;
 
@@ -598,14 +582,12 @@ class CardQueryBuilder extends CodeNameQueryBuilder<Card> {
     required super.help,
   }) : super(
           table.code,
-          table.strippedTitle,
+          table.title,
           fields: {
             'code': StringQueryBuilder(table: table, column: table.code, help: 'card code'),
-            'title': ContainsStringQueryBuilder(
-                table: table, column: table.title, strippedColumn: table.strippedTitle, help: 'card title'),
-            'body': ContainsStringQueryBuilder(
-                table: table, column: table.body, strippedColumn: table.strippedBody, help: 'card body'),
-            'keyword': ContainsStringQueryBuilder(table: table, column: table.keywords, help: 'card keyword'),
+            'title': ContainsStringQueryBuilder(table: table, column: table.title, help: 'card title'),
+            'text': ContainsStringQueryBuilder(table: table, column: table.body, help: 'card body'),
+            'subtype': ContainsStringQueryBuilder(table: table, column: table.keywords, help: 'card keyword'),
             'flavor': ContainsStringQueryBuilder(table: table, column: table.flavor, help: 'card flavor'),
             'quantity': IntQueryBuilder(table: table, column: table.quantity, help: 'card quantity'),
             'cost': IntQueryBuilder(table: table, column: table.cost, help: 'card cost'),
@@ -640,7 +622,7 @@ class CardQueryBuilder extends CodeNameQueryBuilder<Card> {
   }
 
   @override
-  drift.Expression get optionColumn => table.strippedTitle;
+  drift.Expression get optionColumn => table.title;
 }
 
 class DeckQueryBuilder extends ContainsStringQueryBuilder<Deck> {

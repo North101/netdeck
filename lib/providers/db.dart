@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:collection/collection.dart';
+import 'package:diacritic/diacritic.dart';
 import 'package:drift/drift.dart';
 import 'package:drift/isolate.dart';
 import 'package:drift/native.dart';
@@ -22,7 +23,13 @@ Future<DriftIsolate> _createDriftIsolate(Future<File> future) async {
 }
 
 void _startBackground(_IsolateStartRequest request) {
-  final executor = NativeDatabase(request.filename);
+  final executor = NativeDatabase(
+    request.filename,
+    setup: (rawDb) => rawDb.createFunction(
+      functionName: 'removeDiacritics',
+      function: (args) => removeDiacritics(args[0] as String),
+    ),
+  );
   final driftIsolate = DriftIsolate.inCurrent(
     () => DatabaseConnection(executor),
   );

@@ -309,9 +309,7 @@ class NrdbPublicApi {
         result.data.map<CardData>((result) {
           return CardData.fromJson({
             ...result,
-            'stripped_title': removeDiacritics(result['stripped_title']),
             'body': result['text'],
-            'stripped_body': (result['stripped_text'] as String?)?.let((e) => removeDiacritics(e)),
             'image_url': imageUrlTemplate.replaceAll('{code}', result['code']),
           });
         }).toList(),

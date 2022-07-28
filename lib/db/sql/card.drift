@@ -13,9 +13,7 @@ CREATE TABLE card(
   position INT NOT NULL,
 
   title TEXT NOT NULL,
-  stripped_title TEXT NOT NULL,
   body TEXT,
-  stripped_body TEXT,
   keywords TEXT,
   quantity INT NOT NULL,
 
