@@ -40,8 +40,8 @@
       "date_start": "2021-04-09",
       "format_code": "standard",
       "name": "Standard Fourth Rotation",
-      "current": true,
-      "latest": true,
+      "current": false,
+      "latest": false,
       "rotated": [
         "order-and-chaos",
         "data-and-destiny",
@@ -54,6 +54,26 @@
         "ashes",
         "system-gateway",
         "system-update-2021"
+      ]
+    },
+    {
+      "code": "standard-2022",
+      "date_start": "2022-08-05",
+      "format_code": "standard",
+      "name": "Standard Fifth Rotation",
+      "current": true,
+      "latest": true,
+      "rotated": [
+        "data-and-destiny",
+        "flashpoint",
+        "red-sand",
+        "kitara",
+        "reign-and-reverie",
+        "magnum-opus",
+        "ashes",
+        "system-gateway",
+        "system-update-2021",
+        "borealis"
       ]
     },
     {
