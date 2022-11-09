@@ -73,13 +73,10 @@ class CardFilterCycleCheckbox extends ConsumerWidget {
         sliver: SliverList(
           delegate: SliverChildListDelegate([
             ...packList.map(
-              (e) => Material(
-                color: Theme.of(context).splashColor,
-                child: CheckboxListTile(
-                  value: packs.contains(e.pack.code),
-                  title: Text(e.pack.name),
-                  onChanged: (selected) => setCollection(ref, selected, {e.pack.code}),
-                ),
+              (e) => CheckboxListTile(
+                value: packs.contains(e.pack.code),
+                title: Text(e.pack.name),
+                onChanged: (selected) => setCollection(ref, selected, {e.pack.code}),
               ),
             ),
           ]),
@@ -91,6 +88,12 @@ class CardFilterCycleCheckbox extends ConsumerWidget {
 
 class CollectionSettingsPage extends ConsumerWidget {
   const CollectionSettingsPage({super.key});
+
+  static Route<void> route(BuildContext context, Object? arguments) {
+    return MaterialPageRoute(builder: (context) {
+      return const CollectionSettingsPage();
+    });
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

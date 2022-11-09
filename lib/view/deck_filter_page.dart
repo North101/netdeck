@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod_restorable/flutter_riverpod_restorable.dart';
 import 'package:kotlin_flavor/scope_functions.dart';
 
 import '/db/database.dart';
@@ -13,8 +14,8 @@ import 'rotation_dropdown.dart';
 import 'tags_page.dart';
 import 'types_page.dart';
 
-class DeckFilterResult {
-  const DeckFilterResult({
+class DeckFilterArguments {
+  const DeckFilterArguments({
     required this.format,
     required this.rotation,
     required this.mwl,
@@ -25,8 +26,8 @@ class DeckFilterResult {
     required this.tags,
   });
 
-  factory DeckFilterResult.fromJson(Map<String, dynamic> data) {
-    return DeckFilterResult(
+  factory DeckFilterArguments.fromJson(Map<String, dynamic> data) {
+    return DeckFilterArguments(
       format: (data['format'] as Map?)?.let((e) => FormatData.fromJson(e.cast())),
       rotation: (data['rotation'] as Map?)?.let((e) => RotationData.fromJson(e.cast())),
       mwl: (data['mwl'] as Map?)?.let((e) => MwlData.fromJson(e.cast())),
@@ -64,27 +65,25 @@ class DeckFilterResult {
 class DeckFilterPage extends ConsumerWidget {
   const DeckFilterPage({super.key});
 
-  static Widget withOverrides({
-    required FormatData? format,
-    required RotationData? rotation,
-    required MwlData? mwl,
-    required FilterType<String> packs,
-    required FilterType<String> sides,
-    required FilterType<String> factions,
-    required FilterType<String> types,
-    required Set<String> tags,
-  }) {
-    return ProviderScope(
+  static Route<void> route(BuildContext context, Object? arguments) {
+    final args = DeckFilterArguments.fromJson((arguments as Map).cast());
+    return MaterialPageRoute<DeckFilterArguments>(builder: (context) {
+      return DeckFilterPage.withOverrides(args);
+    });
+  }
+
+  static Widget withOverrides(DeckFilterArguments args) {
+    return RestorableProviderScope(
       restorationId: 'deck_filter_page',
       overrides: [
-        filterFormatProvider.overrideWithValue(RestorableFormatData(format), 'filterFormatProvider'),
-        filterRotationProvider.overrideWithValue(RestorableRotationData(rotation), 'filterRotationProvider'),
-        filterMwlProvider.overrideWithValue(RestorableMwlData(mwl), 'filterMwlProvider'),
-        filterPacksProvider.overrideWithValue(RestorableFilterType(packs), 'filterPacksProvider'),
-        filterSidesProvider.overrideWithValue(RestorableFilterType(sides), 'filterSidesProvider'),
-        filterFactionsProvider.overrideWithValue(RestorableFilterType(factions), 'filterFactionsProvider'),
-        filterTypesProvider.overrideWithValue(RestorableFilterType(types), 'filterTypesProvider'),
-        filterTagsProvider.overrideWithValue(RestorableSet<String>(tags), 'filterTagsProvider'),
+        filterFormatProvider.overrideWith((ref) => RestorableFormatData(args.format)),
+        filterRotationProvider.overrideWith((ref) => RestorableRotationData(args.rotation)),
+        filterMwlProvider.overrideWith((ref) => RestorableMwlData(args.mwl)),
+        filterPacksProvider.overrideWith((ref) => RestorableFilterType(args.packs)),
+        filterSidesProvider.overrideWith((ref) => RestorableFilterType(args.sides)),
+        filterFactionsProvider.overrideWith((ref) => RestorableFilterType(args.factions)),
+        filterTypesProvider.overrideWith((ref) => RestorableFilterType(args.types)),
+        filterTagsProvider.overrideWith((ref) => RestorableSet<String>(args.tags)),
       ],
       child: const DeckFilterPage(),
     );
@@ -103,7 +102,7 @@ class DeckFilterPage extends ConsumerWidget {
         final types = ref.read(filterTypesProvider);
         final tags = ref.read(filterTagsProvider);
 
-        final result = DeckFilterResult(
+        final result = DeckFilterArguments(
           format: format.value,
           rotation: rotation.value,
           mwl: mwl.value,
@@ -222,22 +221,13 @@ class DeckFilterPacksState extends ConsumerState<DeckFilterPacks> with Restorati
 
     filterPacksRoute = RestorableRouteFuture<FilterType<String>>(
       onPresent: (navigator, arguments) => Navigator.of(context).restorablePush(
-        openFilterPacksPage,
+        FilterPacksPage.route,
         arguments: arguments,
       ),
       onComplete: (result) {
         final filterPacks = ref.read(filterPacksProvider);
         filterPacks.value = result;
       },
-    );
-  }
-
-  static Route<FilterType<String>> openFilterPacksPage(BuildContext context, Object? arguments) {
-    final packs = FilterType<String>.fromJson((arguments as Map).cast());
-    return MaterialPageRoute(
-      builder: (context) => FilterPacksPage.withOverrides(
-        packs: packs,
-      ),
     );
   }
 
@@ -276,15 +266,15 @@ class DeckFilterFactions extends ConsumerStatefulWidget {
 }
 
 class DeckFilterFactionsState extends ConsumerState<DeckFilterFactions> with RestorationMixin {
-  late RestorableRouteFuture<FilterFactionsResult> filterFactionsRoute;
+  late RestorableRouteFuture<FilterFactionsArguments> filterFactionsRoute;
 
   @override
   void initState() {
     super.initState();
 
-    filterFactionsRoute = RestorableRouteFuture<FilterFactionsResult>(
+    filterFactionsRoute = RestorableRouteFuture<FilterFactionsArguments>(
       onPresent: (navigator, arguments) => Navigator.of(context).restorablePush(
-        openFilterFactionsPage,
+        FilterFactionsPage.route,
         arguments: arguments,
       ),
       onComplete: (result) {
@@ -294,16 +284,6 @@ class DeckFilterFactionsState extends ConsumerState<DeckFilterFactions> with Res
         final filterFactions = ref.read(filterFactionsProvider);
         filterFactions.value = result.factions;
       },
-    );
-  }
-
-  static Route<FilterFactionsResult> openFilterFactionsPage(BuildContext context, Object? arguments) {
-    final result = FilterFactionsResult.fromJson((arguments as Map).cast());
-    return MaterialPageRoute(
-      builder: (context) => FilterFactionsPage.withOverrides(
-        sides: result.sides,
-        factions: result.factions,
-      ),
     );
   }
 
@@ -325,7 +305,7 @@ class DeckFilterFactionsState extends ConsumerState<DeckFilterFactions> with Res
                 .join(', '))
             : null,
       ),
-      onTap: () => filterFactionsRoute.present(FilterFactionsResult(
+      onTap: () => filterFactionsRoute.present(FilterFactionsArguments(
         sides: sides.value,
         factions: factions.value,
       ).toJson()),
@@ -349,15 +329,15 @@ class DeckFilterTypes extends ConsumerStatefulWidget {
 }
 
 class DeckFilterTypesState extends ConsumerState<DeckFilterTypes> with RestorationMixin {
-  late RestorableRouteFuture<FilterTypesResult> filterTypesRoute;
+  late RestorableRouteFuture<FilterTypesArguments> filterTypesRoute;
 
   @override
   void initState() {
     super.initState();
 
-    filterTypesRoute = RestorableRouteFuture<FilterTypesResult>(
+    filterTypesRoute = RestorableRouteFuture<FilterTypesArguments>(
       onPresent: (navigator, arguments) => Navigator.of(context).restorablePush(
-        openFilterTypesPage,
+        FilterTypesPage.route,
         arguments: arguments,
       ),
       onComplete: (result) {
@@ -367,16 +347,6 @@ class DeckFilterTypesState extends ConsumerState<DeckFilterTypes> with Restorati
         final filterTypes = ref.read(filterTypesProvider);
         filterTypes.value = result.types;
       },
-    );
-  }
-
-  static Route<FilterTypesResult> openFilterTypesPage(BuildContext context, Object? arguments) {
-    final result = FilterTypesResult.fromJson((arguments as Map).cast());
-    return MaterialPageRoute(
-      builder: (context) => FilterTypesPage.withOverrides(
-        sides: result.sides,
-        types: result.types,
-      ),
     );
   }
 
@@ -395,7 +365,7 @@ class DeckFilterTypesState extends ConsumerState<DeckFilterTypes> with Restorati
             ? Text(items.where((element) => types.value.contains(element.type.code)).map((e) => e.type.name).join(', '))
             : null,
       ),
-      onTap: () => filterTypesRoute.present(FilterTypesResult(
+      onTap: () => filterTypesRoute.present(FilterTypesArguments(
         sides: sides.value,
         types: types.value,
       ).toJson()),
@@ -427,22 +397,13 @@ class DeckFilterTagsState extends ConsumerState<DeckFilterTags> with Restoration
 
     filterTagsRoute = RestorableRouteFuture<Set<String>>(
       onPresent: (navigator, arguments) => Navigator.of(context).restorablePush(
-        openFilterTagsPage,
+        FilterTagsPage.route,
         arguments: arguments,
       ),
       onComplete: (result) {
         final filterTags = ref.read(filterTagsProvider);
         filterTags.value = result;
       },
-    );
-  }
-
-  static Route<Set<String>> openFilterTagsPage(BuildContext context, Object? arguments) {
-    final tags = Set<String>.from(arguments as List);
-    return MaterialPageRoute(
-      builder: (context) => FilterTagsPage.withOverrides(
-        tags: tags,
-      ),
     );
   }
 

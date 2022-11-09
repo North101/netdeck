@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod_restorable/flutter_riverpod_restorable.dart';
 import 'package:kotlin_flavor/scope_functions.dart';
 
 import '/db/database.dart';
@@ -12,8 +13,8 @@ import 'pack_page.dart';
 import 'rotation_dropdown.dart';
 import 'types_page.dart';
 
-class CardFilterResult {
-  const CardFilterResult({
+class CardFilterArguments {
+  const CardFilterArguments({
     required this.format,
     required this.rotation,
     required this.mwl,
@@ -24,8 +25,8 @@ class CardFilterResult {
     required this.types,
   });
 
-  factory CardFilterResult.fromJson(Map<String, dynamic> data) {
-    return CardFilterResult(
+  factory CardFilterArguments.fromJson(Map<String, dynamic> data) {
+    return CardFilterArguments(
       format: (data['format'] as Map?)?.let((e) => FormatData.fromJson(e.cast())),
       rotation: (data['rotation'] as Map?)?.let((e) => RotationData.fromJson(e.cast())),
       mwl: (data['mwl'] as Map?)?.let((e) => MwlData.fromJson(e.cast())),
@@ -63,27 +64,25 @@ class CardFilterResult {
 class CardFilterPage extends ConsumerWidget {
   const CardFilterPage({super.key});
 
-  static Widget withOverrides({
-    required bool collection,
-    required FormatData? format,
-    required RotationData? rotation,
-    required MwlData? mwl,
-    required FilterType<String> packs,
-    required FilterType<String> sides,
-    required FilterType<String> factions,
-    required FilterType<String> types,
-  }) {
-    return ProviderScope(
+  static Route<void> route(BuildContext context, Object? arguments) {
+    final args = CardFilterArguments.fromJson((arguments as Map).cast());
+    return MaterialPageRoute<CardFilterArguments>(builder: (context) {
+      return CardFilterPage.withOverrides(args);
+    });
+  }
+
+  static Widget withOverrides(CardFilterArguments args) {
+    return RestorableProviderScope(
       restorationId: 'card_filter_page',
       overrides: [
-        filterCollectionProvider.overrideWithValue(RestorableBool(collection), 'filterCollectionProvider'),
-        filterFormatProvider.overrideWithValue(RestorableFormatData(format), 'filterFormatProvider'),
-        filterRotationProvider.overrideWithValue(RestorableRotationData(rotation), 'filterRotationProvider'),
-        filterMwlProvider.overrideWithValue(RestorableMwlData(mwl), 'filterMwlProvider'),
-        filterPacksProvider.overrideWithValue(RestorableFilterType(packs), 'filterPacksProvider'),
-        filterSidesProvider.overrideWithValue(RestorableFilterType(sides), 'filterSidesProvider'),
-        filterFactionsProvider.overrideWithValue(RestorableFilterType(factions), 'filterFactionsProvider'),
-        filterTypesProvider.overrideWithValue(RestorableFilterType(types), 'filterTypesProvider'),
+        filterCollectionProvider.overrideWith((ref) => RestorableBool(args.collection)),
+        filterFormatProvider.overrideWith((ref) => RestorableFormatData(args.format)),
+        filterRotationProvider.overrideWith((ref) => RestorableRotationData(args.rotation)),
+        filterMwlProvider.overrideWith((ref) => RestorableMwlData(args.mwl)),
+        filterPacksProvider.overrideWith((ref) => RestorableFilterType(args.packs)),
+        filterSidesProvider.overrideWith((ref) => RestorableFilterType(args.sides)),
+        filterFactionsProvider.overrideWith((ref) => RestorableFilterType(args.factions)),
+        filterTypesProvider.overrideWith((ref) => RestorableFilterType(args.types)),
       ],
       child: const CardFilterPage(),
     );
@@ -102,7 +101,7 @@ class CardFilterPage extends ConsumerWidget {
         final factions = ref.read(filterFactionsProvider);
         final types = ref.read(filterTypesProvider);
 
-        final result = CardFilterResult(
+        final result = CardFilterArguments(
           format: format.value,
           collection: collection.value,
           rotation: rotation.value,
@@ -242,22 +241,13 @@ class CardFilterPacksState extends ConsumerState<CardFilterPacks> with Restorati
 
     filterPacksRoute = RestorableRouteFuture<FilterType<String>>(
       onPresent: (navigator, arguments) => Navigator.of(context).restorablePush(
-        openFilterPacksPage,
+        FilterPacksPage.route,
         arguments: arguments,
       ),
       onComplete: (result) {
         final filterPacks = ref.read(filterPacksProvider);
         filterPacks.value = result;
       },
-    );
-  }
-
-  static Route<FilterType<String>> openFilterPacksPage(BuildContext context, Object? arguments) {
-    final packs = FilterType<String>.fromJson((arguments as Map).cast());
-    return MaterialPageRoute(
-      builder: (context) => FilterPacksPage.withOverrides(
-        packs: packs,
-      ),
     );
   }
 
@@ -296,15 +286,15 @@ class CardFilterFactions extends ConsumerStatefulWidget {
 }
 
 class CardFilterFactionsState extends ConsumerState<CardFilterFactions> with RestorationMixin {
-  late RestorableRouteFuture<FilterFactionsResult> filterFactionsRoute;
+  late RestorableRouteFuture<FilterFactionsArguments> filterFactionsRoute;
 
   @override
   void initState() {
     super.initState();
 
-    filterFactionsRoute = RestorableRouteFuture<FilterFactionsResult>(
+    filterFactionsRoute = RestorableRouteFuture<FilterFactionsArguments>(
       onPresent: (navigator, arguments) => Navigator.of(context).restorablePush(
-        openFilterFactionsPage,
+        FilterFactionsPage.route,
         arguments: arguments,
       ),
       onComplete: (result) {
@@ -314,16 +304,6 @@ class CardFilterFactionsState extends ConsumerState<CardFilterFactions> with Res
         final filterFactions = ref.read(filterFactionsProvider);
         filterFactions.value = result.factions;
       },
-    );
-  }
-
-  static Route<FilterFactionsResult> openFilterFactionsPage(BuildContext context, Object? arguments) {
-    final result = FilterFactionsResult.fromJson((arguments as Map).cast());
-    return MaterialPageRoute(
-      builder: (context) => FilterFactionsPage.withOverrides(
-        sides: result.sides,
-        factions: result.factions,
-      ),
     );
   }
 
@@ -345,7 +325,7 @@ class CardFilterFactionsState extends ConsumerState<CardFilterFactions> with Res
                 .join(', '))
             : null,
       ),
-      onTap: () => filterFactionsRoute.present(FilterFactionsResult(
+      onTap: () => filterFactionsRoute.present(FilterFactionsArguments(
         sides: sides.value,
         factions: factions.value,
       ).toJson()),
@@ -369,15 +349,15 @@ class CardFilterTypes extends ConsumerStatefulWidget {
 }
 
 class CardFilterTypesState extends ConsumerState<CardFilterTypes> with RestorationMixin {
-  late RestorableRouteFuture<FilterTypesResult> filterTypesRoute;
+  late RestorableRouteFuture<FilterTypesArguments> filterTypesRoute;
 
   @override
   void initState() {
     super.initState();
 
-    filterTypesRoute = RestorableRouteFuture<FilterTypesResult>(
+    filterTypesRoute = RestorableRouteFuture<FilterTypesArguments>(
       onPresent: (navigator, arguments) => Navigator.of(context).restorablePush(
-        openFilterTypesPage,
+        FilterTypesPage.route,
         arguments: arguments,
       ),
       onComplete: (result) {
@@ -387,16 +367,6 @@ class CardFilterTypesState extends ConsumerState<CardFilterTypes> with Restorati
         final filterTypes = ref.read(filterTypesProvider);
         filterTypes.value = result.types;
       },
-    );
-  }
-
-  static Route<FilterTypesResult> openFilterTypesPage(BuildContext context, Object? arguments) {
-    final result = FilterTypesResult.fromJson((arguments as Map).cast());
-    return MaterialPageRoute(
-      builder: (context) => FilterTypesPage.withOverrides(
-        sides: result.sides,
-        types: result.types,
-      ),
     );
   }
 
@@ -416,7 +386,7 @@ class CardFilterTypesState extends ConsumerState<CardFilterTypes> with Restorati
             : null,
       ),
       onTap: () => filterTypesRoute.present(
-        FilterTypesResult(
+        FilterTypesArguments(
           sides: sides.value,
           types: types.value,
         ).toJson(),

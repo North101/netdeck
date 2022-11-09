@@ -78,7 +78,7 @@ class DebugPage extends ConsumerWidget {
                       onPressed: state is! NoneDatabaseResult
                           ? () async {
                               await Database.deleteDatabase();
-                              ref.refresh(dbProvider);
+                              ref.invalidate(dbProvider);
                             }
                           : null,
                       child: const Text('Delete Database'),

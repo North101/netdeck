@@ -14,7 +14,7 @@ class SearchTheme {
         systemOverlayStyle: SystemUiOverlayStyle.dark,
         backgroundColor: colorScheme.brightness == Brightness.dark ? Colors.grey[900] : Colors.white,
         iconTheme: theme.primaryIconTheme.copyWith(color: Colors.grey),
-        titleTextStyle: theme.textTheme.headline6?.copyWith(color: Colors.black),
+        titleTextStyle: theme.textTheme.titleLarge?.copyWith(color: Colors.black),
       ),
       inputDecorationTheme: InputDecorationTheme(
         hintStyle: theme.inputDecorationTheme.hintStyle,
@@ -23,5 +23,5 @@ class SearchTheme {
     );
   }
 
-  static of(BuildContext context) => SearchTheme(context).theme;
+  static ThemeData of(BuildContext context) => SearchTheme(context).theme;
 }

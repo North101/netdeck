@@ -3,41 +3,62 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/db/querybuilder.dart';
 import '/providers.dart';
+import '/util/filter_type.dart';
 import '/view/querybuilder_autocomplete.dart';
 import '/view/search_theme.dart';
 import 'actions.dart';
 
-class CardSearchAppBar extends ConsumerWidget implements PreferredSizeWidget {
-  CardSearchAppBar({super.key}) : preferredSize = const Size.fromHeight(kToolbarHeight);
+class CardSearchAppBar extends ConsumerStatefulWidget implements PreferredSizeWidget {
+  const CardSearchAppBar({super.key}) : preferredSize = const Size.fromHeight(kToolbarHeight);
 
   @override
   final Size preferredSize;
 
+  @override
+  CardSearchAppBarState createState() => CardSearchAppBarState();
+}
+
+class CardSearchAppBarState extends ConsumerState<CardSearchAppBar> {
   final focusNode = FocusNode();
   final controller = TextEditingController();
 
-  void _clearSearchQuery(WidgetRef ref) {
-    controller.clear();
-    _updateSearchQuery(ref, '');
+  @override
+  void initState() {
+    super.initState();
+
+    final value = ref.read(filterSearchProvider).value;
+    controller.text = value ?? '';
   }
 
-  void _updateSearchQuery(WidgetRef ref, String newQuery) {
-    final cardQuery = ref.read(filterQueryProvider);
-    cardQuery.value = tryParseQuery(newQuery);
+  void _clearSearchQuery() {
+    controller.clear();
+    _updateSearchQuery('');
+  }
+
+  void _updateSearchQuery(String newQuery) {
+    final search = ref.read(filterSearchProvider);
+    search.value = newQuery;
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final db = ref.watch(dbProvider);
+    final subtype = db.type.createAlias('subtype');
     final theme = SearchTheme.of(context);
-    final queryBuilder = ref.watch(cardQueryBuilderProvider);
+    final queryBuilder = ref.watch(cardQueryBuilderProvider(CardFilterState(
+      card: db.card,
+      pack: db.pack,
+      cycle: db.cycle,
+      faction: db.faction,
+      side: db.side,
+      type: db.type,
+      subtype: subtype,
+      mwlCard: db.mwlCard,
+    )));
     return WillPopScope(
       onWillPop: () async {
-        final isSearching = ref.read(filterSearchingProvider);
-        isSearching.value = false;
-
-        final cardQuery = ref.read(filterQueryProvider);
-        cardQuery.value = null;
+        final search = ref.read(filterSearchProvider);
+        search.value = null;
         return false;
       },
       child: Theme(
@@ -54,27 +75,24 @@ class CardSearchAppBar extends ConsumerWidget implements PreferredSizeWidget {
                 autofocus: true,
                 focusNode: focusNode,
                 controller: controller,
-                style: theme.textTheme.headline6,
+                style: theme.textTheme.titleLarge,
                 textInputAction: TextInputAction.search,
                 decoration: const InputDecoration(hintText: 'Search'),
-                onChanged: (newQuery) => _updateSearchQuery(ref, newQuery),
+                onChanged: _updateSearchQuery,
               );
             },
-            onSelected: (Option option) => _updateSearchQuery(ref, option.replacement),
+            onSelected: (Option option) => _updateSearchQuery(option.replacement),
           ),
           actions: [
             IconButton(
               icon: const Icon(Icons.clear),
               onPressed: () {
                 if (controller.text.isEmpty) {
-                  final isSearching = ref.read(filterSearchingProvider);
-                  isSearching.value = false;
-
-                  final cardQuery = ref.read(filterQueryProvider);
-                  cardQuery.value = null;
+                  final search = ref.read(filterSearchProvider);
+                  search.value = null;
                   return;
                 }
-                _clearSearchQuery(ref);
+                _clearSearchQuery();
               },
             ),
             const CardListMoreActions(),

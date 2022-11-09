@@ -61,7 +61,7 @@ class CardTile extends ConsumerWidget {
           if (influence.isNotEmpty) Text.rich(TextSpan(children: influence)),
           if (body) CardBodyWidget(card),
           CardCycleWidget(card),
-          if (error != null) Text(error!, style: TextStyle(color: Theme.of(context).errorColor))
+          if (error != null) Text(error!, style: TextStyle(color: Theme.of(context).colorScheme.error))
         ],
       ),
       onTap: onTap,

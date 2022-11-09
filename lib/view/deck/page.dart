@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod_restorable/flutter_riverpod_restorable.dart';
 
+import '/db/database.dart';
 import '/providers.dart';
 import '/util/deck_validator.dart';
 import '/util/filter_type.dart';
+import '/util/header_list.dart';
 import '/view/async_value_builder.dart';
 import '/view/save_deck_dialog.dart';
 import 'body.dart';
@@ -12,20 +15,28 @@ import 'fab.dart';
 class DeckPage extends ConsumerWidget {
   const DeckPage({super.key});
 
+  static Route<void> route(BuildContext context, Object? arguments) {
+    final deck = DeckFullResult.fromJson((arguments as Map).cast());
+    return MaterialPageRoute(builder: (context) {
+      return DeckPage.withOverrides(
+        deck: deck.toNotifierResult(DeckSaveState.isSaved),
+      );
+    });
+  }
+
   static Widget withOverrides({
     required DeckNotifierResult deck,
   }) {
-    return ProviderScope(
+    return RestorableProviderScope(
       restorationId: 'deck_page',
       overrides: [
-        deckProvider.overrideWithValue(DeckNotifier(deck), 'deckProvider'),
-        filterSearchingProvider.overrideWithValue(RestorableBool(false), 'filterSearchingProvider'),
-        filterQueryProvider.overrideWithValue(RestorableQuery(null), 'filterQueryProvider'),
-        filterCollectionProvider.overrideWithValue(RestorableBool(false), 'filterCollectionProvider'),
-        filterPacksProvider.overrideWithValue(RestorableFilterType(FilterType()), 'filterPacksProvider'),
-        filterSidesProvider.overrideWithValue(RestorableFilterType(FilterType()), 'filterSidesProvider'),
-        filterFactionsProvider.overrideWithValue(RestorableFilterType(FilterType()), 'filterFactionsProvider'),
-        filterTypesProvider.overrideWithValue(RestorableFilterType(FilterType()), 'filterTypesProvider'),
+        deckProvider.overrideWith((ref) => DeckNotifier(deck)),
+        filterSearchProvider.overrideWith((ref) => RestorableStringN(null)),
+        filterCollectionProvider.overrideWith((ref) => RestorableBool(false)),
+        filterPacksProvider.overrideWith((ref) => RestorableFilterType(FilterType())),
+        filterSidesProvider.overrideWith((ref) => RestorableFilterType(FilterType())),
+        filterFactionsProvider.overrideWith((ref) => RestorableFilterType(FilterType())),
+        filterTypesProvider.overrideWith((ref) => RestorableFilterType(FilterType())),
       ],
       child: const DeckPage(),
     );
@@ -45,7 +56,18 @@ class DeckPage extends ConsumerWidget {
       data: (deckValidator) => ProviderScope(
         overrides: [
           deckValidatorResultProvider.overrideWithValue(deckValidator),
-          groupedCardListProvider.overrideWithProvider(groupedDeckCardListProvider),
+          groupedCardListProvider.overrideWith((ref) async* {
+            final settings = await ref.watch(settingProvider.future);
+            final deckCardList = ref.watch(deckValidatorResultProvider.select((value) {
+              return value.deck.cards.keys;
+            }));
+
+            final groupBy = settings.settings.deckCardGroup;
+            final sortBy = settings.settings.deckCardSort;
+            yield HeaderList([
+              ...groupBy(sortBy(deckCardList)),
+            ]);
+          }),
         ],
         child: const DeckResultPage(),
       ),

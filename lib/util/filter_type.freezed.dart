@@ -30,44 +30,47 @@ mixin _$FilterType<T> {
 abstract class $FilterTypeCopyWith<T, $Res> {
   factory $FilterTypeCopyWith(
           FilterType<T> value, $Res Function(FilterType<T>) then) =
-      _$FilterTypeCopyWithImpl<T, $Res>;
+      _$FilterTypeCopyWithImpl<T, $Res, FilterType<T>>;
+  @useResult
   $Res call({bool visible, Set<T> values, Set<T> always, Set<T> never});
 }
 
 /// @nodoc
-class _$FilterTypeCopyWithImpl<T, $Res>
+class _$FilterTypeCopyWithImpl<T, $Res, $Val extends FilterType<T>>
     implements $FilterTypeCopyWith<T, $Res> {
   _$FilterTypeCopyWithImpl(this._value, this._then);
 
-  final FilterType<T> _value;
   // ignore: unused_field
-  final $Res Function(FilterType<T>) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? visible = freezed,
-    Object? values = freezed,
-    Object? always = freezed,
-    Object? never = freezed,
+    Object? visible = null,
+    Object? values = null,
+    Object? always = null,
+    Object? never = null,
   }) {
     return _then(_value.copyWith(
-      visible: visible == freezed
+      visible: null == visible
           ? _value.visible
           : visible // ignore: cast_nullable_to_non_nullable
               as bool,
-      values: values == freezed
+      values: null == values
           ? _value.values
           : values // ignore: cast_nullable_to_non_nullable
               as Set<T>,
-      always: always == freezed
+      always: null == always
           ? _value.always
           : always // ignore: cast_nullable_to_non_nullable
               as Set<T>,
-      never: never == freezed
+      never: null == never
           ? _value.never
           : never // ignore: cast_nullable_to_non_nullable
               as Set<T>,
-    ));
+    ) as $Val);
   }
 }
 
@@ -78,41 +81,40 @@ abstract class _$$_FilterTypeCopyWith<T, $Res>
           _$_FilterType<T> value, $Res Function(_$_FilterType<T>) then) =
       __$$_FilterTypeCopyWithImpl<T, $Res>;
   @override
+  @useResult
   $Res call({bool visible, Set<T> values, Set<T> always, Set<T> never});
 }
 
 /// @nodoc
 class __$$_FilterTypeCopyWithImpl<T, $Res>
-    extends _$FilterTypeCopyWithImpl<T, $Res>
+    extends _$FilterTypeCopyWithImpl<T, $Res, _$_FilterType<T>>
     implements _$$_FilterTypeCopyWith<T, $Res> {
   __$$_FilterTypeCopyWithImpl(
       _$_FilterType<T> _value, $Res Function(_$_FilterType<T>) _then)
-      : super(_value, (v) => _then(v as _$_FilterType<T>));
+      : super(_value, _then);
 
-  @override
-  _$_FilterType<T> get _value => super._value as _$_FilterType<T>;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? visible = freezed,
-    Object? values = freezed,
-    Object? always = freezed,
-    Object? never = freezed,
+    Object? visible = null,
+    Object? values = null,
+    Object? always = null,
+    Object? never = null,
   }) {
     return _then(_$_FilterType<T>(
-      visible: visible == freezed
+      visible: null == visible
           ? _value.visible
           : visible // ignore: cast_nullable_to_non_nullable
               as bool,
-      values: values == freezed
+      values: null == values
           ? _value._values
           : values // ignore: cast_nullable_to_non_nullable
               as Set<T>,
-      always: always == freezed
+      always: null == always
           ? _value._always
           : always // ignore: cast_nullable_to_non_nullable
               as Set<T>,
-      never: never == freezed
+      never: null == never
           ? _value._never
           : never // ignore: cast_nullable_to_non_nullable
               as Set<T>,
@@ -165,7 +167,7 @@ class _$_FilterType<T> extends _FilterType<T> {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$_FilterType<T> &&
-            const DeepCollectionEquality().equals(other.visible, visible) &&
+            (identical(other.visible, visible) || other.visible == visible) &&
             const DeepCollectionEquality().equals(other._values, _values) &&
             const DeepCollectionEquality().equals(other._always, _always) &&
             const DeepCollectionEquality().equals(other._never, _never));
@@ -174,13 +176,14 @@ class _$_FilterType<T> extends _FilterType<T> {
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      const DeepCollectionEquality().hash(visible),
+      visible,
       const DeepCollectionEquality().hash(_values),
       const DeepCollectionEquality().hash(_always),
       const DeepCollectionEquality().hash(_never));
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$_FilterTypeCopyWith<T, _$_FilterType<T>> get copyWith =>
       __$$_FilterTypeCopyWithImpl<T, _$_FilterType<T>>(this, _$identity);
 }

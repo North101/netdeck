@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod_restorable/flutter_riverpod_restorable.dart';
 import 'package:kotlin_flavor/scope_functions.dart';
 
 import '/providers.dart';
@@ -43,36 +44,26 @@ class CardGalleryResult {
   final Map<String, int>? deckCards;
 }
 
-Route<CardGalleryResult> openCardGalleryPage(BuildContext context, Object? arguments) {
-  final result = CardGalleryArguments.fromJson((arguments as Map).cast());
-  return MaterialPageRoute<CardGalleryResult>(builder: (context) {
-    return CardGalleryPage.withOverrides(
-      items: result.items,
-      index: result.index,
-      deckCards: result.deckCards,
-    );
-  });
-}
-
 class CardGalleryPage extends ConsumerWidget {
   const CardGalleryPage({super.key});
 
-  static Widget withOverrides({
-    required GroupedCardCodeList items,
-    required int? index,
-    Map<String, int>? deckCards,
-  }) {
-    return ProviderScope(
-      restorationId: 'card_gallery_page',
-      overrides: [
-        cardGalleryIndexProvider.overrideWithValue(RestorableIntN(index), 'cardGalleryIndexProvider'),
-        cardGalleryDeckCardCodesProvider.overrideWithValue(
-            deckCards != null ? DeckCardsNotifier(deckCards) : null, 'cardGalleryDeckCardCodesProvider'),
-        cardGalleryGroupedCardCodeListProvider.overrideWithValue(items),
-      ],
-      child: const CardGalleryPage(),
-    );
+  static Route<CardGalleryResult> route(BuildContext context, Object? arguments) {
+    final args = CardGalleryArguments.fromJson((arguments as Map).cast());
+    return MaterialPageRoute<CardGalleryResult>(builder: (context) {
+      return CardGalleryPage.withOverrides(args);
+    });
   }
+
+  static Widget withOverrides(CardGalleryArguments args) => RestorableProviderScope(
+        restorationId: 'card_gallery_page',
+        overrides: [
+          cardGalleryIndexProvider.overrideWith((ref) => RestorableIntN(args.index)),
+          cardGalleryDeckCardCodesProvider
+              .overrideWith((ref) => args.deckCards != null ? DeckCardsNotifier(args.deckCards!) : null),
+          cardGalleryGroupedCardCodeListProvider.overrideWithValue(args.items),
+        ],
+        child: const CardGalleryPage(),
+      );
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

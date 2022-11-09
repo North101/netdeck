@@ -1,7 +1,7 @@
 import 'package:drift/drift.dart';
 
-const trueExpression = Variable(true);
-const falseExpression = Variable(false);
+const trueExpression = Constant(true);
+const falseExpression = Constant(false);
 
 Expression<bool> buildAnd(Iterable<Expression<bool>> iterable) {
   if (iterable.isEmpty) return trueExpression;

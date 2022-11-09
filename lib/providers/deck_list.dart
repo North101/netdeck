@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart' as drift;
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Card;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod_restorable/flutter_riverpod_restorable.dart';
 
 import '/db/database.dart';
 import '/db/querybuilder.dart';
@@ -9,7 +10,10 @@ import '/util/header_list.dart';
 import 'db.dart';
 import 'filters.dart';
 
-final selectedDeckIdsProvider = RestorableProvider<RestorableSet<String>>((ref) => throw UnimplementedError());
+final selectedDeckIdsProvider = RestorableProvider<RestorableSet<String>>(
+  (ref) => throw UnimplementedError(),
+  restorationId: 'selectedDeckIdsProvider',
+);
 
 final deckItemBuilderProvider =
     Provider<Widget Function(BuildContext context, WidgetRef ref, int index, DeckFullResult deck)>(
@@ -17,9 +21,22 @@ final deckItemBuilderProvider =
 
 final deckFabProvider = Provider<Widget?>((ref) => throw UnimplementedError());
 
-final deckQueryBuilderProvider = Provider((ref) {
+final deckQueryBuilderProvider = Provider.family<DeckQueryBuilder, DeckFilterState>((ref, state) {
   final db = ref.watch(dbProvider);
-  return DeckQueryBuilder(db);
+  return DeckQueryBuilder(
+    db,
+    state.deck,
+    state.identity,
+    state.pack,
+    state.cycle,
+    state.faction,
+    state.side,
+    state.type,
+    state.subtype,
+    state.format,
+    state.rotation,
+    state.mwl,
+  );
 });
 
 final hasDeckFilterProvider = Provider((ref) {
@@ -39,30 +56,29 @@ final hasDeckFilterProvider = Provider((ref) {
   filterTagsProvider,
 ]);
 
-final deckFilterProvider = Provider.family<drift.Expression<bool>, CardFilterState>((ref, state) {
-  final deckQueryBuilder = ref.watch(deckQueryBuilderProvider);
-  final parsedQuery = ref.watch(filterQueryProvider).value;
-  final rotationFilter = ref.watch(filterRotationFilterProvider);
-  final mwlFilter = ref.watch(filterMwlFilterProvider);
+final deckFilterProvider = Provider.family<drift.Expression<bool>, DeckFilterState>((ref, state) {
+  final deckQueryBuilder = ref.watch(deckQueryBuilderProvider(state));
+  final parsedQuery = ref.watch(filterQueryProvider);
+  final rotationFilter = ref.watch(filterDeckRotationFilterProvider(state));
+  final mwlFilter = ref.watch(filterDeckMwlFilterProvider(state));
   final packFilter = ref.watch(filterPackFilterProvider(state));
   final factionFilter = ref.watch(filterFactionFilterProvider(state));
   final typeFilter = ref.watch(filterTypeFilterProvider(state));
-  final tagFilter = ref.watch(tagFilterProvider);
+  final tagFilter = ref.watch(tagFilterProvider(state));
   return buildAnd([
     if (parsedQuery != null) deckQueryBuilder.build(parsedQuery),
-    if (state.rotation && rotationFilter != null) rotationFilter,
-    if (state.mwl && mwlFilter != null) mwlFilter,
+    if (rotationFilter != null) rotationFilter,
+    if (mwlFilter != null) mwlFilter,
     packFilter,
     factionFilter,
     typeFilter,
-    tagFilter,
+    if (tagFilter != null) tagFilter,
   ]);
 }, dependencies: [
-  dbProvider,
   deckQueryBuilderProvider,
   filterQueryProvider,
-  filterRotationFilterProvider,
-  filterMwlFilterProvider,
+  filterDeckRotationFilterProvider,
+  filterDeckMwlFilterProvider,
   filterPackFilterProvider,
   filterFactionFilterProvider,
   filterTypeFilterProvider,
@@ -71,8 +87,21 @@ final deckFilterProvider = Provider.family<drift.Expression<bool>, CardFilterSta
 
 final deckListProvider = StreamProvider<List<DeckFullResult>>((ref) {
   final db = ref.watch(dbProvider);
-  final deckFilter = ref.watch(deckFilterProvider(const CardFilterState()));
-  return db.listDecks2(where: deckFilter);
+  return db.listDecks2(where: (deck, identity, pack, cycle, faction, side, type, subtype, format, rotation, mwl) {
+    return ref.watch(deckFilterProvider(DeckFilterState(
+      deck: deck,
+      identity: identity,
+      pack: pack,
+      cycle: cycle,
+      faction: faction,
+      side: side,
+      type: type,
+      subtype: subtype,
+      format: format,
+      rotation: rotation,
+      mwl: mwl,
+    )));
+  });
 }, dependencies: [
   dbProvider,
   deckFilterProvider,
@@ -88,6 +117,6 @@ final groupedDeckListProvider = StreamProvider<HeaderList<DeckFullResult>>((ref)
     ...groupBy(sortBy(deckList)),
   ]);
 }, dependencies: [
-  settingProvider.future,
-  deckListProvider.future,
+  settingProvider,
+  deckListProvider,
 ]);

@@ -44,6 +44,12 @@ class DeckDescriptionRoute<T> extends PageRoute<T> {
 class DeckDescriptionPage extends StatefulWidget {
   const DeckDescriptionPage({required this.description, super.key});
 
+  static Route<String> route(BuildContext context, Object? arguments) {
+    return DeckDescriptionRoute(DeckDescriptionPage(
+      description: arguments as String,
+    ));
+  }
+
   final String description;
 
   @override

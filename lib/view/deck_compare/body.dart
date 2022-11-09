@@ -84,7 +84,7 @@ class DeckCardTile extends ConsumerWidget {
           return HeaderItems(e.header, e.items.map((e) => e.key.code).toList());
         }).toList());
         navigator.restorablePush(
-          openCardGalleryPage,
+          CardGalleryPage.route,
           arguments: CardGalleryArguments(
             items: groupedCardList,
             index: index,

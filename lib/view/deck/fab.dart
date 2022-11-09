@@ -35,11 +35,8 @@ class DeckFloatingActionBarState extends ConsumerState<DeckFloatingActionBar> wi
           cards: result.deckCards,
         );
 
-        final filterSearching = ref.read(filterSearchingProvider);
-        filterSearching.value = result.filterSearching;
-
-        final filterQuery = ref.read(filterQueryProvider);
-        filterQuery.value = result.filterQuery;
+        final filterSearch = ref.read(filterSearchProvider);
+        filterSearch.value = result.filterSearch;
 
         final filterCollection = ref.read(filterCollectionProvider);
         filterCollection.value = result.filterCollection;
@@ -66,8 +63,7 @@ class DeckFloatingActionBarState extends ConsumerState<DeckFloatingActionBar> wi
         restorationId: 'deck_card_list_page',
         color: result.deck.faction.color,
         title: 'Edit Deck',
-        filterSearching: result.filterSearching,
-        filterQuery: result.filterQuery,
+        filterSearch: result.filterSearch,
         filterCollection: result.filterCollection,
         filterFormat: result.deck.format,
         filterRotation: result.deck.rotation,
@@ -95,8 +91,7 @@ class DeckFloatingActionBarState extends ConsumerState<DeckFloatingActionBar> wi
         deckCardListRoute.present(CardListArguments(
           deck: deck,
           deckCards: ref.read(deckProvider).value.cards,
-          filterSearching: ref.read(filterSearchingProvider).value,
-          filterQuery: ref.read(filterQueryProvider).value,
+          filterSearch: ref.read(filterSearchProvider).value,
           filterCollection: ref.read(filterCollectionProvider).value,
           filterPacks: ref.read(filterPacksProvider).value,
           filterSides: ref.read(filterSidesProvider).value.copyWith(
@@ -143,7 +138,7 @@ class DeckCardListTileState extends ConsumerState<DeckCardListTile> with Restora
 
     cardGalleryRoute = RestorableRouteFuture<CardGalleryResult>(
       onPresent: (navigator, arguments) => Navigator.of(context).restorablePush(
-        openCardGalleryPage,
+        CardGalleryPage.route,
         arguments: arguments,
       ),
       onComplete: (result) {

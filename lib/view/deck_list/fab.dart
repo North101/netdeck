@@ -107,7 +107,7 @@ class IdentityTile extends ConsumerWidget {
         final navigator = Navigator.of(context);
         final groupedCardList = await ref.read(groupedCardListProvider.future);
         navigator.restorablePush(
-          openCardGalleryPage,
+          CardGalleryPage.route,
           arguments: CardGalleryArguments(
             items: GroupedCardCodeList.fromCardResult(groupedCardList),
             index: index,

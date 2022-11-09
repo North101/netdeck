@@ -20,8 +20,8 @@ class CardStandardAppBar extends ConsumerWidget implements PreferredSizeWidget {
   final Size preferredSize;
 
   void _startSearch(BuildContext context, WidgetRef ref) {
-    final isSearching = ref.read(filterSearchingProvider);
-    isSearching.value = true;
+    final search = ref.read(filterSearchProvider);
+    search.value = '';
   }
 
   @override

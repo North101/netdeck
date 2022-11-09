@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod_restorable/flutter_riverpod_restorable.dart';
 
 import '/db/database.dart';
 import '/providers.dart';
@@ -106,7 +107,7 @@ class CompareDeckListFloatingActionButton extends ConsumerWidget {
       onPressed: () {
         final deckList = ref.read(selectedCompareDeckListProvider);
         Navigator.of(context).restorablePush(
-          openDeckComparePage,
+          DeckComparePage.route,
           arguments: DeckCompareArguments({
             deck.toMicroResult(),
             ...deckList.value,
@@ -123,11 +124,10 @@ class DeckMoreActions extends ConsumerWidget {
   static Route<void> openDeckListPage(BuildContext context, Object? arguments) {
     final deck = DeckFullResult.fromJson((arguments as Map).cast());
     return MaterialPageRoute(builder: (context) {
-      return ProviderScope(
+      return RestorableProviderScope(
         restorationId: 'compare_deck_list_page_wrapper',
         overrides: [
-          selectedCompareDeckListProvider.overrideWithValue(
-              RestorableDeckMicroResultSet({}), 'selectedCompareDeckListProvider'),
+          selectedCompareDeckListProvider.overrideWith((ref) => RestorableDeckMicroResultSet({})),
         ],
         child: DeckListPage.withOverrides(
           restorationId: 'compare_deck_list_page',

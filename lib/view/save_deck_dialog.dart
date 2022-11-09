@@ -49,7 +49,7 @@ class SaveDeckDialog extends ConsumerWidget {
     return ProviderScope(
       overrides: [
         deckResultProvider.overrideWithValue(deck),
-        if (state != null) dialogStateProvider.overrideWithValue(StateController(state)),
+        if (state != null) dialogStateProvider.overrideWith((ref) => state),
       ],
       child: const SaveDeckDialog(),
     );
@@ -57,7 +57,7 @@ class SaveDeckDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final dialogState = ref.watch(dialogStateProvider.state);
+    final dialogState = ref.watch(dialogStateProvider.notifier);
     switch (dialogState.state) {
       case SaveDialogState.askToUpload:
         return AlertDialog(
@@ -155,36 +155,41 @@ class SaveDeckLocalDialogState extends ConsumerState<SaveDeckLocalDialog> {
   }
 
   Future<void> save() async {
-    final deck = ref.read(deckResultProvider).copyWith(
+    final saveDeck = ref.read(deckResultProvider).copyWith(
           updated: DateTime.now(),
         );
-    final cards = deck.cards;
-    final tags = deck.tags;
+    final cards = saveDeck.cards;
+    final tags = saveDeck.tags;
 
     final db = ref.read(dbProvider);
     final savedDeck = await db.transaction(() async {
       await db.batch((batch) {
-        batch.insert<Deck, DeckData>(db.deck, deck, mode: drift.InsertMode.insertOrReplace);
-        batch.deleteWhere<DeckCard, DeckCardData>(db.deckCard, (tbl) => tbl.deckId.equals(deck.id));
+        batch.insert<Deck, DeckData>(db.deck, saveDeck, mode: drift.InsertMode.insertOrReplace);
+        batch.deleteWhere<DeckCard, DeckCardData>(db.deckCard, (tbl) => tbl.deckId.equals(saveDeck.id));
         batch.insertAll<DeckCard, DeckCardData>(db.deckCard, [
           for (final entry in cards.entries)
             if (entry.value > 0)
               DeckCardData(
-                deckId: deck.id,
+                deckId: saveDeck.id,
                 cardCode: entry.key,
                 quantity: entry.value,
               ),
         ]);
-        batch.deleteWhere<DeckTag, DeckTagData>(db.deckTag, (tbl) => tbl.deckId.equals(deck.id));
+        batch.deleteWhere<DeckTag, DeckTagData>(db.deckTag, (tbl) => tbl.deckId.equals(saveDeck.id));
         batch.insertAll<DeckTag, DeckTagData>(db.deckTag, [
           for (final tag in tags)
             DeckTagData(
-              deckId: deck.id,
+              deckId: saveDeck.id,
               tag: tag,
             ),
         ]);
       });
-      return await db.listMiniDecks(where: db.deck.id.equals(deck.id)).map((e) => e.first).first;
+      return await db
+          .listMiniDecks(where: (deck, identity, pack, cycle, faction, side, type, subtype, format, rotation, mwl) {
+            return deck.id.equals(saveDeck.id);
+          })
+          .map((e) => e.first)
+          .first;
     });
 
     if (!mounted) return;
@@ -223,7 +228,7 @@ class SaveDeckRemoteDialogState extends ConsumerState<SaveDeckRemoteDialog> {
     final nrdbAuthState = ref.read(nrdbAuthStateProvider);
     final onlineAuthState = await nrdbAuthState.online();
     if (onlineAuthState == null) {
-      ref.read(dialogStateProvider.state).state = SaveDialogState.warnNotUploaded;
+      ref.read(dialogStateProvider.notifier).state = SaveDialogState.warnNotUploaded;
       return;
     }
 
@@ -232,7 +237,7 @@ class SaveDeckRemoteDialogState extends ConsumerState<SaveDeckRemoteDialog> {
         .saveDeck(deck) //
         .catchError((e) => const UnknownHttpResult<NrdbDeck>());
     if (result is! SuccessHttpResult<NrdbDeck>) {
-      ref.read(dialogStateProvider.state).state = SaveDialogState.warnNotUploaded;
+      ref.read(dialogStateProvider.notifier).state = SaveDialogState.warnNotUploaded;
       return;
     }
 
@@ -255,7 +260,12 @@ class SaveDeckRemoteDialogState extends ConsumerState<SaveDeckRemoteDialog> {
           mwlCode: drift.Value(deck.mwlCode),
         );
       });
-      return await db.listMiniDecks(where: db.deck.id.equals(uploadedDeck.id)).map((e) => e.first).first;
+      return await db
+          .listMiniDecks(where: (deck, identity, pack, cycle, faction, side, type, subtype, format, rotation, mwl) {
+            return deck.id.equals(uploadedDeck.id);
+          })
+          .map((e) => e.first)
+          .first;
     });
 
     if (!mounted) return;
@@ -298,7 +308,7 @@ class DownloadDeckDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final downloadDialogState = ref.watch(downloadDialogStateProvider.state);
+    final downloadDialogState = ref.watch(downloadDialogStateProvider.notifier);
     switch (downloadDialogState.state) {
       case DownloadDialogState.download:
         return const DownloadDeckProgressDialog();
@@ -340,7 +350,7 @@ class DownloadDeckProgressDialogState extends ConsumerState<DownloadDeckProgress
     final nrdbAuthState = ref.read(nrdbAuthStateProvider);
     final onlineAuthState = await nrdbAuthState.online();
     if (onlineAuthState == null) {
-      ref.read(downloadDialogStateProvider.state).state = DownloadDialogState.warnNotDownloaded;
+      ref.read(downloadDialogStateProvider.notifier).state = DownloadDialogState.warnNotDownloaded;
       return;
     }
 
@@ -349,7 +359,7 @@ class DownloadDeckProgressDialogState extends ConsumerState<DownloadDeckProgress
         .getDeck(deck.id) //
         .catchError((e) => const UnknownHttpResult<NrdbDeck>());
     if (result is! SuccessHttpResult<NrdbDeck>) {
-      ref.read(downloadDialogStateProvider.state).state = DownloadDialogState.warnNotDownloaded;
+      ref.read(downloadDialogStateProvider.notifier).state = DownloadDialogState.warnNotDownloaded;
       return;
     }
 
@@ -372,7 +382,14 @@ class DownloadDeckProgressDialogState extends ConsumerState<DownloadDeckProgress
           mwlCode: drift.Value(deck.mwlCode),
         );
       });
-      return await db.listMiniDecks(where: db.deck.id.equals(downloadedDeck.id)).map((e) => e.first).first;
+      return await db
+          .listMiniDecks(
+            where: (deck, identity, pack, cycle, faction, side, type, subtype, format, rotation, mwl) {
+              return deck.id.equals(downloadedDeck.id);
+            },
+          )
+          .map((e) => e.first)
+          .first;
     });
 
     if (!mounted) return;

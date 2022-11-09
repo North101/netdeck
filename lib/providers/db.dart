@@ -27,7 +27,10 @@ void _startBackground(_IsolateStartRequest request) {
     request.filename,
     setup: (rawDb) => rawDb.createFunction(
       functionName: 'removeDiacritics',
-      function: (args) => removeDiacritics(args[0] as String),
+      function: (args) {
+        final text = args[0] as String?;
+        return text != null ? removeDiacritics(text) : null;
+      },
     ),
   );
   final driftIsolate = DriftIsolate.inCurrent(
@@ -76,16 +79,20 @@ final formatListProvider = StreamProvider((ref) {
 
 final rotationProvider = Provider<RotationData?>((ref) => throw UnimplementedError());
 
-final rotationListProvider = StreamProvider.family<List<RotationData>, FormatData?>((ref, format) {
+final rotationListProvider = StreamProvider.family<List<RotationData>, FormatData?>((ref, formatFilter) {
   final db = ref.watch(dbProvider);
-  return db.listRotations(where: format?.code.let(db.rotation.formatCode.equals) ?? trueExpression).watch();
+  return db.listRotations(where: (rotation, format) {
+    return formatFilter?.code.let(rotation.formatCode.equals) ?? trueExpression;
+  }).watch();
 });
 
 final mwlProvider = Provider<MwlData?>((ref) => throw UnimplementedError());
 
-final mwlListProvider = StreamProvider.family<List<MwlData>, FormatData?>((ref, format) {
+final mwlListProvider = StreamProvider.family<List<MwlData>, FormatData?>((ref, formatFilter) {
   final db = ref.watch(dbProvider);
-  return db.listMwl(where: format?.code.let(db.mwl.formatCode.equals) ?? trueExpression).watch();
+  return db.listMwl(where: (mwl, format) {
+    return formatFilter?.code.let(db.mwl.formatCode.equals) ?? trueExpression;
+  }).watch();
 });
 
 final collectionProvider = StreamProvider.family<List<CollectionResult>, bool>((ref, inCollection) {
@@ -97,7 +104,7 @@ final collectionByCycleProvider =
     StreamProvider.family<Map<CycleData, List<CollectionResult>>, bool>((ref, inCollection) {
   final collection = ref.watch(collectionProvider(inCollection).stream);
   return collection.map((items) {
-    return groupBy<CollectionResult, CycleData>(items, (item) => item.cycle);
+    return groupBy(items, (item) => item.cycle);
   });
 });
 

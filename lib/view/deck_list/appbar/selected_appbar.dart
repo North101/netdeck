@@ -13,9 +13,13 @@ class DeckSelectedActions extends ConsumerWidget {
     final navigator = Navigator.of(context);
     final db = ref.read(dbProvider);
     final selectedDeckIds = ref.read(selectedDeckIdsProvider).value;
-    final selectedDecks = await db.listMicroDecks(where: db.deck.id.isIn(selectedDeckIds)).first;
+    final selectedDecks = await db.listMicroDecks(
+      where: (deck, identity, pack, cycle, faction, side, type, subtype, format, rotation, mwl) {
+        return deck.id.isIn(selectedDeckIds);
+      },
+    ).first;
     navigator.restorablePush(
-      openDeckComparePage,
+      DeckComparePage.route,
       arguments: DeckCompareArguments(selectedDecks.toSet()).toJson(),
     );
   }
@@ -54,7 +58,11 @@ class DeckSelectedActions extends ConsumerWidget {
 
     final db = ref.read(dbProvider);
     final selectedDeckIds = ref.read(selectedDeckIdsProvider);
-    final selectedDecks = await db.listMiniDecks(where: db.deck.id.isIn(selectedDeckIds.value)).first;
+    final selectedDecks = await db.listMiniDecks(
+      where: (deck, identity, pack, cycle, faction, side, type, subtype, format, rotation, mwl) {
+        return deck.id.isIn(selectedDeckIds.value);
+      },
+    ).first;
     await authState.forceUpload(db, selectedDecks);
     selectedDeckIds.value = {};
   }
@@ -98,7 +106,11 @@ class DeckSelectedActions extends ConsumerWidget {
 
     final db = ref.read(dbProvider);
     final selectedDeckIds = ref.read(selectedDeckIdsProvider);
-    final selectedDecks = await db.listMiniDecks(where: db.deck.id.isIn(selectedDeckIds.value)).first;
+    final selectedDecks = await db.listMiniDecks(
+      where: (deck, identity, pack, cycle, faction, side, type, subtype, format, rotation, mwl) {
+        return deck.id.isIn(selectedDeckIds.value);
+      },
+    ).first;
     await authState.forceDownload(db, selectedDecks);
     selectedDeckIds.value = {};
   }
@@ -106,7 +118,11 @@ class DeckSelectedActions extends ConsumerWidget {
   Future<void> copy(BuildContext context, WidgetRef ref) async {
     final db = ref.read(dbProvider);
     final selectedDeckIds = ref.read(selectedDeckIdsProvider);
-    final selectedDecks = await db.listMiniDecks(where: db.deck.id.isIn(selectedDeckIds.value)).first;
+    final selectedDecks = await db.listMiniDecks(
+      where: (deck, identity, pack, cycle, faction, side, type, subtype, format, rotation, mwl) {
+        return deck.id.isIn(selectedDeckIds.value);
+      },
+    ).first;
     await db.transaction(() async {
       final now = DateTime.now().toUtc();
       for (final selectedDeck in selectedDecks) {

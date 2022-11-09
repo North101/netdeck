@@ -90,15 +90,15 @@ class CardListMoreActions extends ConsumerStatefulWidget {
 }
 
 class CardListMoreActionsState extends ConsumerState<CardListMoreActions> with RestorationMixin {
-  late RestorableRouteFuture<CardFilterResult> cardListFilterRoute;
+  late RestorableRouteFuture<CardFilterArguments> cardListFilterRoute;
 
   @override
   void initState() {
     super.initState();
 
-    cardListFilterRoute = RestorableRouteFuture<CardFilterResult>(
+    cardListFilterRoute = RestorableRouteFuture<CardFilterArguments>(
       onPresent: (navigator, arguments) => Navigator.of(context).restorablePush(
-        openCardFilterRoute,
+        CardFilterPage.route,
         arguments: arguments,
       ),
       onComplete: (result) {
@@ -129,22 +129,6 @@ class CardListMoreActionsState extends ConsumerState<CardListMoreActions> with R
     );
   }
 
-  static Route<void> openCardFilterRoute(BuildContext context, Object? arguments) {
-    final result = CardFilterResult.fromJson((arguments as Map).cast());
-    return MaterialPageRoute<CardFilterResult>(builder: (context) {
-      return CardFilterPage.withOverrides(
-        format: result.format,
-        rotation: result.rotation,
-        mwl: result.mwl,
-        collection: result.collection,
-        packs: result.packs,
-        sides: result.sides,
-        factions: result.factions,
-        types: result.types,
-      );
-    });
-  }
-
   void openCardFilterPage(BuildContext context, WidgetRef ref) {
     final format = ref.read(filterFormatProvider);
     final collection = ref.read(filterCollectionProvider);
@@ -155,7 +139,7 @@ class CardListMoreActionsState extends ConsumerState<CardListMoreActions> with R
     final factions = ref.read(filterFactionsProvider);
     final types = ref.read(filterTypesProvider);
 
-    final result = CardFilterResult(
+    final result = CardFilterArguments(
       format: format.value,
       collection: collection.value,
       rotation: rotation.value,

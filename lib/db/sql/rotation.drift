@@ -1,3 +1,5 @@
+import 'package:drift/drift.dart';
+
 import '/db/types.dart';
 
 import 'format.drift';
@@ -11,7 +13,7 @@ CREATE TABLE rotation(
   format_code TEXT NOT NULL,
   name TEXT NOT NULL,
   date_start DATETIME,
-  type TEXT MAPPED BY `const RotationTypeConverter()`
+  type TEXT MAPPED BY `JsonTypeConverter2.asNullable(const RotationTypeConverter())`
 );
 
 CREATE TABLE rotation_cycle(

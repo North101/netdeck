@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:query/query.dart';
+import 'package:flutter_riverpod_restorable/flutter_riverpod_restorable.dart';
 
 import '/db/database.dart';
-import '/db/querybuilder.dart';
 import '/providers.dart';
 import '/util/filter_type.dart';
 import 'appbar.dart';
@@ -13,8 +12,7 @@ class CardListArguments {
   const CardListArguments({
     required this.deck,
     required this.deckCards,
-    required this.filterSearching,
-    required this.filterQuery,
+    required this.filterSearch,
     required this.filterCollection,
     required this.filterPacks,
     required this.filterSides,
@@ -24,8 +22,7 @@ class CardListArguments {
 
   final DeckResult deck;
   final Map<String, int> deckCards;
-  final bool filterSearching;
-  final Query? filterQuery;
+  final String? filterSearch;
   final bool filterCollection;
   final FilterType<String> filterPacks;
   final FilterType<String> filterSides;
@@ -36,8 +33,7 @@ class CardListArguments {
     return CardListArguments(
       deck: DeckResultEx.fromJson((json['deck'] as Map).cast()),
       deckCards: (json['deckCards'] as Map).cast(),
-      filterSearching: json['searching'] as bool,
-      filterQuery: json['query']?.let((e) => tryParseQuery(e)),
+      filterSearch: json['query'],
       filterCollection: json['collection'] as bool,
       filterPacks: FilterType<String>.fromJson((json['packs'] as Map).cast()),
       filterSides: FilterType<String>.fromJson((json['sides'] as Map).cast()),
@@ -50,8 +46,7 @@ class CardListArguments {
     return {
       'deck': deck.toJson(),
       'deckCards': deckCards,
-      'searching': filterSearching,
-      'query': filterQuery?.toString(),
+      'search': filterSearch,
       'collection': filterCollection,
       'packs': filterPacks.toJson(),
       'sides': filterSides.toJson(),
@@ -64,8 +59,7 @@ class CardListArguments {
 class CardListResults {
   const CardListResults({
     required this.deckCards,
-    required this.filterSearching,
-    required this.filterQuery,
+    required this.filterSearch,
     required this.filterCollection,
     required this.filterPacks,
     required this.filterSides,
@@ -74,8 +68,7 @@ class CardListResults {
   });
 
   final Map<String, int> deckCards;
-  final bool filterSearching;
-  final Query? filterQuery;
+  final String? filterSearch;
   final bool filterCollection;
   final FilterType<String> filterPacks;
   final FilterType<String> filterSides;
@@ -97,8 +90,7 @@ class CardListPage extends ConsumerWidget {
     required String restorationId,
     Color? color,
     required String title,
-    bool? filterSearching,
-    Query? filterQuery,
+    String? filterSearch,
     bool? filterCollection,
     FormatData? filterFormat,
     RotationData? filterRotation,
@@ -111,23 +103,19 @@ class CardListPage extends ConsumerWidget {
     Map<String, int>? deckCards,
     required Widget Function(BuildContext context, WidgetRef ref, int index, CardResult card) itemBuilder,
   }) {
-    return ProviderScope(
+    return RestorableProviderScope(
       restorationId: restorationId,
       overrides: [
-        filterSearchingProvider.overrideWithValue(RestorableBool(filterSearching ?? false), 'filterSearchingProvider'),
-        filterQueryProvider.overrideWithValue(RestorableQuery(filterQuery), 'filterQueryProvider'),
-        filterCollectionProvider.overrideWithValue(
-            RestorableBool(filterCollection ?? false), 'filterCollectionProvider'),
-        filterFormatProvider.overrideWithValue(RestorableFormatData(filterFormat), 'filterFormatProvider'),
-        filterRotationProvider.overrideWithValue(RestorableRotationData(filterRotation), 'filterRotationProvider'),
-        filterMwlProvider.overrideWithValue(RestorableMwlData(filterMwl), 'filterMwlProvider'),
-        filterPacksProvider.overrideWithValue(RestorableFilterType(filterPacks ?? FilterType()), 'filterPacksProvider'),
-        filterSidesProvider.overrideWithValue(RestorableFilterType(filterSides ?? FilterType()), 'filterSidesProvider'),
-        filterFactionsProvider.overrideWithValue(
-            RestorableFilterType(filterFactions ?? FilterType()), 'filterFactionsProvider'),
-        filterTypesProvider.overrideWithValue(RestorableFilterType(filterTypes ?? FilterType()), 'filterTypesProvider'),
-        deckCardListNotifierProvider.overrideWithValue(
-            deckCards != null ? DeckCardsNotifier(deckCards) : null, 'deckCardListNotifierProvider'),
+        filterSearchProvider.overrideWith((ref) => RestorableStringN(filterSearch)),
+        filterCollectionProvider.overrideWith((ref) => RestorableBool(filterCollection ?? false)),
+        filterFormatProvider.overrideWith((ref) => RestorableFormatData(filterFormat)),
+        filterRotationProvider.overrideWith((ref) => RestorableRotationData(filterRotation)),
+        filterMwlProvider.overrideWith((ref) => RestorableMwlData(filterMwl)),
+        filterPacksProvider.overrideWith((ref) => RestorableFilterType(filterPacks ?? FilterType())),
+        filterSidesProvider.overrideWith((ref) => RestorableFilterType(filterSides ?? FilterType())),
+        filterFactionsProvider.overrideWith((ref) => RestorableFilterType(filterFactions ?? FilterType())),
+        filterTypesProvider.overrideWith((ref) => RestorableFilterType(filterTypes ?? FilterType())),
+        deckCardListNotifierProvider.overrideWith((ref) => deckCards != null ? DeckCardsNotifier(deckCards) : null),
         cardListDeckProvider.overrideWithValue(deck?.toFullResult()),
         deckCardCodeSetProvider.overrideWithValue(deckCards?.keys.toSet() ?? {}),
         cardItemBuilderProvider.overrideWithValue(itemBuilder),
@@ -155,8 +143,7 @@ class CardListPage extends ConsumerWidget {
 
         Navigator.of(context).pop(CardListResults(
           deckCards: deckCards,
-          filterSearching: ref.read(filterSearchingProvider).value,
-          filterQuery: ref.read(filterQueryProvider).value,
+          filterSearch: ref.read(filterSearchProvider).value,
           filterCollection: ref.read(filterCollectionProvider).value,
           filterPacks: ref.read(filterPacksProvider).value,
           filterSides: ref.read(filterSidesProvider).value,

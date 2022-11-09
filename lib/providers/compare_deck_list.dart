@@ -49,9 +49,9 @@ final compareDeckListProvider = Provider<Set<DeckMicroResult>>((ref) => throw Un
 final compareAllCardListProvider = StreamProvider((ref) async* {
   final db = ref.watch(dbProvider);
   final deckList = ref.watch(compareDeckListProvider);
-  yield* db
-      .listCards(where: db.card.code.isIn(deckList.map((e) => e.cards.keys).flattened.toSet())) //
-      .watch();
+  yield* db.listCards(where: (card, pack, cycle, faction, side, type, subtype, mwlCard) {
+    return card.code.isIn(deckList.map((e) => e.cards.keys).flattened.toSet());
+  }).watch();
 }, dependencies: [
   dbProvider,
   compareDeckListProvider,
@@ -73,7 +73,7 @@ final compareDeckCardListProvider = StreamProvider((ref) async* {
   ];
 }, dependencies: [
   compareDeckListProvider,
-  compareAllCardListProvider.future,
+  compareAllCardListProvider,
 ]);
 
 final compareMaxCardListProvider = StreamProvider((ref) async* {
@@ -83,8 +83,8 @@ final compareMaxCardListProvider = StreamProvider((ref) async* {
       .map((card) => MapEntry(card, deckList.map((deck) => deck.cards[card] ?? 0).reduce(max))) //
       .toMap();
 }, dependencies: [
-  compareDeckCardListProvider.future,
-  compareAllCardListProvider.future,
+  compareDeckCardListProvider,
+  compareAllCardListProvider,
 ]);
 
 final compareMinCardListProvider = StreamProvider((ref) async* {
@@ -95,8 +95,8 @@ final compareMinCardListProvider = StreamProvider((ref) async* {
       .where((e) => e.value > 0)
       .toMap();
 }, dependencies: [
-  compareDeckCardListProvider.future,
-  compareAllCardListProvider.future,
+  compareDeckCardListProvider,
+  compareAllCardListProvider,
 ]);
 
 final compareGroupedCardListProvider = StreamProvider<HeaderList<MapEntry<CardResult, int>>>((ref) async* {
@@ -126,8 +126,8 @@ final compareGroupedCardListProvider = StreamProvider<HeaderList<MapEntry<CardRe
     ),
   ]);
 }, dependencies: [
-  settingProvider.future,
-  compareDeckCardListProvider.future,
-  compareMaxCardListProvider.future,
-  compareMinCardListProvider.future,
+  settingProvider,
+  compareDeckCardListProvider,
+  compareMaxCardListProvider,
+  compareMinCardListProvider,
 ]);

@@ -10,7 +10,6 @@ import 'package:uuid/uuid.dart';
 import '/db/extensions.dart';
 import '/providers/deck.dart';
 import '/util/extensions.dart';
-import 'extensions.dart';
 import 'types.dart';
 import 'util.dart';
 
@@ -124,13 +123,19 @@ class Database extends _$Database {
     return newDeck;
   }
 
-  Stream<List<DeckFullResult>> listDecks2({Expression<bool> where = trueExpression}) {
+  Stream<List<DeckFullResult>> listDecks2({ListDecks$where? where}) {
     final deckListStream = listDecks(where: where).watch();
     final cardListStream = deckListStream.flatMap((deckList) {
-      return listDeckCards(where: deckCard.deckId.isIn(deckList.map((e) => e.deck.id))).watch();
+      return listDeckCards(
+        where: (deckCard, card, pack, cycle, faction, side, type, subtype) {
+          return deckCard.deckId.isIn(deckList.map((e) => e.deck.id));
+        },
+      ).watch();
     });
     final tagListStream = deckListStream.flatMap((deckList) {
-      return listDeckTags(where: deckTag.deckId.isIn(deckList.map((e) => e.deck.id))).watch();
+      return listDeckTags(
+        where: (deckTag, deck) => deckTag.deckId.isIn(deckList.map((e) => e.deck.id)),
+      ).watch();
     });
     return CombineLatestStream.combine3<List<DeckResult>, List<DeckCardResult>, List<DeckTagData>,
         List<DeckFullResult>>(
@@ -155,13 +160,19 @@ class Database extends _$Database {
     );
   }
 
-  Stream<List<DeckNotifierResult>> listMiniDecks({Expression<bool> where = trueExpression}) {
+  Stream<List<DeckNotifierResult>> listMiniDecks({ListDecks$where? where}) {
     final deckListStream = listDecks(where: where).watch();
     final cardListStream = deckListStream.flatMap((deckList) {
-      return listDeckCards(where: deckCard.deckId.isIn(deckList.map((e) => e.deck.id))).watch();
+      return listDeckCards(
+        where: (deckCard, card, pack, cycle, faction, side, type, subtype) {
+          return deckCard.deckId.isIn(deckList.map((e) => e.deck.id));
+        },
+      ).watch();
     });
     final tagListStream = deckListStream.flatMap((deckList) {
-      return listDeckTags(where: deckTag.deckId.isIn(deckList.map((e) => e.deck.id))).watch();
+      return listDeckTags(
+        where: (deckTag, deck) => deckTag.deckId.isIn(deckList.map((e) => e.deck.id)),
+      ).watch();
     });
     return CombineLatestStream.combine3<List<DeckResult>, List<DeckCardResult>, List<DeckTagData>,
         List<DeckNotifierResult>>(
@@ -199,10 +210,14 @@ class Database extends _$Database {
     );
   }
 
-  Stream<List<DeckMicroResult>> listMicroDecks({Expression<bool> where = trueExpression}) {
+  Stream<List<DeckMicroResult>> listMicroDecks({ListDecks$where? where}) {
     final deckListStream = listDecks(where: where).watch();
     final cardListStream = deckListStream.flatMap((deckList) {
-      return listDeckCards(where: deckCard.deckId.isIn(deckList.map((e) => e.deck.id))).watch();
+      return listDeckCards(
+        where: (deckCard, card, pack, cycle, faction, side, type, subtype) {
+          return deckCard.deckId.isIn(deckList.map((e) => e.deck.id));
+        },
+      ).watch();
     });
     return CombineLatestStream.combine2<List<DeckResult>, List<DeckCardResult>, List<DeckMicroResult>>(
       deckListStream,
@@ -229,12 +244,6 @@ extension BatchEx on Batch {
   }
 }
 
-abstract class MyTypeConverter<D, S extends Object> extends TypeConverter<D, S> implements JsonTypeConverter<D, S> {
+abstract class MyTypeConverter<D, S extends Object> extends TypeConverter<D, S> with JsonTypeConverter<D, S> {
   const MyTypeConverter();
-
-  @override
-  D fromJson(S json) => fromSql(json);
-
-  @override
-  S toJson(D value) => toSql(value);
 }

@@ -341,7 +341,11 @@ extension OnlineAuthStateEx on OnlineAuthState {
     final lastSync = ref.read(lastSyncProvider);
     lastSync.value = DateTime.now();
 
-    final deckList = await db.listMiniDecks(where: db.deck.id.isIn(decks.map((e) => e.id))).first;
+    final deckList = await db.listMiniDecks(
+      where: (deck, identity, pack, cycle, faction, side, type, subtype, format, rotation, mwl) {
+        return deck.id.isIn(decks.map((e) => e.id));
+      },
+    ).first;
     final updateLocalDecks = <NrdbDeck, DeckMiniResult?>{};
     final updateRemoteDecks = <DeckMiniResult>[];
     final updateRemoteDecksStatus = <NrdbDeck>[];

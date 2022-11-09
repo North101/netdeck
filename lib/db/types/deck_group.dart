@@ -175,7 +175,7 @@ extension DeckGroupEx on DeckGroup {
   }
 
   HeaderList<T> call<T extends DeckResult>(List<T> list) {
-    return HeaderList(groupBy<T, String>(list, grouped)
+    return HeaderList(groupBy(list, grouped)
         .entries
         .map((e) => HeaderItems(e.key, e.value))
         .sortedByCompare<T>((e) => e.first, sorted));

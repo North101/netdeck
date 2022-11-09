@@ -9,17 +9,17 @@ import 'main_page.dart';
 class LoadingPage extends ConsumerStatefulWidget {
   const LoadingPage({super.key});
 
+  static Route<void> route(BuildContext context, Object? argument) {
+    return MaterialPageRoute(builder: (context) {
+      return const LoadingPage();
+    });
+  }
+
   @override
   LoadingPageState createState() => LoadingPageState();
 }
 
 class LoadingPageState extends ConsumerState<LoadingPage> {
-  static Route<void> openMainPageRoute(BuildContext context, Object? arguments) {
-    return MaterialPageRoute(builder: (context) {
-      return MainPage.withOverrides();
-    });
-  }
-
   @override
   void initState() {
     super.initState();
@@ -32,7 +32,7 @@ class LoadingPageState extends ConsumerState<LoadingPage> {
     if (value == null) return;
 
     Future.delayed(const Duration(), () {
-      Navigator.of(context).restorablePushReplacement(openMainPageRoute);
+      Navigator.of(context).restorablePushReplacement(MainPage.route);
     });
   }
 

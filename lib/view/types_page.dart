@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod_restorable/flutter_riverpod_restorable.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 
 import '/db/database.dart';
@@ -9,14 +10,14 @@ import '/util/filter_type.dart';
 import 'async_value_builder.dart';
 import 'header_list_tile.dart';
 
-class FilterTypesResult {
-  const FilterTypesResult({
+class FilterTypesArguments {
+  const FilterTypesArguments({
     required this.sides,
     required this.types,
   });
 
-  factory FilterTypesResult.fromJson(Map<String, dynamic> data) {
-    return FilterTypesResult(
+  factory FilterTypesArguments.fromJson(Map<String, dynamic> data) {
+    return FilterTypesArguments(
       sides: FilterType<String>.fromJson((data['sides'] as Map).cast()),
       types: FilterType<String>.fromJson((data['types'] as Map).cast()),
     );
@@ -35,18 +36,28 @@ class FilterTypesResult {
 
 final filteredTypeListProvider = StreamProvider((ref) {
   final db = ref.watch(dbProvider);
-  final where = buildAnd([
-    ref.watch(filterSideFilterProvider(const FilterState(values: false))),
-    ref.watch(filterTypeFilterProvider(const TypeFilterState(
-      values: false,
-      subtypes: false,
-    ))),
-  ]);
-  return db.listTypes(where: where).watch().map((items) {
-    return groupBy<TypeResult, SideData?>(items, (item) {
-      return item.side;
-    }).entries;
-  });
+  return db
+      .listTypes(where: (type, side) {
+        return buildAnd([
+          ref.watch(filterSideFilterProvider(SideFilter(
+            values: false,
+            side: side,
+          ))),
+          ref.watch(filterTypeFilterProvider(TypeFilter(
+            values: false,
+            filterSubtypes: false,
+            side: side,
+            type: type,
+            subtype: type,
+          ))),
+        ]);
+      })
+      .watch()
+      .map((items) {
+        return groupBy(items, (item) {
+          return item.side;
+        }).entries;
+      });
 }, dependencies: [dbProvider, filterSideFilterProvider, filterTypeFilterProvider]);
 
 class FilterTypeCheckbox extends ConsumerWidget {
@@ -94,15 +105,12 @@ class FilterTypeCheckbox extends ConsumerWidget {
         sliver: SliverList(
           delegate: SliverChildListDelegate([
             ...typeList.map(
-              (e) => Material(
-                color: Theme.of(context).splashColor,
-                child: CheckboxListTile(
-                  value: types.contains(e.type.code),
-                  title: Text(e.type.name),
-                  onChanged: types.always.contains(e.type.code)
-                      ? null //
-                      : (selected) => setFactions(ref, selected, {e.type.code}),
-                ),
+              (e) => CheckboxListTile(
+                value: types.contains(e.type.code),
+                title: Text(e.type.name),
+                onChanged: types.always.contains(e.type.code)
+                    ? null //
+                    : (selected) => setFactions(ref, selected, {e.type.code}),
               ),
             )
           ]),
@@ -131,15 +139,19 @@ class FilterTypeCheckbox extends ConsumerWidget {
 class FilterTypesPage extends ConsumerWidget {
   const FilterTypesPage({super.key});
 
-  static Widget withOverrides({
-    required FilterType<String> sides,
-    required FilterType<String> types,
-  }) {
-    return ProviderScope(
+  static Route<FilterTypesArguments> route(BuildContext context, Object? arguments) {
+    final args = FilterTypesArguments.fromJson((arguments as Map).cast());
+    return MaterialPageRoute(
+      builder: (context) => FilterTypesPage.withOverrides(args),
+    );
+  }
+
+  static Widget withOverrides(FilterTypesArguments args) {
+    return RestorableProviderScope(
       restorationId: 'filter_types_page',
       overrides: [
-        filterSidesProvider.overrideWithValue(RestorableFilterType(sides), 'filterSidesProvider'),
-        filterTypesProvider.overrideWithValue(RestorableFilterType(types), 'filterTypesProvider'),
+        filterSidesProvider.overrideWith((ref) => RestorableFilterType(args.sides)),
+        filterTypesProvider.overrideWith((ref) => RestorableFilterType(args.types)),
       ],
       child: const FilterTypesPage(),
     );
@@ -153,7 +165,7 @@ class FilterTypesPage extends ConsumerWidget {
     final typeList = ref.watch(filteredTypeListProvider);
     return WillPopScope(
       onWillPop: () async {
-        Navigator.of(context).pop(FilterTypesResult(
+        Navigator.of(context).pop(FilterTypesArguments(
           sides: ref.read(filterSidesProvider).value,
           types: ref.read(filterTypesProvider).value,
         ));

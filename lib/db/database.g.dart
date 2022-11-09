@@ -277,15 +277,15 @@ class Type extends Table with TableInfo<Type, TypeData> {
   TypeData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return TypeData(
-      code: attachedDatabase.options.types
+      code: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
-      sideCode: attachedDatabase.options.types
+      sideCode: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}side_code']),
-      position: attachedDatabase.options.types
+      position: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}position'])!,
-      name: attachedDatabase.options.types
+      name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      isSubtype: attachedDatabase.options.types
+      isSubtype: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}is_subtype'])!,
     );
   }
@@ -456,9 +456,9 @@ class Side extends Table with TableInfo<Side, SideData> {
   SideData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return SideData(
-      code: attachedDatabase.options.types
+      code: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
-      name: attachedDatabase.options.types
+      name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
     );
   }
@@ -619,22 +619,22 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       'filter_mwl_code': serializer.toJson<String?>(filterMwlCode),
       'filter_collection': serializer.toJson<bool>(filterCollection),
       'card_sort':
-          serializer.toJson<String?>(Settings.$converter0.toJson(cardSort)),
+          serializer.toJson<String>(Settings.$converter0.toJson(cardSort)),
       'card_group':
-          serializer.toJson<String?>(Settings.$converter1.toJson(cardGroup)),
+          serializer.toJson<String>(Settings.$converter1.toJson(cardGroup)),
       'deck_sort':
-          serializer.toJson<String?>(Settings.$converter2.toJson(deckSort)),
+          serializer.toJson<String>(Settings.$converter2.toJson(deckSort)),
       'deck_group':
-          serializer.toJson<String?>(Settings.$converter3.toJson(deckGroup)),
+          serializer.toJson<String>(Settings.$converter3.toJson(deckGroup)),
       'deck_card_sort':
-          serializer.toJson<String?>(Settings.$converter4.toJson(deckCardSort)),
-      'deck_card_group': serializer
-          .toJson<String?>(Settings.$converter5.toJson(deckCardGroup)),
+          serializer.toJson<String>(Settings.$converter4.toJson(deckCardSort)),
+      'deck_card_group':
+          serializer.toJson<String>(Settings.$converter5.toJson(deckCardGroup)),
       'compare_card_sort': serializer
-          .toJson<String?>(Settings.$converter6.toJson(compareCardSort)),
+          .toJson<String>(Settings.$converter6.toJson(compareCardSort)),
       'apex_resources': serializer.toJson<bool>(apexResources),
       'card_gallery_view': serializer
-          .toJson<String?>(Settings.$converter7.toJson(cardGalleryView)),
+          .toJson<String>(Settings.$converter7.toJson(cardGalleryView)),
     };
   }
 
@@ -1126,37 +1126,37 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
   SettingsData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return SettingsData(
-      id: attachedDatabase.options.types
+      id: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}id'])!,
-      filterFormatCode: attachedDatabase.options.types.read(
+      filterFormatCode: attachedDatabase.typeMapping.read(
           DriftSqlType.string, data['${effectivePrefix}filter_format_code']),
-      filterRotationCode: attachedDatabase.options.types.read(
+      filterRotationCode: attachedDatabase.typeMapping.read(
           DriftSqlType.string, data['${effectivePrefix}filter_rotation_code']),
-      filterMwlCode: attachedDatabase.options.types
+      filterMwlCode: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}filter_mwl_code']),
-      filterCollection: attachedDatabase.options.types.read(
+      filterCollection: attachedDatabase.typeMapping.read(
           DriftSqlType.bool, data['${effectivePrefix}filter_collection'])!,
-      cardSort: Settings.$converter0.fromSql(attachedDatabase.options.types
+      cardSort: Settings.$converter0.fromSql(attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}card_sort'])!),
-      cardGroup: Settings.$converter1.fromSql(attachedDatabase.options.types
+      cardGroup: Settings.$converter1.fromSql(attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}card_group'])!),
-      deckSort: Settings.$converter2.fromSql(attachedDatabase.options.types
+      deckSort: Settings.$converter2.fromSql(attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}deck_sort'])!),
-      deckGroup: Settings.$converter3.fromSql(attachedDatabase.options.types
+      deckGroup: Settings.$converter3.fromSql(attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}deck_group'])!),
-      deckCardSort: Settings.$converter4.fromSql(attachedDatabase.options.types
+      deckCardSort: Settings.$converter4.fromSql(attachedDatabase.typeMapping
           .read(
               DriftSqlType.string, data['${effectivePrefix}deck_card_sort'])!),
-      deckCardGroup: Settings.$converter5.fromSql(attachedDatabase.options.types
+      deckCardGroup: Settings.$converter5.fromSql(attachedDatabase.typeMapping
           .read(
               DriftSqlType.string, data['${effectivePrefix}deck_card_group'])!),
-      compareCardSort: Settings.$converter6.fromSql(
-          attachedDatabase.options.types.read(DriftSqlType.string,
+      compareCardSort: Settings.$converter6.fromSql(attachedDatabase.typeMapping
+          .read(DriftSqlType.string,
               data['${effectivePrefix}compare_card_sort'])!),
-      apexResources: attachedDatabase.options.types
+      apexResources: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}apex_resources'])!,
-      cardGalleryView: Settings.$converter7.fromSql(
-          attachedDatabase.options.types.read(DriftSqlType.string,
+      cardGalleryView: Settings.$converter7.fromSql(attachedDatabase.typeMapping
+          .read(DriftSqlType.string,
               data['${effectivePrefix}card_gallery_view'])!),
     );
   }
@@ -1166,21 +1166,21 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     return Settings(attachedDatabase, alias);
   }
 
-  static JsonTypeConverter<CardSort, String> $converter0 =
+  static JsonTypeConverter2<CardSort, String, String> $converter0 =
       const CardSortConverter(CardSort.set);
-  static JsonTypeConverter<CardGroup, String> $converter1 =
+  static JsonTypeConverter2<CardGroup, String, String> $converter1 =
       const CardGroupConverter(CardGroup.type);
-  static JsonTypeConverter<DeckSort, String> $converter2 =
+  static JsonTypeConverter2<DeckSort, String, String> $converter2 =
       const DeckSortConverter(DeckSort.updated);
-  static JsonTypeConverter<DeckGroup, String> $converter3 =
+  static JsonTypeConverter2<DeckGroup, String, String> $converter3 =
       const DeckGroupConverter(DeckGroup.side);
-  static JsonTypeConverter<CardSort, String> $converter4 =
+  static JsonTypeConverter2<CardSort, String, String> $converter4 =
       const CardSortConverter(CardSort.set);
-  static JsonTypeConverter<CardGroup, String> $converter5 =
+  static JsonTypeConverter2<CardGroup, String, String> $converter5 =
       const CardGroupConverter(CardGroup.type);
-  static JsonTypeConverter<CardSort, String> $converter6 =
+  static JsonTypeConverter2<CardSort, String, String> $converter6 =
       const CardSortConverter(CardSort.set);
-  static JsonTypeConverter<CardGalleryPageView, String> $converter7 =
+  static JsonTypeConverter2<CardGalleryPageView, String, String> $converter7 =
       const CardGalleryViewConverter(CardGalleryPageView.image);
   @override
   List<String> get customConstraints =>
@@ -1211,7 +1211,7 @@ class RotationData extends DataClass implements Insertable<RotationData> {
       map['date_start'] = Variable<DateTime>(dateStart);
     }
     if (!nullToAbsent || type != null) {
-      final converter = Rotation.$converter0n;
+      final converter = Rotation.$converter0;
       map['type'] = Variable<String>(converter.toSql(type));
     }
     return map;
@@ -1237,7 +1237,7 @@ class RotationData extends DataClass implements Insertable<RotationData> {
       formatCode: serializer.fromJson<String>(json['format_code']),
       name: serializer.fromJson<String>(json['name']),
       dateStart: serializer.fromJson<DateTime?>(json['date_start']),
-      type: Rotation.$converter0n
+      type: Rotation.$converter0
           .fromJson(serializer.fromJson<String?>(json['type'])),
     );
   }
@@ -1249,7 +1249,7 @@ class RotationData extends DataClass implements Insertable<RotationData> {
       'format_code': serializer.toJson<String>(formatCode),
       'name': serializer.toJson<String>(name),
       'date_start': serializer.toJson<DateTime?>(dateStart),
-      'type': serializer.toJson<String?>(Rotation.$converter0n.toJson(type)),
+      'type': serializer.toJson<String?>(Rotation.$converter0.toJson(type)),
     };
   }
 
@@ -1360,7 +1360,7 @@ class RotationCompanion extends UpdateCompanion<RotationData> {
       map['date_start'] = Variable<DateTime>(dateStart.value);
     }
     if (type.present) {
-      final converter = Rotation.$converter0n;
+      final converter = Rotation.$converter0;
       map['type'] = Variable<String>(converter.toSql(type.value));
     }
     return map;
@@ -1414,7 +1414,7 @@ class Rotation extends Table with TableInfo<Rotation, RotationData> {
               type: DriftSqlType.string,
               requiredDuringInsert: false,
               $customConstraints: '')
-          .withConverter<RotationType?>(Rotation.$converter0n);
+          .withConverter<RotationType?>(Rotation.$converter0);
   @override
   List<GeneratedColumn> get $columns =>
       [code, formatCode, name, dateStart, type];
@@ -1461,15 +1461,15 @@ class Rotation extends Table with TableInfo<Rotation, RotationData> {
   RotationData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return RotationData(
-      code: attachedDatabase.options.types
+      code: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
-      formatCode: attachedDatabase.options.types
+      formatCode: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}format_code'])!,
-      name: attachedDatabase.options.types
+      name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      dateStart: attachedDatabase.options.types
+      dateStart: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_start']),
-      type: Rotation.$converter0n.fromSql(attachedDatabase.options.types
+      type: Rotation.$converter0.fromSql(attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}type'])),
     );
   }
@@ -1479,10 +1479,8 @@ class Rotation extends Table with TableInfo<Rotation, RotationData> {
     return Rotation(attachedDatabase, alias);
   }
 
-  static JsonTypeConverter<RotationType, String> $converter0 =
-      const RotationTypeConverter();
-  static JsonTypeConverter<RotationType?, String?> $converter0n =
-      JsonTypeConverter.asNullable($converter0);
+  static JsonTypeConverter2<RotationType?, String?, String?> $converter0 =
+      JsonTypeConverter2.asNullable(const RotationTypeConverter());
   @override
   bool get dontWriteConstraints => true;
 }
@@ -1654,9 +1652,9 @@ class RotationCycle extends Table
   RotationCycleData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return RotationCycleData(
-      rotationCode: attachedDatabase.options.types
+      rotationCode: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}rotation_code'])!,
-      cycleCode: attachedDatabase.options.types
+      cycleCode: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}cycle_code'])!,
     );
   }
@@ -1980,17 +1978,17 @@ class Pack extends Table with TableInfo<Pack, PackData> {
   PackData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return PackData(
-      code: attachedDatabase.options.types
+      code: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
-      cycleCode: attachedDatabase.options.types
+      cycleCode: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}cycle_code'])!,
-      position: attachedDatabase.options.types
+      position: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}position'])!,
-      name: attachedDatabase.options.types
+      name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      dateRelease: attachedDatabase.options.types
+      dateRelease: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_release']),
-      size: attachedDatabase.options.types
+      size: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}size']),
     );
   }
@@ -2531,30 +2529,30 @@ class Nrdb extends Table with TableInfo<Nrdb, NrdbData> {
   NrdbData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return NrdbData(
-      id: attachedDatabase.options.types
+      id: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}id'])!,
-      expires: attachedDatabase.options.types
+      expires: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}expires'])!,
-      cycleLastUpdated: attachedDatabase.options.types.read(
+      cycleLastUpdated: attachedDatabase.typeMapping.read(
           DriftSqlType.dateTime, data['${effectivePrefix}cycle_last_updated'])!,
-      packLastUpdated: attachedDatabase.options.types.read(
+      packLastUpdated: attachedDatabase.typeMapping.read(
           DriftSqlType.dateTime, data['${effectivePrefix}pack_last_updated'])!,
-      sideLastUpdated: attachedDatabase.options.types.read(
+      sideLastUpdated: attachedDatabase.typeMapping.read(
           DriftSqlType.dateTime, data['${effectivePrefix}side_last_updated'])!,
-      factionLastUpdated: attachedDatabase.options.types.read(
+      factionLastUpdated: attachedDatabase.typeMapping.read(
           DriftSqlType.dateTime,
           data['${effectivePrefix}faction_last_updated'])!,
-      typeLastUpdated: attachedDatabase.options.types.read(
+      typeLastUpdated: attachedDatabase.typeMapping.read(
           DriftSqlType.dateTime, data['${effectivePrefix}type_last_updated'])!,
-      cardLastUpdated: attachedDatabase.options.types.read(
+      cardLastUpdated: attachedDatabase.typeMapping.read(
           DriftSqlType.dateTime, data['${effectivePrefix}card_last_updated'])!,
-      formatLastUpdated: attachedDatabase.options.types.read(
+      formatLastUpdated: attachedDatabase.typeMapping.read(
           DriftSqlType.dateTime,
           data['${effectivePrefix}format_last_updated'])!,
-      rotationLastUpdated: attachedDatabase.options.types.read(
+      rotationLastUpdated: attachedDatabase.typeMapping.read(
           DriftSqlType.dateTime,
           data['${effectivePrefix}rotation_last_updated'])!,
-      mwlLastUpdated: attachedDatabase.options.types.read(
+      mwlLastUpdated: attachedDatabase.typeMapping.read(
           DriftSqlType.dateTime, data['${effectivePrefix}mwl_last_updated'])!,
     );
   }
@@ -2597,7 +2595,7 @@ class MwlData extends DataClass implements Insertable<MwlData> {
       map['date_start'] = Variable<DateTime>(dateStart);
     }
     if (!nullToAbsent || type != null) {
-      final converter = Mwl.$converter0n;
+      final converter = Mwl.$converter0;
       map['type'] = Variable<String>(converter.toSql(type));
     }
     if (!nullToAbsent || runnerPoints != null) {
@@ -2636,7 +2634,7 @@ class MwlData extends DataClass implements Insertable<MwlData> {
       name: serializer.fromJson<String>(json['name']),
       dateStart: serializer.fromJson<DateTime?>(json['date_start']),
       type:
-          Mwl.$converter0n.fromJson(serializer.fromJson<String?>(json['type'])),
+          Mwl.$converter0.fromJson(serializer.fromJson<String?>(json['type'])),
       runnerPoints: serializer.fromJson<int?>(json['runner_points']),
       corpPoints: serializer.fromJson<int?>(json['corp_points']),
     );
@@ -2649,7 +2647,7 @@ class MwlData extends DataClass implements Insertable<MwlData> {
       'format_code': serializer.toJson<String>(formatCode),
       'name': serializer.toJson<String>(name),
       'date_start': serializer.toJson<DateTime?>(dateStart),
-      'type': serializer.toJson<String?>(Mwl.$converter0n.toJson(type)),
+      'type': serializer.toJson<String?>(Mwl.$converter0.toJson(type)),
       'runner_points': serializer.toJson<int?>(runnerPoints),
       'corp_points': serializer.toJson<int?>(corpPoints),
     };
@@ -2786,7 +2784,7 @@ class MwlCompanion extends UpdateCompanion<MwlData> {
       map['date_start'] = Variable<DateTime>(dateStart.value);
     }
     if (type.present) {
-      final converter = Mwl.$converter0n;
+      final converter = Mwl.$converter0;
       map['type'] = Variable<String>(converter.toSql(type.value));
     }
     if (runnerPoints.present) {
@@ -2848,7 +2846,7 @@ class Mwl extends Table with TableInfo<Mwl, MwlData> {
               type: DriftSqlType.string,
               requiredDuringInsert: false,
               $customConstraints: '')
-          .withConverter<MwlType?>(Mwl.$converter0n);
+          .withConverter<MwlType?>(Mwl.$converter0);
   final VerificationMeta _runnerPointsMeta =
       const VerificationMeta('runnerPoints');
   late final GeneratedColumn<int> runnerPoints = GeneratedColumn<int>(
@@ -2920,19 +2918,19 @@ class Mwl extends Table with TableInfo<Mwl, MwlData> {
   MwlData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return MwlData(
-      code: attachedDatabase.options.types
+      code: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
-      formatCode: attachedDatabase.options.types
+      formatCode: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}format_code'])!,
-      name: attachedDatabase.options.types
+      name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      dateStart: attachedDatabase.options.types
+      dateStart: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_start']),
-      type: Mwl.$converter0n.fromSql(attachedDatabase.options.types
+      type: Mwl.$converter0.fromSql(attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}type'])),
-      runnerPoints: attachedDatabase.options.types
+      runnerPoints: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}runner_points']),
-      corpPoints: attachedDatabase.options.types
+      corpPoints: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}corp_points']),
     );
   }
@@ -2942,10 +2940,8 @@ class Mwl extends Table with TableInfo<Mwl, MwlData> {
     return Mwl(attachedDatabase, alias);
   }
 
-  static JsonTypeConverter<MwlType, String> $converter0 =
-      const MwlTypeConverter();
-  static JsonTypeConverter<MwlType?, String?> $converter0n =
-      JsonTypeConverter.asNullable($converter0);
+  static JsonTypeConverter2<MwlType?, String?, String?> $converter0 =
+      JsonTypeConverter2.asNullable(const MwlTypeConverter());
   @override
   bool get dontWriteConstraints => true;
 }
@@ -3312,19 +3308,19 @@ class MwlCard extends Table with TableInfo<MwlCard, MwlCardData> {
   MwlCardData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return MwlCardData(
-      mwlCode: attachedDatabase.options.types
+      mwlCode: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}mwl_code'])!,
-      cardCode: attachedDatabase.options.types
+      cardCode: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}card_code'])!,
-      isRestricted: attachedDatabase.options.types
+      isRestricted: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}is_restricted'])!,
-      globalPenalty: attachedDatabase.options.types
+      globalPenalty: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}global_penalty']),
-      universalFactionCost: attachedDatabase.options.types.read(
+      universalFactionCost: attachedDatabase.typeMapping.read(
           DriftSqlType.int, data['${effectivePrefix}universal_faction_cost']),
-      deckLimit: attachedDatabase.options.types
+      deckLimit: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}deck_limit']),
-      points: attachedDatabase.options.types
+      points: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}points']),
     );
   }
@@ -3531,11 +3527,11 @@ class Format extends Table with TableInfo<Format, FormatData> {
   FormatData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return FormatData(
-      id: attachedDatabase.options.types
+      id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      code: attachedDatabase.options.types
+      code: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
-      name: attachedDatabase.options.types
+      name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
     );
   }
@@ -3604,7 +3600,7 @@ class FactionData extends DataClass implements Insertable<FactionData> {
       'code': serializer.toJson<String>(code),
       'side_code': serializer.toJson<String>(sideCode),
       'name': serializer.toJson<String>(name),
-      'color': serializer.toJson<int?>(Faction.$converter0.toJson(color)),
+      'color': serializer.toJson<int>(Faction.$converter0.toJson(color)),
       'is_mini': serializer.toJson<bool>(isMini),
     };
   }
@@ -3818,15 +3814,15 @@ class Faction extends Table with TableInfo<Faction, FactionData> {
   FactionData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return FactionData(
-      code: attachedDatabase.options.types
+      code: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
-      sideCode: attachedDatabase.options.types
+      sideCode: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}side_code'])!,
-      name: attachedDatabase.options.types
+      name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      color: Faction.$converter0.fromSql(attachedDatabase.options.types
+      color: Faction.$converter0.fromSql(attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}color'])!),
-      isMini: attachedDatabase.options.types
+      isMini: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}is_mini'])!,
     );
   }
@@ -3836,7 +3832,8 @@ class Faction extends Table with TableInfo<Faction, FactionData> {
     return Faction(attachedDatabase, alias);
   }
 
-  static JsonTypeConverter<Color, int> $converter0 = const ColorConverter();
+  static JsonTypeConverter2<Color, int, int> $converter0 =
+      const ColorConverter();
   @override
   bool get dontWriteConstraints => true;
 }
@@ -4391,29 +4388,29 @@ class Deck extends Table with TableInfo<Deck, DeckData> {
   DeckData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return DeckData(
-      id: attachedDatabase.options.types
+      id: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
-      identityCode: attachedDatabase.options.types
+      identityCode: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}identity_code'])!,
-      formatCode: attachedDatabase.options.types
+      formatCode: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}format_code']),
-      rotationCode: attachedDatabase.options.types
+      rotationCode: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}rotation_code']),
-      mwlCode: attachedDatabase.options.types
+      mwlCode: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}mwl_code']),
-      name: attachedDatabase.options.types
+      name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      description: attachedDatabase.options.types
+      description: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
-      created: attachedDatabase.options.types
+      created: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created'])!,
-      updated: attachedDatabase.options.types
+      updated: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}updated'])!,
-      deleted: attachedDatabase.options.types
+      deleted: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}deleted'])!,
-      remoteUpdated: attachedDatabase.options.types.read(
+      remoteUpdated: attachedDatabase.typeMapping.read(
           DriftSqlType.dateTime, data['${effectivePrefix}remote_updated']),
-      synced: attachedDatabase.options.types
+      synced: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}synced']),
     );
   }
@@ -4586,9 +4583,9 @@ class DeckTag extends Table with TableInfo<DeckTag, DeckTagData> {
   DeckTagData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return DeckTagData(
-      deckId: attachedDatabase.options.types
+      deckId: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}deck_id'])!,
-      tag: attachedDatabase.options.types
+      tag: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}tag'])!,
     );
   }
@@ -4797,11 +4794,11 @@ class DeckCard extends Table with TableInfo<DeckCard, DeckCardData> {
   DeckCardData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return DeckCardData(
-      deckId: attachedDatabase.options.types
+      deckId: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}deck_id'])!,
-      cardCode: attachedDatabase.options.types
+      cardCode: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}card_code'])!,
-      quantity: attachedDatabase.options.types
+      quantity: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}quantity'])!,
     );
   }
@@ -5086,15 +5083,15 @@ class Cycle extends Table with TableInfo<Cycle, CycleData> {
   CycleData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return CycleData(
-      code: attachedDatabase.options.types
+      code: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
-      position: attachedDatabase.options.types
+      position: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}position'])!,
-      name: attachedDatabase.options.types
+      name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      size: attachedDatabase.options.types
+      size: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}size'])!,
-      rotated: attachedDatabase.options.types
+      rotated: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}rotated'])!,
     );
   }
@@ -5235,7 +5232,7 @@ class Collection extends Table with TableInfo<Collection, CollectionData> {
   CollectionData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return CollectionData(
-      packCode: attachedDatabase.options.types
+      packCode: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}pack_code'])!,
     );
   }
@@ -6252,53 +6249,53 @@ class Card extends Table with TableInfo<Card, CardData> {
   CardData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return CardData(
-      code: attachedDatabase.options.types
+      code: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
-      packCode: attachedDatabase.options.types
+      packCode: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}pack_code'])!,
-      factionCode: attachedDatabase.options.types
+      factionCode: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}faction_code'])!,
-      typeCode: attachedDatabase.options.types
+      typeCode: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}type_code'])!,
-      position: attachedDatabase.options.types
+      position: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}position'])!,
-      title: attachedDatabase.options.types
+      title: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
-      body: attachedDatabase.options.types
+      body: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}body']),
-      keywords: attachedDatabase.options.types
+      keywords: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}keywords']),
-      quantity: attachedDatabase.options.types
+      quantity: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}quantity'])!,
-      cost: attachedDatabase.options.types
+      cost: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}cost']),
-      deckLimit: attachedDatabase.options.types
+      deckLimit: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}deck_limit'])!,
-      factionCost: attachedDatabase.options.types
+      factionCost: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}faction_cost'])!,
-      uniqueness: attachedDatabase.options.types
+      uniqueness: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}uniqueness'])!,
-      strength: attachedDatabase.options.types
+      strength: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}strength']),
-      agendaPoints: attachedDatabase.options.types
+      agendaPoints: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}agenda_points']),
-      memoryCost: attachedDatabase.options.types
+      memoryCost: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}memory_cost']),
-      advancementCost: attachedDatabase.options.types
+      advancementCost: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}advancement_cost']),
-      trashCost: attachedDatabase.options.types
+      trashCost: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}trash_cost']),
-      baseLink: attachedDatabase.options.types
+      baseLink: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}base_link']),
-      influenceLimit: attachedDatabase.options.types
+      influenceLimit: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}influence_limit']),
-      minimumDeckSize: attachedDatabase.options.types
+      minimumDeckSize: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}minimum_deck_size']),
-      flavor: attachedDatabase.options.types
+      flavor: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}flavor']),
-      illustrator: attachedDatabase.options.types
+      illustrator: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}illustrator']),
-      imageUrl: attachedDatabase.options.types
+      imageUrl: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}image_url'])!,
     );
   }
@@ -6332,11 +6329,12 @@ abstract class _$Database extends GeneratedDatabase {
   late final Cycle cycle = Cycle(this);
   late final Collection collection = Collection(this);
   late final Card card = Card(this);
-  Selectable<TypeResult> listTypes(
-      {Expression<bool> where = const CustomExpression('(TRUE)')}) {
+  Selectable<TypeResult> listTypes({ListTypes$where? where}) {
     var $arrayStartIndex = 1;
-    final generatedwhere =
-        $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    final generatedwhere = $write(
+        where?.call(this.type, this.side) ?? const CustomExpression('(TRUE)'),
+        hasMultipleTables: true,
+        startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
         'SELECT"type"."code" AS "nested_0.code", "type"."side_code" AS "nested_0.side_code", "type"."position" AS "nested_0.position", "type"."name" AS "nested_0.name", "type"."is_subtype" AS "nested_0.is_subtype","side"."code" AS "nested_1.code", "side"."name" AS "nested_1.name" FROM type LEFT JOIN side ON side.code = type.side_code WHERE ${generatedwhere.sql} ORDER BY type.position',
@@ -6347,18 +6345,19 @@ abstract class _$Database extends GeneratedDatabase {
           type,
           side,
           ...generatedwhere.watchedTables,
-        }).map((QueryRow row) {
+        }).asyncMap((QueryRow row) async {
       return TypeResult(
-        type: type.mapFromRow(row, tablePrefix: 'nested_0'),
-        side: side.mapFromRowOrNull(row, tablePrefix: 'nested_1'),
+        type: await type.mapFromRow(row, tablePrefix: 'nested_0'),
+        side: await side.mapFromRowOrNull(row, tablePrefix: 'nested_1'),
       );
     });
   }
 
-  Selectable<SideData> listSides(
-      {Expression<bool> where = const CustomExpression('(TRUE)')}) {
+  Selectable<SideData> listSides({ListSides$where? where}) {
     var $arrayStartIndex = 1;
-    final generatedwhere = $write(where, startIndex: $arrayStartIndex);
+    final generatedwhere = $write(
+        where?.call(this.side) ?? const CustomExpression('(TRUE)'),
+        startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect('SELECT * FROM side WHERE ${generatedwhere.sql}',
         variables: [
@@ -6367,7 +6366,7 @@ abstract class _$Database extends GeneratedDatabase {
         readsFrom: {
           side,
           ...generatedwhere.watchedTables,
-        }).map(side.mapFromRow);
+        }).asyncMap(side.mapFromRow);
   }
 
   Selectable<SettingResult> getSettings() {
@@ -6379,21 +6378,25 @@ abstract class _$Database extends GeneratedDatabase {
           format,
           rotation,
           mwl,
-        }).map((QueryRow row) {
+        }).asyncMap((QueryRow row) async {
       return SettingResult(
-        settings: settings.mapFromRow(row, tablePrefix: 'nested_0'),
-        filterFormat: format.mapFromRowOrNull(row, tablePrefix: 'nested_1'),
-        filterRotation: rotation.mapFromRowOrNull(row, tablePrefix: 'nested_2'),
-        filterMwl: mwl.mapFromRowOrNull(row, tablePrefix: 'nested_3'),
+        settings: await settings.mapFromRow(row, tablePrefix: 'nested_0'),
+        filterFormat:
+            await format.mapFromRowOrNull(row, tablePrefix: 'nested_1'),
+        filterRotation:
+            await rotation.mapFromRowOrNull(row, tablePrefix: 'nested_2'),
+        filterMwl: await mwl.mapFromRowOrNull(row, tablePrefix: 'nested_3'),
       );
     });
   }
 
-  Selectable<RotationData> listRotations(
-      {Expression<bool> where = const CustomExpression('(TRUE)')}) {
+  Selectable<RotationData> listRotations({ListRotations$where? where}) {
     var $arrayStartIndex = 1;
-    final generatedwhere =
-        $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    final generatedwhere = $write(
+        where?.call(this.rotation, this.format) ??
+            const CustomExpression('(TRUE)'),
+        hasMultipleTables: true,
+        startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
         'SELECT rotation.* FROM rotation INNER JOIN format ON format.code = rotation.format_code WHERE ${generatedwhere.sql} ORDER BY format.id, rotation.type = \'latest\' DESC, rotation.type = \'current\' DESC, rotation.date_start DESC',
@@ -6404,14 +6407,18 @@ abstract class _$Database extends GeneratedDatabase {
           rotation,
           format,
           ...generatedwhere.watchedTables,
-        }).map(rotation.mapFromRow);
+        }).asyncMap(rotation.mapFromRow);
   }
 
   Selectable<RotationPackResult> listRotationPacks(
-      {Expression<bool> where = const CustomExpression('(TRUE)')}) {
+      {ListRotationPacks$where? where}) {
     var $arrayStartIndex = 1;
-    final generatedwhere =
-        $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    final generatedwhere = $write(
+        where?.call(this.rotation, this.format, this.rotationCycle, this.cycle,
+                this.pack) ??
+            const CustomExpression('(TRUE)'),
+        hasMultipleTables: true,
+        startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
         'SELECT"format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name","rotation"."code" AS "nested_1.code", "rotation"."format_code" AS "nested_1.format_code", "rotation"."name" AS "nested_1.name", "rotation"."date_start" AS "nested_1.date_start", "rotation"."type" AS "nested_1.type","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated" FROM rotation INNER JOIN format ON format.code = rotation.format_code LEFT JOIN rotation_cycle ON rotation_cycle.rotation_code = rotation.code INNER JOIN cycle ON cycle.code = rotation_cycle.cycle_code INNER JOIN pack ON pack.cycle_code = cycle.code WHERE ${generatedwhere.sql} ORDER BY format.id, rotation.type = \'latest\', rotation.type = \'current\', rotation.date_start DESC, cycle.position DESC, pack.position',
@@ -6425,12 +6432,12 @@ abstract class _$Database extends GeneratedDatabase {
           cycle,
           pack,
           ...generatedwhere.watchedTables,
-        }).map((QueryRow row) {
+        }).asyncMap((QueryRow row) async {
       return RotationPackResult(
-        format: format.mapFromRow(row, tablePrefix: 'nested_0'),
-        rotation: rotation.mapFromRow(row, tablePrefix: 'nested_1'),
-        pack: pack.mapFromRow(row, tablePrefix: 'nested_2'),
-        cycle: cycle.mapFromRow(row, tablePrefix: 'nested_3'),
+        format: await format.mapFromRow(row, tablePrefix: 'nested_0'),
+        rotation: await rotation.mapFromRow(row, tablePrefix: 'nested_1'),
+        pack: await pack.mapFromRow(row, tablePrefix: 'nested_2'),
+        cycle: await cycle.mapFromRow(row, tablePrefix: 'nested_3'),
       );
     });
   }
@@ -6446,21 +6453,25 @@ abstract class _$Database extends GeneratedDatabase {
           rotationCycle,
           cycle,
           pack,
-        }).map((QueryRow row) {
+        }).asyncMap((QueryRow row) async {
       return FormatPackResult(
-        format: format.mapFromRow(row, tablePrefix: 'nested_0'),
-        rotation: rotation.mapFromRow(row, tablePrefix: 'nested_1'),
-        pack: pack.mapFromRow(row, tablePrefix: 'nested_2'),
-        cycle: cycle.mapFromRow(row, tablePrefix: 'nested_3'),
+        format: await format.mapFromRow(row, tablePrefix: 'nested_0'),
+        rotation: await rotation.mapFromRow(row, tablePrefix: 'nested_1'),
+        pack: await pack.mapFromRow(row, tablePrefix: 'nested_2'),
+        cycle: await cycle.mapFromRow(row, tablePrefix: 'nested_3'),
       );
     });
   }
 
   Selectable<RotationCardResult> listRotationCards(
-      {Expression<bool> where = const CustomExpression('(TRUE)')}) {
+      {ListRotationCards$where? where}) {
     var $arrayStartIndex = 1;
-    final generatedwhere =
-        $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    final generatedwhere = $write(
+        where?.call(this.rotation, this.format, this.rotationCycle, this.cycle,
+                this.pack, this.card) ??
+            const CustomExpression('(TRUE)'),
+        hasMultipleTables: true,
+        startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
         'SELECT"format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name","rotation"."code" AS "nested_1.code", "rotation"."format_code" AS "nested_1.format_code", "rotation"."name" AS "nested_1.name", "rotation"."date_start" AS "nested_1.date_start", "rotation"."type" AS "nested_1.type","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated","card"."code" AS "nested_4.code", "card"."pack_code" AS "nested_4.pack_code", "card"."faction_code" AS "nested_4.faction_code", "card"."type_code" AS "nested_4.type_code", "card"."position" AS "nested_4.position", "card"."title" AS "nested_4.title", "card"."body" AS "nested_4.body", "card"."keywords" AS "nested_4.keywords", "card"."quantity" AS "nested_4.quantity", "card"."cost" AS "nested_4.cost", "card"."deck_limit" AS "nested_4.deck_limit", "card"."faction_cost" AS "nested_4.faction_cost", "card"."uniqueness" AS "nested_4.uniqueness", "card"."strength" AS "nested_4.strength", "card"."agenda_points" AS "nested_4.agenda_points", "card"."memory_cost" AS "nested_4.memory_cost", "card"."advancement_cost" AS "nested_4.advancement_cost", "card"."trash_cost" AS "nested_4.trash_cost", "card"."base_link" AS "nested_4.base_link", "card"."influence_limit" AS "nested_4.influence_limit", "card"."minimum_deck_size" AS "nested_4.minimum_deck_size", "card"."flavor" AS "nested_4.flavor", "card"."illustrator" AS "nested_4.illustrator", "card"."image_url" AS "nested_4.image_url" FROM rotation INNER JOIN format ON format.code = rotation.format_code LEFT JOIN rotation_cycle ON rotation_cycle.rotation_code = rotation.code INNER JOIN cycle ON cycle.code = rotation_cycle.cycle_code INNER JOIN pack ON pack.cycle_code = cycle.code INNER JOIN card ON card.pack_code = pack.code WHERE ${generatedwhere.sql} ORDER BY rotation.date_start DESC, cycle.position DESC, pack.position, card.position',
@@ -6475,42 +6486,55 @@ abstract class _$Database extends GeneratedDatabase {
           pack,
           card,
           ...generatedwhere.watchedTables,
-        }).map((QueryRow row) {
+        }).asyncMap((QueryRow row) async {
       return RotationCardResult(
-        format: format.mapFromRow(row, tablePrefix: 'nested_0'),
-        rotation: rotation.mapFromRow(row, tablePrefix: 'nested_1'),
-        pack: pack.mapFromRow(row, tablePrefix: 'nested_2'),
-        cycle: cycle.mapFromRow(row, tablePrefix: 'nested_3'),
-        card: card.mapFromRow(row, tablePrefix: 'nested_4'),
+        format: await format.mapFromRow(row, tablePrefix: 'nested_0'),
+        rotation: await rotation.mapFromRow(row, tablePrefix: 'nested_1'),
+        pack: await pack.mapFromRow(row, tablePrefix: 'nested_2'),
+        cycle: await cycle.mapFromRow(row, tablePrefix: 'nested_3'),
+        card: await card.mapFromRow(row, tablePrefix: 'nested_4'),
       );
     });
   }
 
   Selectable<CountStuffResult> countStuff(
-      {Expression<bool> cards = const CustomExpression('(TRUE)'),
-      Expression<bool> cycles = const CustomExpression('(TRUE)'),
-      Expression<bool> packs = const CustomExpression('(TRUE)'),
-      Expression<bool> sides = const CustomExpression('(TRUE)'),
-      Expression<bool> factions = const CustomExpression('(TRUE)'),
-      Expression<bool> types = const CustomExpression('(TRUE)')}) {
+      {CountStuff$cards? cards,
+      CountStuff$cycles? cycles,
+      CountStuff$packs? packs,
+      CountStuff$sides? sides,
+      CountStuff$factions? factions,
+      CountStuff$types? types}) {
     var $arrayStartIndex = 1;
-    final generatedcards =
-        $write(cards, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    final generatedcards = $write(
+        cards?.call(this.card) ?? const CustomExpression('(TRUE)'),
+        hasMultipleTables: true,
+        startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedcards.amountOfVariables;
-    final generatedcycles =
-        $write(cycles, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    final generatedcycles = $write(
+        cycles?.call(this.cycle) ?? const CustomExpression('(TRUE)'),
+        hasMultipleTables: true,
+        startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedcycles.amountOfVariables;
-    final generatedpacks =
-        $write(packs, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    final generatedpacks = $write(
+        packs?.call(this.pack) ?? const CustomExpression('(TRUE)'),
+        hasMultipleTables: true,
+        startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedpacks.amountOfVariables;
-    final generatedsides =
-        $write(sides, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    final generatedsides = $write(
+        sides?.call(this.side) ?? const CustomExpression('(TRUE)'),
+        hasMultipleTables: true,
+        startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedsides.amountOfVariables;
-    final generatedfactions =
-        $write(factions, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    final generatedfactions = $write(
+        factions?.call(this.faction, this.side) ??
+            const CustomExpression('(TRUE)'),
+        hasMultipleTables: true,
+        startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedfactions.amountOfVariables;
-    final generatedtypes =
-        $write(types, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    final generatedtypes = $write(
+        types?.call(this.type, this.side) ?? const CustomExpression('(TRUE)'),
+        hasMultipleTables: true,
+        startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedtypes.amountOfVariables;
     return customSelect(
         'SELECT (SELECT COUNT(*) FROM card WHERE ${generatedcards.sql}) AS card_count, (SELECT COUNT(*) FROM cycle WHERE ${generatedcycles.sql}) AS cycle_count, (SELECT COUNT(*) FROM pack WHERE ${generatedpacks.sql}) AS pack_count, (SELECT COUNT(*) FROM side WHERE ${generatedsides.sql}) AS side_count, (SELECT COUNT(*) FROM faction INNER JOIN side ON side.code = faction.side_code WHERE ${generatedfactions.sql}) AS faction_count, (SELECT COUNT(*) FROM type INNER JOIN side ON side.code = type.side_code WHERE ${generatedtypes.sql}) AS type_count',
@@ -6547,11 +6571,12 @@ abstract class _$Database extends GeneratedDatabase {
     });
   }
 
-  Selectable<PackResult> listPacks(
-      {Expression<bool> where = const CustomExpression('(TRUE)')}) {
+  Selectable<PackResult> listPacks({ListPacks$where? where}) {
     var $arrayStartIndex = 1;
-    final generatedwhere =
-        $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    final generatedwhere = $write(
+        where?.call(this.pack, this.cycle) ?? const CustomExpression('(TRUE)'),
+        hasMultipleTables: true,
+        startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
         'SELECT"pack"."code" AS "nested_0.code", "pack"."cycle_code" AS "nested_0.cycle_code", "pack"."position" AS "nested_0.position", "pack"."name" AS "nested_0.name", "pack"."date_release" AS "nested_0.date_release", "pack"."size" AS "nested_0.size","cycle"."code" AS "nested_1.code", "cycle"."position" AS "nested_1.position", "cycle"."name" AS "nested_1.name", "cycle"."size" AS "nested_1.size", "cycle"."rotated" AS "nested_1.rotated" FROM pack INNER JOIN cycle ON cycle.code = pack.cycle_code WHERE ${generatedwhere.sql} ORDER BY cycle.position DESC, pack.position',
@@ -6562,10 +6587,10 @@ abstract class _$Database extends GeneratedDatabase {
           pack,
           cycle,
           ...generatedwhere.watchedTables,
-        }).map((QueryRow row) {
+        }).asyncMap((QueryRow row) async {
       return PackResult(
-        pack: pack.mapFromRow(row, tablePrefix: 'nested_0'),
-        cycle: cycle.mapFromRow(row, tablePrefix: 'nested_1'),
+        pack: await pack.mapFromRow(row, tablePrefix: 'nested_0'),
+        cycle: await cycle.mapFromRow(row, tablePrefix: 'nested_1'),
       );
     });
   }
@@ -6573,14 +6598,15 @@ abstract class _$Database extends GeneratedDatabase {
   Selectable<NrdbData> getNrdb() {
     return customSelect('SELECT * FROM nrdb', variables: [], readsFrom: {
       nrdb,
-    }).map(nrdb.mapFromRow);
+    }).asyncMap(nrdb.mapFromRow);
   }
 
-  Selectable<MwlData> listMwl(
-      {Expression<bool> where = const CustomExpression('(TRUE)')}) {
+  Selectable<MwlData> listMwl({ListMwl$where? where}) {
     var $arrayStartIndex = 1;
-    final generatedwhere =
-        $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    final generatedwhere = $write(
+        where?.call(this.mwl, this.format) ?? const CustomExpression('(TRUE)'),
+        hasMultipleTables: true,
+        startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
         'SELECT mwl.* FROM mwl INNER JOIN format ON format.code = mwl.format_code WHERE ${generatedwhere.sql} ORDER BY format.id, mwl.type = \'latest\' DESC, mwl.type = \'active\' DESC, mwl.date_start DESC',
@@ -6591,13 +6617,14 @@ abstract class _$Database extends GeneratedDatabase {
           mwl,
           format,
           ...generatedwhere.watchedTables,
-        }).map(mwl.mapFromRow);
+        }).asyncMap(mwl.mapFromRow);
   }
 
-  Selectable<MwlCardData> listMwlCard(
-      {Expression<bool> where = const CustomExpression('(TRUE)')}) {
+  Selectable<MwlCardData> listMwlCard({ListMwlCard$where? where}) {
     var $arrayStartIndex = 1;
-    final generatedwhere = $write(where, startIndex: $arrayStartIndex);
+    final generatedwhere = $write(
+        where?.call(this.mwlCard) ?? const CustomExpression('(TRUE)'),
+        startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect('SELECT * FROM mwl_card WHERE ${generatedwhere.sql}',
         variables: [
@@ -6606,14 +6633,21 @@ abstract class _$Database extends GeneratedDatabase {
         readsFrom: {
           mwlCard,
           ...generatedwhere.watchedTables,
-        }).map(mwlCard.mapFromRow);
+        }).asyncMap(mwlCard.mapFromRow);
   }
 
-  Selectable<FormatResult> listFormats(
-      {Expression<bool> where = const CustomExpression('(TRUE)')}) {
+  Selectable<FormatResult> listFormats({ListFormats$where? where}) {
     var $arrayStartIndex = 1;
-    final generatedwhere =
-        $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    final generatedwhere = $write(
+        where?.call(
+                this.format,
+                alias(this.rotation, 'current_rotation'),
+                alias(this.rotation, 'latest_rotation'),
+                alias(this.mwl, 'active_mwl'),
+                alias(this.mwl, 'latest_mwl')) ??
+            const CustomExpression('(TRUE)'),
+        hasMultipleTables: true,
+        startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
         'SELECT"format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name","current_rotation"."code" AS "nested_1.code", "current_rotation"."format_code" AS "nested_1.format_code", "current_rotation"."name" AS "nested_1.name", "current_rotation"."date_start" AS "nested_1.date_start", "current_rotation"."type" AS "nested_1.type","latest_rotation"."code" AS "nested_2.code", "latest_rotation"."format_code" AS "nested_2.format_code", "latest_rotation"."name" AS "nested_2.name", "latest_rotation"."date_start" AS "nested_2.date_start", "latest_rotation"."type" AS "nested_2.type","active_mwl"."code" AS "nested_3.code", "active_mwl"."format_code" AS "nested_3.format_code", "active_mwl"."name" AS "nested_3.name", "active_mwl"."date_start" AS "nested_3.date_start", "active_mwl"."type" AS "nested_3.type", "active_mwl"."runner_points" AS "nested_3.runner_points", "active_mwl"."corp_points" AS "nested_3.corp_points","latest_mwl"."code" AS "nested_4.code", "latest_mwl"."format_code" AS "nested_4.format_code", "latest_mwl"."name" AS "nested_4.name", "latest_mwl"."date_start" AS "nested_4.date_start", "latest_mwl"."type" AS "nested_4.type", "latest_mwl"."runner_points" AS "nested_4.runner_points", "latest_mwl"."corp_points" AS "nested_4.corp_points" FROM format LEFT JOIN rotation AS current_rotation ON current_rotation.format_code = format.code AND current_rotation.type = \'current\' LEFT JOIN rotation AS latest_rotation ON latest_rotation.format_code = format.code AND latest_rotation.type = \'latest\' LEFT JOIN mwl AS active_mwl ON active_mwl.format_code = format.code AND active_mwl.type = \'active\' LEFT JOIN mwl AS latest_mwl ON latest_mwl.format_code = format.code AND latest_mwl.type = \'latest\' WHERE ${generatedwhere.sql} ORDER BY format.id',
@@ -6625,23 +6659,26 @@ abstract class _$Database extends GeneratedDatabase {
           rotation,
           mwl,
           ...generatedwhere.watchedTables,
-        }).map((QueryRow row) {
+        }).asyncMap((QueryRow row) async {
       return FormatResult(
-        format: format.mapFromRow(row, tablePrefix: 'nested_0'),
+        format: await format.mapFromRow(row, tablePrefix: 'nested_0'),
         currentRotation:
-            rotation.mapFromRowOrNull(row, tablePrefix: 'nested_1'),
-        latestRotation: rotation.mapFromRowOrNull(row, tablePrefix: 'nested_2'),
-        activeMwl: mwl.mapFromRowOrNull(row, tablePrefix: 'nested_3'),
-        latestMwl: mwl.mapFromRowOrNull(row, tablePrefix: 'nested_4'),
+            await rotation.mapFromRowOrNull(row, tablePrefix: 'nested_1'),
+        latestRotation:
+            await rotation.mapFromRowOrNull(row, tablePrefix: 'nested_2'),
+        activeMwl: await mwl.mapFromRowOrNull(row, tablePrefix: 'nested_3'),
+        latestMwl: await mwl.mapFromRowOrNull(row, tablePrefix: 'nested_4'),
       );
     });
   }
 
-  Selectable<FactionResult> listFactions(
-      {Expression<bool> where = const CustomExpression('(TRUE)')}) {
+  Selectable<FactionResult> listFactions({ListFactions$where? where}) {
     var $arrayStartIndex = 1;
-    final generatedwhere =
-        $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    final generatedwhere = $write(
+        where?.call(this.faction, this.side) ??
+            const CustomExpression('(TRUE)'),
+        hasMultipleTables: true,
+        startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
         'SELECT"faction"."code" AS "nested_0.code", "faction"."side_code" AS "nested_0.side_code", "faction"."name" AS "nested_0.name", "faction"."color" AS "nested_0.color", "faction"."is_mini" AS "nested_0.is_mini","side"."code" AS "nested_1.code", "side"."name" AS "nested_1.name" FROM faction INNER JOIN side ON side.code = faction.side_code WHERE ${generatedwhere.sql}',
@@ -6652,19 +6689,32 @@ abstract class _$Database extends GeneratedDatabase {
           faction,
           side,
           ...generatedwhere.watchedTables,
-        }).map((QueryRow row) {
+        }).asyncMap((QueryRow row) async {
       return FactionResult(
-        faction: faction.mapFromRow(row, tablePrefix: 'nested_0'),
-        side: side.mapFromRow(row, tablePrefix: 'nested_1'),
+        faction: await faction.mapFromRow(row, tablePrefix: 'nested_0'),
+        side: await side.mapFromRow(row, tablePrefix: 'nested_1'),
       );
     });
   }
 
-  Selectable<DeckResult> listDecks(
-      {Expression<bool> where = const CustomExpression('(TRUE)')}) {
+  Selectable<DeckResult> listDecks({ListDecks$where? where}) {
     var $arrayStartIndex = 1;
-    final generatedwhere =
-        $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    final generatedwhere = $write(
+        where?.call(
+                this.deck,
+                alias(this.card, 'identity'),
+                this.pack,
+                this.cycle,
+                this.faction,
+                this.side,
+                this.type,
+                alias(this.type, 'subtype'),
+                this.format,
+                this.rotation,
+                this.mwl) ??
+            const CustomExpression('(TRUE)'),
+        hasMultipleTables: true,
+        startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
         'SELECT"deck"."id" AS "nested_0.id", "deck"."identity_code" AS "nested_0.identity_code", "deck"."format_code" AS "nested_0.format_code", "deck"."rotation_code" AS "nested_0.rotation_code", "deck"."mwl_code" AS "nested_0.mwl_code", "deck"."name" AS "nested_0.name", "deck"."description" AS "nested_0.description", "deck"."created" AS "nested_0.created", "deck"."updated" AS "nested_0.updated", "deck"."deleted" AS "nested_0.deleted", "deck"."remote_updated" AS "nested_0.remote_updated", "deck"."synced" AS "nested_0.synced","identity"."code" AS "nested_1.code", "identity"."pack_code" AS "nested_1.pack_code", "identity"."faction_code" AS "nested_1.faction_code", "identity"."type_code" AS "nested_1.type_code", "identity"."position" AS "nested_1.position", "identity"."title" AS "nested_1.title", "identity"."body" AS "nested_1.body", "identity"."keywords" AS "nested_1.keywords", "identity"."quantity" AS "nested_1.quantity", "identity"."cost" AS "nested_1.cost", "identity"."deck_limit" AS "nested_1.deck_limit", "identity"."faction_cost" AS "nested_1.faction_cost", "identity"."uniqueness" AS "nested_1.uniqueness", "identity"."strength" AS "nested_1.strength", "identity"."agenda_points" AS "nested_1.agenda_points", "identity"."memory_cost" AS "nested_1.memory_cost", "identity"."advancement_cost" AS "nested_1.advancement_cost", "identity"."trash_cost" AS "nested_1.trash_cost", "identity"."base_link" AS "nested_1.base_link", "identity"."influence_limit" AS "nested_1.influence_limit", "identity"."minimum_deck_size" AS "nested_1.minimum_deck_size", "identity"."flavor" AS "nested_1.flavor", "identity"."illustrator" AS "nested_1.illustrator", "identity"."image_url" AS "nested_1.image_url","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated","faction"."code" AS "nested_4.code", "faction"."side_code" AS "nested_4.side_code", "faction"."name" AS "nested_4.name", "faction"."color" AS "nested_4.color", "faction"."is_mini" AS "nested_4.is_mini","side"."code" AS "nested_5.code", "side"."name" AS "nested_5.name","type"."code" AS "nested_6.code", "type"."side_code" AS "nested_6.side_code", "type"."position" AS "nested_6.position", "type"."name" AS "nested_6.name", "type"."is_subtype" AS "nested_6.is_subtype","subtype"."code" AS "nested_7.code", "subtype"."side_code" AS "nested_7.side_code", "subtype"."position" AS "nested_7.position", "subtype"."name" AS "nested_7.name", "subtype"."is_subtype" AS "nested_7.is_subtype","format"."id" AS "nested_8.id", "format"."code" AS "nested_8.code", "format"."name" AS "nested_8.name","rotation"."code" AS "nested_9.code", "rotation"."format_code" AS "nested_9.format_code", "rotation"."name" AS "nested_9.name", "rotation"."date_start" AS "nested_9.date_start", "rotation"."type" AS "nested_9.type","mwl"."code" AS "nested_10.code", "mwl"."format_code" AS "nested_10.format_code", "mwl"."name" AS "nested_10.name", "mwl"."date_start" AS "nested_10.date_start", "mwl"."type" AS "nested_10.type", "mwl"."runner_points" AS "nested_10.runner_points", "mwl"."corp_points" AS "nested_10.corp_points" FROM deck INNER JOIN card AS identity ON identity.code = deck.identity_code INNER JOIN pack ON pack.code = identity.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = identity.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = identity.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = identity.keywords OR identity.keywords LIKE(subtype.name || \' - %\'))LEFT JOIN format ON format.code = deck.format_code LEFT JOIN rotation ON rotation.code = deck.rotation_code LEFT JOIN mwl ON mwl.code = deck.mwl_code WHERE ${generatedwhere.sql}',
@@ -6683,19 +6733,19 @@ abstract class _$Database extends GeneratedDatabase {
           rotation,
           mwl,
           ...generatedwhere.watchedTables,
-        }).map((QueryRow row) {
+        }).asyncMap((QueryRow row) async {
       return DeckResult(
-        deck: deck.mapFromRow(row, tablePrefix: 'nested_0'),
-        identity: card.mapFromRow(row, tablePrefix: 'nested_1'),
-        pack: pack.mapFromRow(row, tablePrefix: 'nested_2'),
-        cycle: cycle.mapFromRow(row, tablePrefix: 'nested_3'),
-        faction: faction.mapFromRow(row, tablePrefix: 'nested_4'),
-        side: side.mapFromRow(row, tablePrefix: 'nested_5'),
-        type: type.mapFromRow(row, tablePrefix: 'nested_6'),
-        subtype: type.mapFromRowOrNull(row, tablePrefix: 'nested_7'),
-        format: format.mapFromRowOrNull(row, tablePrefix: 'nested_8'),
-        rotation: rotation.mapFromRowOrNull(row, tablePrefix: 'nested_9'),
-        mwl: mwl.mapFromRowOrNull(row, tablePrefix: 'nested_10'),
+        deck: await deck.mapFromRow(row, tablePrefix: 'nested_0'),
+        identity: await card.mapFromRow(row, tablePrefix: 'nested_1'),
+        pack: await pack.mapFromRow(row, tablePrefix: 'nested_2'),
+        cycle: await cycle.mapFromRow(row, tablePrefix: 'nested_3'),
+        faction: await faction.mapFromRow(row, tablePrefix: 'nested_4'),
+        side: await side.mapFromRow(row, tablePrefix: 'nested_5'),
+        type: await type.mapFromRow(row, tablePrefix: 'nested_6'),
+        subtype: await type.mapFromRowOrNull(row, tablePrefix: 'nested_7'),
+        format: await format.mapFromRowOrNull(row, tablePrefix: 'nested_8'),
+        rotation: await rotation.mapFromRowOrNull(row, tablePrefix: 'nested_9'),
+        mwl: await mwl.mapFromRowOrNull(row, tablePrefix: 'nested_10'),
       );
     });
   }
@@ -6705,7 +6755,7 @@ abstract class _$Database extends GeneratedDatabase {
       Variable<String>(deckId)
     ], readsFrom: {
       deck,
-    }).map(deck.mapFromRow);
+    }).asyncMap(deck.mapFromRow);
   }
 
   Future<int> deleteDecks({required List<String> deckIds}) {
@@ -6743,27 +6793,29 @@ abstract class _$Database extends GeneratedDatabase {
           format,
           rotation,
           mwl,
-        }).map((QueryRow row) {
+        }).asyncMap((QueryRow row) async {
       return GetDeckFromDataResult(
-        identity: card.mapFromRow(row, tablePrefix: 'nested_0'),
-        pack: pack.mapFromRow(row, tablePrefix: 'nested_1'),
-        cycle: cycle.mapFromRow(row, tablePrefix: 'nested_2'),
-        faction: faction.mapFromRow(row, tablePrefix: 'nested_3'),
-        side: side.mapFromRow(row, tablePrefix: 'nested_4'),
-        type: type.mapFromRow(row, tablePrefix: 'nested_5'),
-        subtype: type.mapFromRowOrNull(row, tablePrefix: 'nested_6'),
-        format: format.mapFromRowOrNull(row, tablePrefix: 'nested_7'),
-        rotation: rotation.mapFromRowOrNull(row, tablePrefix: 'nested_8'),
-        mwl: mwl.mapFromRowOrNull(row, tablePrefix: 'nested_9'),
+        identity: await card.mapFromRow(row, tablePrefix: 'nested_0'),
+        pack: await pack.mapFromRow(row, tablePrefix: 'nested_1'),
+        cycle: await cycle.mapFromRow(row, tablePrefix: 'nested_2'),
+        faction: await faction.mapFromRow(row, tablePrefix: 'nested_3'),
+        side: await side.mapFromRow(row, tablePrefix: 'nested_4'),
+        type: await type.mapFromRow(row, tablePrefix: 'nested_5'),
+        subtype: await type.mapFromRowOrNull(row, tablePrefix: 'nested_6'),
+        format: await format.mapFromRowOrNull(row, tablePrefix: 'nested_7'),
+        rotation: await rotation.mapFromRowOrNull(row, tablePrefix: 'nested_8'),
+        mwl: await mwl.mapFromRowOrNull(row, tablePrefix: 'nested_9'),
       );
     });
   }
 
-  Selectable<DeckTagData> listDeckTags(
-      {Expression<bool> where = const CustomExpression('(TRUE)')}) {
+  Selectable<DeckTagData> listDeckTags({ListDeckTags$where? where}) {
     var $arrayStartIndex = 1;
-    final generatedwhere =
-        $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    final generatedwhere = $write(
+        where?.call(this.deckTag, this.deck) ??
+            const CustomExpression('(TRUE)'),
+        hasMultipleTables: true,
+        startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
         'SELECT deck_tag.* FROM deck_tag INNER JOIN deck ON deck.id = deck_tag.deck_id WHERE ${generatedwhere.sql} AND NOT deck.deleted',
@@ -6774,14 +6826,16 @@ abstract class _$Database extends GeneratedDatabase {
           deckTag,
           deck,
           ...generatedwhere.watchedTables,
-        }).map(deckTag.mapFromRow);
+        }).asyncMap(deckTag.mapFromRow);
   }
 
-  Selectable<String> listDistinctDeckTags(
-      {Expression<bool> where = const CustomExpression('(TRUE)')}) {
+  Selectable<String> listDistinctDeckTags({ListDistinctDeckTags$where? where}) {
     var $arrayStartIndex = 1;
-    final generatedwhere =
-        $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    final generatedwhere = $write(
+        where?.call(this.deckTag, this.deck) ??
+            const CustomExpression('(TRUE)'),
+        hasMultipleTables: true,
+        startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
         'SELECT tag FROM (SELECT deck_tag.tag, COUNT(*) AS count FROM deck_tag INNER JOIN deck ON deck.id = deck_tag.deck_id WHERE ${generatedwhere.sql} AND NOT deck.deleted GROUP BY deck_tag.tag) AS deck_tag ORDER BY count DESC',
@@ -6816,11 +6870,21 @@ abstract class _$Database extends GeneratedDatabase {
     );
   }
 
-  Selectable<DeckCardResult> listDeckCards(
-      {Expression<bool> where = const CustomExpression('(TRUE)')}) {
+  Selectable<DeckCardResult> listDeckCards({ListDeckCards$where? where}) {
     var $arrayStartIndex = 1;
-    final generatedwhere =
-        $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    final generatedwhere = $write(
+        where?.call(
+                this.deckCard,
+                this.card,
+                this.pack,
+                this.cycle,
+                this.faction,
+                this.side,
+                this.type,
+                alias(this.type, 'subtype')) ??
+            const CustomExpression('(TRUE)'),
+        hasMultipleTables: true,
+        startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
         'SELECT"deck_card"."deck_id" AS "nested_0.deck_id", "deck_card"."card_code" AS "nested_0.card_code", "deck_card"."quantity" AS "nested_0.quantity","card"."code" AS "nested_1.code", "card"."pack_code" AS "nested_1.pack_code", "card"."faction_code" AS "nested_1.faction_code", "card"."type_code" AS "nested_1.type_code", "card"."position" AS "nested_1.position", "card"."title" AS "nested_1.title", "card"."body" AS "nested_1.body", "card"."keywords" AS "nested_1.keywords", "card"."quantity" AS "nested_1.quantity", "card"."cost" AS "nested_1.cost", "card"."deck_limit" AS "nested_1.deck_limit", "card"."faction_cost" AS "nested_1.faction_cost", "card"."uniqueness" AS "nested_1.uniqueness", "card"."strength" AS "nested_1.strength", "card"."agenda_points" AS "nested_1.agenda_points", "card"."memory_cost" AS "nested_1.memory_cost", "card"."advancement_cost" AS "nested_1.advancement_cost", "card"."trash_cost" AS "nested_1.trash_cost", "card"."base_link" AS "nested_1.base_link", "card"."influence_limit" AS "nested_1.influence_limit", "card"."minimum_deck_size" AS "nested_1.minimum_deck_size", "card"."flavor" AS "nested_1.flavor", "card"."illustrator" AS "nested_1.illustrator", "card"."image_url" AS "nested_1.image_url","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated","faction"."code" AS "nested_4.code", "faction"."side_code" AS "nested_4.side_code", "faction"."name" AS "nested_4.name", "faction"."color" AS "nested_4.color", "faction"."is_mini" AS "nested_4.is_mini","side"."code" AS "nested_5.code", "side"."name" AS "nested_5.name","type"."code" AS "nested_6.code", "type"."side_code" AS "nested_6.side_code", "type"."position" AS "nested_6.position", "type"."name" AS "nested_6.name", "type"."is_subtype" AS "nested_6.is_subtype","subtype"."code" AS "nested_7.code", "subtype"."side_code" AS "nested_7.side_code", "subtype"."position" AS "nested_7.position", "subtype"."name" AS "nested_7.name", "subtype"."is_subtype" AS "nested_7.is_subtype" FROM deck_card INNER JOIN card ON card.code = deck_card.card_code INNER JOIN pack ON pack.code = card.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = card.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = card.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = card.keywords OR card.keywords LIKE(subtype.name || \' - %\'))WHERE ${generatedwhere.sql}',
@@ -6836,16 +6900,16 @@ abstract class _$Database extends GeneratedDatabase {
           side,
           type,
           ...generatedwhere.watchedTables,
-        }).map((QueryRow row) {
+        }).asyncMap((QueryRow row) async {
       return DeckCardResult(
-        deckCard: deckCard.mapFromRow(row, tablePrefix: 'nested_0'),
-        card: card.mapFromRow(row, tablePrefix: 'nested_1'),
-        pack: pack.mapFromRow(row, tablePrefix: 'nested_2'),
-        cycle: cycle.mapFromRow(row, tablePrefix: 'nested_3'),
-        faction: faction.mapFromRow(row, tablePrefix: 'nested_4'),
-        side: side.mapFromRow(row, tablePrefix: 'nested_5'),
-        type: type.mapFromRow(row, tablePrefix: 'nested_6'),
-        subtype: type.mapFromRowOrNull(row, tablePrefix: 'nested_7'),
+        deckCard: await deckCard.mapFromRow(row, tablePrefix: 'nested_0'),
+        card: await card.mapFromRow(row, tablePrefix: 'nested_1'),
+        pack: await pack.mapFromRow(row, tablePrefix: 'nested_2'),
+        cycle: await cycle.mapFromRow(row, tablePrefix: 'nested_3'),
+        faction: await faction.mapFromRow(row, tablePrefix: 'nested_4'),
+        side: await side.mapFromRow(row, tablePrefix: 'nested_5'),
+        type: await type.mapFromRow(row, tablePrefix: 'nested_6'),
+        subtype: await type.mapFromRowOrNull(row, tablePrefix: 'nested_7'),
       );
     });
   }
@@ -6876,7 +6940,7 @@ abstract class _$Database extends GeneratedDatabase {
         variables: [],
         readsFrom: {
           cycle,
-        }).map(cycle.mapFromRow);
+        }).asyncMap(cycle.mapFromRow);
   }
 
   Selectable<CollectionResult> listCollection({required bool inCollection}) {
@@ -6889,11 +6953,11 @@ abstract class _$Database extends GeneratedDatabase {
           collection,
           pack,
           cycle,
-        }).map((QueryRow row) {
+        }).asyncMap((QueryRow row) async {
       return CollectionResult(
         inCollection: row.read<bool>('in_collection'),
-        pack: pack.mapFromRow(row, tablePrefix: 'nested_0'),
-        cycle: cycle.mapFromRow(row, tablePrefix: 'nested_1'),
+        pack: await pack.mapFromRow(row, tablePrefix: 'nested_0'),
+        cycle: await cycle.mapFromRow(row, tablePrefix: 'nested_1'),
       );
     });
   }
@@ -6907,12 +6971,14 @@ abstract class _$Database extends GeneratedDatabase {
     );
   }
 
-  Selectable<CardResult> listCards(
-      {String? mwlCode,
-      Expression<bool> where = const CustomExpression('(TRUE)')}) {
+  Selectable<CardResult> listCards({String? mwlCode, ListCards$where? where}) {
     var $arrayStartIndex = 2;
-    final generatedwhere =
-        $write(where, hasMultipleTables: true, startIndex: $arrayStartIndex);
+    final generatedwhere = $write(
+        where?.call(this.card, this.pack, this.cycle, this.faction, this.side,
+                this.type, alias(this.type, 'subtype'), this.mwlCard) ??
+            const CustomExpression('(TRUE)'),
+        hasMultipleTables: true,
+        startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
         'SELECT"card"."code" AS "nested_0.code", "card"."pack_code" AS "nested_0.pack_code", "card"."faction_code" AS "nested_0.faction_code", "card"."type_code" AS "nested_0.type_code", "card"."position" AS "nested_0.position", "card"."title" AS "nested_0.title", "card"."body" AS "nested_0.body", "card"."keywords" AS "nested_0.keywords", "card"."quantity" AS "nested_0.quantity", "card"."cost" AS "nested_0.cost", "card"."deck_limit" AS "nested_0.deck_limit", "card"."faction_cost" AS "nested_0.faction_cost", "card"."uniqueness" AS "nested_0.uniqueness", "card"."strength" AS "nested_0.strength", "card"."agenda_points" AS "nested_0.agenda_points", "card"."memory_cost" AS "nested_0.memory_cost", "card"."advancement_cost" AS "nested_0.advancement_cost", "card"."trash_cost" AS "nested_0.trash_cost", "card"."base_link" AS "nested_0.base_link", "card"."influence_limit" AS "nested_0.influence_limit", "card"."minimum_deck_size" AS "nested_0.minimum_deck_size", "card"."flavor" AS "nested_0.flavor", "card"."illustrator" AS "nested_0.illustrator", "card"."image_url" AS "nested_0.image_url","pack"."code" AS "nested_1.code", "pack"."cycle_code" AS "nested_1.cycle_code", "pack"."position" AS "nested_1.position", "pack"."name" AS "nested_1.name", "pack"."date_release" AS "nested_1.date_release", "pack"."size" AS "nested_1.size","cycle"."code" AS "nested_2.code", "cycle"."position" AS "nested_2.position", "cycle"."name" AS "nested_2.name", "cycle"."size" AS "nested_2.size", "cycle"."rotated" AS "nested_2.rotated","faction"."code" AS "nested_3.code", "faction"."side_code" AS "nested_3.side_code", "faction"."name" AS "nested_3.name", "faction"."color" AS "nested_3.color", "faction"."is_mini" AS "nested_3.is_mini","side"."code" AS "nested_4.code", "side"."name" AS "nested_4.name","type"."code" AS "nested_5.code", "type"."side_code" AS "nested_5.side_code", "type"."position" AS "nested_5.position", "type"."name" AS "nested_5.name", "type"."is_subtype" AS "nested_5.is_subtype","subtype"."code" AS "nested_6.code", "subtype"."side_code" AS "nested_6.side_code", "subtype"."position" AS "nested_6.position", "subtype"."name" AS "nested_6.name", "subtype"."is_subtype" AS "nested_6.is_subtype" FROM card INNER JOIN pack ON pack.code = card.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = card.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = card.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = card.keywords OR card.keywords LIKE(subtype.name || \' - %\'))LEFT JOIN mwl_card ON mwl_card.mwl_code = ?1 AND mwl_card.card_code = card.code WHERE ${generatedwhere.sql}',
@@ -6929,15 +6995,15 @@ abstract class _$Database extends GeneratedDatabase {
           type,
           mwlCard,
           ...generatedwhere.watchedTables,
-        }).map((QueryRow row) {
+        }).asyncMap((QueryRow row) async {
       return CardResult(
-        card: card.mapFromRow(row, tablePrefix: 'nested_0'),
-        pack: pack.mapFromRow(row, tablePrefix: 'nested_1'),
-        cycle: cycle.mapFromRow(row, tablePrefix: 'nested_2'),
-        faction: faction.mapFromRow(row, tablePrefix: 'nested_3'),
-        side: side.mapFromRow(row, tablePrefix: 'nested_4'),
-        type: type.mapFromRow(row, tablePrefix: 'nested_5'),
-        subtype: type.mapFromRowOrNull(row, tablePrefix: 'nested_6'),
+        card: await card.mapFromRow(row, tablePrefix: 'nested_0'),
+        pack: await pack.mapFromRow(row, tablePrefix: 'nested_1'),
+        cycle: await cycle.mapFromRow(row, tablePrefix: 'nested_2'),
+        faction: await faction.mapFromRow(row, tablePrefix: 'nested_3'),
+        side: await side.mapFromRow(row, tablePrefix: 'nested_4'),
+        type: await type.mapFromRow(row, tablePrefix: 'nested_5'),
+        subtype: await type.mapFromRowOrNull(row, tablePrefix: 'nested_6'),
       );
     });
   }
@@ -6971,7 +7037,8 @@ abstract class _$Database extends GeneratedDatabase {
   }
 
   @override
-  Iterable<TableInfo> get allTables => allSchemaEntities.whereType<TableInfo>();
+  Iterable<TableInfo<Table, dynamic>> get allTables =>
+      allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
         type,
@@ -7023,6 +7090,9 @@ class TypeResult {
   }
 }
 
+typedef ListTypes$where = Expression<bool> Function(Type type, Side side);
+typedef ListSides$where = Expression<bool> Function(Side side);
+
 class SettingResult {
   final SettingsData settings;
   final FormatData? filterFormat;
@@ -7057,6 +7127,9 @@ class SettingResult {
   }
 }
 
+typedef ListRotations$where = Expression<bool> Function(
+    Rotation rotation, Format format);
+
 class RotationPackResult {
   final FormatData format;
   final RotationData rotation;
@@ -7089,6 +7162,9 @@ class RotationPackResult {
         .toString();
   }
 }
+
+typedef ListRotationPacks$where = Expression<bool> Function(Rotation rotation,
+    Format format, RotationCycle rotation_cycle, Cycle cycle, Pack pack);
 
 class FormatPackResult {
   final FormatData format;
@@ -7160,6 +7236,14 @@ class RotationCardResult {
   }
 }
 
+typedef ListRotationCards$where = Expression<bool> Function(
+    Rotation rotation,
+    Format format,
+    RotationCycle rotation_cycle,
+    Cycle cycle,
+    Pack pack,
+    Card card);
+
 class CountStuffResult {
   final int cardCount;
   final int cycleCount;
@@ -7202,6 +7286,14 @@ class CountStuffResult {
   }
 }
 
+typedef CountStuff$cards = Expression<bool> Function(Card card);
+typedef CountStuff$cycles = Expression<bool> Function(Cycle cycle);
+typedef CountStuff$packs = Expression<bool> Function(Pack pack);
+typedef CountStuff$sides = Expression<bool> Function(Side side);
+typedef CountStuff$factions = Expression<bool> Function(
+    Faction faction, Side side);
+typedef CountStuff$types = Expression<bool> Function(Type type, Side side);
+
 class PackResult {
   final PackData pack;
   final CycleData cycle;
@@ -7226,6 +7318,10 @@ class PackResult {
         .toString();
   }
 }
+
+typedef ListPacks$where = Expression<bool> Function(Pack pack, Cycle cycle);
+typedef ListMwl$where = Expression<bool> Function(Mwl mwl, Format format);
+typedef ListMwlCard$where = Expression<bool> Function(MwlCard mwl_card);
 
 class FormatResult {
   final FormatData format;
@@ -7265,6 +7361,13 @@ class FormatResult {
   }
 }
 
+typedef ListFormats$where = Expression<bool> Function(
+    Format format,
+    Rotation current_rotation,
+    Rotation latest_rotation,
+    Mwl active_mwl,
+    Mwl latest_mwl);
+
 class FactionResult {
   final FactionData faction;
   final SideData side;
@@ -7289,6 +7392,9 @@ class FactionResult {
         .toString();
   }
 }
+
+typedef ListFactions$where = Expression<bool> Function(
+    Faction faction, Side side);
 
 class DeckResult {
   final DeckData deck;
@@ -7352,6 +7458,19 @@ class DeckResult {
   }
 }
 
+typedef ListDecks$where = Expression<bool> Function(
+    Deck deck,
+    Card identity,
+    Pack pack,
+    Cycle cycle,
+    Faction faction,
+    Side side,
+    Type type,
+    Type subtype,
+    Format format,
+    Rotation rotation,
+    Mwl mwl);
+
 class GetDeckFromDataResult {
   final CardData identity;
   final PackData pack;
@@ -7410,6 +7529,11 @@ class GetDeckFromDataResult {
   }
 }
 
+typedef ListDeckTags$where = Expression<bool> Function(
+    DeckTag deck_tag, Deck deck);
+typedef ListDistinctDeckTags$where = Expression<bool> Function(
+    DeckTag deck_tag, Deck deck);
+
 class DeckCardResult {
   final DeckCardData deckCard;
   final CardData card;
@@ -7459,6 +7583,16 @@ class DeckCardResult {
         .toString();
   }
 }
+
+typedef ListDeckCards$where = Expression<bool> Function(
+    DeckCard deck_card,
+    Card card,
+    Pack pack,
+    Cycle cycle,
+    Faction faction,
+    Side side,
+    Type type,
+    Type subtype);
 
 class CollectionResult {
   final bool inCollection;
@@ -7534,3 +7668,13 @@ class CardResult {
         .toString();
   }
 }
+
+typedef ListCards$where = Expression<bool> Function(
+    Card card,
+    Pack pack,
+    Cycle cycle,
+    Faction faction,
+    Side side,
+    Type type,
+    Type subtype,
+    MwlCard mwl_card);

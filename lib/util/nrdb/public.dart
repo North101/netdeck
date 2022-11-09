@@ -2,12 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:collection/collection.dart';
-import 'package:diacritic/diacritic.dart';
 import 'package:flutter/material.dart' hide Card;
 import 'package:flutter/services.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:http/http.dart' as http;
-import 'package:kotlin_flavor/scope_functions.dart';
 
 import '/db/database.dart';
 import '/util/assets.gen.dart';
@@ -43,9 +41,6 @@ extension DateTimeUtc on DateTime {
         microsecond,
       );
 }
-
-int? tryParseDateTime(String? value) =>
-    value != null ? DateTimeUtc.parseUtc(value).millisecondsSinceEpoch : null;
 
 String currentRotationCode(String formatCode) => '$formatCode@current';
 
@@ -202,7 +197,7 @@ class NrdbPublicApi {
         result.data.map<PackData>((result) {
           return PackData.fromJson({
             ...result,
-            'date_release': tryParseDateTime(result['date_release']),
+            'date_release': result['date_release'],
           });
         }).toList(),
       );
@@ -402,9 +397,10 @@ class NrdbPublicApi {
       b.insertAll<Rotation, RotationData>(
         _db.rotation,
         rotations.map<RotationData>((result) {
+          print(result);
           return RotationData.fromJson({
             ...result,
-            'date_start': tryParseDateTime(result['date_start']),
+            'date_start': result['date_start'],
           });
         }).toList(),
       );
@@ -488,7 +484,7 @@ class NrdbPublicApi {
           result = result.cast<String, dynamic>();
           return MwlData.fromJson({
             ...result,
-            'date_start': tryParseDateTime(result['date_start']),
+            'date_start': result['date_start'],
           });
         }).toList(),
       );

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod_restorable/flutter_riverpod_restorable.dart';
 
 import '/db/database.dart';
 import '/providers.dart';
@@ -41,8 +42,7 @@ class CardListBottomNavigationItem extends BottomNavigationItem {
         restorationId: 'card_list_page',
         automaticallyImplyLeading: false,
         title: 'Cards',
-        filterSearching: false,
-        filterQuery: null,
+        filterSearch: null,
         filterCollection: settings.settings.filterCollection,
         filterFormat: settings.filterFormat,
         filterRotation: settings.filterRotation,
@@ -78,8 +78,7 @@ class DeckListBottomNavigationItem extends BottomNavigationItem {
         restorationId: 'deck_list_page',
         automaticallyImplyLeading: false,
         title: 'Decks',
-        filterSearching: false,
-        filterQuery: null,
+        filterSearch: null,
         filterFormat: null,
         filterRotation: null,
         filterMwl: null,
@@ -125,16 +124,25 @@ final itemsProvider = FutureProvider<List<BottomNavigationItem>>((ref) async {
   ];
 }, dependencies: [dbProvider]);
 
-final selectedIndexProvider = RestorableProvider.autoDispose<RestorableInt>((ref) => throw UnimplementedError());
+final selectedIndexProvider = RestorableProvider<RestorableInt>(
+  (_) => throw UnimplementedError(),
+  restorationId: 'selectedIndexProvider',
+);
 
 class MainPage extends ConsumerWidget {
   const MainPage({super.key});
 
+  static Route<void> route(BuildContext context, Object? arguments) {
+    return MaterialPageRoute(builder: (context) {
+      return MainPage.withOverrides();
+    });
+  }
+
   static Widget withOverrides() {
-    return ProviderScope(
+    return RestorableProviderScope(
       restorationId: 'main_page_scope',
       overrides: [
-        selectedIndexProvider.overrideWithValue(RestorableInt(0), 'selectedIndexProvider'),
+        selectedIndexProvider.overrideWith((ref) => RestorableInt(0)),
       ],
       child: const MainPage(),
     );
@@ -227,7 +235,7 @@ class CardTileWidget extends ConsumerWidget {
         final navigator = Navigator.of(context);
         final groupedCardList = await ref.read(groupedCardListProvider.future);
         navigator.restorablePush(
-          openCardGalleryPage,
+          CardGalleryPage.route,
           arguments: CardGalleryArguments(
             items: GroupedCardCodeList.fromCardResult(groupedCardList),
             index: index,
@@ -248,15 +256,6 @@ class DeckTileWidget extends ConsumerWidget {
   final int index;
   final DeckFullResult deck;
 
-  static Route<void> openDeckRoute(BuildContext context, Object? arguments) {
-    final deck = DeckFullResult.fromJson((arguments as Map).cast());
-    return MaterialPageRoute(builder: (context) {
-      return DeckPage.withOverrides(
-        deck: deck.toNotifierResult(DeckSaveState.isSaved),
-      );
-    });
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tags = ref.watch(filterTagsProvider);
@@ -269,7 +268,7 @@ class DeckTileWidget extends ConsumerWidget {
       onTap: () {
         if (selectedDecks.value.isEmpty) {
           Navigator.of(context).restorablePush(
-            openDeckRoute,
+            DeckPage.route,
             arguments: deck.toJson(),
           );
         } else {

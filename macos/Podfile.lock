@@ -1,15 +1,15 @@
 PODS:
-  - AppAuth (1.5.0):
-    - AppAuth/Core (= 1.5.0)
-    - AppAuth/ExternalUserAgent (= 1.5.0)
-  - AppAuth/Core (1.5.0)
-  - AppAuth/ExternalUserAgent (1.5.0):
+  - AppAuth (1.6.0):
+    - AppAuth/Core (= 1.6.0)
+    - AppAuth/ExternalUserAgent (= 1.6.0)
+  - AppAuth/Core (1.6.0)
+  - AppAuth/ExternalUserAgent (1.6.0):
     - AppAuth/Core
-  - connectivity_plus_macos (0.0.1):
+  - connectivity_plus (0.0.1):
     - FlutterMacOS
     - ReachabilitySwift
   - flutter_appauth (0.0.1):
-    - AppAuth (= 1.5.0)
+    - AppAuth (= 1.6.0)
     - FlutterMacOS
   - flutter_secure_storage_macos (3.3.1):
     - FlutterMacOS
@@ -23,29 +23,26 @@ PODS:
   - sqflite (0.0.2):
     - FlutterMacOS
     - FMDB (>= 2.7.5)
-  - sqlite3 (3.39.0):
-    - sqlite3/common (= 3.39.0)
-  - sqlite3/common (3.39.0)
-  - sqlite3/fts5 (3.39.0):
+  - sqlite3 (3.39.4):
+    - sqlite3/common (= 3.39.4)
+  - sqlite3/common (3.39.4)
+  - sqlite3/fts5 (3.39.4):
     - sqlite3/common
-  - sqlite3/json1 (3.39.0):
+  - sqlite3/perf-threadsafe (3.39.4):
     - sqlite3/common
-  - sqlite3/perf-threadsafe (3.39.0):
-    - sqlite3/common
-  - sqlite3/rtree (3.39.0):
+  - sqlite3/rtree (3.39.4):
     - sqlite3/common
   - sqlite3_flutter_libs (0.0.1):
     - FlutterMacOS
-    - sqlite3 (~> 3.39.0)
+    - sqlite3 (~> 3.39.4)
     - sqlite3/fts5
-    - sqlite3/json1
     - sqlite3/perf-threadsafe
     - sqlite3/rtree
   - url_launcher_macos (0.0.1):
     - FlutterMacOS
 
 DEPENDENCIES:
-  - connectivity_plus_macos (from `Flutter/ephemeral/.symlinks/plugins/connectivity_plus_macos/macos`)
+  - connectivity_plus (from `Flutter/ephemeral/.symlinks/plugins/connectivity_plus/macos`)
   - flutter_appauth (from `Flutter/ephemeral/.symlinks/plugins/flutter_appauth/macos`)
   - flutter_secure_storage_macos (from `Flutter/ephemeral/.symlinks/plugins/flutter_secure_storage_macos/macos`)
   - FlutterMacOS (from `Flutter/ephemeral`)
@@ -62,8 +59,8 @@ SPEC REPOS:
     - sqlite3
 
 EXTERNAL SOURCES:
-  connectivity_plus_macos:
-    :path: Flutter/ephemeral/.symlinks/plugins/connectivity_plus_macos/macos
+  connectivity_plus:
+    :path: Flutter/ephemeral/.symlinks/plugins/connectivity_plus/macos
   flutter_appauth:
     :path: Flutter/ephemeral/.symlinks/plugins/flutter_appauth/macos
   flutter_secure_storage_macos:
@@ -80,17 +77,17 @@ EXTERNAL SOURCES:
     :path: Flutter/ephemeral/.symlinks/plugins/url_launcher_macos/macos
 
 SPEC CHECKSUMS:
-  AppAuth: 80317d99ac7ff2801a2f18ff86b48cd315ed465d
-  connectivity_plus_macos: f6e86fd000e971d361e54b5afcadc8c8fa773308
-  flutter_appauth: e10750f3c3da067cce52c9c5556b4a5676172d09
+  AppAuth: 8fca6b5563a5baef2c04bee27538025e4ceb2add
+  connectivity_plus: 18d3c32514c886e046de60e9c13895109866c747
+  flutter_appauth: adacee57756dd4640e12db56bd96812f0a0207b5
   flutter_secure_storage_macos: 6ceee8fbc7f484553ad17f79361b556259df89aa
-  FlutterMacOS: 57701585bf7de1b3fc2bb61f6378d73bbdea8424
+  FlutterMacOS: 85f90bfb3f1703249cf1539e4dfbff31e8584698
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   path_provider_macos: 3c0c3b4b0d4a76d2bf989a913c2de869c5641a19
   ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
   sqflite: a5789cceda41d54d23f31d6de539d65bb14100ea
-  sqlite3: ddcd34fff6490ab01f36560b87eabbebf8b2121d
-  sqlite3_flutter_libs: 65803af6a06f8640ec53d0fc100c91164c02e341
+  sqlite3: 401936402fe5aa242c07f87fccfee5fc2b606f45
+  sqlite3_flutter_libs: db076bb9ff5f17c4e32bdebdec78c382703c71e1
   url_launcher_macos: 597e05b8e514239626bcf4a850fcf9ef5c856ec3
 
 PODFILE CHECKSUM: 1e599825e64ae2bda97035db1759447dc33ff502

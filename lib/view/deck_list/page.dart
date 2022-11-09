@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:query/query.dart';
+import 'package:flutter_riverpod_restorable/flutter_riverpod_restorable.dart';
 
 import '/db/database.dart';
 import '/providers.dart';
@@ -20,8 +20,7 @@ class DeckListPage extends ConsumerWidget {
     required String restorationId,
     bool automaticallyImplyLeading = false,
     required String title,
-    bool? filterSearching,
-    Query? filterQuery,
+    String? filterSearch,
     FormatData? filterFormat,
     RotationData? filterRotation,
     MwlData? filterMwl,
@@ -33,21 +32,19 @@ class DeckListPage extends ConsumerWidget {
     required Widget Function(BuildContext context, WidgetRef ref, int index, DeckFullResult deck) itemBuilder,
     Widget? fab,
   }) {
-    return ProviderScope(
+    return RestorableProviderScope(
       restorationId: restorationId,
       overrides: [
-        filterSearchingProvider.overrideWithValue(RestorableBool(filterSearching ?? false), 'filterSearchingProvider'),
-        filterQueryProvider.overrideWithValue(RestorableQuery(filterQuery), 'filterQueryProvider'),
-        filterFormatProvider.overrideWithValue(RestorableFormatData(filterFormat), 'filterFormatProvider'),
-        filterRotationProvider.overrideWithValue(RestorableRotationData(filterRotation), 'filterRotationProvider'),
-        filterMwlProvider.overrideWithValue(RestorableMwlData(filterMwl), 'filterMwlProvider'),
-        filterPacksProvider.overrideWithValue(RestorableFilterType(filterPacks ?? FilterType()), 'filterPacksProvider'),
-        filterSidesProvider.overrideWithValue(RestorableFilterType(filterSides ?? FilterType()), 'filterSidesProvider'),
-        filterFactionsProvider.overrideWithValue(
-            RestorableFilterType(filterFactions ?? FilterType()), 'filterFactionsProvider'),
-        filterTypesProvider.overrideWithValue(RestorableFilterType(filterTypes ?? FilterType()), 'filterTypesProvider'),
-        filterTagsProvider.overrideWithValue(RestorableSet(filterTags ?? const {}), 'filterTagsProvider'),
-        selectedDeckIdsProvider.overrideWithValue(RestorableSet<String>({}), 'selectedDeckIdsProvider'),
+        filterSearchProvider.overrideWith((ref) => RestorableStringN(filterSearch)),
+        filterFormatProvider.overrideWith((ref) => RestorableFormatData(filterFormat)),
+        filterRotationProvider.overrideWith((ref) => RestorableRotationData(filterRotation)),
+        filterMwlProvider.overrideWith((ref) => RestorableMwlData(filterMwl)),
+        filterPacksProvider.overrideWith((ref) => RestorableFilterType(filterPacks ?? FilterType())),
+        filterSidesProvider.overrideWith((ref) => RestorableFilterType(filterSides ?? FilterType())),
+        filterFactionsProvider.overrideWith((ref) => RestorableFilterType(filterFactions ?? FilterType())),
+        filterTypesProvider.overrideWith((ref) => RestorableFilterType(filterTypes ?? FilterType())),
+        filterTagsProvider.overrideWith((ref) => RestorableSet(filterTags ?? const {})),
+        selectedDeckIdsProvider.overrideWith((ref) => RestorableSet<String>({})),
         deckItemBuilderProvider.overrideWithValue(itemBuilder),
         deckFabProvider.overrideWithValue(fab),
       ],

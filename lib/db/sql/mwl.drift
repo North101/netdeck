@@ -1,3 +1,5 @@
+import 'package:drift/drift.dart';
+
 import '/db/types.dart';
 
 import 'format.drift';
@@ -7,7 +9,7 @@ CREATE TABLE mwl(
   format_code TEXT NOT NULL,
   name TEXT NOT NULL,
   date_start DATETIME,
-  type TEXT MAPPED BY `const MwlTypeConverter()`,
+  type TEXT MAPPED BY `JsonTypeConverter2.asNullable(const MwlTypeConverter())`,
   runner_points INT,
   corp_points INT
 );

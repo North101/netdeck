@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod_restorable/flutter_riverpod_restorable.dart';
 
 import '/providers.dart';
 import 'async_value_builder.dart';
@@ -7,13 +8,22 @@ import 'async_value_builder.dart';
 class FilterTagsPage extends ConsumerWidget {
   const FilterTagsPage({super.key});
 
+  static Route<Set<String>> route(BuildContext context, Object? arguments) {
+    final tags = Set<String>.from(arguments as List);
+    return MaterialPageRoute(
+      builder: (context) => FilterTagsPage.withOverrides(
+        tags: tags,
+      ),
+    );
+  }
+
   static Widget withOverrides({
     required Set<String> tags,
   }) {
-    return ProviderScope(
+    return RestorableProviderScope(
       restorationId: 'filter_tags_page',
       overrides: [
-        filterTagsProvider.overrideWithValue(RestorableSet(tags), 'filterTagsProvider'),
+        filterTagsProvider.overrideWith((ref) => RestorableSet(tags)),
       ],
       child: const FilterTagsPage(),
     );

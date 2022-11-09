@@ -129,7 +129,7 @@ extension CardGroupEx on CardGroup {
   }
 
   HeaderList<CardResult> call(List<CardResult> list) {
-    return HeaderList(groupBy<CardResult, String>(list, grouped)
+    return HeaderList(groupBy(list, grouped)
         .entries
         .map((e) => HeaderItems(e.key, e.value))
         .sortedByCompare<CardResult>((e) => e.first, sorted));

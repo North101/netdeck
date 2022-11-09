@@ -22,10 +22,9 @@ class CardListAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Widget build(context, ref) {
-    final isSearching = ref.watch(filterSearchingProvider).value;
-    if (isSearching) {
-      return CardSearchAppBar();
-    }
+    final isSearching = ref.watch(filterSearchingProvider);
+    if (isSearching) return const CardSearchAppBar();
+
     return CardStandardAppBar(
       automaticallyImplyLeading: automaticallyImplyLeading,
       title: title,

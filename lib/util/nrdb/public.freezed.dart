@@ -27,8 +27,8 @@ mixin _$ApiResult {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(DateTime lastUpdated)? unmodified,
-    TResult Function(DateTime lastUpdated, List<Map<String, dynamic>> data,
+    TResult? Function(DateTime lastUpdated)? unmodified,
+    TResult? Function(DateTime lastUpdated, List<Map<String, dynamic>> data,
             Map<String, dynamic> info)?
         modified,
   }) =>
@@ -50,8 +50,8 @@ mixin _$ApiResult {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(UnmodifiedApiResult value)? unmodified,
-    TResult Function(ModifiedApiResult value)? modified,
+    TResult? Function(UnmodifiedApiResult value)? unmodified,
+    TResult? Function(ModifiedApiResult value)? modified,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -70,28 +70,32 @@ mixin _$ApiResult {
 /// @nodoc
 abstract class $ApiResultCopyWith<$Res> {
   factory $ApiResultCopyWith(ApiResult value, $Res Function(ApiResult) then) =
-      _$ApiResultCopyWithImpl<$Res>;
+      _$ApiResultCopyWithImpl<$Res, ApiResult>;
+  @useResult
   $Res call({DateTime lastUpdated});
 }
 
 /// @nodoc
-class _$ApiResultCopyWithImpl<$Res> implements $ApiResultCopyWith<$Res> {
+class _$ApiResultCopyWithImpl<$Res, $Val extends ApiResult>
+    implements $ApiResultCopyWith<$Res> {
   _$ApiResultCopyWithImpl(this._value, this._then);
 
-  final ApiResult _value;
   // ignore: unused_field
-  final $Res Function(ApiResult) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? lastUpdated = freezed,
+    Object? lastUpdated = null,
   }) {
     return _then(_value.copyWith(
-      lastUpdated: lastUpdated == freezed
+      lastUpdated: null == lastUpdated
           ? _value.lastUpdated
           : lastUpdated // ignore: cast_nullable_to_non_nullable
               as DateTime,
-    ));
+    ) as $Val);
   }
 }
 
@@ -102,26 +106,25 @@ abstract class _$$UnmodifiedApiResultCopyWith<$Res>
           $Res Function(_$UnmodifiedApiResult) then) =
       __$$UnmodifiedApiResultCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call({DateTime lastUpdated});
 }
 
 /// @nodoc
 class __$$UnmodifiedApiResultCopyWithImpl<$Res>
-    extends _$ApiResultCopyWithImpl<$Res>
+    extends _$ApiResultCopyWithImpl<$Res, _$UnmodifiedApiResult>
     implements _$$UnmodifiedApiResultCopyWith<$Res> {
   __$$UnmodifiedApiResultCopyWithImpl(
       _$UnmodifiedApiResult _value, $Res Function(_$UnmodifiedApiResult) _then)
-      : super(_value, (v) => _then(v as _$UnmodifiedApiResult));
+      : super(_value, _then);
 
-  @override
-  _$UnmodifiedApiResult get _value => super._value as _$UnmodifiedApiResult;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? lastUpdated = freezed,
+    Object? lastUpdated = null,
   }) {
     return _then(_$UnmodifiedApiResult(
-      lastUpdated == freezed
+      null == lastUpdated
           ? _value.lastUpdated
           : lastUpdated // ignore: cast_nullable_to_non_nullable
               as DateTime,
@@ -147,16 +150,16 @@ class _$UnmodifiedApiResult implements UnmodifiedApiResult {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$UnmodifiedApiResult &&
-            const DeepCollectionEquality()
-                .equals(other.lastUpdated, lastUpdated));
+            (identical(other.lastUpdated, lastUpdated) ||
+                other.lastUpdated == lastUpdated));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, const DeepCollectionEquality().hash(lastUpdated));
+  int get hashCode => Object.hash(runtimeType, lastUpdated);
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$UnmodifiedApiResultCopyWith<_$UnmodifiedApiResult> get copyWith =>
       __$$UnmodifiedApiResultCopyWithImpl<_$UnmodifiedApiResult>(
           this, _$identity);
@@ -175,8 +178,8 @@ class _$UnmodifiedApiResult implements UnmodifiedApiResult {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(DateTime lastUpdated)? unmodified,
-    TResult Function(DateTime lastUpdated, List<Map<String, dynamic>> data,
+    TResult? Function(DateTime lastUpdated)? unmodified,
+    TResult? Function(DateTime lastUpdated, List<Map<String, dynamic>> data,
             Map<String, dynamic> info)?
         modified,
   }) {
@@ -210,8 +213,8 @@ class _$UnmodifiedApiResult implements UnmodifiedApiResult {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(UnmodifiedApiResult value)? unmodified,
-    TResult Function(ModifiedApiResult value)? modified,
+    TResult? Function(UnmodifiedApiResult value)? unmodified,
+    TResult? Function(ModifiedApiResult value)? modified,
   }) {
     return unmodified?.call(this);
   }
@@ -249,6 +252,7 @@ abstract class _$$ModifiedApiResultCopyWith<$Res>
           _$ModifiedApiResult value, $Res Function(_$ModifiedApiResult) then) =
       __$$ModifiedApiResultCopyWithImpl<$Res>;
   @override
+  @useResult
   $Res call(
       {DateTime lastUpdated,
       List<Map<String, dynamic>> data,
@@ -257,31 +261,29 @@ abstract class _$$ModifiedApiResultCopyWith<$Res>
 
 /// @nodoc
 class __$$ModifiedApiResultCopyWithImpl<$Res>
-    extends _$ApiResultCopyWithImpl<$Res>
+    extends _$ApiResultCopyWithImpl<$Res, _$ModifiedApiResult>
     implements _$$ModifiedApiResultCopyWith<$Res> {
   __$$ModifiedApiResultCopyWithImpl(
       _$ModifiedApiResult _value, $Res Function(_$ModifiedApiResult) _then)
-      : super(_value, (v) => _then(v as _$ModifiedApiResult));
+      : super(_value, _then);
 
-  @override
-  _$ModifiedApiResult get _value => super._value as _$ModifiedApiResult;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? lastUpdated = freezed,
-    Object? data = freezed,
-    Object? info = freezed,
+    Object? lastUpdated = null,
+    Object? data = null,
+    Object? info = null,
   }) {
     return _then(_$ModifiedApiResult(
-      lastUpdated: lastUpdated == freezed
+      lastUpdated: null == lastUpdated
           ? _value.lastUpdated
           : lastUpdated // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      data: data == freezed
+      data: null == data
           ? _value._data
           : data // ignore: cast_nullable_to_non_nullable
               as List<Map<String, dynamic>>,
-      info: info == freezed
+      info: null == info
           ? _value._info
           : info // ignore: cast_nullable_to_non_nullable
               as Map<String, dynamic>,
@@ -325,8 +327,8 @@ class _$ModifiedApiResult implements ModifiedApiResult {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ModifiedApiResult &&
-            const DeepCollectionEquality()
-                .equals(other.lastUpdated, lastUpdated) &&
+            (identical(other.lastUpdated, lastUpdated) ||
+                other.lastUpdated == lastUpdated) &&
             const DeepCollectionEquality().equals(other._data, _data) &&
             const DeepCollectionEquality().equals(other._info, _info));
   }
@@ -334,12 +336,13 @@ class _$ModifiedApiResult implements ModifiedApiResult {
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      const DeepCollectionEquality().hash(lastUpdated),
+      lastUpdated,
       const DeepCollectionEquality().hash(_data),
       const DeepCollectionEquality().hash(_info));
 
   @JsonKey(ignore: true)
   @override
+  @pragma('vm:prefer-inline')
   _$$ModifiedApiResultCopyWith<_$ModifiedApiResult> get copyWith =>
       __$$ModifiedApiResultCopyWithImpl<_$ModifiedApiResult>(this, _$identity);
 
@@ -357,8 +360,8 @@ class _$ModifiedApiResult implements ModifiedApiResult {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function(DateTime lastUpdated)? unmodified,
-    TResult Function(DateTime lastUpdated, List<Map<String, dynamic>> data,
+    TResult? Function(DateTime lastUpdated)? unmodified,
+    TResult? Function(DateTime lastUpdated, List<Map<String, dynamic>> data,
             Map<String, dynamic> info)?
         modified,
   }) {
@@ -392,8 +395,8 @@ class _$ModifiedApiResult implements ModifiedApiResult {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(UnmodifiedApiResult value)? unmodified,
-    TResult Function(ModifiedApiResult value)? modified,
+    TResult? Function(UnmodifiedApiResult value)? unmodified,
+    TResult? Function(ModifiedApiResult value)? modified,
   }) {
     return modified?.call(this);
   }

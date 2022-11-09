@@ -46,12 +46,6 @@ class SettingsGeneral extends ConsumerWidget {
 class SettingsCollection extends ConsumerWidget {
   const SettingsCollection({super.key});
 
-  static Route<void> openCollectionPage(BuildContext context, Object? arguments) {
-    return MaterialPageRoute(builder: (context) {
-      return const CollectionSettingsPage();
-    });
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final collection = ref.watch(collectionProvider(false));
@@ -61,19 +55,13 @@ class SettingsCollection extends ConsumerWidget {
         error: (error, stackTrace) => Text(error.toString()),
         data: (data) => Text('${data.where((item) => item.inCollection).length} / ${data.length}'),
       ),
-      onTap: () => Navigator.of(context).restorablePush(openCollectionPage),
+      onTap: () => Navigator.of(context).restorablePush(CollectionSettingsPage.route),
     );
   }
 }
 
 class SettingsDefaultCardFilters extends ConsumerWidget {
   const SettingsDefaultCardFilters({super.key});
-
-  static Route<void> openDefaultCardFilterPage(BuildContext context, Object? arguments) {
-    return MaterialPageRoute(builder: (context) {
-      return const DefaultCardFilterPage();
-    });
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -89,7 +77,7 @@ class SettingsDefaultCardFilters extends ConsumerWidget {
           if (data.filterMwl != null) 'Most Wanted List: ${data.filterMwl!.name}',
         ].join('\n').let((e) => e.isNotEmpty ? Text(e) : null),
       ),
-      onTap: () => Navigator.of(context).restorablePush(openDefaultCardFilterPage),
+      onTap: () => Navigator.of(context).restorablePush(DefaultCardFilterPage.route),
     );
   }
 }
@@ -196,13 +184,7 @@ class SettingsNrdb extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return SliverStickyHeader(
-      header: Material(
-        elevation: 1,
-        color: Theme.of(context).canvasColor,
-        child: const ListTile(
-          title: Text('NetrunnerDB'),
-        ),
-      ),
+      header: HeaderListTile.title(title: 'NetrunnerDB'),
       sliver: const SliverList(
         delegate: SliverChildListDelegate.fixed([
           SettingsNrdbAuth(),
@@ -230,13 +212,7 @@ class SettingsApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return SliverStickyHeader(
-      header: Material(
-        elevation: 1,
-        color: Theme.of(context).canvasColor,
-        child: const ListTile(
-          title: Text('App'),
-        ),
-      ),
+      header: HeaderListTile.title(title: 'App'),
       sliver: const SliverList(
         delegate: SliverChildListDelegate.fixed([
           //_buildBackup(context),

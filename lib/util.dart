@@ -16,7 +16,7 @@ bool isDigit(String value) => digits.contains(value);
 
 RelativeRect menuPosition(BuildContext context) {
   final bar = context.findRenderObject()! as RenderBox;
-  final overlay = Overlay.of(context)!.context.findRenderObject() as RenderBox;
+  final overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
   return RelativeRect.fromRect(
     Rect.fromPoints(
       bar.localToGlobal(bar.size.topRight(Offset.zero), ancestor: overlay),

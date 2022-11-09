@@ -12,6 +12,12 @@ import '/view/rotation_dropdown.dart';
 class DefaultCardFilterPage extends ConsumerWidget {
   const DefaultCardFilterPage({super.key});
 
+  static Route<void> route(BuildContext context, Object? arguments) {
+    return MaterialPageRoute(builder: (context) {
+      return const DefaultCardFilterPage();
+    });
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(

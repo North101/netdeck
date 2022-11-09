@@ -90,7 +90,7 @@ class DeckListMoreActions extends ConsumerStatefulWidget {
 }
 
 class DeckListMoreActionsState extends ConsumerState<DeckListMoreActions> with RestorationMixin {
-  late RestorableRouteFuture<DeckFilterResult> deckFilterRoute;
+  late RestorableRouteFuture<DeckFilterArguments> deckFilterRoute;
 
   @override
   void initState() {
@@ -98,7 +98,7 @@ class DeckListMoreActionsState extends ConsumerState<DeckListMoreActions> with R
 
     deckFilterRoute = RestorableRouteFuture(
       onPresent: (navigator, arguments) => Navigator.of(context).restorablePush(
-        openDeckFilterRoute,
+        DeckFilterPage.route,
         arguments: arguments,
       ),
       onComplete: (result) {
@@ -129,22 +129,6 @@ class DeckListMoreActionsState extends ConsumerState<DeckListMoreActions> with R
     );
   }
 
-  static Route<void> openDeckFilterRoute(BuildContext context, Object? arguments) {
-    final result = DeckFilterResult.fromJson((arguments as Map).cast());
-    return MaterialPageRoute<DeckFilterResult>(builder: (context) {
-      return DeckFilterPage.withOverrides(
-        format: result.format,
-        rotation: result.rotation,
-        mwl: result.mwl,
-        packs: result.packs,
-        sides: result.sides,
-        factions: result.factions,
-        types: result.types,
-        tags: result.tags,
-      );
-    });
-  }
-
   void openCardFilterPage(BuildContext context, WidgetRef ref) {
     final format = ref.read(filterFormatProvider);
     final rotation = ref.read(filterRotationProvider);
@@ -155,7 +139,7 @@ class DeckListMoreActionsState extends ConsumerState<DeckListMoreActions> with R
     final types = ref.read(filterTypesProvider);
     final tags = ref.read(filterTagsProvider);
 
-    final result = DeckFilterResult(
+    final result = DeckFilterArguments(
       format: format.value,
       rotation: rotation.value,
       mwl: mwl.value,

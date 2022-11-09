@@ -22,24 +22,20 @@ class DeckCompareArguments {
   final Set<DeckMicroResult> deckList;
 }
 
-Route<void> openDeckComparePage(BuildContext context, Object? arguments) {
-  final args = DeckCompareArguments.fromJson(arguments as List);
-  return MaterialPageRoute(builder: (context) {
-    return DeckComparePage.withOverrides(
-      deckList: args.deckList,
-    );
-  });
-}
-
 class DeckComparePage extends ConsumerWidget {
   const DeckComparePage({super.key});
 
-  static Widget withOverrides({
-    required Set<DeckMicroResult> deckList,
-  }) {
+  static Route<void> route(BuildContext context, Object? arguments) {
+    final args = DeckCompareArguments.fromJson(arguments as List);
+    return MaterialPageRoute(builder: (context) {
+      return DeckComparePage.withOverrides(args);
+    });
+  }
+
+  static Widget withOverrides(DeckCompareArguments args) {
     return ProviderScope(
       overrides: [
-        compareDeckListProvider.overrideWithValue(deckList),
+        compareDeckListProvider.overrideWithValue(args.deckList),
       ],
       child: const DeckComparePage(),
     );

@@ -9,3 +9,12 @@ targets:
           override_hash_and_equals_in_result_sets: true
           generate_connect_constructor: true
           store_date_time_values_as_text: true
+      freezed:
+        options:
+          union_key: type
+          union_value_key: snake
+          explicit_to_json: true
+      json_serializable:
+        options:
+          any_map: true
+          explicit_to_json: true

@@ -24,11 +24,11 @@ class DeckListAppBar extends ConsumerWidget implements PreferredSizeWidget {
   @override
   Widget build(context, ref) {
     final isSelected = ref.watch(selectedDeckIdsProvider.select((value) => value.value.isNotEmpty));
-    final isSearching = ref.watch(filterSearchingProvider).value;
+    final isSearching = ref.watch(filterSearchingProvider);
     if (isSelected) {
       return const DeckSelectedAppBar();
     } else if (isSearching) {
-      return DeckSearchAppBar();
+      return const DeckSearchAppBar();
     }
     return DeckStandardAppBar(
       automaticallyImplyLeading: automaticallyImplyLeading,

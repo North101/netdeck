@@ -29,7 +29,7 @@ class HeaderListTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       elevation: 1,
-      color: Theme.of(context).canvasColor,
+      color: Theme.of(context).cardColor,
       child: child,
     );
   }

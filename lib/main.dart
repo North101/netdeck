@@ -2,21 +2,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod_restorable/flutter_riverpod_restorable.dart';
 
 import '/view/debug_page.dart';
 import '/view/loading_page.dart';
 import 'providers.dart';
 
-void main() => runApp(const App());
+void main() => runApp(const ProviderScope(child: App()));
 
 class App extends StatelessWidget {
   const App({super.key});
-
-  static Route<void> openHomeRoute(BuildContext context, Object? argument) {
-    return MaterialPageRoute(builder: (context) {
-      return const LoadingPage();
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +20,7 @@ class App extends StatelessWidget {
       restorationScopeId: 'root',
       title: 'Netdeck',
       theme: ThemeData(
+        brightness: Brightness.light,
         appBarTheme: theme.appBarTheme.copyWith(
           color: const Color(0xFF093156),
           systemOverlayStyle: SystemUiOverlayStyle.light,
@@ -32,7 +28,7 @@ class App extends StatelessWidget {
         dividerTheme: theme.dividerTheme.copyWith(space: 1),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
-            primary: const Color(0xFF093156),
+            backgroundColor: const Color(0xFF093156),
           ),
         ),
         colorScheme: theme.colorScheme.copyWith(
@@ -43,15 +39,19 @@ class App extends StatelessWidget {
           buttonColor: const Color(0xFF093156),
         ),
       ),
-      builder: (context, child) => ProviderScope(
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+      ),
+      themeMode: ThemeMode.system,
+      builder: (context, child) => RestorableProviderRegister(
         restorationId: 'app',
-        restorables: [
-          nrdbPublicApiProvider.withRestorationId('nrdbPublicApiProvider'),
-          lastSyncProvider.withRestorationId('lastSyncProvider'),
+        providers: [
+          nrdbPublicApiProvider,
+          lastSyncProvider,
         ],
         child: child!,
       ),
-      home: kDebugMode ? const DebugPage(route: openHomeRoute) : const LoadingPage(),
+      home: kDebugMode ? const DebugPage(route: LoadingPage.route) : const LoadingPage(),
     );
   }
 }

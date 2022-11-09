@@ -1,17 +1,20 @@
 import 'dart:math';
 
 import 'package:drift/drift.dart' as drift;
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' hide Card;
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod_restorable/flutter_riverpod_restorable.dart';
 
 import '/db/database.dart';
 import '/util/deck_validator.dart';
 import '/util/extensions.dart';
-import '/util/header_list.dart';
 import 'db.dart';
 
-final deckProvider = RestorableProvider<DeckNotifier>((ref) => throw UnimplementedError());
+final deckProvider = RestorableProvider<DeckNotifier>(
+  (_) => throw UnimplementedError(),
+  restorationId: 'deckProvider',
+);
 
 final deckResultStreamProvider = StreamProvider((ref) {
   final db = ref.watch(dbProvider);
@@ -72,7 +75,9 @@ final deckCardCodeSetProvider = Provider<Iterable<String>>((ref) {
 final deckCardListProvider = StreamProvider((ref) {
   final db = ref.watch(dbProvider);
   final cards = ref.watch(deckCardCodeSetProvider);
-  return db.listCards(where: db.card.code.isIn(cards)).watch();
+  return db.listCards(where: (card, pack, cycle, faction, side, type, subtype, mwlCard) {
+    return card.code.isIn(cards);
+  }).watch();
 }, dependencies: [
   dbProvider,
   deckCardCodeSetProvider,
@@ -101,8 +106,8 @@ final deckFullResultStreamProvider = StreamProvider((ref) async* {
   );
 }, dependencies: [
   deckProvider,
-  deckDataProvider.future,
-  deckCardListProvider.future,
+  deckDataProvider,
+  deckCardListProvider,
 ]);
 
 enum DeckSaveState {
@@ -251,29 +256,16 @@ class DeckNotifier extends RestorableValue<DeckNotifierResult> {
   Object? toPrimitives() => value.toJson();
 }
 
-final groupedDeckCardListProvider = StreamProvider((ref) async* {
-  final settings = await ref.watch(settingProvider.future);
-  final deckCardList = ref.watch(deckValidatorResultProvider.select((value) {
-    return value.deck.cards.keys;
-  }));
-
-  final groupBy = settings.settings.deckCardGroup;
-  final sortBy = settings.settings.deckCardSort;
-  yield HeaderList([
-    ...groupBy(sortBy(deckCardList)),
-  ]);
-});
-
 final deckRotationCardListProvider = StreamProvider.family<List<RotationCardResult>, DeckFullResult>((ref, deck) {
   final db = ref.watch(dbProvider);
-  return db
-      .listRotationCards(
-        where: buildAnd([
-          db.card.code.isIn(deck.cards.keys.map((e) => e.code).toList()),
-          db.rotation.code.equalsExp(drift.Variable(deck.rotation?.code)),
-        ]),
-      )
-      .watch();
+  return db.listRotationCards(
+    where: (rotation, format, rotationCycle, cycle, pack, card) {
+      return buildAnd([
+        card.code.isIn(deck.cards.keys.map((e) => e.code).toList()),
+        rotation.code.equalsExp(drift.Variable(deck.rotation?.code)),
+      ]);
+    },
+  ).watch();
 }, dependencies: [
   dbProvider,
 ]);
@@ -281,7 +273,7 @@ final deckRotationCardListProvider = StreamProvider.family<List<RotationCardResu
 final deckMwlCardListProvider = StreamProvider.family<List<MwlCardData>, DeckFullResult>((ref, deck) {
   final db = ref.watch(dbProvider);
   return db //
-      .listMwlCard(where: db.mwlCard.mwlCode.equalsExp(drift.Variable(deck.mwl?.code))) //
+      .listMwlCard(where: (mwlCard) => mwlCard.mwlCode.equalsExp(drift.Variable(deck.mwl?.code))) //
       .watch();
 }, dependencies: [
   dbProvider,
@@ -307,7 +299,7 @@ final deckValidatorStreamProvider = StreamProvider<DeckValidator>((ref) async* {
   final deck = await ref.watch(deckFullResultStreamProvider.future);
   yield await ref.watch(deckValidatorProvider(deck).future);
 }, dependencies: [
-  deckFullResultStreamProvider.future,
+  deckFullResultStreamProvider,
   deckValidatorProvider,
 ]);
 
@@ -335,5 +327,7 @@ class RestorableDeckMicroResultSet extends RestorableValue<Set<DeckMicroResult>>
   Object? toPrimitives() => value.map((e) => e.toJson()).toList();
 }
 
-final selectedCompareDeckListProvider =
-    RestorableProvider<RestorableDeckMicroResultSet>((ref) => throw UnimplementedError());
+final selectedCompareDeckListProvider = RestorableProvider<RestorableDeckMicroResultSet>(
+  (_) => throw UnimplementedError(),
+  restorationId: 'selectedCompareDeckListProvider',
+);

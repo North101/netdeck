@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -21,10 +22,14 @@ class AsyncValueBuilder<T> extends StatelessWidget {
       loading: loading ?? () => const Center(child: CircularProgressIndicator()),
       error: error ??
           (error, stackTrace) {
+            if (kDebugMode) {
+              print(stackTrace);
+              print(error);
+            }
             return Center(
               child: Text(
                 stackTrace.toString(),
-                style: Theme.of(context).textTheme.headline6!.copyWith(color: Colors.red),
+                style: Theme.of(context).textTheme.titleLarge!.copyWith(color: Theme.of(context).colorScheme.error),
               ),
             );
           },

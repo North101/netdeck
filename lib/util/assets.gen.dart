@@ -5,7 +5,7 @@
 
 // coverage:ignore-file
 // ignore_for_file: type=lint
-// ignore_for_file: directives_ordering,unnecessary_import
+// ignore_for_file: directives_ordering,unnecessary_import,implicit_dynamic_list_literal
 
 import 'package:flutter/widgets.dart';
 
@@ -23,6 +23,9 @@ class $AssetsIconsGen {
 
   /// File path: assets/icons/decks.png
   AssetGenImage get decks => const AssetGenImage('assets/icons/decks.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [appIos, app, cards, decks];
 }
 
 class $AssetsImagesGen {
@@ -110,6 +113,34 @@ class $AssetsImagesGen {
   /// File path: assets/images/weyland-consortium.png
   AssetGenImage get weylandConsortium =>
       const AssetGenImage('assets/images/weyland-consortium.png');
+
+  /// List of all assets
+  List<AssetGenImage> get values => [
+        adam,
+        agenda,
+        anarch,
+        apex,
+        click,
+        credit,
+        criminal,
+        haasBioroid,
+        interrupt,
+        jinteki,
+        link,
+        mu,
+        nbn,
+        netrunnerdb,
+        neutralCorp,
+        neutralRunner,
+        recurringCredit,
+        rez,
+        shaper,
+        strength,
+        subroutine,
+        sunnyLebeau,
+        trash,
+        weylandConsortium
+      ];
 }
 
 class $AssetsNrdbGen {
@@ -141,6 +172,10 @@ class $AssetsNrdbGen {
 
   /// File path: assets/nrdb/types.json
   String get types => 'assets/nrdb/types.json';
+
+  /// List of all assets
+  List<String> get values =>
+      [cards, cycles, factions, formats, mwl, packs, rotations, sides, types];
 }
 
 class Assets {
@@ -208,6 +243,8 @@ class AssetGenImage {
       cacheHeight: cacheHeight,
     );
   }
+
+  ImageProvider provider() => AssetImage(_assetName);
 
   String get path => _assetName;
 

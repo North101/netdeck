@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod_restorable/flutter_riverpod_restorable.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
 
 import '/db/database.dart' hide Card;
@@ -11,12 +12,19 @@ import 'header_list_tile.dart';
 
 final filteredPackListProvider = StreamProvider((ref) {
   final db = ref.watch(dbProvider);
-  final where = ref.watch(filterPackFilterProvider(const TypeFilterState(values: false)));
-  return db.listPacks(where: where).watch().map((items) {
-    return groupBy<PackResult, CycleData>(items, (item) {
-      return item.cycle;
-    }).entries;
-  });
+  return db
+      .listPacks(where: (pack, cycle) {
+        return ref.watch(filterPackFilterProvider(PackFilter(
+          values: false,
+          pack: pack,
+        )));
+      })
+      .watch()
+      .map((items) {
+        return groupBy(items, (item) {
+          return item.cycle;
+        }).entries;
+      });
 }, dependencies: [dbProvider, filterPackFilterProvider]);
 
 class FilterCycleCheckbox extends ConsumerWidget {
@@ -77,15 +85,12 @@ class FilterCycleCheckbox extends ConsumerWidget {
         sliver: SliverList(
           delegate: SliverChildListDelegate([
             ...packList.map(
-              (e) => Material(
-                color: Theme.of(context).splashColor,
-                child: CheckboxListTile(
-                  value: packs.contains(e.pack.code),
-                  title: Text(e.pack.name),
-                  onChanged: packs.always.contains(e.pack.code)
-                      ? null //
-                      : (selected) => setPacks(ref, selected, {e.pack.code}),
-                ),
+              (e) => CheckboxListTile(
+                value: packs.contains(e.pack.code),
+                title: Text(e.pack.name),
+                onChanged: packs.always.contains(e.pack.code)
+                    ? null //
+                    : (selected) => setPacks(ref, selected, {e.pack.code}),
               ),
             ),
           ]),
@@ -98,13 +103,22 @@ class FilterCycleCheckbox extends ConsumerWidget {
 class FilterPacksPage extends ConsumerWidget {
   const FilterPacksPage({super.key});
 
+  static Route<FilterType<String>> route(BuildContext context, Object? arguments) {
+    final packs = FilterType<String>.fromJson((arguments as Map).cast());
+    return MaterialPageRoute(
+      builder: (context) => FilterPacksPage.withOverrides(
+        packs: packs,
+      ),
+    );
+  }
+
   static Widget withOverrides({
     required FilterType<String> packs,
   }) {
-    return ProviderScope(
+    return RestorableProviderScope(
       restorationId: 'filter_packs_page',
       overrides: [
-        filterPacksProvider.overrideWithValue(RestorableFilterType(packs), 'filterPacksProvider'),
+        filterPacksProvider.overrideWith((ref) => RestorableFilterType(packs)),
       ],
       child: const FilterPacksPage(),
     );

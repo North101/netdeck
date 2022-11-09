@@ -29,11 +29,7 @@ class DeckStatsHeaderDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return Material(
-      elevation: 1,
-      color: Theme.of(context).canvasColor,
-      child: const DeckStats(),
-    );
+    return const HeaderListTile(child: DeckStats());
   }
 
   @override
@@ -62,7 +58,7 @@ class DeckBodyState extends ConsumerState<DeckBody> with RestorationMixin {
 
     cardGalleryRoute = RestorableRouteFuture<CardGalleryResult>(
       onPresent: (navigator, arguments) => Navigator.of(context).restorablePush(
-        openCardGalleryPage,
+        CardGalleryPage.route,
         arguments: arguments,
       ),
       onComplete: (result) {
@@ -85,7 +81,7 @@ class DeckBodyState extends ConsumerState<DeckBody> with RestorationMixin {
         title: Text(
           errors.join('\n'),
           style: TextStyle(
-            color: Theme.of(context).errorColor,
+            color: Theme.of(context).colorScheme.error,
           ),
         ),
       ),
@@ -209,7 +205,7 @@ class DeckDescriptionFieldState extends ConsumerState<DeckDescriptionField> with
 
     deckDescriptionRoute = RestorableRouteFuture<String>(
       onPresent: (navigator, arguments) => Navigator.of(context).restorablePush(
-        openDeckDescription,
+        DeckDescriptionPage.route,
         arguments: arguments,
       ),
       onComplete: (value) {
@@ -219,12 +215,6 @@ class DeckDescriptionFieldState extends ConsumerState<DeckDescriptionField> with
         );
       },
     );
-  }
-
-  static Route<String> openDeckDescription(BuildContext context, Object? arguments) {
-    return DeckDescriptionRoute(DeckDescriptionPage(
-      description: arguments as String,
-    ));
   }
 
   @override
@@ -340,7 +330,7 @@ class DeckIdentity extends ConsumerWidget {
         final deckCards = ref.read(deckProvider).value.cards;
 
         navigator.restorablePush(
-          openCardGalleryPage,
+          CardGalleryPage.route,
           arguments: CardGalleryArguments(
             items: GroupedCardCodeList.fromCardResult(HeaderList([
               HeaderItems(
@@ -411,7 +401,7 @@ class DeckInfluenceStat extends ConsumerWidget {
           children: [
             TextSpan(
               text: '$influence',
-              style: TextStyle(color: hasError ? theme.errorColor : null),
+              style: TextStyle(color: hasError ? theme.colorScheme.error : null),
             ),
             const TextSpan(text: ' / '),
             TextSpan(text: '${maxInfluence ?? '∞'}'),
@@ -448,7 +438,7 @@ class DeckAgendaStat extends ConsumerWidget {
           children: [
             TextSpan(
               text: '$agendaPoints',
-              style: TextStyle(color: hasError ? theme.errorColor : null),
+              style: TextStyle(color: hasError ? theme.colorScheme.error : null),
             ),
             const TextSpan(text: ' / '),
             TextSpan(text: '$minAgendaPoints - $maxAgendaPoints'),
@@ -482,7 +472,7 @@ class DeckSizeStat extends ConsumerWidget {
           children: [
             TextSpan(
               text: '$deckSize',
-              style: TextStyle(color: hasError ? theme.errorColor : null),
+              style: TextStyle(color: hasError ? theme.colorScheme.error : null),
             ),
             const TextSpan(text: ' / '),
             TextSpan(text: '$minDeckSize'),
@@ -518,7 +508,7 @@ class DeckMwlPointsStat extends ConsumerWidget {
           children: [
             TextSpan(
               text: '$points',
-              style: TextStyle(color: hasError ? theme.errorColor : null),
+              style: TextStyle(color: hasError ? theme.colorScheme.error : null),
             ),
             const TextSpan(text: ' / '),
             TextSpan(text: '$maxPoints'),
@@ -570,7 +560,7 @@ class DeckErrors extends ConsumerWidget {
         title: Text(
           allErrors.join('\n'),
           style: TextStyle(
-            color: Theme.of(context).errorColor,
+            color: Theme.of(context).colorScheme.error,
           ),
         ),
       ),
@@ -596,11 +586,9 @@ class DeckTags extends ConsumerWidget {
           labelText: 'Tags',
         ),
         findSuggestions: (query) async {
-          final foundTags = await db
-              .listDistinctDeckTags(
-                where: db.deckTag.tag.equals(query) | db.deckTag.tag.lower().contains(query.toLowerCase()),
-              )
-              .get();
+          final foundTags = await db.listDistinctDeckTags(where: (deckTag, deck) {
+            return deckTag.tag.equals(query) | deckTag.tag.lower().contains(query.toLowerCase());
+          }).get();
           final validQuery = query.isNotEmpty && !query.contains(' ') && foundTags.none((result) => result == query);
           return [
             if (validQuery) query,
