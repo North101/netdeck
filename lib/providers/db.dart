@@ -95,17 +95,14 @@ final mwlListProvider = StreamProvider.family<List<MwlData>, FormatData?>((ref, 
   }).watch();
 });
 
-final collectionProvider = StreamProvider.family<List<CollectionResult>, bool>((ref, inCollection) {
+final collectionProvider = StreamProvider.family<List<CollectionResult>, bool>((ref, inCollection) async* {
   final db = ref.watch(dbProvider);
-  return db.listCollection(inCollection: inCollection).watch();
+  yield* db.listCollection(inCollection: inCollection).watch();
 });
 
-final collectionByCycleProvider =
-    StreamProvider.family<Map<CycleData, List<CollectionResult>>, bool>((ref, inCollection) {
-  final collection = ref.watch(collectionProvider(inCollection).stream);
-  return collection.map((items) {
-    return groupBy(items, (item) => item.cycle);
-  });
+final collectionByCycleProvider = StreamProvider.family<Map<CycleData, List<CollectionResult>>, bool>((ref, inCollection) async* {
+  final collection = await ref.watch(collectionProvider(inCollection).future);
+  yield collection.groupListsBy((item) => item.cycle);
 });
 
 final packListProvider = StreamProvider((ref) {
