@@ -20,7 +20,7 @@ class DeckListFilters extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final hasFilters = ref.watch(hasDeckFilterProvider);
     if (!hasFilters) {
-      return const SizedBox();
+      return const SizedBox.shrink();
     }
 
     final tags = ref.watch(filterTagsProvider).value;
@@ -30,9 +30,8 @@ class DeckListFilters extends ConsumerWidget {
       loading: () => const Center(child: LinearProgressIndicator()),
       data: (data) {
         return SizedBox(
-          height: 40,
+          height: 44,
           child: ListView(
-            padding: const EdgeInsets.only(top: 8, right: 8, left: 8),
             shrinkWrap: true,
             scrollDirection: Axis.horizontal,
             children: [
