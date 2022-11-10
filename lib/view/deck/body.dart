@@ -108,14 +108,21 @@ class DeckBodyState extends ConsumerState<DeckBody> with RestorationMixin {
           delegate: SliverChildListDelegate.fixed([
             DeckSyncStatus(),
             DeckErrors(),
-            DeckIdentity(),
-            DeckNameField(),
-            DeckDescriptionField(),
-            DeckTags(),
-            DeckFormatDropdown(),
-            DeckRotationDropdown(),
-            DeckMwlDropdown(),
           ]),
+        ),
+        const SliverPadding(
+          padding: EdgeInsets.symmetric(vertical: 8),
+          sliver: SliverList(
+            delegate: SliverChildListDelegate.fixed([
+              DeckIdentity(),
+              DeckNameField(),
+              DeckDescriptionField(),
+              DeckTags(),
+              DeckFormatDropdown(),
+              DeckRotationDropdown(),
+              DeckMwlDropdown(),
+            ]),
+          ),
         ),
         if (groupedCardList.hasError)
           SliverToBoxAdapter(child: Text(groupedCardList.error!.toString()))

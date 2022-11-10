@@ -63,11 +63,14 @@ class DeckHeader extends ConsumerWidget {
     final deckItemBuilder = ref.watch(deckItemBuilderProvider);
     return SliverStickyHeader(
       header: HeaderListTile.titleCount(title: headerList.header, count: headerList.length),
-      sliver: SliverList(
-        delegate: SliverChildSeperatedBuilderDelegate(
-          (context, index) => deckItemBuilder(context, ref, index, headerList[index]),
-          (context, index) => const Divider(),
-          childCount: headerList.length,
+      sliver: SliverPadding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        sliver: SliverList(
+          delegate: SliverChildSeperatedBuilderDelegate(
+            (context, index) => deckItemBuilder(context, ref, index, headerList[index]),
+            (context, index) => const Divider(),
+            childCount: headerList.length,
+          ),
         ),
       ),
     );

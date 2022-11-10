@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 
 int compareToChain<T>(T a, T b, Iterable<int Function(T a, T b)> comparables) {
@@ -39,6 +41,6 @@ class SliverChildSeperatedBuilderDelegate extends SliverChildBuilderDelegate {
     super.semanticIndexOffset,
   }) : super(
           (context, index) => index.isEven ? builder(context, index ~/ 2) : separatedBy(context, index ~/ 2),
-          childCount: childCount != null ? childCount * 2 : 0,
+          childCount: childCount != null ? max((childCount * 2) - 1, 0) : null,
         );
 }

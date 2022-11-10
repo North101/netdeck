@@ -59,11 +59,14 @@ class CardHeader extends ConsumerWidget {
     final cardItemBuilder = ref.watch(cardItemBuilderProvider);
     return SliverStickyHeader(
       header: HeaderListTile.titleCount(title: headerList.header, count: headerList.length),
-      sliver: SliverList(
-        delegate: SliverChildSeperatedBuilderDelegate(
-          (context, index) => cardItemBuilder(context, ref, indexOffset + index, headerList[index]),
-          (context, index) => const Divider(),
-          childCount: headerList.length,
+      sliver: SliverPadding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        sliver: SliverList(
+          delegate: SliverChildSeperatedBuilderDelegate(
+            (context, index) => cardItemBuilder(context, ref, indexOffset + index, headerList[index]),
+            (context, index) => const Divider(),
+            childCount: headerList.length,
+          ),
         ),
       ),
     );

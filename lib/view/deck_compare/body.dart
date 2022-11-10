@@ -41,15 +41,18 @@ class DeckCardHeader extends ConsumerWidget {
     final count = headerList.map<int>((e) => e.value).sum;
     return SliverStickyHeader(
       header: HeaderListTile.titleCount(title: headerList.header, count: count),
-      sliver: SliverList(
-        delegate: SliverChildSeperatedBuilderDelegate(
-          (context, index) => DeckCardTile(
-            index: indexOffset + index,
-            card: headerList[index].key,
-            count: headerList[index].value,
+      sliver: SliverPadding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        sliver: SliverList(
+          delegate: SliverChildSeperatedBuilderDelegate(
+            (context, index) => DeckCardTile(
+              index: indexOffset + index,
+              card: headerList[index].key,
+              count: headerList[index].value,
+            ),
+            (context, index) => const Divider(),
+            childCount: headerList.length,
           ),
-          (context, index) => const Divider(),
-          childCount: headerList.length,
         ),
       ),
     );
