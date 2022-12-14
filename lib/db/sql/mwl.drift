@@ -9,7 +9,7 @@ CREATE TABLE mwl(
   format_code TEXT NOT NULL,
   name TEXT NOT NULL,
   date_start DATETIME,
-  type TEXT MAPPED BY `JsonTypeConverter2.asNullable(const MwlTypeConverter())`,
+  type ENUMNAME(MwlType),
   runner_points INT,
   corp_points INT
 );

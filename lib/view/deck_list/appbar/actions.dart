@@ -74,7 +74,7 @@ class DeckListSortMenu extends ConsumerWidget {
           (v) => CheckedPopupMenuItem(
             checked: v == deckSort,
             value: v,
-            child: Text(v.name),
+            child: Text(v.title),
           ),
         ),
       ],

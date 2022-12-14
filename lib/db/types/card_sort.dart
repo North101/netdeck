@@ -91,15 +91,3 @@ extension CardSortEx on CardSort {
 
   List<CardResult> call(Iterable<CardResult> items) => items.sorted(sorted);
 }
-
-class CardSortConverter extends MyTypeConverter<CardSort, String> {
-  const CardSortConverter(this.defaultValue);
-
-  final CardSort defaultValue;
-
-  @override
-  CardSort fromSql(String fromDb) => CardSort.values.firstWhereOrNull((e) => toSql(e) == fromDb) ?? defaultValue;
-
-  @override
-  String toSql(CardSort value) => value.title;
-}

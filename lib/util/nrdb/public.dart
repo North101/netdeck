@@ -170,7 +170,7 @@ class NrdbPublicApi {
       b.deleteAll<Cycle, CycleData>(_db.cycle);
       b.insertAll(
         _db.cycle,
-        result.data.map<CycleData>((item) => CycleData.fromJson(item.cast())).toList(),
+        result.data.map<CycleData>(CycleData.fromJson).toList(),
       );
     });
   }
@@ -194,12 +194,7 @@ class NrdbPublicApi {
       b.deleteAll<Pack, PackData>(_db.pack);
       b.insertAll(
         _db.pack,
-        result.data.map<PackData>((result) {
-          return PackData.fromJson({
-            ...result,
-            'date_release': result['date_release'],
-          });
-        }).toList(),
+        result.data.map<PackData>(PackData.fromJson).toList(),
       );
     });
   }
@@ -223,7 +218,7 @@ class NrdbPublicApi {
       b.deleteAll<Side, SideData>(_db.side);
       b.insertAll(
         _db.side,
-        result.data.map<SideData>((item) => SideData.fromJson(item)).toList(),
+        result.data.map<SideData>(SideData.fromJson).toList(),
       );
     });
   }
@@ -276,7 +271,7 @@ class NrdbPublicApi {
       b.deleteAll<Type, TypeData>(_db.type);
       b.insertAll(
         _db.type,
-        result.data.map<TypeData>((result) => TypeData.fromJson(result)).toList(),
+        result.data.map<TypeData>(TypeData.fromJson).toList(),
       );
     });
   }
@@ -363,7 +358,7 @@ class NrdbPublicApi {
           'code': currentRotationCode(format.code),
           'format_code': format.code,
           'name': currentRotationName(null),
-          'type': const RotationTypeConverter().toJson(RotationType.current),
+          'type': RotationType.current.name,
           'rotated': [],
         },
       for (final e in result.data)
@@ -372,14 +367,14 @@ class NrdbPublicApi {
             ...e,
             'code': currentRotationCode(e['format_code']),
             'name': currentRotationName(e['name']!),
-            'type': const RotationTypeConverter().toJson(RotationType.current),
+            'type': RotationType.current.name,
           },
       for (final format in formats)
         latestRotationCode(format.code): {
           'code': latestRotationCode(format.code),
           'format_code': format.code,
           'name': latestRotationName(null),
-          'type': const RotationTypeConverter().toJson(RotationType.latest),
+          'type': RotationType.latest.name,
           'rotated': [],
         },
       for (final e in result.data)
@@ -388,7 +383,7 @@ class NrdbPublicApi {
             ...e,
             'code': latestRotationCode(e['format_code']),
             'name': latestRotationName(e['name']!),
-            'type': const RotationTypeConverter().toJson(RotationType.latest),
+            'type': RotationType.latest.name,
           },
       for (final e in result.data) e['code']: e,
     }.values;
@@ -396,13 +391,7 @@ class NrdbPublicApi {
       b.deleteAll<Rotation, RotationData>(_db.rotation);
       b.insertAll<Rotation, RotationData>(
         _db.rotation,
-        rotations.map<RotationData>((result) {
-          print(result);
-          return RotationData.fromJson({
-            ...result,
-            'date_start': result['date_start'],
-          });
-        }).toList(),
+        rotations.map<RotationData>(RotationData.fromJson).toList(),
       );
 
       final rotationCycles = rotations.map((result) {
@@ -447,7 +436,7 @@ class NrdbPublicApi {
           'code': activeMwlCode(format.code),
           'format_code': format.code,
           'name': activeMwlName(null),
-          'type': const MwlTypeConverter().toJson(MwlType.active),
+          'type': MwlType.active.name,
           'cards': {},
         },
       for (final e in result.data)
@@ -456,14 +445,14 @@ class NrdbPublicApi {
             ...e,
             'code': activeMwlCode(e['format_code']),
             'name': activeMwlName(e['name']!),
-            'type': const MwlTypeConverter().toJson(MwlType.active),
+            'type': MwlType.active.name,
           },
       for (final format in formats)
         latestRotationCode(format.code): {
           'code': latestRotationCode(format.code),
           'format_code': format.code,
           'name': latestRotationName(null),
-          'type': const MwlTypeConverter().toJson(MwlType.latest),
+          'type': MwlType.latest.name,
           'cards': {},
         },
       for (final e in result.data)
@@ -472,7 +461,7 @@ class NrdbPublicApi {
             ...e,
             'code': latestRotationCode(e['format_code']),
             'name': latestRotationName(e['name']!),
-            'type': const MwlTypeConverter().toJson(MwlType.latest),
+            'type': MwlType.latest.name,
           },
       for (final e in result.data) e['code']: e,
     }.values;
@@ -480,13 +469,7 @@ class NrdbPublicApi {
       b.deleteAll<Mwl, MwlData>(_db.mwl);
       b.insertAll<Mwl, MwlData>(
         _db.mwl,
-        mwl.map<MwlData>((result) {
-          result = result.cast<String, dynamic>();
-          return MwlData.fromJson({
-            ...result,
-            'date_start': result['date_start'],
-          });
-        }).toList(),
+        mwl.map<MwlData>(MwlData.fromJson).toList(),
       );
 
       final mwlCards = mwl.map((result) {
@@ -524,9 +507,9 @@ class NrdbPublicApi {
     final rotationResult = await initRotations();
     final mwlResult = await initMwl();
 
-    return NrdbData(
+    return await _db.into(_db.nrdb).insertReturning(NrdbData(
       id: true,
-      expires: now.add(const Duration(days: 1)),
+      expires: now,
       cycleLastUpdated: cycleResult.lastUpdated,
       packLastUpdated: packResult.lastUpdated,
       sideLastUpdated: sideResult.lastUpdated,
@@ -536,7 +519,7 @@ class NrdbPublicApi {
       formatLastUpdated: formatResult.lastUpdated,
       rotationLastUpdated: rotationResult.lastUpdated,
       mwlLastUpdated: mwlResult.lastUpdated,
-    );
+    ));
   }
 
   Future<DateTime> updateDatabase({bool force = false}) async {
@@ -544,7 +527,7 @@ class NrdbPublicApi {
     return await _db.transaction(() async {
       var nrdb = await _db.getNrdb().getSingleOrNull() ?? await initDatabase(now);
 
-      final expired = force || nrdb.expires.isBefore(now);
+      final expired = force || nrdb.expires.isAtSameMomentAs(now) || nrdb.expires.isBefore(now);
       if (!expired) return now;
 
       final cycleResult = await fetchCycles(nrdb.cycleLastUpdated).catchError((e) {
@@ -576,8 +559,7 @@ class NrdbPublicApi {
         return ApiResult.unmodified(nrdb.mwlLastUpdated);
       });
 
-      await _db.delete(_db.nrdb).go();
-      await _db.into(_db.nrdb).insert(NrdbData(
+      await _db.into(_db.nrdb).insertOnConflictUpdate(NrdbData(
             id: true,
             expires: now.add(const Duration(days: 1)),
             cycleLastUpdated: cycleResult.lastUpdated,

@@ -1,8 +1,7 @@
+import 'package:drift/drift.dart';
 import 'package:flutter/material.dart';
 
-import '/db/database.dart';
-
-class ColorConverter extends MyTypeConverter<Color, int> {
+class ColorConverter extends TypeConverter<Color, int> with JsonTypeConverter<Color, int> {
   const ColorConverter();
 
   @override

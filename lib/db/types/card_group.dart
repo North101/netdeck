@@ -154,15 +154,3 @@ extension CardGroupEx on CardGroup {
     }
   }
 }
-
-class CardGroupConverter extends MyTypeConverter<CardGroup, String> {
-  const CardGroupConverter(this.defaultValue);
-
-  final CardGroup defaultValue;
-
-  @override
-  CardGroup fromSql(String fromDb) => CardGroup.values.firstWhereOrNull((e) => toSql(e) == fromDb) ?? defaultValue;
-
-  @override
-  String toSql(CardGroup value) => value.name;
-}

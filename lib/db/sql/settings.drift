@@ -8,15 +8,15 @@ CREATE TABLE settings(
   filter_rotation_code TEXT DEFAULT NULL,
   filter_mwl_code TEXT DEFAULT NULL,
   filter_collection BOOLEAN NOT NULL DEFAULT FALSE,
-  card_sort TEXT NOT NULL MAPPED BY `const CardSortConverter(CardSort.set)` DEFAULT '',
-  card_group TEXT NOT NULL MAPPED BY `const CardGroupConverter(CardGroup.type)` DEFAULT '',
-  deck_sort TEXT NOT NULL MAPPED BY `const DeckSortConverter(DeckSort.updated)` DEFAULT '',
-  deck_group TEXT NOT NULL MAPPED BY `const DeckGroupConverter(DeckGroup.side)` DEFAULT '',
-  deck_card_sort TEXT NOT NULL MAPPED BY `const CardSortConverter(CardSort.set)` DEFAULT '',
-  deck_card_group TEXT NOT NULL MAPPED BY `const CardGroupConverter(CardGroup.type)` DEFAULT '',
-  compare_card_sort TEXT NOT NULL MAPPED BY `const CardSortConverter(CardSort.set)` DEFAULT '',
+  card_sort ENUMNAME(CardSort) NOT NULL DEFAULT 'set',
+  card_group ENUMNAME(CardGroup) NOT NULL DEFAULT 'type',
+  deck_sort ENUMNAME(DeckSort) NOT NULL DEFAULT 'updated',
+  deck_group ENUMNAME(DeckGroup) NOT NULL DEFAULT 'side',
+  deck_card_sort ENUMNAME(CardSort) NOT NULL DEFAULT 'set',
+  deck_card_group ENUMNAME(CardGroup) NOT NULL DEFAULT 'type',
+  compare_card_sort ENUMNAME(CardSort) NOT NULL DEFAULT 'set',
   apex_resources BOOLEAN NOT NULL DEFAULT FALSE,
-  card_gallery_view TEXT NOT NULL MAPPED BY `const CardGalleryViewConverter(CardGalleryPageView.image)` DEFAULT '',
+  card_gallery_view ENUMNAME(CardGalleryPageView) NOT NULL DEFAULT 'image',
   CONSTRAINT settings_id CHECK (id = TRUE)
 ) AS SettingsData;
 

@@ -181,15 +181,3 @@ extension DeckGroupEx on DeckGroup {
         .sortedByCompare<T>((e) => e.first, sorted));
   }
 }
-
-class DeckGroupConverter extends MyTypeConverter<DeckGroup, String> {
-  const DeckGroupConverter(this.defaultValue);
-
-  final DeckGroup defaultValue;
-
-  @override
-  DeckGroup fromSql(String fromDb) => DeckGroup.values.firstWhereOrNull((e) => toSql(e) == fromDb) ?? defaultValue;
-
-  @override
-  String toSql(DeckGroup value) => value.name;
-}

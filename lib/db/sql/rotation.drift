@@ -13,7 +13,7 @@ CREATE TABLE rotation(
   format_code TEXT NOT NULL,
   name TEXT NOT NULL,
   date_start DATETIME,
-  type TEXT MAPPED BY `JsonTypeConverter2.asNullable(const RotationTypeConverter())`
+  type ENUMNAME(RotationType)
 );
 
 CREATE TABLE rotation_cycle(

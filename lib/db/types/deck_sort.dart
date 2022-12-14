@@ -65,7 +65,7 @@ extension DeckSortEx on DeckSort {
     }
   }
 
-  String get name {
+  String get title {
     switch (this) {
       case DeckSort.name:
         return 'Name';
@@ -83,16 +83,4 @@ extension DeckSortEx on DeckSort {
   }
 
   List<T> call<T extends DeckResult>(Iterable<T> items) => items.sorted(sorted);
-}
-
-class DeckSortConverter extends MyTypeConverter<DeckSort, String> {
-  const DeckSortConverter(this.defaultValue);
-
-  final DeckSort defaultValue;
-
-  @override
-  DeckSort fromSql(String fromDb) => DeckSort.values.firstWhereOrNull((e) => toSql(e) == fromDb) ?? defaultValue;
-
-  @override
-  String toSql(DeckSort value) => value.name;
 }
