@@ -8,10 +8,10 @@ import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
 
 import '/db/extensions.dart';
+import '/db/migrations.dart';
 import '/providers/deck.dart';
 import '/util/extensions.dart';
 import 'types.dart';
-import 'util.dart';
 
 export 'extensions.dart';
 export 'types.dart';
@@ -56,57 +56,10 @@ class Database extends _$Database {
   }
 
   @override
-  int schemaVersion = 6;
+  int schemaVersion = 7;
 
   @override
-  MigrationStrategy get migration => MigrationStrategy(
-        onUpgrade: (m, from, to) async {
-          if (from < 2) {
-            await m.addColumn(settings, settings.cardGalleryView);
-          }
-          if (from < 3) {
-            await m.addColumn(mwl, mwl.runnerPoints);
-            await m.addColumn(mwl, mwl.corpPoints);
-            await m.addColumn(mwlCard, mwlCard.points);
-          }
-          if (from < 4) {
-            await m.drop(card);
-            await m.createTable(card);
-            await delete(nrdb).go();
-          }
-          if (from < 5) {
-            await m.drop(rotation);
-            await m.createTable(rotation);
-            await m.drop(mwl);
-            await m.createTable(mwl);
-            await delete(nrdb).go();
-          }
-          if (from < 6) {
-            await m.alterTable(TableMigration(card));
-            await migrateFromUnixTimestampsToText(m);
-          }
-        },
-      );
-
-  Future<void> migrateFromUnixTimestampsToText(Migrator m) async {
-    for (final table in allTables) {
-      final dateTimeColumns = table.$columns.where((c) => c.type == DriftSqlType.dateTime);
-
-      if (dateTimeColumns.isNotEmpty) {
-        // This table has dateTime columns which need to be migrated.
-        await m.alterTable(TableMigration(
-          table,
-          columnTransformer: {
-            for (final column in dateTimeColumns)
-              // We assume that the column in the database is an int (unix
-              // timestamp), use `fromUnixEpoch` to convert it to a date time.
-              // Note that the resulting value in the database is in UTC.
-              column: DateTimeExpressions.fromUnixEpoch(column.dartCast<int>() * const Constant(100)),
-          },
-        ));
-      }
-    }
-  }
+  MigrationStrategy get migration => migrationStrategy(this);
 
   Future<DeckData> copyDeck(DeckData deck, {String? newDeckId, DateTime? now}) async {
     newDeckId ??= const Uuid().v4();
@@ -236,14 +189,4 @@ class Database extends _$Database {
       },
     );
   }
-}
-
-extension BatchEx on Batch {
-  void deleteAll<T extends Table, D>(TableInfo<T, D> table) {
-    return deleteWhere<T, D>(table, (tbl) => trueExpression);
-  }
-}
-
-abstract class MyTypeConverter<D, S extends Object> extends TypeConverter<D, S> with JsonTypeConverter<D, S> {
-  const MyTypeConverter();
 }

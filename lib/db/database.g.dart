@@ -2,10 +2,6 @@
 
 part of 'database.dart';
 
-// **************************************************************************
-// DriftDatabaseGenerator
-// **************************************************************************
-
 // ignore_for_file: type=lint
 class TypeData extends DataClass implements Insertable<TypeData> {
   final String code;
@@ -198,31 +194,34 @@ class Type extends Table with TableInfo<Type, TypeData> {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   Type(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _codeMeta = const VerificationMeta('code');
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
   late final GeneratedColumn<String> code = GeneratedColumn<String>(
       'code', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'PRIMARY KEY NOT NULL');
-  final VerificationMeta _sideCodeMeta = const VerificationMeta('sideCode');
+  static const VerificationMeta _sideCodeMeta =
+      const VerificationMeta('sideCode');
   late final GeneratedColumn<String> sideCode = GeneratedColumn<String>(
       'side_code', aliasedName, true,
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       $customConstraints: '');
-  final VerificationMeta _positionMeta = const VerificationMeta('position');
+  static const VerificationMeta _positionMeta =
+      const VerificationMeta('position');
   late final GeneratedColumn<int> position = GeneratedColumn<int>(
       'position', aliasedName, false,
       type: DriftSqlType.int,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
-  final VerificationMeta _nameMeta = const VerificationMeta('name');
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
-  final VerificationMeta _isSubtypeMeta = const VerificationMeta('isSubtype');
+  static const VerificationMeta _isSubtypeMeta =
+      const VerificationMeta('isSubtype');
   late final GeneratedColumn<bool> isSubtype = GeneratedColumn<bool>(
       'is_subtype', aliasedName, false,
       type: DriftSqlType.bool,
@@ -295,6 +294,8 @@ class Type extends Table with TableInfo<Type, TypeData> {
     return Type(attachedDatabase, alias);
   }
 
+  @override
+  List<String> get customConstraints => const [];
   @override
   bool get dontWriteConstraints => true;
 }
@@ -412,13 +413,13 @@ class Side extends Table with TableInfo<Side, SideData> {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   Side(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _codeMeta = const VerificationMeta('code');
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
   late final GeneratedColumn<String> code = GeneratedColumn<String>(
       'code', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'PRIMARY KEY NOT NULL');
-  final VerificationMeta _nameMeta = const VerificationMeta('name');
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
       type: DriftSqlType.string,
@@ -469,6 +470,8 @@ class Side extends Table with TableInfo<Side, SideData> {
   }
 
   @override
+  List<String> get customConstraints => const [];
+  @override
   bool get dontWriteConstraints => true;
 }
 
@@ -517,37 +520,37 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
     }
     map['filter_collection'] = Variable<bool>(filterCollection);
     {
-      final converter = Settings.$converter0;
+      final converter = Settings.$convertercardSort;
       map['card_sort'] = Variable<String>(converter.toSql(cardSort));
     }
     {
-      final converter = Settings.$converter1;
+      final converter = Settings.$convertercardGroup;
       map['card_group'] = Variable<String>(converter.toSql(cardGroup));
     }
     {
-      final converter = Settings.$converter2;
+      final converter = Settings.$converterdeckSort;
       map['deck_sort'] = Variable<String>(converter.toSql(deckSort));
     }
     {
-      final converter = Settings.$converter3;
+      final converter = Settings.$converterdeckGroup;
       map['deck_group'] = Variable<String>(converter.toSql(deckGroup));
     }
     {
-      final converter = Settings.$converter4;
+      final converter = Settings.$converterdeckCardSort;
       map['deck_card_sort'] = Variable<String>(converter.toSql(deckCardSort));
     }
     {
-      final converter = Settings.$converter5;
+      final converter = Settings.$converterdeckCardGroup;
       map['deck_card_group'] = Variable<String>(converter.toSql(deckCardGroup));
     }
     {
-      final converter = Settings.$converter6;
+      final converter = Settings.$convertercompareCardSort;
       map['compare_card_sort'] =
           Variable<String>(converter.toSql(compareCardSort));
     }
     map['apex_resources'] = Variable<bool>(apexResources);
     {
-      final converter = Settings.$converter7;
+      final converter = Settings.$convertercardGalleryView;
       map['card_gallery_view'] =
           Variable<String>(converter.toSql(cardGalleryView));
     }
@@ -590,22 +593,22 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           serializer.fromJson<String?>(json['filter_rotation_code']),
       filterMwlCode: serializer.fromJson<String?>(json['filter_mwl_code']),
       filterCollection: serializer.fromJson<bool>(json['filter_collection']),
-      cardSort: Settings.$converter0
+      cardSort: Settings.$convertercardSort
           .fromJson(serializer.fromJson<String>(json['card_sort'])),
-      cardGroup: Settings.$converter1
+      cardGroup: Settings.$convertercardGroup
           .fromJson(serializer.fromJson<String>(json['card_group'])),
-      deckSort: Settings.$converter2
+      deckSort: Settings.$converterdeckSort
           .fromJson(serializer.fromJson<String>(json['deck_sort'])),
-      deckGroup: Settings.$converter3
+      deckGroup: Settings.$converterdeckGroup
           .fromJson(serializer.fromJson<String>(json['deck_group'])),
-      deckCardSort: Settings.$converter4
+      deckCardSort: Settings.$converterdeckCardSort
           .fromJson(serializer.fromJson<String>(json['deck_card_sort'])),
-      deckCardGroup: Settings.$converter5
+      deckCardGroup: Settings.$converterdeckCardGroup
           .fromJson(serializer.fromJson<String>(json['deck_card_group'])),
-      compareCardSort: Settings.$converter6
+      compareCardSort: Settings.$convertercompareCardSort
           .fromJson(serializer.fromJson<String>(json['compare_card_sort'])),
       apexResources: serializer.fromJson<bool>(json['apex_resources']),
-      cardGalleryView: Settings.$converter7
+      cardGalleryView: Settings.$convertercardGalleryView
           .fromJson(serializer.fromJson<String>(json['card_gallery_view'])),
     );
   }
@@ -618,23 +621,23 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
       'filter_rotation_code': serializer.toJson<String?>(filterRotationCode),
       'filter_mwl_code': serializer.toJson<String?>(filterMwlCode),
       'filter_collection': serializer.toJson<bool>(filterCollection),
-      'card_sort':
-          serializer.toJson<String>(Settings.$converter0.toJson(cardSort)),
-      'card_group':
-          serializer.toJson<String>(Settings.$converter1.toJson(cardGroup)),
-      'deck_sort':
-          serializer.toJson<String>(Settings.$converter2.toJson(deckSort)),
-      'deck_group':
-          serializer.toJson<String>(Settings.$converter3.toJson(deckGroup)),
-      'deck_card_sort':
-          serializer.toJson<String>(Settings.$converter4.toJson(deckCardSort)),
-      'deck_card_group':
-          serializer.toJson<String>(Settings.$converter5.toJson(deckCardGroup)),
-      'compare_card_sort': serializer
-          .toJson<String>(Settings.$converter6.toJson(compareCardSort)),
+      'card_sort': serializer
+          .toJson<String>(Settings.$convertercardSort.toJson(cardSort)),
+      'card_group': serializer
+          .toJson<String>(Settings.$convertercardGroup.toJson(cardGroup)),
+      'deck_sort': serializer
+          .toJson<String>(Settings.$converterdeckSort.toJson(deckSort)),
+      'deck_group': serializer
+          .toJson<String>(Settings.$converterdeckGroup.toJson(deckGroup)),
+      'deck_card_sort': serializer
+          .toJson<String>(Settings.$converterdeckCardSort.toJson(deckCardSort)),
+      'deck_card_group': serializer.toJson<String>(
+          Settings.$converterdeckCardGroup.toJson(deckCardGroup)),
+      'compare_card_sort': serializer.toJson<String>(
+          Settings.$convertercompareCardSort.toJson(compareCardSort)),
       'apex_resources': serializer.toJson<bool>(apexResources),
-      'card_gallery_view': serializer
-          .toJson<String>(Settings.$converter7.toJson(cardGalleryView)),
+      'card_gallery_view': serializer.toJson<String>(
+          Settings.$convertercardGalleryView.toJson(cardGalleryView)),
     };
   }
 
@@ -865,33 +868,33 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       map['filter_collection'] = Variable<bool>(filterCollection.value);
     }
     if (cardSort.present) {
-      final converter = Settings.$converter0;
+      final converter = Settings.$convertercardSort;
       map['card_sort'] = Variable<String>(converter.toSql(cardSort.value));
     }
     if (cardGroup.present) {
-      final converter = Settings.$converter1;
+      final converter = Settings.$convertercardGroup;
       map['card_group'] = Variable<String>(converter.toSql(cardGroup.value));
     }
     if (deckSort.present) {
-      final converter = Settings.$converter2;
+      final converter = Settings.$converterdeckSort;
       map['deck_sort'] = Variable<String>(converter.toSql(deckSort.value));
     }
     if (deckGroup.present) {
-      final converter = Settings.$converter3;
+      final converter = Settings.$converterdeckGroup;
       map['deck_group'] = Variable<String>(converter.toSql(deckGroup.value));
     }
     if (deckCardSort.present) {
-      final converter = Settings.$converter4;
+      final converter = Settings.$converterdeckCardSort;
       map['deck_card_sort'] =
           Variable<String>(converter.toSql(deckCardSort.value));
     }
     if (deckCardGroup.present) {
-      final converter = Settings.$converter5;
+      final converter = Settings.$converterdeckCardGroup;
       map['deck_card_group'] =
           Variable<String>(converter.toSql(deckCardGroup.value));
     }
     if (compareCardSort.present) {
-      final converter = Settings.$converter6;
+      final converter = Settings.$convertercompareCardSort;
       map['compare_card_sort'] =
           Variable<String>(converter.toSql(compareCardSort.value));
     }
@@ -899,7 +902,7 @@ class SettingsCompanion extends UpdateCompanion<SettingsData> {
       map['apex_resources'] = Variable<bool>(apexResources.value);
     }
     if (cardGalleryView.present) {
-      final converter = Settings.$converter7;
+      final converter = Settings.$convertercardGalleryView;
       map['card_gallery_view'] =
           Variable<String>(converter.toSql(cardGalleryView.value));
     }
@@ -933,123 +936,128 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   Settings(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
   late final GeneratedColumn<bool> id = GeneratedColumn<bool>(
       'id', aliasedName, false,
       type: DriftSqlType.bool,
       requiredDuringInsert: false,
       $customConstraints: 'PRIMARY KEY NOT NULL DEFAULT TRUE',
-      defaultValue: const CustomExpression<bool>('TRUE'));
-  final VerificationMeta _filterFormatCodeMeta =
+      defaultValue: const CustomExpression('TRUE'));
+  static const VerificationMeta _filterFormatCodeMeta =
       const VerificationMeta('filterFormatCode');
   late final GeneratedColumn<String> filterFormatCode = GeneratedColumn<String>(
       'filter_format_code', aliasedName, true,
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       $customConstraints: 'DEFAULT NULL',
-      defaultValue: const CustomExpression<String>('NULL'));
-  final VerificationMeta _filterRotationCodeMeta =
+      defaultValue: const CustomExpression('NULL'));
+  static const VerificationMeta _filterRotationCodeMeta =
       const VerificationMeta('filterRotationCode');
   late final GeneratedColumn<String> filterRotationCode =
       GeneratedColumn<String>('filter_rotation_code', aliasedName, true,
           type: DriftSqlType.string,
           requiredDuringInsert: false,
           $customConstraints: 'DEFAULT NULL',
-          defaultValue: const CustomExpression<String>('NULL'));
-  final VerificationMeta _filterMwlCodeMeta =
+          defaultValue: const CustomExpression('NULL'));
+  static const VerificationMeta _filterMwlCodeMeta =
       const VerificationMeta('filterMwlCode');
   late final GeneratedColumn<String> filterMwlCode = GeneratedColumn<String>(
       'filter_mwl_code', aliasedName, true,
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       $customConstraints: 'DEFAULT NULL',
-      defaultValue: const CustomExpression<String>('NULL'));
-  final VerificationMeta _filterCollectionMeta =
+      defaultValue: const CustomExpression('NULL'));
+  static const VerificationMeta _filterCollectionMeta =
       const VerificationMeta('filterCollection');
   late final GeneratedColumn<bool> filterCollection = GeneratedColumn<bool>(
       'filter_collection', aliasedName, false,
       type: DriftSqlType.bool,
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL DEFAULT FALSE',
-      defaultValue: const CustomExpression<bool>('FALSE'));
-  final VerificationMeta _cardSortMeta = const VerificationMeta('cardSort');
+      defaultValue: const CustomExpression('FALSE'));
+  static const VerificationMeta _cardSortMeta =
+      const VerificationMeta('cardSort');
   late final GeneratedColumnWithTypeConverter<CardSort, String> cardSort =
       GeneratedColumn<String>('card_sort', aliasedName, false,
               type: DriftSqlType.string,
               requiredDuringInsert: false,
-              $customConstraints: 'NOT NULL DEFAULT \'\'',
-              defaultValue: const CustomExpression<String>('\'\''))
-          .withConverter<CardSort>(Settings.$converter0);
-  final VerificationMeta _cardGroupMeta = const VerificationMeta('cardGroup');
+              $customConstraints: 'NOT NULL DEFAULT \'set\'',
+              defaultValue: const CustomExpression('\'set\''))
+          .withConverter<CardSort>(Settings.$convertercardSort);
+  static const VerificationMeta _cardGroupMeta =
+      const VerificationMeta('cardGroup');
   late final GeneratedColumnWithTypeConverter<CardGroup, String> cardGroup =
       GeneratedColumn<String>('card_group', aliasedName, false,
               type: DriftSqlType.string,
               requiredDuringInsert: false,
-              $customConstraints: 'NOT NULL DEFAULT \'\'',
-              defaultValue: const CustomExpression<String>('\'\''))
-          .withConverter<CardGroup>(Settings.$converter1);
-  final VerificationMeta _deckSortMeta = const VerificationMeta('deckSort');
+              $customConstraints: 'NOT NULL DEFAULT \'type\'',
+              defaultValue: const CustomExpression('\'type\''))
+          .withConverter<CardGroup>(Settings.$convertercardGroup);
+  static const VerificationMeta _deckSortMeta =
+      const VerificationMeta('deckSort');
   late final GeneratedColumnWithTypeConverter<DeckSort, String> deckSort =
       GeneratedColumn<String>('deck_sort', aliasedName, false,
               type: DriftSqlType.string,
               requiredDuringInsert: false,
-              $customConstraints: 'NOT NULL DEFAULT \'\'',
-              defaultValue: const CustomExpression<String>('\'\''))
-          .withConverter<DeckSort>(Settings.$converter2);
-  final VerificationMeta _deckGroupMeta = const VerificationMeta('deckGroup');
+              $customConstraints: 'NOT NULL DEFAULT \'updated\'',
+              defaultValue: const CustomExpression('\'updated\''))
+          .withConverter<DeckSort>(Settings.$converterdeckSort);
+  static const VerificationMeta _deckGroupMeta =
+      const VerificationMeta('deckGroup');
   late final GeneratedColumnWithTypeConverter<DeckGroup, String> deckGroup =
       GeneratedColumn<String>('deck_group', aliasedName, false,
               type: DriftSqlType.string,
               requiredDuringInsert: false,
-              $customConstraints: 'NOT NULL DEFAULT \'\'',
-              defaultValue: const CustomExpression<String>('\'\''))
-          .withConverter<DeckGroup>(Settings.$converter3);
-  final VerificationMeta _deckCardSortMeta =
+              $customConstraints: 'NOT NULL DEFAULT \'side\'',
+              defaultValue: const CustomExpression('\'side\''))
+          .withConverter<DeckGroup>(Settings.$converterdeckGroup);
+  static const VerificationMeta _deckCardSortMeta =
       const VerificationMeta('deckCardSort');
   late final GeneratedColumnWithTypeConverter<CardSort, String> deckCardSort =
       GeneratedColumn<String>('deck_card_sort', aliasedName, false,
               type: DriftSqlType.string,
               requiredDuringInsert: false,
-              $customConstraints: 'NOT NULL DEFAULT \'\'',
-              defaultValue: const CustomExpression<String>('\'\''))
-          .withConverter<CardSort>(Settings.$converter4);
-  final VerificationMeta _deckCardGroupMeta =
+              $customConstraints: 'NOT NULL DEFAULT \'set\'',
+              defaultValue: const CustomExpression('\'set\''))
+          .withConverter<CardSort>(Settings.$converterdeckCardSort);
+  static const VerificationMeta _deckCardGroupMeta =
       const VerificationMeta('deckCardGroup');
   late final GeneratedColumnWithTypeConverter<CardGroup, String> deckCardGroup =
       GeneratedColumn<String>('deck_card_group', aliasedName, false,
               type: DriftSqlType.string,
               requiredDuringInsert: false,
-              $customConstraints: 'NOT NULL DEFAULT \'\'',
-              defaultValue: const CustomExpression<String>('\'\''))
-          .withConverter<CardGroup>(Settings.$converter5);
-  final VerificationMeta _compareCardSortMeta =
+              $customConstraints: 'NOT NULL DEFAULT \'type\'',
+              defaultValue: const CustomExpression('\'type\''))
+          .withConverter<CardGroup>(Settings.$converterdeckCardGroup);
+  static const VerificationMeta _compareCardSortMeta =
       const VerificationMeta('compareCardSort');
   late final GeneratedColumnWithTypeConverter<CardSort, String>
       compareCardSort = GeneratedColumn<String>(
               'compare_card_sort', aliasedName, false,
               type: DriftSqlType.string,
               requiredDuringInsert: false,
-              $customConstraints: 'NOT NULL DEFAULT \'\'',
-              defaultValue: const CustomExpression<String>('\'\''))
-          .withConverter<CardSort>(Settings.$converter6);
-  final VerificationMeta _apexResourcesMeta =
+              $customConstraints: 'NOT NULL DEFAULT \'set\'',
+              defaultValue: const CustomExpression('\'set\''))
+          .withConverter<CardSort>(Settings.$convertercompareCardSort);
+  static const VerificationMeta _apexResourcesMeta =
       const VerificationMeta('apexResources');
   late final GeneratedColumn<bool> apexResources = GeneratedColumn<bool>(
       'apex_resources', aliasedName, false,
       type: DriftSqlType.bool,
       requiredDuringInsert: false,
       $customConstraints: 'NOT NULL DEFAULT FALSE',
-      defaultValue: const CustomExpression<bool>('FALSE'));
-  final VerificationMeta _cardGalleryViewMeta =
+      defaultValue: const CustomExpression('FALSE'));
+  static const VerificationMeta _cardGalleryViewMeta =
       const VerificationMeta('cardGalleryView');
   late final GeneratedColumnWithTypeConverter<CardGalleryPageView, String>
       cardGalleryView = GeneratedColumn<String>(
               'card_gallery_view', aliasedName, false,
               type: DriftSqlType.string,
               requiredDuringInsert: false,
-              $customConstraints: 'NOT NULL DEFAULT \'\'',
-              defaultValue: const CustomExpression<String>('\'\''))
-          .withConverter<CardGalleryPageView>(Settings.$converter7);
+              $customConstraints: 'NOT NULL DEFAULT \'image\'',
+              defaultValue: const CustomExpression('\'image\''))
+          .withConverter<CardGalleryPageView>(
+              Settings.$convertercardGalleryView);
   @override
   List<GeneratedColumn> get $columns => [
         id,
@@ -1136,27 +1144,29 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
           .read(DriftSqlType.string, data['${effectivePrefix}filter_mwl_code']),
       filterCollection: attachedDatabase.typeMapping.read(
           DriftSqlType.bool, data['${effectivePrefix}filter_collection'])!,
-      cardSort: Settings.$converter0.fromSql(attachedDatabase.typeMapping
+      cardSort: Settings.$convertercardSort.fromSql(attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}card_sort'])!),
-      cardGroup: Settings.$converter1.fromSql(attachedDatabase.typeMapping
+      cardGroup: Settings.$convertercardGroup.fromSql(attachedDatabase
+          .typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}card_group'])!),
-      deckSort: Settings.$converter2.fromSql(attachedDatabase.typeMapping
+      deckSort: Settings.$converterdeckSort.fromSql(attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}deck_sort'])!),
-      deckGroup: Settings.$converter3.fromSql(attachedDatabase.typeMapping
+      deckGroup: Settings.$converterdeckGroup.fromSql(attachedDatabase
+          .typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}deck_group'])!),
-      deckCardSort: Settings.$converter4.fromSql(attachedDatabase.typeMapping
-          .read(
+      deckCardSort: Settings.$converterdeckCardSort.fromSql(
+          attachedDatabase.typeMapping.read(
               DriftSqlType.string, data['${effectivePrefix}deck_card_sort'])!),
-      deckCardGroup: Settings.$converter5.fromSql(attachedDatabase.typeMapping
-          .read(
+      deckCardGroup: Settings.$converterdeckCardGroup.fromSql(
+          attachedDatabase.typeMapping.read(
               DriftSqlType.string, data['${effectivePrefix}deck_card_group'])!),
-      compareCardSort: Settings.$converter6.fromSql(attachedDatabase.typeMapping
-          .read(DriftSqlType.string,
+      compareCardSort: Settings.$convertercompareCardSort.fromSql(
+          attachedDatabase.typeMapping.read(DriftSqlType.string,
               data['${effectivePrefix}compare_card_sort'])!),
       apexResources: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}apex_resources'])!,
-      cardGalleryView: Settings.$converter7.fromSql(attachedDatabase.typeMapping
-          .read(DriftSqlType.string,
+      cardGalleryView: Settings.$convertercardGalleryView.fromSql(
+          attachedDatabase.typeMapping.read(DriftSqlType.string,
               data['${effectivePrefix}card_gallery_view'])!),
     );
   }
@@ -1166,25 +1176,237 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
     return Settings(attachedDatabase, alias);
   }
 
-  static JsonTypeConverter2<CardSort, String, String> $converter0 =
-      const CardSortConverter(CardSort.set);
-  static JsonTypeConverter2<CardGroup, String, String> $converter1 =
-      const CardGroupConverter(CardGroup.type);
-  static JsonTypeConverter2<DeckSort, String, String> $converter2 =
-      const DeckSortConverter(DeckSort.updated);
-  static JsonTypeConverter2<DeckGroup, String, String> $converter3 =
-      const DeckGroupConverter(DeckGroup.side);
-  static JsonTypeConverter2<CardSort, String, String> $converter4 =
-      const CardSortConverter(CardSort.set);
-  static JsonTypeConverter2<CardGroup, String, String> $converter5 =
-      const CardGroupConverter(CardGroup.type);
-  static JsonTypeConverter2<CardSort, String, String> $converter6 =
-      const CardSortConverter(CardSort.set);
-  static JsonTypeConverter2<CardGalleryPageView, String, String> $converter7 =
-      const CardGalleryViewConverter(CardGalleryPageView.image);
+  static JsonTypeConverter2<CardSort, String, String> $convertercardSort =
+      const EnumNameConverter<CardSort>(CardSort.values);
+  static JsonTypeConverter2<CardGroup, String, String> $convertercardGroup =
+      const EnumNameConverter<CardGroup>(CardGroup.values);
+  static JsonTypeConverter2<DeckSort, String, String> $converterdeckSort =
+      const EnumNameConverter<DeckSort>(DeckSort.values);
+  static JsonTypeConverter2<DeckGroup, String, String> $converterdeckGroup =
+      const EnumNameConverter<DeckGroup>(DeckGroup.values);
+  static JsonTypeConverter2<CardSort, String, String> $converterdeckCardSort =
+      const EnumNameConverter<CardSort>(CardSort.values);
+  static JsonTypeConverter2<CardGroup, String, String> $converterdeckCardGroup =
+      const EnumNameConverter<CardGroup>(CardGroup.values);
+  static JsonTypeConverter2<CardSort, String, String>
+      $convertercompareCardSort =
+      const EnumNameConverter<CardSort>(CardSort.values);
+  static JsonTypeConverter2<CardGalleryPageView, String, String>
+      $convertercardGalleryView =
+      const EnumNameConverter<CardGalleryPageView>(CardGalleryPageView.values);
   @override
   List<String> get customConstraints =>
-      const ['CONSTRAINT settings_id CHECK (id = TRUE)'];
+      const ['CONSTRAINT settings_id CHECK(id = TRUE)'];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class FormatData extends DataClass implements Insertable<FormatData> {
+  final int id;
+  final String code;
+  final String name;
+  const FormatData({required this.id, required this.code, required this.name});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['code'] = Variable<String>(code);
+    map['name'] = Variable<String>(name);
+    return map;
+  }
+
+  FormatCompanion toCompanion(bool nullToAbsent) {
+    return FormatCompanion(
+      id: Value(id),
+      code: Value(code),
+      name: Value(name),
+    );
+  }
+
+  factory FormatData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FormatData(
+      id: serializer.fromJson<int>(json['id']),
+      code: serializer.fromJson<String>(json['code']),
+      name: serializer.fromJson<String>(json['name']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'code': serializer.toJson<String>(code),
+      'name': serializer.toJson<String>(name),
+    };
+  }
+
+  FormatData copyWith({int? id, String? code, String? name}) => FormatData(
+        id: id ?? this.id,
+        code: code ?? this.code,
+        name: name ?? this.name,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('FormatData(')
+          ..write('id: $id, ')
+          ..write('code: $code, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, code, name);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FormatData &&
+          other.id == this.id &&
+          other.code == this.code &&
+          other.name == this.name);
+}
+
+class FormatCompanion extends UpdateCompanion<FormatData> {
+  final Value<int> id;
+  final Value<String> code;
+  final Value<String> name;
+  const FormatCompanion({
+    this.id = const Value.absent(),
+    this.code = const Value.absent(),
+    this.name = const Value.absent(),
+  });
+  FormatCompanion.insert({
+    required int id,
+    required String code,
+    required String name,
+  })  : id = Value(id),
+        code = Value(code),
+        name = Value(name);
+  static Insertable<FormatData> custom({
+    Expression<int>? id,
+    Expression<String>? code,
+    Expression<String>? name,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (code != null) 'code': code,
+      if (name != null) 'name': name,
+    });
+  }
+
+  FormatCompanion copyWith(
+      {Value<int>? id, Value<String>? code, Value<String>? name}) {
+    return FormatCompanion(
+      id: id ?? this.id,
+      code: code ?? this.code,
+      name: name ?? this.name,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FormatCompanion(')
+          ..write('id: $id, ')
+          ..write('code: $code, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class Format extends Table with TableInfo<Format, FormatData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  Format(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+      'code', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'PRIMARY KEY NOT NULL');
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  @override
+  List<GeneratedColumn> get $columns => [id, code, name];
+  @override
+  String get aliasedName => _alias ?? 'format';
+  @override
+  String get actualTableName => 'format';
+  @override
+  VerificationContext validateIntegrity(Insertable<FormatData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('code')) {
+      context.handle(
+          _codeMeta, code.isAcceptableOrUnknown(data['code']!, _codeMeta));
+    } else if (isInserting) {
+      context.missing(_codeMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {code};
+  @override
+  FormatData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FormatData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      code: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+    );
+  }
+
+  @override
+  Format createAlias(String alias) {
+    return Format(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [];
   @override
   bool get dontWriteConstraints => true;
 }
@@ -1211,7 +1433,7 @@ class RotationData extends DataClass implements Insertable<RotationData> {
       map['date_start'] = Variable<DateTime>(dateStart);
     }
     if (!nullToAbsent || type != null) {
-      final converter = Rotation.$converter0;
+      final converter = Rotation.$convertertypen;
       map['type'] = Variable<String>(converter.toSql(type));
     }
     return map;
@@ -1237,7 +1459,7 @@ class RotationData extends DataClass implements Insertable<RotationData> {
       formatCode: serializer.fromJson<String>(json['format_code']),
       name: serializer.fromJson<String>(json['name']),
       dateStart: serializer.fromJson<DateTime?>(json['date_start']),
-      type: Rotation.$converter0
+      type: Rotation.$convertertypen
           .fromJson(serializer.fromJson<String?>(json['type'])),
     );
   }
@@ -1249,7 +1471,7 @@ class RotationData extends DataClass implements Insertable<RotationData> {
       'format_code': serializer.toJson<String>(formatCode),
       'name': serializer.toJson<String>(name),
       'date_start': serializer.toJson<DateTime?>(dateStart),
-      'type': serializer.toJson<String?>(Rotation.$converter0.toJson(type)),
+      'type': serializer.toJson<String?>(Rotation.$convertertypen.toJson(type)),
     };
   }
 
@@ -1360,7 +1582,7 @@ class RotationCompanion extends UpdateCompanion<RotationData> {
       map['date_start'] = Variable<DateTime>(dateStart.value);
     }
     if (type.present) {
-      final converter = Rotation.$converter0;
+      final converter = Rotation.$convertertypen;
       map['type'] = Variable<String>(converter.toSql(type.value));
     }
     return map;
@@ -1384,37 +1606,39 @@ class Rotation extends Table with TableInfo<Rotation, RotationData> {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   Rotation(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _codeMeta = const VerificationMeta('code');
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
   late final GeneratedColumn<String> code = GeneratedColumn<String>(
       'code', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL PRIMARY KEY');
-  final VerificationMeta _formatCodeMeta = const VerificationMeta('formatCode');
+  static const VerificationMeta _formatCodeMeta =
+      const VerificationMeta('formatCode');
   late final GeneratedColumn<String> formatCode = GeneratedColumn<String>(
       'format_code', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
-  final VerificationMeta _nameMeta = const VerificationMeta('name');
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
-  final VerificationMeta _dateStartMeta = const VerificationMeta('dateStart');
+  static const VerificationMeta _dateStartMeta =
+      const VerificationMeta('dateStart');
   late final GeneratedColumn<DateTime> dateStart = GeneratedColumn<DateTime>(
       'date_start', aliasedName, true,
       type: DriftSqlType.dateTime,
       requiredDuringInsert: false,
       $customConstraints: '');
-  final VerificationMeta _typeMeta = const VerificationMeta('type');
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
   late final GeneratedColumnWithTypeConverter<RotationType?, String> type =
       GeneratedColumn<String>('type', aliasedName, true,
               type: DriftSqlType.string,
               requiredDuringInsert: false,
               $customConstraints: '')
-          .withConverter<RotationType?>(Rotation.$converter0);
+          .withConverter<RotationType?>(Rotation.$convertertypen);
   @override
   List<GeneratedColumn> get $columns =>
       [code, formatCode, name, dateStart, type];
@@ -1469,7 +1693,7 @@ class Rotation extends Table with TableInfo<Rotation, RotationData> {
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       dateStart: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_start']),
-      type: Rotation.$converter0.fromSql(attachedDatabase.typeMapping
+      type: Rotation.$convertertypen.fromSql(attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}type'])),
     );
   }
@@ -1479,8 +1703,396 @@ class Rotation extends Table with TableInfo<Rotation, RotationData> {
     return Rotation(attachedDatabase, alias);
   }
 
-  static JsonTypeConverter2<RotationType?, String?, String?> $converter0 =
-      JsonTypeConverter2.asNullable(const RotationTypeConverter());
+  static JsonTypeConverter2<RotationType, String, String> $convertertype =
+      const EnumNameConverter<RotationType>(RotationType.values);
+  static JsonTypeConverter2<RotationType?, String?, String?> $convertertypen =
+      JsonTypeConverter2.asNullable($convertertype);
+  @override
+  List<String> get customConstraints => const [];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class MwlData extends DataClass implements Insertable<MwlData> {
+  final String code;
+  final String formatCode;
+  final String name;
+  final DateTime? dateStart;
+  final MwlType? type;
+  final int? runnerPoints;
+  final int? corpPoints;
+  const MwlData(
+      {required this.code,
+      required this.formatCode,
+      required this.name,
+      this.dateStart,
+      this.type,
+      this.runnerPoints,
+      this.corpPoints});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['code'] = Variable<String>(code);
+    map['format_code'] = Variable<String>(formatCode);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || dateStart != null) {
+      map['date_start'] = Variable<DateTime>(dateStart);
+    }
+    if (!nullToAbsent || type != null) {
+      final converter = Mwl.$convertertypen;
+      map['type'] = Variable<String>(converter.toSql(type));
+    }
+    if (!nullToAbsent || runnerPoints != null) {
+      map['runner_points'] = Variable<int>(runnerPoints);
+    }
+    if (!nullToAbsent || corpPoints != null) {
+      map['corp_points'] = Variable<int>(corpPoints);
+    }
+    return map;
+  }
+
+  MwlCompanion toCompanion(bool nullToAbsent) {
+    return MwlCompanion(
+      code: Value(code),
+      formatCode: Value(formatCode),
+      name: Value(name),
+      dateStart: dateStart == null && nullToAbsent
+          ? const Value.absent()
+          : Value(dateStart),
+      type: type == null && nullToAbsent ? const Value.absent() : Value(type),
+      runnerPoints: runnerPoints == null && nullToAbsent
+          ? const Value.absent()
+          : Value(runnerPoints),
+      corpPoints: corpPoints == null && nullToAbsent
+          ? const Value.absent()
+          : Value(corpPoints),
+    );
+  }
+
+  factory MwlData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MwlData(
+      code: serializer.fromJson<String>(json['code']),
+      formatCode: serializer.fromJson<String>(json['format_code']),
+      name: serializer.fromJson<String>(json['name']),
+      dateStart: serializer.fromJson<DateTime?>(json['date_start']),
+      type: Mwl.$convertertypen
+          .fromJson(serializer.fromJson<String?>(json['type'])),
+      runnerPoints: serializer.fromJson<int?>(json['runner_points']),
+      corpPoints: serializer.fromJson<int?>(json['corp_points']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'code': serializer.toJson<String>(code),
+      'format_code': serializer.toJson<String>(formatCode),
+      'name': serializer.toJson<String>(name),
+      'date_start': serializer.toJson<DateTime?>(dateStart),
+      'type': serializer.toJson<String?>(Mwl.$convertertypen.toJson(type)),
+      'runner_points': serializer.toJson<int?>(runnerPoints),
+      'corp_points': serializer.toJson<int?>(corpPoints),
+    };
+  }
+
+  MwlData copyWith(
+          {String? code,
+          String? formatCode,
+          String? name,
+          Value<DateTime?> dateStart = const Value.absent(),
+          Value<MwlType?> type = const Value.absent(),
+          Value<int?> runnerPoints = const Value.absent(),
+          Value<int?> corpPoints = const Value.absent()}) =>
+      MwlData(
+        code: code ?? this.code,
+        formatCode: formatCode ?? this.formatCode,
+        name: name ?? this.name,
+        dateStart: dateStart.present ? dateStart.value : this.dateStart,
+        type: type.present ? type.value : this.type,
+        runnerPoints:
+            runnerPoints.present ? runnerPoints.value : this.runnerPoints,
+        corpPoints: corpPoints.present ? corpPoints.value : this.corpPoints,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('MwlData(')
+          ..write('code: $code, ')
+          ..write('formatCode: $formatCode, ')
+          ..write('name: $name, ')
+          ..write('dateStart: $dateStart, ')
+          ..write('type: $type, ')
+          ..write('runnerPoints: $runnerPoints, ')
+          ..write('corpPoints: $corpPoints')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      code, formatCode, name, dateStart, type, runnerPoints, corpPoints);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MwlData &&
+          other.code == this.code &&
+          other.formatCode == this.formatCode &&
+          other.name == this.name &&
+          other.dateStart == this.dateStart &&
+          other.type == this.type &&
+          other.runnerPoints == this.runnerPoints &&
+          other.corpPoints == this.corpPoints);
+}
+
+class MwlCompanion extends UpdateCompanion<MwlData> {
+  final Value<String> code;
+  final Value<String> formatCode;
+  final Value<String> name;
+  final Value<DateTime?> dateStart;
+  final Value<MwlType?> type;
+  final Value<int?> runnerPoints;
+  final Value<int?> corpPoints;
+  const MwlCompanion({
+    this.code = const Value.absent(),
+    this.formatCode = const Value.absent(),
+    this.name = const Value.absent(),
+    this.dateStart = const Value.absent(),
+    this.type = const Value.absent(),
+    this.runnerPoints = const Value.absent(),
+    this.corpPoints = const Value.absent(),
+  });
+  MwlCompanion.insert({
+    required String code,
+    required String formatCode,
+    required String name,
+    this.dateStart = const Value.absent(),
+    this.type = const Value.absent(),
+    this.runnerPoints = const Value.absent(),
+    this.corpPoints = const Value.absent(),
+  })  : code = Value(code),
+        formatCode = Value(formatCode),
+        name = Value(name);
+  static Insertable<MwlData> custom({
+    Expression<String>? code,
+    Expression<String>? formatCode,
+    Expression<String>? name,
+    Expression<DateTime>? dateStart,
+    Expression<String>? type,
+    Expression<int>? runnerPoints,
+    Expression<int>? corpPoints,
+  }) {
+    return RawValuesInsertable({
+      if (code != null) 'code': code,
+      if (formatCode != null) 'format_code': formatCode,
+      if (name != null) 'name': name,
+      if (dateStart != null) 'date_start': dateStart,
+      if (type != null) 'type': type,
+      if (runnerPoints != null) 'runner_points': runnerPoints,
+      if (corpPoints != null) 'corp_points': corpPoints,
+    });
+  }
+
+  MwlCompanion copyWith(
+      {Value<String>? code,
+      Value<String>? formatCode,
+      Value<String>? name,
+      Value<DateTime?>? dateStart,
+      Value<MwlType?>? type,
+      Value<int?>? runnerPoints,
+      Value<int?>? corpPoints}) {
+    return MwlCompanion(
+      code: code ?? this.code,
+      formatCode: formatCode ?? this.formatCode,
+      name: name ?? this.name,
+      dateStart: dateStart ?? this.dateStart,
+      type: type ?? this.type,
+      runnerPoints: runnerPoints ?? this.runnerPoints,
+      corpPoints: corpPoints ?? this.corpPoints,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (formatCode.present) {
+      map['format_code'] = Variable<String>(formatCode.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (dateStart.present) {
+      map['date_start'] = Variable<DateTime>(dateStart.value);
+    }
+    if (type.present) {
+      final converter = Mwl.$convertertypen;
+      map['type'] = Variable<String>(converter.toSql(type.value));
+    }
+    if (runnerPoints.present) {
+      map['runner_points'] = Variable<int>(runnerPoints.value);
+    }
+    if (corpPoints.present) {
+      map['corp_points'] = Variable<int>(corpPoints.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MwlCompanion(')
+          ..write('code: $code, ')
+          ..write('formatCode: $formatCode, ')
+          ..write('name: $name, ')
+          ..write('dateStart: $dateStart, ')
+          ..write('type: $type, ')
+          ..write('runnerPoints: $runnerPoints, ')
+          ..write('corpPoints: $corpPoints')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class Mwl extends Table with TableInfo<Mwl, MwlData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  Mwl(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+      'code', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL PRIMARY KEY');
+  static const VerificationMeta _formatCodeMeta =
+      const VerificationMeta('formatCode');
+  late final GeneratedColumn<String> formatCode = GeneratedColumn<String>(
+      'format_code', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _dateStartMeta =
+      const VerificationMeta('dateStart');
+  late final GeneratedColumn<DateTime> dateStart = GeneratedColumn<DateTime>(
+      'date_start', aliasedName, true,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  late final GeneratedColumnWithTypeConverter<MwlType?, String> type =
+      GeneratedColumn<String>('type', aliasedName, true,
+              type: DriftSqlType.string,
+              requiredDuringInsert: false,
+              $customConstraints: '')
+          .withConverter<MwlType?>(Mwl.$convertertypen);
+  static const VerificationMeta _runnerPointsMeta =
+      const VerificationMeta('runnerPoints');
+  late final GeneratedColumn<int> runnerPoints = GeneratedColumn<int>(
+      'runner_points', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  static const VerificationMeta _corpPointsMeta =
+      const VerificationMeta('corpPoints');
+  late final GeneratedColumn<int> corpPoints = GeneratedColumn<int>(
+      'corp_points', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  @override
+  List<GeneratedColumn> get $columns =>
+      [code, formatCode, name, dateStart, type, runnerPoints, corpPoints];
+  @override
+  String get aliasedName => _alias ?? 'mwl';
+  @override
+  String get actualTableName => 'mwl';
+  @override
+  VerificationContext validateIntegrity(Insertable<MwlData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('code')) {
+      context.handle(
+          _codeMeta, code.isAcceptableOrUnknown(data['code']!, _codeMeta));
+    } else if (isInserting) {
+      context.missing(_codeMeta);
+    }
+    if (data.containsKey('format_code')) {
+      context.handle(
+          _formatCodeMeta,
+          formatCode.isAcceptableOrUnknown(
+              data['format_code']!, _formatCodeMeta));
+    } else if (isInserting) {
+      context.missing(_formatCodeMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('date_start')) {
+      context.handle(_dateStartMeta,
+          dateStart.isAcceptableOrUnknown(data['date_start']!, _dateStartMeta));
+    }
+    context.handle(_typeMeta, const VerificationResult.success());
+    if (data.containsKey('runner_points')) {
+      context.handle(
+          _runnerPointsMeta,
+          runnerPoints.isAcceptableOrUnknown(
+              data['runner_points']!, _runnerPointsMeta));
+    }
+    if (data.containsKey('corp_points')) {
+      context.handle(
+          _corpPointsMeta,
+          corpPoints.isAcceptableOrUnknown(
+              data['corp_points']!, _corpPointsMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {code};
+  @override
+  MwlData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MwlData(
+      code: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
+      formatCode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}format_code'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      dateStart: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date_start']),
+      type: Mwl.$convertertypen.fromSql(attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}type'])),
+      runnerPoints: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}runner_points']),
+      corpPoints: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}corp_points']),
+    );
+  }
+
+  @override
+  Mwl createAlias(String alias) {
+    return Mwl(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<MwlType, String, String> $convertertype =
+      const EnumNameConverter<MwlType>(MwlType.values);
+  static JsonTypeConverter2<MwlType?, String?, String?> $convertertypen =
+      JsonTypeConverter2.asNullable($convertertype);
+  @override
+  List<String> get customConstraints => const [];
   @override
   bool get dontWriteConstraints => true;
 }
@@ -1605,14 +2217,15 @@ class RotationCycle extends Table
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   RotationCycle(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _rotationCodeMeta =
+  static const VerificationMeta _rotationCodeMeta =
       const VerificationMeta('rotationCode');
   late final GeneratedColumn<String> rotationCode = GeneratedColumn<String>(
       'rotation_code', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
-  final VerificationMeta _cycleCodeMeta = const VerificationMeta('cycleCode');
+  static const VerificationMeta _cycleCodeMeta =
+      const VerificationMeta('cycleCode');
   late final GeneratedColumn<String> cycleCode = GeneratedColumn<String>(
       'cycle_code', aliasedName, false,
       type: DriftSqlType.string,
@@ -1666,7 +2279,301 @@ class RotationCycle extends Table
 
   @override
   List<String> get customConstraints =>
-      const ['PRIMARY KEY (rotation_code, cycle_code)'];
+      const ['PRIMARY KEY(rotation_code, cycle_code)'];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class CycleData extends DataClass implements Insertable<CycleData> {
+  final String code;
+  final int position;
+  final String name;
+  final int size;
+  final bool rotated;
+  const CycleData(
+      {required this.code,
+      required this.position,
+      required this.name,
+      required this.size,
+      required this.rotated});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['code'] = Variable<String>(code);
+    map['position'] = Variable<int>(position);
+    map['name'] = Variable<String>(name);
+    map['size'] = Variable<int>(size);
+    map['rotated'] = Variable<bool>(rotated);
+    return map;
+  }
+
+  CycleCompanion toCompanion(bool nullToAbsent) {
+    return CycleCompanion(
+      code: Value(code),
+      position: Value(position),
+      name: Value(name),
+      size: Value(size),
+      rotated: Value(rotated),
+    );
+  }
+
+  factory CycleData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CycleData(
+      code: serializer.fromJson<String>(json['code']),
+      position: serializer.fromJson<int>(json['position']),
+      name: serializer.fromJson<String>(json['name']),
+      size: serializer.fromJson<int>(json['size']),
+      rotated: serializer.fromJson<bool>(json['rotated']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'code': serializer.toJson<String>(code),
+      'position': serializer.toJson<int>(position),
+      'name': serializer.toJson<String>(name),
+      'size': serializer.toJson<int>(size),
+      'rotated': serializer.toJson<bool>(rotated),
+    };
+  }
+
+  CycleData copyWith(
+          {String? code,
+          int? position,
+          String? name,
+          int? size,
+          bool? rotated}) =>
+      CycleData(
+        code: code ?? this.code,
+        position: position ?? this.position,
+        name: name ?? this.name,
+        size: size ?? this.size,
+        rotated: rotated ?? this.rotated,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('CycleData(')
+          ..write('code: $code, ')
+          ..write('position: $position, ')
+          ..write('name: $name, ')
+          ..write('size: $size, ')
+          ..write('rotated: $rotated')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(code, position, name, size, rotated);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CycleData &&
+          other.code == this.code &&
+          other.position == this.position &&
+          other.name == this.name &&
+          other.size == this.size &&
+          other.rotated == this.rotated);
+}
+
+class CycleCompanion extends UpdateCompanion<CycleData> {
+  final Value<String> code;
+  final Value<int> position;
+  final Value<String> name;
+  final Value<int> size;
+  final Value<bool> rotated;
+  const CycleCompanion({
+    this.code = const Value.absent(),
+    this.position = const Value.absent(),
+    this.name = const Value.absent(),
+    this.size = const Value.absent(),
+    this.rotated = const Value.absent(),
+  });
+  CycleCompanion.insert({
+    required String code,
+    required int position,
+    required String name,
+    required int size,
+    required bool rotated,
+  })  : code = Value(code),
+        position = Value(position),
+        name = Value(name),
+        size = Value(size),
+        rotated = Value(rotated);
+  static Insertable<CycleData> custom({
+    Expression<String>? code,
+    Expression<int>? position,
+    Expression<String>? name,
+    Expression<int>? size,
+    Expression<bool>? rotated,
+  }) {
+    return RawValuesInsertable({
+      if (code != null) 'code': code,
+      if (position != null) 'position': position,
+      if (name != null) 'name': name,
+      if (size != null) 'size': size,
+      if (rotated != null) 'rotated': rotated,
+    });
+  }
+
+  CycleCompanion copyWith(
+      {Value<String>? code,
+      Value<int>? position,
+      Value<String>? name,
+      Value<int>? size,
+      Value<bool>? rotated}) {
+    return CycleCompanion(
+      code: code ?? this.code,
+      position: position ?? this.position,
+      name: name ?? this.name,
+      size: size ?? this.size,
+      rotated: rotated ?? this.rotated,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (size.present) {
+      map['size'] = Variable<int>(size.value);
+    }
+    if (rotated.present) {
+      map['rotated'] = Variable<bool>(rotated.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CycleCompanion(')
+          ..write('code: $code, ')
+          ..write('position: $position, ')
+          ..write('name: $name, ')
+          ..write('size: $size, ')
+          ..write('rotated: $rotated')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class Cycle extends Table with TableInfo<Cycle, CycleData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  Cycle(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+      'code', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'PRIMARY KEY NOT NULL');
+  static const VerificationMeta _positionMeta =
+      const VerificationMeta('position');
+  late final GeneratedColumn<int> position = GeneratedColumn<int>(
+      'position', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _sizeMeta = const VerificationMeta('size');
+  late final GeneratedColumn<int> size = GeneratedColumn<int>(
+      'size', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _rotatedMeta =
+      const VerificationMeta('rotated');
+  late final GeneratedColumn<bool> rotated = GeneratedColumn<bool>(
+      'rotated', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  @override
+  List<GeneratedColumn> get $columns => [code, position, name, size, rotated];
+  @override
+  String get aliasedName => _alias ?? 'cycle';
+  @override
+  String get actualTableName => 'cycle';
+  @override
+  VerificationContext validateIntegrity(Insertable<CycleData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('code')) {
+      context.handle(
+          _codeMeta, code.isAcceptableOrUnknown(data['code']!, _codeMeta));
+    } else if (isInserting) {
+      context.missing(_codeMeta);
+    }
+    if (data.containsKey('position')) {
+      context.handle(_positionMeta,
+          position.isAcceptableOrUnknown(data['position']!, _positionMeta));
+    } else if (isInserting) {
+      context.missing(_positionMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('size')) {
+      context.handle(
+          _sizeMeta, size.isAcceptableOrUnknown(data['size']!, _sizeMeta));
+    } else if (isInserting) {
+      context.missing(_sizeMeta);
+    }
+    if (data.containsKey('rotated')) {
+      context.handle(_rotatedMeta,
+          rotated.isAcceptableOrUnknown(data['rotated']!, _rotatedMeta));
+    } else if (isInserting) {
+      context.missing(_rotatedMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {code};
+  @override
+  CycleData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CycleData(
+      code: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
+      position: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}position'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      size: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}size'])!,
+      rotated: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}rotated'])!,
+    );
+  }
+
+  @override
+  Cycle createAlias(String alias) {
+    return Cycle(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [];
   @override
   bool get dontWriteConstraints => true;
 }
@@ -1886,38 +2793,40 @@ class Pack extends Table with TableInfo<Pack, PackData> {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   Pack(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _codeMeta = const VerificationMeta('code');
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
   late final GeneratedColumn<String> code = GeneratedColumn<String>(
       'code', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'PRIMARY KEY NOT NULL');
-  final VerificationMeta _cycleCodeMeta = const VerificationMeta('cycleCode');
+  static const VerificationMeta _cycleCodeMeta =
+      const VerificationMeta('cycleCode');
   late final GeneratedColumn<String> cycleCode = GeneratedColumn<String>(
       'cycle_code', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
-  final VerificationMeta _positionMeta = const VerificationMeta('position');
+  static const VerificationMeta _positionMeta =
+      const VerificationMeta('position');
   late final GeneratedColumn<int> position = GeneratedColumn<int>(
       'position', aliasedName, false,
       type: DriftSqlType.int,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
-  final VerificationMeta _nameMeta = const VerificationMeta('name');
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
   late final GeneratedColumn<String> name = GeneratedColumn<String>(
       'name', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
-  final VerificationMeta _dateReleaseMeta =
+  static const VerificationMeta _dateReleaseMeta =
       const VerificationMeta('dateRelease');
   late final GeneratedColumn<DateTime> dateRelease = GeneratedColumn<DateTime>(
       'date_release', aliasedName, true,
       type: DriftSqlType.dateTime,
       requiredDuringInsert: false,
       $customConstraints: '');
-  final VerificationMeta _sizeMeta = const VerificationMeta('size');
+  static const VerificationMeta _sizeMeta = const VerificationMeta('size');
   late final GeneratedColumn<int> size = GeneratedColumn<int>(
       'size', aliasedName, true,
       type: DriftSqlType.int,
@@ -1999,3249 +2908,7 @@ class Pack extends Table with TableInfo<Pack, PackData> {
   }
 
   @override
-  bool get dontWriteConstraints => true;
-}
-
-class NrdbData extends DataClass implements Insertable<NrdbData> {
-  final bool id;
-  final DateTime expires;
-  final DateTime cycleLastUpdated;
-  final DateTime packLastUpdated;
-  final DateTime sideLastUpdated;
-  final DateTime factionLastUpdated;
-  final DateTime typeLastUpdated;
-  final DateTime cardLastUpdated;
-  final DateTime formatLastUpdated;
-  final DateTime rotationLastUpdated;
-  final DateTime mwlLastUpdated;
-  const NrdbData(
-      {required this.id,
-      required this.expires,
-      required this.cycleLastUpdated,
-      required this.packLastUpdated,
-      required this.sideLastUpdated,
-      required this.factionLastUpdated,
-      required this.typeLastUpdated,
-      required this.cardLastUpdated,
-      required this.formatLastUpdated,
-      required this.rotationLastUpdated,
-      required this.mwlLastUpdated});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<bool>(id);
-    map['expires'] = Variable<DateTime>(expires);
-    map['cycle_last_updated'] = Variable<DateTime>(cycleLastUpdated);
-    map['pack_last_updated'] = Variable<DateTime>(packLastUpdated);
-    map['side_last_updated'] = Variable<DateTime>(sideLastUpdated);
-    map['faction_last_updated'] = Variable<DateTime>(factionLastUpdated);
-    map['type_last_updated'] = Variable<DateTime>(typeLastUpdated);
-    map['card_last_updated'] = Variable<DateTime>(cardLastUpdated);
-    map['format_last_updated'] = Variable<DateTime>(formatLastUpdated);
-    map['rotation_last_updated'] = Variable<DateTime>(rotationLastUpdated);
-    map['mwl_last_updated'] = Variable<DateTime>(mwlLastUpdated);
-    return map;
-  }
-
-  NrdbCompanion toCompanion(bool nullToAbsent) {
-    return NrdbCompanion(
-      id: Value(id),
-      expires: Value(expires),
-      cycleLastUpdated: Value(cycleLastUpdated),
-      packLastUpdated: Value(packLastUpdated),
-      sideLastUpdated: Value(sideLastUpdated),
-      factionLastUpdated: Value(factionLastUpdated),
-      typeLastUpdated: Value(typeLastUpdated),
-      cardLastUpdated: Value(cardLastUpdated),
-      formatLastUpdated: Value(formatLastUpdated),
-      rotationLastUpdated: Value(rotationLastUpdated),
-      mwlLastUpdated: Value(mwlLastUpdated),
-    );
-  }
-
-  factory NrdbData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return NrdbData(
-      id: serializer.fromJson<bool>(json['id']),
-      expires: serializer.fromJson<DateTime>(json['expires']),
-      cycleLastUpdated:
-          serializer.fromJson<DateTime>(json['cycle_last_updated']),
-      packLastUpdated: serializer.fromJson<DateTime>(json['pack_last_updated']),
-      sideLastUpdated: serializer.fromJson<DateTime>(json['side_last_updated']),
-      factionLastUpdated:
-          serializer.fromJson<DateTime>(json['faction_last_updated']),
-      typeLastUpdated: serializer.fromJson<DateTime>(json['type_last_updated']),
-      cardLastUpdated: serializer.fromJson<DateTime>(json['card_last_updated']),
-      formatLastUpdated:
-          serializer.fromJson<DateTime>(json['format_last_updated']),
-      rotationLastUpdated:
-          serializer.fromJson<DateTime>(json['rotation_last_updated']),
-      mwlLastUpdated: serializer.fromJson<DateTime>(json['mwl_last_updated']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<bool>(id),
-      'expires': serializer.toJson<DateTime>(expires),
-      'cycle_last_updated': serializer.toJson<DateTime>(cycleLastUpdated),
-      'pack_last_updated': serializer.toJson<DateTime>(packLastUpdated),
-      'side_last_updated': serializer.toJson<DateTime>(sideLastUpdated),
-      'faction_last_updated': serializer.toJson<DateTime>(factionLastUpdated),
-      'type_last_updated': serializer.toJson<DateTime>(typeLastUpdated),
-      'card_last_updated': serializer.toJson<DateTime>(cardLastUpdated),
-      'format_last_updated': serializer.toJson<DateTime>(formatLastUpdated),
-      'rotation_last_updated': serializer.toJson<DateTime>(rotationLastUpdated),
-      'mwl_last_updated': serializer.toJson<DateTime>(mwlLastUpdated),
-    };
-  }
-
-  NrdbData copyWith(
-          {bool? id,
-          DateTime? expires,
-          DateTime? cycleLastUpdated,
-          DateTime? packLastUpdated,
-          DateTime? sideLastUpdated,
-          DateTime? factionLastUpdated,
-          DateTime? typeLastUpdated,
-          DateTime? cardLastUpdated,
-          DateTime? formatLastUpdated,
-          DateTime? rotationLastUpdated,
-          DateTime? mwlLastUpdated}) =>
-      NrdbData(
-        id: id ?? this.id,
-        expires: expires ?? this.expires,
-        cycleLastUpdated: cycleLastUpdated ?? this.cycleLastUpdated,
-        packLastUpdated: packLastUpdated ?? this.packLastUpdated,
-        sideLastUpdated: sideLastUpdated ?? this.sideLastUpdated,
-        factionLastUpdated: factionLastUpdated ?? this.factionLastUpdated,
-        typeLastUpdated: typeLastUpdated ?? this.typeLastUpdated,
-        cardLastUpdated: cardLastUpdated ?? this.cardLastUpdated,
-        formatLastUpdated: formatLastUpdated ?? this.formatLastUpdated,
-        rotationLastUpdated: rotationLastUpdated ?? this.rotationLastUpdated,
-        mwlLastUpdated: mwlLastUpdated ?? this.mwlLastUpdated,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('NrdbData(')
-          ..write('id: $id, ')
-          ..write('expires: $expires, ')
-          ..write('cycleLastUpdated: $cycleLastUpdated, ')
-          ..write('packLastUpdated: $packLastUpdated, ')
-          ..write('sideLastUpdated: $sideLastUpdated, ')
-          ..write('factionLastUpdated: $factionLastUpdated, ')
-          ..write('typeLastUpdated: $typeLastUpdated, ')
-          ..write('cardLastUpdated: $cardLastUpdated, ')
-          ..write('formatLastUpdated: $formatLastUpdated, ')
-          ..write('rotationLastUpdated: $rotationLastUpdated, ')
-          ..write('mwlLastUpdated: $mwlLastUpdated')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(
-      id,
-      expires,
-      cycleLastUpdated,
-      packLastUpdated,
-      sideLastUpdated,
-      factionLastUpdated,
-      typeLastUpdated,
-      cardLastUpdated,
-      formatLastUpdated,
-      rotationLastUpdated,
-      mwlLastUpdated);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is NrdbData &&
-          other.id == this.id &&
-          other.expires == this.expires &&
-          other.cycleLastUpdated == this.cycleLastUpdated &&
-          other.packLastUpdated == this.packLastUpdated &&
-          other.sideLastUpdated == this.sideLastUpdated &&
-          other.factionLastUpdated == this.factionLastUpdated &&
-          other.typeLastUpdated == this.typeLastUpdated &&
-          other.cardLastUpdated == this.cardLastUpdated &&
-          other.formatLastUpdated == this.formatLastUpdated &&
-          other.rotationLastUpdated == this.rotationLastUpdated &&
-          other.mwlLastUpdated == this.mwlLastUpdated);
-}
-
-class NrdbCompanion extends UpdateCompanion<NrdbData> {
-  final Value<bool> id;
-  final Value<DateTime> expires;
-  final Value<DateTime> cycleLastUpdated;
-  final Value<DateTime> packLastUpdated;
-  final Value<DateTime> sideLastUpdated;
-  final Value<DateTime> factionLastUpdated;
-  final Value<DateTime> typeLastUpdated;
-  final Value<DateTime> cardLastUpdated;
-  final Value<DateTime> formatLastUpdated;
-  final Value<DateTime> rotationLastUpdated;
-  final Value<DateTime> mwlLastUpdated;
-  const NrdbCompanion({
-    this.id = const Value.absent(),
-    this.expires = const Value.absent(),
-    this.cycleLastUpdated = const Value.absent(),
-    this.packLastUpdated = const Value.absent(),
-    this.sideLastUpdated = const Value.absent(),
-    this.factionLastUpdated = const Value.absent(),
-    this.typeLastUpdated = const Value.absent(),
-    this.cardLastUpdated = const Value.absent(),
-    this.formatLastUpdated = const Value.absent(),
-    this.rotationLastUpdated = const Value.absent(),
-    this.mwlLastUpdated = const Value.absent(),
-  });
-  NrdbCompanion.insert({
-    this.id = const Value.absent(),
-    required DateTime expires,
-    required DateTime cycleLastUpdated,
-    required DateTime packLastUpdated,
-    required DateTime sideLastUpdated,
-    required DateTime factionLastUpdated,
-    required DateTime typeLastUpdated,
-    required DateTime cardLastUpdated,
-    required DateTime formatLastUpdated,
-    required DateTime rotationLastUpdated,
-    required DateTime mwlLastUpdated,
-  })  : expires = Value(expires),
-        cycleLastUpdated = Value(cycleLastUpdated),
-        packLastUpdated = Value(packLastUpdated),
-        sideLastUpdated = Value(sideLastUpdated),
-        factionLastUpdated = Value(factionLastUpdated),
-        typeLastUpdated = Value(typeLastUpdated),
-        cardLastUpdated = Value(cardLastUpdated),
-        formatLastUpdated = Value(formatLastUpdated),
-        rotationLastUpdated = Value(rotationLastUpdated),
-        mwlLastUpdated = Value(mwlLastUpdated);
-  static Insertable<NrdbData> custom({
-    Expression<bool>? id,
-    Expression<DateTime>? expires,
-    Expression<DateTime>? cycleLastUpdated,
-    Expression<DateTime>? packLastUpdated,
-    Expression<DateTime>? sideLastUpdated,
-    Expression<DateTime>? factionLastUpdated,
-    Expression<DateTime>? typeLastUpdated,
-    Expression<DateTime>? cardLastUpdated,
-    Expression<DateTime>? formatLastUpdated,
-    Expression<DateTime>? rotationLastUpdated,
-    Expression<DateTime>? mwlLastUpdated,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (expires != null) 'expires': expires,
-      if (cycleLastUpdated != null) 'cycle_last_updated': cycleLastUpdated,
-      if (packLastUpdated != null) 'pack_last_updated': packLastUpdated,
-      if (sideLastUpdated != null) 'side_last_updated': sideLastUpdated,
-      if (factionLastUpdated != null)
-        'faction_last_updated': factionLastUpdated,
-      if (typeLastUpdated != null) 'type_last_updated': typeLastUpdated,
-      if (cardLastUpdated != null) 'card_last_updated': cardLastUpdated,
-      if (formatLastUpdated != null) 'format_last_updated': formatLastUpdated,
-      if (rotationLastUpdated != null)
-        'rotation_last_updated': rotationLastUpdated,
-      if (mwlLastUpdated != null) 'mwl_last_updated': mwlLastUpdated,
-    });
-  }
-
-  NrdbCompanion copyWith(
-      {Value<bool>? id,
-      Value<DateTime>? expires,
-      Value<DateTime>? cycleLastUpdated,
-      Value<DateTime>? packLastUpdated,
-      Value<DateTime>? sideLastUpdated,
-      Value<DateTime>? factionLastUpdated,
-      Value<DateTime>? typeLastUpdated,
-      Value<DateTime>? cardLastUpdated,
-      Value<DateTime>? formatLastUpdated,
-      Value<DateTime>? rotationLastUpdated,
-      Value<DateTime>? mwlLastUpdated}) {
-    return NrdbCompanion(
-      id: id ?? this.id,
-      expires: expires ?? this.expires,
-      cycleLastUpdated: cycleLastUpdated ?? this.cycleLastUpdated,
-      packLastUpdated: packLastUpdated ?? this.packLastUpdated,
-      sideLastUpdated: sideLastUpdated ?? this.sideLastUpdated,
-      factionLastUpdated: factionLastUpdated ?? this.factionLastUpdated,
-      typeLastUpdated: typeLastUpdated ?? this.typeLastUpdated,
-      cardLastUpdated: cardLastUpdated ?? this.cardLastUpdated,
-      formatLastUpdated: formatLastUpdated ?? this.formatLastUpdated,
-      rotationLastUpdated: rotationLastUpdated ?? this.rotationLastUpdated,
-      mwlLastUpdated: mwlLastUpdated ?? this.mwlLastUpdated,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<bool>(id.value);
-    }
-    if (expires.present) {
-      map['expires'] = Variable<DateTime>(expires.value);
-    }
-    if (cycleLastUpdated.present) {
-      map['cycle_last_updated'] = Variable<DateTime>(cycleLastUpdated.value);
-    }
-    if (packLastUpdated.present) {
-      map['pack_last_updated'] = Variable<DateTime>(packLastUpdated.value);
-    }
-    if (sideLastUpdated.present) {
-      map['side_last_updated'] = Variable<DateTime>(sideLastUpdated.value);
-    }
-    if (factionLastUpdated.present) {
-      map['faction_last_updated'] =
-          Variable<DateTime>(factionLastUpdated.value);
-    }
-    if (typeLastUpdated.present) {
-      map['type_last_updated'] = Variable<DateTime>(typeLastUpdated.value);
-    }
-    if (cardLastUpdated.present) {
-      map['card_last_updated'] = Variable<DateTime>(cardLastUpdated.value);
-    }
-    if (formatLastUpdated.present) {
-      map['format_last_updated'] = Variable<DateTime>(formatLastUpdated.value);
-    }
-    if (rotationLastUpdated.present) {
-      map['rotation_last_updated'] =
-          Variable<DateTime>(rotationLastUpdated.value);
-    }
-    if (mwlLastUpdated.present) {
-      map['mwl_last_updated'] = Variable<DateTime>(mwlLastUpdated.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('NrdbCompanion(')
-          ..write('id: $id, ')
-          ..write('expires: $expires, ')
-          ..write('cycleLastUpdated: $cycleLastUpdated, ')
-          ..write('packLastUpdated: $packLastUpdated, ')
-          ..write('sideLastUpdated: $sideLastUpdated, ')
-          ..write('factionLastUpdated: $factionLastUpdated, ')
-          ..write('typeLastUpdated: $typeLastUpdated, ')
-          ..write('cardLastUpdated: $cardLastUpdated, ')
-          ..write('formatLastUpdated: $formatLastUpdated, ')
-          ..write('rotationLastUpdated: $rotationLastUpdated, ')
-          ..write('mwlLastUpdated: $mwlLastUpdated')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class Nrdb extends Table with TableInfo<Nrdb, NrdbData> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  Nrdb(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
-  late final GeneratedColumn<bool> id = GeneratedColumn<bool>(
-      'id', aliasedName, false,
-      type: DriftSqlType.bool,
-      requiredDuringInsert: false,
-      $customConstraints: 'PRIMARY KEY NOT NULL DEFAULT TRUE',
-      defaultValue: const CustomExpression<bool>('TRUE'));
-  final VerificationMeta _expiresMeta = const VerificationMeta('expires');
-  late final GeneratedColumn<DateTime> expires = GeneratedColumn<DateTime>(
-      'expires', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  final VerificationMeta _cycleLastUpdatedMeta =
-      const VerificationMeta('cycleLastUpdated');
-  late final GeneratedColumn<DateTime> cycleLastUpdated =
-      GeneratedColumn<DateTime>('cycle_last_updated', aliasedName, false,
-          type: DriftSqlType.dateTime,
-          requiredDuringInsert: true,
-          $customConstraints: 'NOT NULL');
-  final VerificationMeta _packLastUpdatedMeta =
-      const VerificationMeta('packLastUpdated');
-  late final GeneratedColumn<DateTime> packLastUpdated =
-      GeneratedColumn<DateTime>('pack_last_updated', aliasedName, false,
-          type: DriftSqlType.dateTime,
-          requiredDuringInsert: true,
-          $customConstraints: 'NOT NULL');
-  final VerificationMeta _sideLastUpdatedMeta =
-      const VerificationMeta('sideLastUpdated');
-  late final GeneratedColumn<DateTime> sideLastUpdated =
-      GeneratedColumn<DateTime>('side_last_updated', aliasedName, false,
-          type: DriftSqlType.dateTime,
-          requiredDuringInsert: true,
-          $customConstraints: 'NOT NULL');
-  final VerificationMeta _factionLastUpdatedMeta =
-      const VerificationMeta('factionLastUpdated');
-  late final GeneratedColumn<DateTime> factionLastUpdated =
-      GeneratedColumn<DateTime>('faction_last_updated', aliasedName, false,
-          type: DriftSqlType.dateTime,
-          requiredDuringInsert: true,
-          $customConstraints: 'NOT NULL');
-  final VerificationMeta _typeLastUpdatedMeta =
-      const VerificationMeta('typeLastUpdated');
-  late final GeneratedColumn<DateTime> typeLastUpdated =
-      GeneratedColumn<DateTime>('type_last_updated', aliasedName, false,
-          type: DriftSqlType.dateTime,
-          requiredDuringInsert: true,
-          $customConstraints: 'NOT NULL');
-  final VerificationMeta _cardLastUpdatedMeta =
-      const VerificationMeta('cardLastUpdated');
-  late final GeneratedColumn<DateTime> cardLastUpdated =
-      GeneratedColumn<DateTime>('card_last_updated', aliasedName, false,
-          type: DriftSqlType.dateTime,
-          requiredDuringInsert: true,
-          $customConstraints: 'NOT NULL');
-  final VerificationMeta _formatLastUpdatedMeta =
-      const VerificationMeta('formatLastUpdated');
-  late final GeneratedColumn<DateTime> formatLastUpdated =
-      GeneratedColumn<DateTime>('format_last_updated', aliasedName, false,
-          type: DriftSqlType.dateTime,
-          requiredDuringInsert: true,
-          $customConstraints: 'NOT NULL');
-  final VerificationMeta _rotationLastUpdatedMeta =
-      const VerificationMeta('rotationLastUpdated');
-  late final GeneratedColumn<DateTime> rotationLastUpdated =
-      GeneratedColumn<DateTime>('rotation_last_updated', aliasedName, false,
-          type: DriftSqlType.dateTime,
-          requiredDuringInsert: true,
-          $customConstraints: 'NOT NULL');
-  final VerificationMeta _mwlLastUpdatedMeta =
-      const VerificationMeta('mwlLastUpdated');
-  late final GeneratedColumn<DateTime> mwlLastUpdated =
-      GeneratedColumn<DateTime>('mwl_last_updated', aliasedName, false,
-          type: DriftSqlType.dateTime,
-          requiredDuringInsert: true,
-          $customConstraints: 'NOT NULL');
-  @override
-  List<GeneratedColumn> get $columns => [
-        id,
-        expires,
-        cycleLastUpdated,
-        packLastUpdated,
-        sideLastUpdated,
-        factionLastUpdated,
-        typeLastUpdated,
-        cardLastUpdated,
-        formatLastUpdated,
-        rotationLastUpdated,
-        mwlLastUpdated
-      ];
-  @override
-  String get aliasedName => _alias ?? 'nrdb';
-  @override
-  String get actualTableName => 'nrdb';
-  @override
-  VerificationContext validateIntegrity(Insertable<NrdbData> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('expires')) {
-      context.handle(_expiresMeta,
-          expires.isAcceptableOrUnknown(data['expires']!, _expiresMeta));
-    } else if (isInserting) {
-      context.missing(_expiresMeta);
-    }
-    if (data.containsKey('cycle_last_updated')) {
-      context.handle(
-          _cycleLastUpdatedMeta,
-          cycleLastUpdated.isAcceptableOrUnknown(
-              data['cycle_last_updated']!, _cycleLastUpdatedMeta));
-    } else if (isInserting) {
-      context.missing(_cycleLastUpdatedMeta);
-    }
-    if (data.containsKey('pack_last_updated')) {
-      context.handle(
-          _packLastUpdatedMeta,
-          packLastUpdated.isAcceptableOrUnknown(
-              data['pack_last_updated']!, _packLastUpdatedMeta));
-    } else if (isInserting) {
-      context.missing(_packLastUpdatedMeta);
-    }
-    if (data.containsKey('side_last_updated')) {
-      context.handle(
-          _sideLastUpdatedMeta,
-          sideLastUpdated.isAcceptableOrUnknown(
-              data['side_last_updated']!, _sideLastUpdatedMeta));
-    } else if (isInserting) {
-      context.missing(_sideLastUpdatedMeta);
-    }
-    if (data.containsKey('faction_last_updated')) {
-      context.handle(
-          _factionLastUpdatedMeta,
-          factionLastUpdated.isAcceptableOrUnknown(
-              data['faction_last_updated']!, _factionLastUpdatedMeta));
-    } else if (isInserting) {
-      context.missing(_factionLastUpdatedMeta);
-    }
-    if (data.containsKey('type_last_updated')) {
-      context.handle(
-          _typeLastUpdatedMeta,
-          typeLastUpdated.isAcceptableOrUnknown(
-              data['type_last_updated']!, _typeLastUpdatedMeta));
-    } else if (isInserting) {
-      context.missing(_typeLastUpdatedMeta);
-    }
-    if (data.containsKey('card_last_updated')) {
-      context.handle(
-          _cardLastUpdatedMeta,
-          cardLastUpdated.isAcceptableOrUnknown(
-              data['card_last_updated']!, _cardLastUpdatedMeta));
-    } else if (isInserting) {
-      context.missing(_cardLastUpdatedMeta);
-    }
-    if (data.containsKey('format_last_updated')) {
-      context.handle(
-          _formatLastUpdatedMeta,
-          formatLastUpdated.isAcceptableOrUnknown(
-              data['format_last_updated']!, _formatLastUpdatedMeta));
-    } else if (isInserting) {
-      context.missing(_formatLastUpdatedMeta);
-    }
-    if (data.containsKey('rotation_last_updated')) {
-      context.handle(
-          _rotationLastUpdatedMeta,
-          rotationLastUpdated.isAcceptableOrUnknown(
-              data['rotation_last_updated']!, _rotationLastUpdatedMeta));
-    } else if (isInserting) {
-      context.missing(_rotationLastUpdatedMeta);
-    }
-    if (data.containsKey('mwl_last_updated')) {
-      context.handle(
-          _mwlLastUpdatedMeta,
-          mwlLastUpdated.isAcceptableOrUnknown(
-              data['mwl_last_updated']!, _mwlLastUpdatedMeta));
-    } else if (isInserting) {
-      context.missing(_mwlLastUpdatedMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  NrdbData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return NrdbData(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}id'])!,
-      expires: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}expires'])!,
-      cycleLastUpdated: attachedDatabase.typeMapping.read(
-          DriftSqlType.dateTime, data['${effectivePrefix}cycle_last_updated'])!,
-      packLastUpdated: attachedDatabase.typeMapping.read(
-          DriftSqlType.dateTime, data['${effectivePrefix}pack_last_updated'])!,
-      sideLastUpdated: attachedDatabase.typeMapping.read(
-          DriftSqlType.dateTime, data['${effectivePrefix}side_last_updated'])!,
-      factionLastUpdated: attachedDatabase.typeMapping.read(
-          DriftSqlType.dateTime,
-          data['${effectivePrefix}faction_last_updated'])!,
-      typeLastUpdated: attachedDatabase.typeMapping.read(
-          DriftSqlType.dateTime, data['${effectivePrefix}type_last_updated'])!,
-      cardLastUpdated: attachedDatabase.typeMapping.read(
-          DriftSqlType.dateTime, data['${effectivePrefix}card_last_updated'])!,
-      formatLastUpdated: attachedDatabase.typeMapping.read(
-          DriftSqlType.dateTime,
-          data['${effectivePrefix}format_last_updated'])!,
-      rotationLastUpdated: attachedDatabase.typeMapping.read(
-          DriftSqlType.dateTime,
-          data['${effectivePrefix}rotation_last_updated'])!,
-      mwlLastUpdated: attachedDatabase.typeMapping.read(
-          DriftSqlType.dateTime, data['${effectivePrefix}mwl_last_updated'])!,
-    );
-  }
-
-  @override
-  Nrdb createAlias(String alias) {
-    return Nrdb(attachedDatabase, alias);
-  }
-
-  @override
-  List<String> get customConstraints =>
-      const ['CONSTRAINT settings_id CHECK (id = TRUE)'];
-  @override
-  bool get dontWriteConstraints => true;
-}
-
-class MwlData extends DataClass implements Insertable<MwlData> {
-  final String code;
-  final String formatCode;
-  final String name;
-  final DateTime? dateStart;
-  final MwlType? type;
-  final int? runnerPoints;
-  final int? corpPoints;
-  const MwlData(
-      {required this.code,
-      required this.formatCode,
-      required this.name,
-      this.dateStart,
-      this.type,
-      this.runnerPoints,
-      this.corpPoints});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['code'] = Variable<String>(code);
-    map['format_code'] = Variable<String>(formatCode);
-    map['name'] = Variable<String>(name);
-    if (!nullToAbsent || dateStart != null) {
-      map['date_start'] = Variable<DateTime>(dateStart);
-    }
-    if (!nullToAbsent || type != null) {
-      final converter = Mwl.$converter0;
-      map['type'] = Variable<String>(converter.toSql(type));
-    }
-    if (!nullToAbsent || runnerPoints != null) {
-      map['runner_points'] = Variable<int>(runnerPoints);
-    }
-    if (!nullToAbsent || corpPoints != null) {
-      map['corp_points'] = Variable<int>(corpPoints);
-    }
-    return map;
-  }
-
-  MwlCompanion toCompanion(bool nullToAbsent) {
-    return MwlCompanion(
-      code: Value(code),
-      formatCode: Value(formatCode),
-      name: Value(name),
-      dateStart: dateStart == null && nullToAbsent
-          ? const Value.absent()
-          : Value(dateStart),
-      type: type == null && nullToAbsent ? const Value.absent() : Value(type),
-      runnerPoints: runnerPoints == null && nullToAbsent
-          ? const Value.absent()
-          : Value(runnerPoints),
-      corpPoints: corpPoints == null && nullToAbsent
-          ? const Value.absent()
-          : Value(corpPoints),
-    );
-  }
-
-  factory MwlData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return MwlData(
-      code: serializer.fromJson<String>(json['code']),
-      formatCode: serializer.fromJson<String>(json['format_code']),
-      name: serializer.fromJson<String>(json['name']),
-      dateStart: serializer.fromJson<DateTime?>(json['date_start']),
-      type:
-          Mwl.$converter0.fromJson(serializer.fromJson<String?>(json['type'])),
-      runnerPoints: serializer.fromJson<int?>(json['runner_points']),
-      corpPoints: serializer.fromJson<int?>(json['corp_points']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'code': serializer.toJson<String>(code),
-      'format_code': serializer.toJson<String>(formatCode),
-      'name': serializer.toJson<String>(name),
-      'date_start': serializer.toJson<DateTime?>(dateStart),
-      'type': serializer.toJson<String?>(Mwl.$converter0.toJson(type)),
-      'runner_points': serializer.toJson<int?>(runnerPoints),
-      'corp_points': serializer.toJson<int?>(corpPoints),
-    };
-  }
-
-  MwlData copyWith(
-          {String? code,
-          String? formatCode,
-          String? name,
-          Value<DateTime?> dateStart = const Value.absent(),
-          Value<MwlType?> type = const Value.absent(),
-          Value<int?> runnerPoints = const Value.absent(),
-          Value<int?> corpPoints = const Value.absent()}) =>
-      MwlData(
-        code: code ?? this.code,
-        formatCode: formatCode ?? this.formatCode,
-        name: name ?? this.name,
-        dateStart: dateStart.present ? dateStart.value : this.dateStart,
-        type: type.present ? type.value : this.type,
-        runnerPoints:
-            runnerPoints.present ? runnerPoints.value : this.runnerPoints,
-        corpPoints: corpPoints.present ? corpPoints.value : this.corpPoints,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('MwlData(')
-          ..write('code: $code, ')
-          ..write('formatCode: $formatCode, ')
-          ..write('name: $name, ')
-          ..write('dateStart: $dateStart, ')
-          ..write('type: $type, ')
-          ..write('runnerPoints: $runnerPoints, ')
-          ..write('corpPoints: $corpPoints')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(
-      code, formatCode, name, dateStart, type, runnerPoints, corpPoints);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is MwlData &&
-          other.code == this.code &&
-          other.formatCode == this.formatCode &&
-          other.name == this.name &&
-          other.dateStart == this.dateStart &&
-          other.type == this.type &&
-          other.runnerPoints == this.runnerPoints &&
-          other.corpPoints == this.corpPoints);
-}
-
-class MwlCompanion extends UpdateCompanion<MwlData> {
-  final Value<String> code;
-  final Value<String> formatCode;
-  final Value<String> name;
-  final Value<DateTime?> dateStart;
-  final Value<MwlType?> type;
-  final Value<int?> runnerPoints;
-  final Value<int?> corpPoints;
-  const MwlCompanion({
-    this.code = const Value.absent(),
-    this.formatCode = const Value.absent(),
-    this.name = const Value.absent(),
-    this.dateStart = const Value.absent(),
-    this.type = const Value.absent(),
-    this.runnerPoints = const Value.absent(),
-    this.corpPoints = const Value.absent(),
-  });
-  MwlCompanion.insert({
-    required String code,
-    required String formatCode,
-    required String name,
-    this.dateStart = const Value.absent(),
-    this.type = const Value.absent(),
-    this.runnerPoints = const Value.absent(),
-    this.corpPoints = const Value.absent(),
-  })  : code = Value(code),
-        formatCode = Value(formatCode),
-        name = Value(name);
-  static Insertable<MwlData> custom({
-    Expression<String>? code,
-    Expression<String>? formatCode,
-    Expression<String>? name,
-    Expression<DateTime>? dateStart,
-    Expression<String>? type,
-    Expression<int>? runnerPoints,
-    Expression<int>? corpPoints,
-  }) {
-    return RawValuesInsertable({
-      if (code != null) 'code': code,
-      if (formatCode != null) 'format_code': formatCode,
-      if (name != null) 'name': name,
-      if (dateStart != null) 'date_start': dateStart,
-      if (type != null) 'type': type,
-      if (runnerPoints != null) 'runner_points': runnerPoints,
-      if (corpPoints != null) 'corp_points': corpPoints,
-    });
-  }
-
-  MwlCompanion copyWith(
-      {Value<String>? code,
-      Value<String>? formatCode,
-      Value<String>? name,
-      Value<DateTime?>? dateStart,
-      Value<MwlType?>? type,
-      Value<int?>? runnerPoints,
-      Value<int?>? corpPoints}) {
-    return MwlCompanion(
-      code: code ?? this.code,
-      formatCode: formatCode ?? this.formatCode,
-      name: name ?? this.name,
-      dateStart: dateStart ?? this.dateStart,
-      type: type ?? this.type,
-      runnerPoints: runnerPoints ?? this.runnerPoints,
-      corpPoints: corpPoints ?? this.corpPoints,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (code.present) {
-      map['code'] = Variable<String>(code.value);
-    }
-    if (formatCode.present) {
-      map['format_code'] = Variable<String>(formatCode.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    if (dateStart.present) {
-      map['date_start'] = Variable<DateTime>(dateStart.value);
-    }
-    if (type.present) {
-      final converter = Mwl.$converter0;
-      map['type'] = Variable<String>(converter.toSql(type.value));
-    }
-    if (runnerPoints.present) {
-      map['runner_points'] = Variable<int>(runnerPoints.value);
-    }
-    if (corpPoints.present) {
-      map['corp_points'] = Variable<int>(corpPoints.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('MwlCompanion(')
-          ..write('code: $code, ')
-          ..write('formatCode: $formatCode, ')
-          ..write('name: $name, ')
-          ..write('dateStart: $dateStart, ')
-          ..write('type: $type, ')
-          ..write('runnerPoints: $runnerPoints, ')
-          ..write('corpPoints: $corpPoints')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class Mwl extends Table with TableInfo<Mwl, MwlData> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  Mwl(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _codeMeta = const VerificationMeta('code');
-  late final GeneratedColumn<String> code = GeneratedColumn<String>(
-      'code', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL PRIMARY KEY');
-  final VerificationMeta _formatCodeMeta = const VerificationMeta('formatCode');
-  late final GeneratedColumn<String> formatCode = GeneratedColumn<String>(
-      'format_code', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  final VerificationMeta _nameMeta = const VerificationMeta('name');
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-      'name', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  final VerificationMeta _dateStartMeta = const VerificationMeta('dateStart');
-  late final GeneratedColumn<DateTime> dateStart = GeneratedColumn<DateTime>(
-      'date_start', aliasedName, true,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  final VerificationMeta _typeMeta = const VerificationMeta('type');
-  late final GeneratedColumnWithTypeConverter<MwlType?, String> type =
-      GeneratedColumn<String>('type', aliasedName, true,
-              type: DriftSqlType.string,
-              requiredDuringInsert: false,
-              $customConstraints: '')
-          .withConverter<MwlType?>(Mwl.$converter0);
-  final VerificationMeta _runnerPointsMeta =
-      const VerificationMeta('runnerPoints');
-  late final GeneratedColumn<int> runnerPoints = GeneratedColumn<int>(
-      'runner_points', aliasedName, true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  final VerificationMeta _corpPointsMeta = const VerificationMeta('corpPoints');
-  late final GeneratedColumn<int> corpPoints = GeneratedColumn<int>(
-      'corp_points', aliasedName, true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  @override
-  List<GeneratedColumn> get $columns =>
-      [code, formatCode, name, dateStart, type, runnerPoints, corpPoints];
-  @override
-  String get aliasedName => _alias ?? 'mwl';
-  @override
-  String get actualTableName => 'mwl';
-  @override
-  VerificationContext validateIntegrity(Insertable<MwlData> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('code')) {
-      context.handle(
-          _codeMeta, code.isAcceptableOrUnknown(data['code']!, _codeMeta));
-    } else if (isInserting) {
-      context.missing(_codeMeta);
-    }
-    if (data.containsKey('format_code')) {
-      context.handle(
-          _formatCodeMeta,
-          formatCode.isAcceptableOrUnknown(
-              data['format_code']!, _formatCodeMeta));
-    } else if (isInserting) {
-      context.missing(_formatCodeMeta);
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
-    } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
-    if (data.containsKey('date_start')) {
-      context.handle(_dateStartMeta,
-          dateStart.isAcceptableOrUnknown(data['date_start']!, _dateStartMeta));
-    }
-    context.handle(_typeMeta, const VerificationResult.success());
-    if (data.containsKey('runner_points')) {
-      context.handle(
-          _runnerPointsMeta,
-          runnerPoints.isAcceptableOrUnknown(
-              data['runner_points']!, _runnerPointsMeta));
-    }
-    if (data.containsKey('corp_points')) {
-      context.handle(
-          _corpPointsMeta,
-          corpPoints.isAcceptableOrUnknown(
-              data['corp_points']!, _corpPointsMeta));
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {code};
-  @override
-  MwlData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return MwlData(
-      code: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
-      formatCode: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}format_code'])!,
-      name: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      dateStart: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}date_start']),
-      type: Mwl.$converter0.fromSql(attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}type'])),
-      runnerPoints: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}runner_points']),
-      corpPoints: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}corp_points']),
-    );
-  }
-
-  @override
-  Mwl createAlias(String alias) {
-    return Mwl(attachedDatabase, alias);
-  }
-
-  static JsonTypeConverter2<MwlType?, String?, String?> $converter0 =
-      JsonTypeConverter2.asNullable(const MwlTypeConverter());
-  @override
-  bool get dontWriteConstraints => true;
-}
-
-class MwlCardData extends DataClass implements Insertable<MwlCardData> {
-  final String mwlCode;
-  final String cardCode;
-  final bool isRestricted;
-  final int? globalPenalty;
-  final int? universalFactionCost;
-  final int? deckLimit;
-  final int? points;
-  const MwlCardData(
-      {required this.mwlCode,
-      required this.cardCode,
-      required this.isRestricted,
-      this.globalPenalty,
-      this.universalFactionCost,
-      this.deckLimit,
-      this.points});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['mwl_code'] = Variable<String>(mwlCode);
-    map['card_code'] = Variable<String>(cardCode);
-    map['is_restricted'] = Variable<bool>(isRestricted);
-    if (!nullToAbsent || globalPenalty != null) {
-      map['global_penalty'] = Variable<int>(globalPenalty);
-    }
-    if (!nullToAbsent || universalFactionCost != null) {
-      map['universal_faction_cost'] = Variable<int>(universalFactionCost);
-    }
-    if (!nullToAbsent || deckLimit != null) {
-      map['deck_limit'] = Variable<int>(deckLimit);
-    }
-    if (!nullToAbsent || points != null) {
-      map['points'] = Variable<int>(points);
-    }
-    return map;
-  }
-
-  MwlCardCompanion toCompanion(bool nullToAbsent) {
-    return MwlCardCompanion(
-      mwlCode: Value(mwlCode),
-      cardCode: Value(cardCode),
-      isRestricted: Value(isRestricted),
-      globalPenalty: globalPenalty == null && nullToAbsent
-          ? const Value.absent()
-          : Value(globalPenalty),
-      universalFactionCost: universalFactionCost == null && nullToAbsent
-          ? const Value.absent()
-          : Value(universalFactionCost),
-      deckLimit: deckLimit == null && nullToAbsent
-          ? const Value.absent()
-          : Value(deckLimit),
-      points:
-          points == null && nullToAbsent ? const Value.absent() : Value(points),
-    );
-  }
-
-  factory MwlCardData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return MwlCardData(
-      mwlCode: serializer.fromJson<String>(json['mwl_code']),
-      cardCode: serializer.fromJson<String>(json['card_code']),
-      isRestricted: serializer.fromJson<bool>(json['is_restricted']),
-      globalPenalty: serializer.fromJson<int?>(json['global_penalty']),
-      universalFactionCost:
-          serializer.fromJson<int?>(json['universal_faction_cost']),
-      deckLimit: serializer.fromJson<int?>(json['deck_limit']),
-      points: serializer.fromJson<int?>(json['points']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'mwl_code': serializer.toJson<String>(mwlCode),
-      'card_code': serializer.toJson<String>(cardCode),
-      'is_restricted': serializer.toJson<bool>(isRestricted),
-      'global_penalty': serializer.toJson<int?>(globalPenalty),
-      'universal_faction_cost': serializer.toJson<int?>(universalFactionCost),
-      'deck_limit': serializer.toJson<int?>(deckLimit),
-      'points': serializer.toJson<int?>(points),
-    };
-  }
-
-  MwlCardData copyWith(
-          {String? mwlCode,
-          String? cardCode,
-          bool? isRestricted,
-          Value<int?> globalPenalty = const Value.absent(),
-          Value<int?> universalFactionCost = const Value.absent(),
-          Value<int?> deckLimit = const Value.absent(),
-          Value<int?> points = const Value.absent()}) =>
-      MwlCardData(
-        mwlCode: mwlCode ?? this.mwlCode,
-        cardCode: cardCode ?? this.cardCode,
-        isRestricted: isRestricted ?? this.isRestricted,
-        globalPenalty:
-            globalPenalty.present ? globalPenalty.value : this.globalPenalty,
-        universalFactionCost: universalFactionCost.present
-            ? universalFactionCost.value
-            : this.universalFactionCost,
-        deckLimit: deckLimit.present ? deckLimit.value : this.deckLimit,
-        points: points.present ? points.value : this.points,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('MwlCardData(')
-          ..write('mwlCode: $mwlCode, ')
-          ..write('cardCode: $cardCode, ')
-          ..write('isRestricted: $isRestricted, ')
-          ..write('globalPenalty: $globalPenalty, ')
-          ..write('universalFactionCost: $universalFactionCost, ')
-          ..write('deckLimit: $deckLimit, ')
-          ..write('points: $points')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(mwlCode, cardCode, isRestricted,
-      globalPenalty, universalFactionCost, deckLimit, points);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is MwlCardData &&
-          other.mwlCode == this.mwlCode &&
-          other.cardCode == this.cardCode &&
-          other.isRestricted == this.isRestricted &&
-          other.globalPenalty == this.globalPenalty &&
-          other.universalFactionCost == this.universalFactionCost &&
-          other.deckLimit == this.deckLimit &&
-          other.points == this.points);
-}
-
-class MwlCardCompanion extends UpdateCompanion<MwlCardData> {
-  final Value<String> mwlCode;
-  final Value<String> cardCode;
-  final Value<bool> isRestricted;
-  final Value<int?> globalPenalty;
-  final Value<int?> universalFactionCost;
-  final Value<int?> deckLimit;
-  final Value<int?> points;
-  const MwlCardCompanion({
-    this.mwlCode = const Value.absent(),
-    this.cardCode = const Value.absent(),
-    this.isRestricted = const Value.absent(),
-    this.globalPenalty = const Value.absent(),
-    this.universalFactionCost = const Value.absent(),
-    this.deckLimit = const Value.absent(),
-    this.points = const Value.absent(),
-  });
-  MwlCardCompanion.insert({
-    required String mwlCode,
-    required String cardCode,
-    required bool isRestricted,
-    this.globalPenalty = const Value.absent(),
-    this.universalFactionCost = const Value.absent(),
-    this.deckLimit = const Value.absent(),
-    this.points = const Value.absent(),
-  })  : mwlCode = Value(mwlCode),
-        cardCode = Value(cardCode),
-        isRestricted = Value(isRestricted);
-  static Insertable<MwlCardData> custom({
-    Expression<String>? mwlCode,
-    Expression<String>? cardCode,
-    Expression<bool>? isRestricted,
-    Expression<int>? globalPenalty,
-    Expression<int>? universalFactionCost,
-    Expression<int>? deckLimit,
-    Expression<int>? points,
-  }) {
-    return RawValuesInsertable({
-      if (mwlCode != null) 'mwl_code': mwlCode,
-      if (cardCode != null) 'card_code': cardCode,
-      if (isRestricted != null) 'is_restricted': isRestricted,
-      if (globalPenalty != null) 'global_penalty': globalPenalty,
-      if (universalFactionCost != null)
-        'universal_faction_cost': universalFactionCost,
-      if (deckLimit != null) 'deck_limit': deckLimit,
-      if (points != null) 'points': points,
-    });
-  }
-
-  MwlCardCompanion copyWith(
-      {Value<String>? mwlCode,
-      Value<String>? cardCode,
-      Value<bool>? isRestricted,
-      Value<int?>? globalPenalty,
-      Value<int?>? universalFactionCost,
-      Value<int?>? deckLimit,
-      Value<int?>? points}) {
-    return MwlCardCompanion(
-      mwlCode: mwlCode ?? this.mwlCode,
-      cardCode: cardCode ?? this.cardCode,
-      isRestricted: isRestricted ?? this.isRestricted,
-      globalPenalty: globalPenalty ?? this.globalPenalty,
-      universalFactionCost: universalFactionCost ?? this.universalFactionCost,
-      deckLimit: deckLimit ?? this.deckLimit,
-      points: points ?? this.points,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (mwlCode.present) {
-      map['mwl_code'] = Variable<String>(mwlCode.value);
-    }
-    if (cardCode.present) {
-      map['card_code'] = Variable<String>(cardCode.value);
-    }
-    if (isRestricted.present) {
-      map['is_restricted'] = Variable<bool>(isRestricted.value);
-    }
-    if (globalPenalty.present) {
-      map['global_penalty'] = Variable<int>(globalPenalty.value);
-    }
-    if (universalFactionCost.present) {
-      map['universal_faction_cost'] = Variable<int>(universalFactionCost.value);
-    }
-    if (deckLimit.present) {
-      map['deck_limit'] = Variable<int>(deckLimit.value);
-    }
-    if (points.present) {
-      map['points'] = Variable<int>(points.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('MwlCardCompanion(')
-          ..write('mwlCode: $mwlCode, ')
-          ..write('cardCode: $cardCode, ')
-          ..write('isRestricted: $isRestricted, ')
-          ..write('globalPenalty: $globalPenalty, ')
-          ..write('universalFactionCost: $universalFactionCost, ')
-          ..write('deckLimit: $deckLimit, ')
-          ..write('points: $points')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class MwlCard extends Table with TableInfo<MwlCard, MwlCardData> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  MwlCard(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _mwlCodeMeta = const VerificationMeta('mwlCode');
-  late final GeneratedColumn<String> mwlCode = GeneratedColumn<String>(
-      'mwl_code', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  final VerificationMeta _cardCodeMeta = const VerificationMeta('cardCode');
-  late final GeneratedColumn<String> cardCode = GeneratedColumn<String>(
-      'card_code', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  final VerificationMeta _isRestrictedMeta =
-      const VerificationMeta('isRestricted');
-  late final GeneratedColumn<bool> isRestricted = GeneratedColumn<bool>(
-      'is_restricted', aliasedName, false,
-      type: DriftSqlType.bool,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  final VerificationMeta _globalPenaltyMeta =
-      const VerificationMeta('globalPenalty');
-  late final GeneratedColumn<int> globalPenalty = GeneratedColumn<int>(
-      'global_penalty', aliasedName, true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  final VerificationMeta _universalFactionCostMeta =
-      const VerificationMeta('universalFactionCost');
-  late final GeneratedColumn<int> universalFactionCost = GeneratedColumn<int>(
-      'universal_faction_cost', aliasedName, true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  final VerificationMeta _deckLimitMeta = const VerificationMeta('deckLimit');
-  late final GeneratedColumn<int> deckLimit = GeneratedColumn<int>(
-      'deck_limit', aliasedName, true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  final VerificationMeta _pointsMeta = const VerificationMeta('points');
-  late final GeneratedColumn<int> points = GeneratedColumn<int>(
-      'points', aliasedName, true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  @override
-  List<GeneratedColumn> get $columns => [
-        mwlCode,
-        cardCode,
-        isRestricted,
-        globalPenalty,
-        universalFactionCost,
-        deckLimit,
-        points
-      ];
-  @override
-  String get aliasedName => _alias ?? 'mwl_card';
-  @override
-  String get actualTableName => 'mwl_card';
-  @override
-  VerificationContext validateIntegrity(Insertable<MwlCardData> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('mwl_code')) {
-      context.handle(_mwlCodeMeta,
-          mwlCode.isAcceptableOrUnknown(data['mwl_code']!, _mwlCodeMeta));
-    } else if (isInserting) {
-      context.missing(_mwlCodeMeta);
-    }
-    if (data.containsKey('card_code')) {
-      context.handle(_cardCodeMeta,
-          cardCode.isAcceptableOrUnknown(data['card_code']!, _cardCodeMeta));
-    } else if (isInserting) {
-      context.missing(_cardCodeMeta);
-    }
-    if (data.containsKey('is_restricted')) {
-      context.handle(
-          _isRestrictedMeta,
-          isRestricted.isAcceptableOrUnknown(
-              data['is_restricted']!, _isRestrictedMeta));
-    } else if (isInserting) {
-      context.missing(_isRestrictedMeta);
-    }
-    if (data.containsKey('global_penalty')) {
-      context.handle(
-          _globalPenaltyMeta,
-          globalPenalty.isAcceptableOrUnknown(
-              data['global_penalty']!, _globalPenaltyMeta));
-    }
-    if (data.containsKey('universal_faction_cost')) {
-      context.handle(
-          _universalFactionCostMeta,
-          universalFactionCost.isAcceptableOrUnknown(
-              data['universal_faction_cost']!, _universalFactionCostMeta));
-    }
-    if (data.containsKey('deck_limit')) {
-      context.handle(_deckLimitMeta,
-          deckLimit.isAcceptableOrUnknown(data['deck_limit']!, _deckLimitMeta));
-    }
-    if (data.containsKey('points')) {
-      context.handle(_pointsMeta,
-          points.isAcceptableOrUnknown(data['points']!, _pointsMeta));
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {mwlCode, cardCode};
-  @override
-  MwlCardData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return MwlCardData(
-      mwlCode: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}mwl_code'])!,
-      cardCode: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}card_code'])!,
-      isRestricted: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}is_restricted'])!,
-      globalPenalty: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}global_penalty']),
-      universalFactionCost: attachedDatabase.typeMapping.read(
-          DriftSqlType.int, data['${effectivePrefix}universal_faction_cost']),
-      deckLimit: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}deck_limit']),
-      points: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}points']),
-    );
-  }
-
-  @override
-  MwlCard createAlias(String alias) {
-    return MwlCard(attachedDatabase, alias);
-  }
-
-  @override
-  List<String> get customConstraints =>
-      const ['PRIMARY KEY (mwl_code, card_code)'];
-  @override
-  bool get dontWriteConstraints => true;
-}
-
-class FormatData extends DataClass implements Insertable<FormatData> {
-  final int id;
-  final String code;
-  final String name;
-  const FormatData({required this.id, required this.code, required this.name});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['code'] = Variable<String>(code);
-    map['name'] = Variable<String>(name);
-    return map;
-  }
-
-  FormatCompanion toCompanion(bool nullToAbsent) {
-    return FormatCompanion(
-      id: Value(id),
-      code: Value(code),
-      name: Value(name),
-    );
-  }
-
-  factory FormatData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return FormatData(
-      id: serializer.fromJson<int>(json['id']),
-      code: serializer.fromJson<String>(json['code']),
-      name: serializer.fromJson<String>(json['name']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'code': serializer.toJson<String>(code),
-      'name': serializer.toJson<String>(name),
-    };
-  }
-
-  FormatData copyWith({int? id, String? code, String? name}) => FormatData(
-        id: id ?? this.id,
-        code: code ?? this.code,
-        name: name ?? this.name,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('FormatData(')
-          ..write('id: $id, ')
-          ..write('code: $code, ')
-          ..write('name: $name')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(id, code, name);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is FormatData &&
-          other.id == this.id &&
-          other.code == this.code &&
-          other.name == this.name);
-}
-
-class FormatCompanion extends UpdateCompanion<FormatData> {
-  final Value<int> id;
-  final Value<String> code;
-  final Value<String> name;
-  const FormatCompanion({
-    this.id = const Value.absent(),
-    this.code = const Value.absent(),
-    this.name = const Value.absent(),
-  });
-  FormatCompanion.insert({
-    required int id,
-    required String code,
-    required String name,
-  })  : id = Value(id),
-        code = Value(code),
-        name = Value(name);
-  static Insertable<FormatData> custom({
-    Expression<int>? id,
-    Expression<String>? code,
-    Expression<String>? name,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (code != null) 'code': code,
-      if (name != null) 'name': name,
-    });
-  }
-
-  FormatCompanion copyWith(
-      {Value<int>? id, Value<String>? code, Value<String>? name}) {
-    return FormatCompanion(
-      id: id ?? this.id,
-      code: code ?? this.code,
-      name: name ?? this.name,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (code.present) {
-      map['code'] = Variable<String>(code.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('FormatCompanion(')
-          ..write('id: $id, ')
-          ..write('code: $code, ')
-          ..write('name: $name')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class Format extends Table with TableInfo<Format, FormatData> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  Format(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  final VerificationMeta _codeMeta = const VerificationMeta('code');
-  late final GeneratedColumn<String> code = GeneratedColumn<String>(
-      'code', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'PRIMARY KEY NOT NULL');
-  final VerificationMeta _nameMeta = const VerificationMeta('name');
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-      'name', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  @override
-  List<GeneratedColumn> get $columns => [id, code, name];
-  @override
-  String get aliasedName => _alias ?? 'format';
-  @override
-  String get actualTableName => 'format';
-  @override
-  VerificationContext validateIntegrity(Insertable<FormatData> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    } else if (isInserting) {
-      context.missing(_idMeta);
-    }
-    if (data.containsKey('code')) {
-      context.handle(
-          _codeMeta, code.isAcceptableOrUnknown(data['code']!, _codeMeta));
-    } else if (isInserting) {
-      context.missing(_codeMeta);
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
-    } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {code};
-  @override
-  FormatData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return FormatData(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      code: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
-      name: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-    );
-  }
-
-  @override
-  Format createAlias(String alias) {
-    return Format(attachedDatabase, alias);
-  }
-
-  @override
-  bool get dontWriteConstraints => true;
-}
-
-class FactionData extends DataClass implements Insertable<FactionData> {
-  final String code;
-  final String sideCode;
-  final String name;
-  final Color color;
-  final bool isMini;
-  const FactionData(
-      {required this.code,
-      required this.sideCode,
-      required this.name,
-      required this.color,
-      required this.isMini});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['code'] = Variable<String>(code);
-    map['side_code'] = Variable<String>(sideCode);
-    map['name'] = Variable<String>(name);
-    {
-      final converter = Faction.$converter0;
-      map['color'] = Variable<int>(converter.toSql(color));
-    }
-    map['is_mini'] = Variable<bool>(isMini);
-    return map;
-  }
-
-  FactionCompanion toCompanion(bool nullToAbsent) {
-    return FactionCompanion(
-      code: Value(code),
-      sideCode: Value(sideCode),
-      name: Value(name),
-      color: Value(color),
-      isMini: Value(isMini),
-    );
-  }
-
-  factory FactionData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return FactionData(
-      code: serializer.fromJson<String>(json['code']),
-      sideCode: serializer.fromJson<String>(json['side_code']),
-      name: serializer.fromJson<String>(json['name']),
-      color:
-          Faction.$converter0.fromJson(serializer.fromJson<int>(json['color'])),
-      isMini: serializer.fromJson<bool>(json['is_mini']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'code': serializer.toJson<String>(code),
-      'side_code': serializer.toJson<String>(sideCode),
-      'name': serializer.toJson<String>(name),
-      'color': serializer.toJson<int>(Faction.$converter0.toJson(color)),
-      'is_mini': serializer.toJson<bool>(isMini),
-    };
-  }
-
-  FactionData copyWith(
-          {String? code,
-          String? sideCode,
-          String? name,
-          Color? color,
-          bool? isMini}) =>
-      FactionData(
-        code: code ?? this.code,
-        sideCode: sideCode ?? this.sideCode,
-        name: name ?? this.name,
-        color: color ?? this.color,
-        isMini: isMini ?? this.isMini,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('FactionData(')
-          ..write('code: $code, ')
-          ..write('sideCode: $sideCode, ')
-          ..write('name: $name, ')
-          ..write('color: $color, ')
-          ..write('isMini: $isMini')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(code, sideCode, name, color, isMini);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is FactionData &&
-          other.code == this.code &&
-          other.sideCode == this.sideCode &&
-          other.name == this.name &&
-          other.color == this.color &&
-          other.isMini == this.isMini);
-}
-
-class FactionCompanion extends UpdateCompanion<FactionData> {
-  final Value<String> code;
-  final Value<String> sideCode;
-  final Value<String> name;
-  final Value<Color> color;
-  final Value<bool> isMini;
-  const FactionCompanion({
-    this.code = const Value.absent(),
-    this.sideCode = const Value.absent(),
-    this.name = const Value.absent(),
-    this.color = const Value.absent(),
-    this.isMini = const Value.absent(),
-  });
-  FactionCompanion.insert({
-    required String code,
-    required String sideCode,
-    required String name,
-    required Color color,
-    required bool isMini,
-  })  : code = Value(code),
-        sideCode = Value(sideCode),
-        name = Value(name),
-        color = Value(color),
-        isMini = Value(isMini);
-  static Insertable<FactionData> custom({
-    Expression<String>? code,
-    Expression<String>? sideCode,
-    Expression<String>? name,
-    Expression<int>? color,
-    Expression<bool>? isMini,
-  }) {
-    return RawValuesInsertable({
-      if (code != null) 'code': code,
-      if (sideCode != null) 'side_code': sideCode,
-      if (name != null) 'name': name,
-      if (color != null) 'color': color,
-      if (isMini != null) 'is_mini': isMini,
-    });
-  }
-
-  FactionCompanion copyWith(
-      {Value<String>? code,
-      Value<String>? sideCode,
-      Value<String>? name,
-      Value<Color>? color,
-      Value<bool>? isMini}) {
-    return FactionCompanion(
-      code: code ?? this.code,
-      sideCode: sideCode ?? this.sideCode,
-      name: name ?? this.name,
-      color: color ?? this.color,
-      isMini: isMini ?? this.isMini,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (code.present) {
-      map['code'] = Variable<String>(code.value);
-    }
-    if (sideCode.present) {
-      map['side_code'] = Variable<String>(sideCode.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    if (color.present) {
-      final converter = Faction.$converter0;
-      map['color'] = Variable<int>(converter.toSql(color.value));
-    }
-    if (isMini.present) {
-      map['is_mini'] = Variable<bool>(isMini.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('FactionCompanion(')
-          ..write('code: $code, ')
-          ..write('sideCode: $sideCode, ')
-          ..write('name: $name, ')
-          ..write('color: $color, ')
-          ..write('isMini: $isMini')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class Faction extends Table with TableInfo<Faction, FactionData> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  Faction(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _codeMeta = const VerificationMeta('code');
-  late final GeneratedColumn<String> code = GeneratedColumn<String>(
-      'code', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'PRIMARY KEY NOT NULL');
-  final VerificationMeta _sideCodeMeta = const VerificationMeta('sideCode');
-  late final GeneratedColumn<String> sideCode = GeneratedColumn<String>(
-      'side_code', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  final VerificationMeta _nameMeta = const VerificationMeta('name');
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-      'name', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  final VerificationMeta _colorMeta = const VerificationMeta('color');
-  late final GeneratedColumnWithTypeConverter<Color, int> color =
-      GeneratedColumn<int>('color', aliasedName, false,
-              type: DriftSqlType.int,
-              requiredDuringInsert: true,
-              $customConstraints: 'NOT NULL')
-          .withConverter<Color>(Faction.$converter0);
-  final VerificationMeta _isMiniMeta = const VerificationMeta('isMini');
-  late final GeneratedColumn<bool> isMini = GeneratedColumn<bool>(
-      'is_mini', aliasedName, false,
-      type: DriftSqlType.bool,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  @override
-  List<GeneratedColumn> get $columns => [code, sideCode, name, color, isMini];
-  @override
-  String get aliasedName => _alias ?? 'faction';
-  @override
-  String get actualTableName => 'faction';
-  @override
-  VerificationContext validateIntegrity(Insertable<FactionData> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('code')) {
-      context.handle(
-          _codeMeta, code.isAcceptableOrUnknown(data['code']!, _codeMeta));
-    } else if (isInserting) {
-      context.missing(_codeMeta);
-    }
-    if (data.containsKey('side_code')) {
-      context.handle(_sideCodeMeta,
-          sideCode.isAcceptableOrUnknown(data['side_code']!, _sideCodeMeta));
-    } else if (isInserting) {
-      context.missing(_sideCodeMeta);
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
-    } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
-    context.handle(_colorMeta, const VerificationResult.success());
-    if (data.containsKey('is_mini')) {
-      context.handle(_isMiniMeta,
-          isMini.isAcceptableOrUnknown(data['is_mini']!, _isMiniMeta));
-    } else if (isInserting) {
-      context.missing(_isMiniMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {code};
-  @override
-  FactionData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return FactionData(
-      code: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
-      sideCode: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}side_code'])!,
-      name: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      color: Faction.$converter0.fromSql(attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}color'])!),
-      isMini: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}is_mini'])!,
-    );
-  }
-
-  @override
-  Faction createAlias(String alias) {
-    return Faction(attachedDatabase, alias);
-  }
-
-  static JsonTypeConverter2<Color, int, int> $converter0 =
-      const ColorConverter();
-  @override
-  bool get dontWriteConstraints => true;
-}
-
-class DeckData extends DataClass implements Insertable<DeckData> {
-  final String id;
-  final String identityCode;
-  final String? formatCode;
-  final String? rotationCode;
-  final String? mwlCode;
-  final String name;
-  final String description;
-  final DateTime created;
-  final DateTime updated;
-  final bool deleted;
-  final DateTime? remoteUpdated;
-  final DateTime? synced;
-  const DeckData(
-      {required this.id,
-      required this.identityCode,
-      this.formatCode,
-      this.rotationCode,
-      this.mwlCode,
-      required this.name,
-      required this.description,
-      required this.created,
-      required this.updated,
-      required this.deleted,
-      this.remoteUpdated,
-      this.synced});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<String>(id);
-    map['identity_code'] = Variable<String>(identityCode);
-    if (!nullToAbsent || formatCode != null) {
-      map['format_code'] = Variable<String>(formatCode);
-    }
-    if (!nullToAbsent || rotationCode != null) {
-      map['rotation_code'] = Variable<String>(rotationCode);
-    }
-    if (!nullToAbsent || mwlCode != null) {
-      map['mwl_code'] = Variable<String>(mwlCode);
-    }
-    map['name'] = Variable<String>(name);
-    map['description'] = Variable<String>(description);
-    map['created'] = Variable<DateTime>(created);
-    map['updated'] = Variable<DateTime>(updated);
-    map['deleted'] = Variable<bool>(deleted);
-    if (!nullToAbsent || remoteUpdated != null) {
-      map['remote_updated'] = Variable<DateTime>(remoteUpdated);
-    }
-    if (!nullToAbsent || synced != null) {
-      map['synced'] = Variable<DateTime>(synced);
-    }
-    return map;
-  }
-
-  DeckCompanion toCompanion(bool nullToAbsent) {
-    return DeckCompanion(
-      id: Value(id),
-      identityCode: Value(identityCode),
-      formatCode: formatCode == null && nullToAbsent
-          ? const Value.absent()
-          : Value(formatCode),
-      rotationCode: rotationCode == null && nullToAbsent
-          ? const Value.absent()
-          : Value(rotationCode),
-      mwlCode: mwlCode == null && nullToAbsent
-          ? const Value.absent()
-          : Value(mwlCode),
-      name: Value(name),
-      description: Value(description),
-      created: Value(created),
-      updated: Value(updated),
-      deleted: Value(deleted),
-      remoteUpdated: remoteUpdated == null && nullToAbsent
-          ? const Value.absent()
-          : Value(remoteUpdated),
-      synced:
-          synced == null && nullToAbsent ? const Value.absent() : Value(synced),
-    );
-  }
-
-  factory DeckData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return DeckData(
-      id: serializer.fromJson<String>(json['id']),
-      identityCode: serializer.fromJson<String>(json['identity_code']),
-      formatCode: serializer.fromJson<String?>(json['format_code']),
-      rotationCode: serializer.fromJson<String?>(json['rotation_code']),
-      mwlCode: serializer.fromJson<String?>(json['mwl_code']),
-      name: serializer.fromJson<String>(json['name']),
-      description: serializer.fromJson<String>(json['description']),
-      created: serializer.fromJson<DateTime>(json['created']),
-      updated: serializer.fromJson<DateTime>(json['updated']),
-      deleted: serializer.fromJson<bool>(json['deleted']),
-      remoteUpdated: serializer.fromJson<DateTime?>(json['remote_updated']),
-      synced: serializer.fromJson<DateTime?>(json['synced']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
-      'identity_code': serializer.toJson<String>(identityCode),
-      'format_code': serializer.toJson<String?>(formatCode),
-      'rotation_code': serializer.toJson<String?>(rotationCode),
-      'mwl_code': serializer.toJson<String?>(mwlCode),
-      'name': serializer.toJson<String>(name),
-      'description': serializer.toJson<String>(description),
-      'created': serializer.toJson<DateTime>(created),
-      'updated': serializer.toJson<DateTime>(updated),
-      'deleted': serializer.toJson<bool>(deleted),
-      'remote_updated': serializer.toJson<DateTime?>(remoteUpdated),
-      'synced': serializer.toJson<DateTime?>(synced),
-    };
-  }
-
-  DeckData copyWith(
-          {String? id,
-          String? identityCode,
-          Value<String?> formatCode = const Value.absent(),
-          Value<String?> rotationCode = const Value.absent(),
-          Value<String?> mwlCode = const Value.absent(),
-          String? name,
-          String? description,
-          DateTime? created,
-          DateTime? updated,
-          bool? deleted,
-          Value<DateTime?> remoteUpdated = const Value.absent(),
-          Value<DateTime?> synced = const Value.absent()}) =>
-      DeckData(
-        id: id ?? this.id,
-        identityCode: identityCode ?? this.identityCode,
-        formatCode: formatCode.present ? formatCode.value : this.formatCode,
-        rotationCode:
-            rotationCode.present ? rotationCode.value : this.rotationCode,
-        mwlCode: mwlCode.present ? mwlCode.value : this.mwlCode,
-        name: name ?? this.name,
-        description: description ?? this.description,
-        created: created ?? this.created,
-        updated: updated ?? this.updated,
-        deleted: deleted ?? this.deleted,
-        remoteUpdated:
-            remoteUpdated.present ? remoteUpdated.value : this.remoteUpdated,
-        synced: synced.present ? synced.value : this.synced,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('DeckData(')
-          ..write('id: $id, ')
-          ..write('identityCode: $identityCode, ')
-          ..write('formatCode: $formatCode, ')
-          ..write('rotationCode: $rotationCode, ')
-          ..write('mwlCode: $mwlCode, ')
-          ..write('name: $name, ')
-          ..write('description: $description, ')
-          ..write('created: $created, ')
-          ..write('updated: $updated, ')
-          ..write('deleted: $deleted, ')
-          ..write('remoteUpdated: $remoteUpdated, ')
-          ..write('synced: $synced')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(
-      id,
-      identityCode,
-      formatCode,
-      rotationCode,
-      mwlCode,
-      name,
-      description,
-      created,
-      updated,
-      deleted,
-      remoteUpdated,
-      synced);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is DeckData &&
-          other.id == this.id &&
-          other.identityCode == this.identityCode &&
-          other.formatCode == this.formatCode &&
-          other.rotationCode == this.rotationCode &&
-          other.mwlCode == this.mwlCode &&
-          other.name == this.name &&
-          other.description == this.description &&
-          other.created == this.created &&
-          other.updated == this.updated &&
-          other.deleted == this.deleted &&
-          other.remoteUpdated == this.remoteUpdated &&
-          other.synced == this.synced);
-}
-
-class DeckCompanion extends UpdateCompanion<DeckData> {
-  final Value<String> id;
-  final Value<String> identityCode;
-  final Value<String?> formatCode;
-  final Value<String?> rotationCode;
-  final Value<String?> mwlCode;
-  final Value<String> name;
-  final Value<String> description;
-  final Value<DateTime> created;
-  final Value<DateTime> updated;
-  final Value<bool> deleted;
-  final Value<DateTime?> remoteUpdated;
-  final Value<DateTime?> synced;
-  const DeckCompanion({
-    this.id = const Value.absent(),
-    this.identityCode = const Value.absent(),
-    this.formatCode = const Value.absent(),
-    this.rotationCode = const Value.absent(),
-    this.mwlCode = const Value.absent(),
-    this.name = const Value.absent(),
-    this.description = const Value.absent(),
-    this.created = const Value.absent(),
-    this.updated = const Value.absent(),
-    this.deleted = const Value.absent(),
-    this.remoteUpdated = const Value.absent(),
-    this.synced = const Value.absent(),
-  });
-  DeckCompanion.insert({
-    required String id,
-    required String identityCode,
-    this.formatCode = const Value.absent(),
-    this.rotationCode = const Value.absent(),
-    this.mwlCode = const Value.absent(),
-    required String name,
-    required String description,
-    required DateTime created,
-    required DateTime updated,
-    required bool deleted,
-    this.remoteUpdated = const Value.absent(),
-    this.synced = const Value.absent(),
-  })  : id = Value(id),
-        identityCode = Value(identityCode),
-        name = Value(name),
-        description = Value(description),
-        created = Value(created),
-        updated = Value(updated),
-        deleted = Value(deleted);
-  static Insertable<DeckData> custom({
-    Expression<String>? id,
-    Expression<String>? identityCode,
-    Expression<String>? formatCode,
-    Expression<String>? rotationCode,
-    Expression<String>? mwlCode,
-    Expression<String>? name,
-    Expression<String>? description,
-    Expression<DateTime>? created,
-    Expression<DateTime>? updated,
-    Expression<bool>? deleted,
-    Expression<DateTime>? remoteUpdated,
-    Expression<DateTime>? synced,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (identityCode != null) 'identity_code': identityCode,
-      if (formatCode != null) 'format_code': formatCode,
-      if (rotationCode != null) 'rotation_code': rotationCode,
-      if (mwlCode != null) 'mwl_code': mwlCode,
-      if (name != null) 'name': name,
-      if (description != null) 'description': description,
-      if (created != null) 'created': created,
-      if (updated != null) 'updated': updated,
-      if (deleted != null) 'deleted': deleted,
-      if (remoteUpdated != null) 'remote_updated': remoteUpdated,
-      if (synced != null) 'synced': synced,
-    });
-  }
-
-  DeckCompanion copyWith(
-      {Value<String>? id,
-      Value<String>? identityCode,
-      Value<String?>? formatCode,
-      Value<String?>? rotationCode,
-      Value<String?>? mwlCode,
-      Value<String>? name,
-      Value<String>? description,
-      Value<DateTime>? created,
-      Value<DateTime>? updated,
-      Value<bool>? deleted,
-      Value<DateTime?>? remoteUpdated,
-      Value<DateTime?>? synced}) {
-    return DeckCompanion(
-      id: id ?? this.id,
-      identityCode: identityCode ?? this.identityCode,
-      formatCode: formatCode ?? this.formatCode,
-      rotationCode: rotationCode ?? this.rotationCode,
-      mwlCode: mwlCode ?? this.mwlCode,
-      name: name ?? this.name,
-      description: description ?? this.description,
-      created: created ?? this.created,
-      updated: updated ?? this.updated,
-      deleted: deleted ?? this.deleted,
-      remoteUpdated: remoteUpdated ?? this.remoteUpdated,
-      synced: synced ?? this.synced,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<String>(id.value);
-    }
-    if (identityCode.present) {
-      map['identity_code'] = Variable<String>(identityCode.value);
-    }
-    if (formatCode.present) {
-      map['format_code'] = Variable<String>(formatCode.value);
-    }
-    if (rotationCode.present) {
-      map['rotation_code'] = Variable<String>(rotationCode.value);
-    }
-    if (mwlCode.present) {
-      map['mwl_code'] = Variable<String>(mwlCode.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    if (description.present) {
-      map['description'] = Variable<String>(description.value);
-    }
-    if (created.present) {
-      map['created'] = Variable<DateTime>(created.value);
-    }
-    if (updated.present) {
-      map['updated'] = Variable<DateTime>(updated.value);
-    }
-    if (deleted.present) {
-      map['deleted'] = Variable<bool>(deleted.value);
-    }
-    if (remoteUpdated.present) {
-      map['remote_updated'] = Variable<DateTime>(remoteUpdated.value);
-    }
-    if (synced.present) {
-      map['synced'] = Variable<DateTime>(synced.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('DeckCompanion(')
-          ..write('id: $id, ')
-          ..write('identityCode: $identityCode, ')
-          ..write('formatCode: $formatCode, ')
-          ..write('rotationCode: $rotationCode, ')
-          ..write('mwlCode: $mwlCode, ')
-          ..write('name: $name, ')
-          ..write('description: $description, ')
-          ..write('created: $created, ')
-          ..write('updated: $updated, ')
-          ..write('deleted: $deleted, ')
-          ..write('remoteUpdated: $remoteUpdated, ')
-          ..write('synced: $synced')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class Deck extends Table with TableInfo<Deck, DeckData> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  Deck(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _idMeta = const VerificationMeta('id');
-  late final GeneratedColumn<String> id = GeneratedColumn<String>(
-      'id', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'PRIMARY KEY NOT NULL');
-  final VerificationMeta _identityCodeMeta =
-      const VerificationMeta('identityCode');
-  late final GeneratedColumn<String> identityCode = GeneratedColumn<String>(
-      'identity_code', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  final VerificationMeta _formatCodeMeta = const VerificationMeta('formatCode');
-  late final GeneratedColumn<String> formatCode = GeneratedColumn<String>(
-      'format_code', aliasedName, true,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  final VerificationMeta _rotationCodeMeta =
-      const VerificationMeta('rotationCode');
-  late final GeneratedColumn<String> rotationCode = GeneratedColumn<String>(
-      'rotation_code', aliasedName, true,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  final VerificationMeta _mwlCodeMeta = const VerificationMeta('mwlCode');
-  late final GeneratedColumn<String> mwlCode = GeneratedColumn<String>(
-      'mwl_code', aliasedName, true,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  final VerificationMeta _nameMeta = const VerificationMeta('name');
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-      'name', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  final VerificationMeta _descriptionMeta =
-      const VerificationMeta('description');
-  late final GeneratedColumn<String> description = GeneratedColumn<String>(
-      'description', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  final VerificationMeta _createdMeta = const VerificationMeta('created');
-  late final GeneratedColumn<DateTime> created = GeneratedColumn<DateTime>(
-      'created', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  final VerificationMeta _updatedMeta = const VerificationMeta('updated');
-  late final GeneratedColumn<DateTime> updated = GeneratedColumn<DateTime>(
-      'updated', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  final VerificationMeta _deletedMeta = const VerificationMeta('deleted');
-  late final GeneratedColumn<bool> deleted = GeneratedColumn<bool>(
-      'deleted', aliasedName, false,
-      type: DriftSqlType.bool,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  final VerificationMeta _remoteUpdatedMeta =
-      const VerificationMeta('remoteUpdated');
-  late final GeneratedColumn<DateTime> remoteUpdated =
-      GeneratedColumn<DateTime>('remote_updated', aliasedName, true,
-          type: DriftSqlType.dateTime,
-          requiredDuringInsert: false,
-          $customConstraints: '');
-  final VerificationMeta _syncedMeta = const VerificationMeta('synced');
-  late final GeneratedColumn<DateTime> synced = GeneratedColumn<DateTime>(
-      'synced', aliasedName, true,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  @override
-  List<GeneratedColumn> get $columns => [
-        id,
-        identityCode,
-        formatCode,
-        rotationCode,
-        mwlCode,
-        name,
-        description,
-        created,
-        updated,
-        deleted,
-        remoteUpdated,
-        synced
-      ];
-  @override
-  String get aliasedName => _alias ?? 'deck';
-  @override
-  String get actualTableName => 'deck';
-  @override
-  VerificationContext validateIntegrity(Insertable<DeckData> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    } else if (isInserting) {
-      context.missing(_idMeta);
-    }
-    if (data.containsKey('identity_code')) {
-      context.handle(
-          _identityCodeMeta,
-          identityCode.isAcceptableOrUnknown(
-              data['identity_code']!, _identityCodeMeta));
-    } else if (isInserting) {
-      context.missing(_identityCodeMeta);
-    }
-    if (data.containsKey('format_code')) {
-      context.handle(
-          _formatCodeMeta,
-          formatCode.isAcceptableOrUnknown(
-              data['format_code']!, _formatCodeMeta));
-    }
-    if (data.containsKey('rotation_code')) {
-      context.handle(
-          _rotationCodeMeta,
-          rotationCode.isAcceptableOrUnknown(
-              data['rotation_code']!, _rotationCodeMeta));
-    }
-    if (data.containsKey('mwl_code')) {
-      context.handle(_mwlCodeMeta,
-          mwlCode.isAcceptableOrUnknown(data['mwl_code']!, _mwlCodeMeta));
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
-    } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
-    if (data.containsKey('description')) {
-      context.handle(
-          _descriptionMeta,
-          description.isAcceptableOrUnknown(
-              data['description']!, _descriptionMeta));
-    } else if (isInserting) {
-      context.missing(_descriptionMeta);
-    }
-    if (data.containsKey('created')) {
-      context.handle(_createdMeta,
-          created.isAcceptableOrUnknown(data['created']!, _createdMeta));
-    } else if (isInserting) {
-      context.missing(_createdMeta);
-    }
-    if (data.containsKey('updated')) {
-      context.handle(_updatedMeta,
-          updated.isAcceptableOrUnknown(data['updated']!, _updatedMeta));
-    } else if (isInserting) {
-      context.missing(_updatedMeta);
-    }
-    if (data.containsKey('deleted')) {
-      context.handle(_deletedMeta,
-          deleted.isAcceptableOrUnknown(data['deleted']!, _deletedMeta));
-    } else if (isInserting) {
-      context.missing(_deletedMeta);
-    }
-    if (data.containsKey('remote_updated')) {
-      context.handle(
-          _remoteUpdatedMeta,
-          remoteUpdated.isAcceptableOrUnknown(
-              data['remote_updated']!, _remoteUpdatedMeta));
-    }
-    if (data.containsKey('synced')) {
-      context.handle(_syncedMeta,
-          synced.isAcceptableOrUnknown(data['synced']!, _syncedMeta));
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  DeckData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return DeckData(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
-      identityCode: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}identity_code'])!,
-      formatCode: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}format_code']),
-      rotationCode: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}rotation_code']),
-      mwlCode: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}mwl_code']),
-      name: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      description: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
-      created: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}created'])!,
-      updated: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated'])!,
-      deleted: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}deleted'])!,
-      remoteUpdated: attachedDatabase.typeMapping.read(
-          DriftSqlType.dateTime, data['${effectivePrefix}remote_updated']),
-      synced: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}synced']),
-    );
-  }
-
-  @override
-  Deck createAlias(String alias) {
-    return Deck(attachedDatabase, alias);
-  }
-
-  @override
-  bool get dontWriteConstraints => true;
-}
-
-class DeckTagData extends DataClass implements Insertable<DeckTagData> {
-  final String deckId;
-  final String tag;
-  const DeckTagData({required this.deckId, required this.tag});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['deck_id'] = Variable<String>(deckId);
-    map['tag'] = Variable<String>(tag);
-    return map;
-  }
-
-  DeckTagCompanion toCompanion(bool nullToAbsent) {
-    return DeckTagCompanion(
-      deckId: Value(deckId),
-      tag: Value(tag),
-    );
-  }
-
-  factory DeckTagData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return DeckTagData(
-      deckId: serializer.fromJson<String>(json['deck_id']),
-      tag: serializer.fromJson<String>(json['tag']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'deck_id': serializer.toJson<String>(deckId),
-      'tag': serializer.toJson<String>(tag),
-    };
-  }
-
-  DeckTagData copyWith({String? deckId, String? tag}) => DeckTagData(
-        deckId: deckId ?? this.deckId,
-        tag: tag ?? this.tag,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('DeckTagData(')
-          ..write('deckId: $deckId, ')
-          ..write('tag: $tag')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(deckId, tag);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is DeckTagData &&
-          other.deckId == this.deckId &&
-          other.tag == this.tag);
-}
-
-class DeckTagCompanion extends UpdateCompanion<DeckTagData> {
-  final Value<String> deckId;
-  final Value<String> tag;
-  const DeckTagCompanion({
-    this.deckId = const Value.absent(),
-    this.tag = const Value.absent(),
-  });
-  DeckTagCompanion.insert({
-    required String deckId,
-    required String tag,
-  })  : deckId = Value(deckId),
-        tag = Value(tag);
-  static Insertable<DeckTagData> custom({
-    Expression<String>? deckId,
-    Expression<String>? tag,
-  }) {
-    return RawValuesInsertable({
-      if (deckId != null) 'deck_id': deckId,
-      if (tag != null) 'tag': tag,
-    });
-  }
-
-  DeckTagCompanion copyWith({Value<String>? deckId, Value<String>? tag}) {
-    return DeckTagCompanion(
-      deckId: deckId ?? this.deckId,
-      tag: tag ?? this.tag,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (deckId.present) {
-      map['deck_id'] = Variable<String>(deckId.value);
-    }
-    if (tag.present) {
-      map['tag'] = Variable<String>(tag.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('DeckTagCompanion(')
-          ..write('deckId: $deckId, ')
-          ..write('tag: $tag')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class DeckTag extends Table with TableInfo<DeckTag, DeckTagData> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  DeckTag(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _deckIdMeta = const VerificationMeta('deckId');
-  late final GeneratedColumn<String> deckId = GeneratedColumn<String>(
-      'deck_id', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  final VerificationMeta _tagMeta = const VerificationMeta('tag');
-  late final GeneratedColumn<String> tag = GeneratedColumn<String>(
-      'tag', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  @override
-  List<GeneratedColumn> get $columns => [deckId, tag];
-  @override
-  String get aliasedName => _alias ?? 'deck_tag';
-  @override
-  String get actualTableName => 'deck_tag';
-  @override
-  VerificationContext validateIntegrity(Insertable<DeckTagData> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('deck_id')) {
-      context.handle(_deckIdMeta,
-          deckId.isAcceptableOrUnknown(data['deck_id']!, _deckIdMeta));
-    } else if (isInserting) {
-      context.missing(_deckIdMeta);
-    }
-    if (data.containsKey('tag')) {
-      context.handle(
-          _tagMeta, tag.isAcceptableOrUnknown(data['tag']!, _tagMeta));
-    } else if (isInserting) {
-      context.missing(_tagMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {deckId, tag};
-  @override
-  DeckTagData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return DeckTagData(
-      deckId: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}deck_id'])!,
-      tag: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}tag'])!,
-    );
-  }
-
-  @override
-  DeckTag createAlias(String alias) {
-    return DeckTag(attachedDatabase, alias);
-  }
-
-  @override
-  List<String> get customConstraints => const ['PRIMARY KEY (deck_id, tag)'];
-  @override
-  bool get dontWriteConstraints => true;
-}
-
-class DeckCardData extends DataClass implements Insertable<DeckCardData> {
-  final String deckId;
-  final String cardCode;
-  final int quantity;
-  const DeckCardData(
-      {required this.deckId, required this.cardCode, required this.quantity});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['deck_id'] = Variable<String>(deckId);
-    map['card_code'] = Variable<String>(cardCode);
-    map['quantity'] = Variable<int>(quantity);
-    return map;
-  }
-
-  DeckCardCompanion toCompanion(bool nullToAbsent) {
-    return DeckCardCompanion(
-      deckId: Value(deckId),
-      cardCode: Value(cardCode),
-      quantity: Value(quantity),
-    );
-  }
-
-  factory DeckCardData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return DeckCardData(
-      deckId: serializer.fromJson<String>(json['deck_id']),
-      cardCode: serializer.fromJson<String>(json['card_code']),
-      quantity: serializer.fromJson<int>(json['quantity']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'deck_id': serializer.toJson<String>(deckId),
-      'card_code': serializer.toJson<String>(cardCode),
-      'quantity': serializer.toJson<int>(quantity),
-    };
-  }
-
-  DeckCardData copyWith({String? deckId, String? cardCode, int? quantity}) =>
-      DeckCardData(
-        deckId: deckId ?? this.deckId,
-        cardCode: cardCode ?? this.cardCode,
-        quantity: quantity ?? this.quantity,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('DeckCardData(')
-          ..write('deckId: $deckId, ')
-          ..write('cardCode: $cardCode, ')
-          ..write('quantity: $quantity')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(deckId, cardCode, quantity);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is DeckCardData &&
-          other.deckId == this.deckId &&
-          other.cardCode == this.cardCode &&
-          other.quantity == this.quantity);
-}
-
-class DeckCardCompanion extends UpdateCompanion<DeckCardData> {
-  final Value<String> deckId;
-  final Value<String> cardCode;
-  final Value<int> quantity;
-  const DeckCardCompanion({
-    this.deckId = const Value.absent(),
-    this.cardCode = const Value.absent(),
-    this.quantity = const Value.absent(),
-  });
-  DeckCardCompanion.insert({
-    required String deckId,
-    required String cardCode,
-    required int quantity,
-  })  : deckId = Value(deckId),
-        cardCode = Value(cardCode),
-        quantity = Value(quantity);
-  static Insertable<DeckCardData> custom({
-    Expression<String>? deckId,
-    Expression<String>? cardCode,
-    Expression<int>? quantity,
-  }) {
-    return RawValuesInsertable({
-      if (deckId != null) 'deck_id': deckId,
-      if (cardCode != null) 'card_code': cardCode,
-      if (quantity != null) 'quantity': quantity,
-    });
-  }
-
-  DeckCardCompanion copyWith(
-      {Value<String>? deckId, Value<String>? cardCode, Value<int>? quantity}) {
-    return DeckCardCompanion(
-      deckId: deckId ?? this.deckId,
-      cardCode: cardCode ?? this.cardCode,
-      quantity: quantity ?? this.quantity,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (deckId.present) {
-      map['deck_id'] = Variable<String>(deckId.value);
-    }
-    if (cardCode.present) {
-      map['card_code'] = Variable<String>(cardCode.value);
-    }
-    if (quantity.present) {
-      map['quantity'] = Variable<int>(quantity.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('DeckCardCompanion(')
-          ..write('deckId: $deckId, ')
-          ..write('cardCode: $cardCode, ')
-          ..write('quantity: $quantity')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class DeckCard extends Table with TableInfo<DeckCard, DeckCardData> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  DeckCard(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _deckIdMeta = const VerificationMeta('deckId');
-  late final GeneratedColumn<String> deckId = GeneratedColumn<String>(
-      'deck_id', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  final VerificationMeta _cardCodeMeta = const VerificationMeta('cardCode');
-  late final GeneratedColumn<String> cardCode = GeneratedColumn<String>(
-      'card_code', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  final VerificationMeta _quantityMeta = const VerificationMeta('quantity');
-  late final GeneratedColumn<int> quantity = GeneratedColumn<int>(
-      'quantity', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  @override
-  List<GeneratedColumn> get $columns => [deckId, cardCode, quantity];
-  @override
-  String get aliasedName => _alias ?? 'deck_card';
-  @override
-  String get actualTableName => 'deck_card';
-  @override
-  VerificationContext validateIntegrity(Insertable<DeckCardData> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('deck_id')) {
-      context.handle(_deckIdMeta,
-          deckId.isAcceptableOrUnknown(data['deck_id']!, _deckIdMeta));
-    } else if (isInserting) {
-      context.missing(_deckIdMeta);
-    }
-    if (data.containsKey('card_code')) {
-      context.handle(_cardCodeMeta,
-          cardCode.isAcceptableOrUnknown(data['card_code']!, _cardCodeMeta));
-    } else if (isInserting) {
-      context.missing(_cardCodeMeta);
-    }
-    if (data.containsKey('quantity')) {
-      context.handle(_quantityMeta,
-          quantity.isAcceptableOrUnknown(data['quantity']!, _quantityMeta));
-    } else if (isInserting) {
-      context.missing(_quantityMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {deckId, cardCode};
-  @override
-  DeckCardData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return DeckCardData(
-      deckId: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}deck_id'])!,
-      cardCode: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}card_code'])!,
-      quantity: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}quantity'])!,
-    );
-  }
-
-  @override
-  DeckCard createAlias(String alias) {
-    return DeckCard(attachedDatabase, alias);
-  }
-
-  @override
-  List<String> get customConstraints =>
-      const ['PRIMARY KEY (deck_id, card_code)'];
-  @override
-  bool get dontWriteConstraints => true;
-}
-
-class CycleData extends DataClass implements Insertable<CycleData> {
-  final String code;
-  final int position;
-  final String name;
-  final int size;
-  final bool rotated;
-  const CycleData(
-      {required this.code,
-      required this.position,
-      required this.name,
-      required this.size,
-      required this.rotated});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['code'] = Variable<String>(code);
-    map['position'] = Variable<int>(position);
-    map['name'] = Variable<String>(name);
-    map['size'] = Variable<int>(size);
-    map['rotated'] = Variable<bool>(rotated);
-    return map;
-  }
-
-  CycleCompanion toCompanion(bool nullToAbsent) {
-    return CycleCompanion(
-      code: Value(code),
-      position: Value(position),
-      name: Value(name),
-      size: Value(size),
-      rotated: Value(rotated),
-    );
-  }
-
-  factory CycleData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return CycleData(
-      code: serializer.fromJson<String>(json['code']),
-      position: serializer.fromJson<int>(json['position']),
-      name: serializer.fromJson<String>(json['name']),
-      size: serializer.fromJson<int>(json['size']),
-      rotated: serializer.fromJson<bool>(json['rotated']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'code': serializer.toJson<String>(code),
-      'position': serializer.toJson<int>(position),
-      'name': serializer.toJson<String>(name),
-      'size': serializer.toJson<int>(size),
-      'rotated': serializer.toJson<bool>(rotated),
-    };
-  }
-
-  CycleData copyWith(
-          {String? code,
-          int? position,
-          String? name,
-          int? size,
-          bool? rotated}) =>
-      CycleData(
-        code: code ?? this.code,
-        position: position ?? this.position,
-        name: name ?? this.name,
-        size: size ?? this.size,
-        rotated: rotated ?? this.rotated,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('CycleData(')
-          ..write('code: $code, ')
-          ..write('position: $position, ')
-          ..write('name: $name, ')
-          ..write('size: $size, ')
-          ..write('rotated: $rotated')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(code, position, name, size, rotated);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is CycleData &&
-          other.code == this.code &&
-          other.position == this.position &&
-          other.name == this.name &&
-          other.size == this.size &&
-          other.rotated == this.rotated);
-}
-
-class CycleCompanion extends UpdateCompanion<CycleData> {
-  final Value<String> code;
-  final Value<int> position;
-  final Value<String> name;
-  final Value<int> size;
-  final Value<bool> rotated;
-  const CycleCompanion({
-    this.code = const Value.absent(),
-    this.position = const Value.absent(),
-    this.name = const Value.absent(),
-    this.size = const Value.absent(),
-    this.rotated = const Value.absent(),
-  });
-  CycleCompanion.insert({
-    required String code,
-    required int position,
-    required String name,
-    required int size,
-    required bool rotated,
-  })  : code = Value(code),
-        position = Value(position),
-        name = Value(name),
-        size = Value(size),
-        rotated = Value(rotated);
-  static Insertable<CycleData> custom({
-    Expression<String>? code,
-    Expression<int>? position,
-    Expression<String>? name,
-    Expression<int>? size,
-    Expression<bool>? rotated,
-  }) {
-    return RawValuesInsertable({
-      if (code != null) 'code': code,
-      if (position != null) 'position': position,
-      if (name != null) 'name': name,
-      if (size != null) 'size': size,
-      if (rotated != null) 'rotated': rotated,
-    });
-  }
-
-  CycleCompanion copyWith(
-      {Value<String>? code,
-      Value<int>? position,
-      Value<String>? name,
-      Value<int>? size,
-      Value<bool>? rotated}) {
-    return CycleCompanion(
-      code: code ?? this.code,
-      position: position ?? this.position,
-      name: name ?? this.name,
-      size: size ?? this.size,
-      rotated: rotated ?? this.rotated,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (code.present) {
-      map['code'] = Variable<String>(code.value);
-    }
-    if (position.present) {
-      map['position'] = Variable<int>(position.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    if (size.present) {
-      map['size'] = Variable<int>(size.value);
-    }
-    if (rotated.present) {
-      map['rotated'] = Variable<bool>(rotated.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('CycleCompanion(')
-          ..write('code: $code, ')
-          ..write('position: $position, ')
-          ..write('name: $name, ')
-          ..write('size: $size, ')
-          ..write('rotated: $rotated')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class Cycle extends Table with TableInfo<Cycle, CycleData> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  Cycle(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _codeMeta = const VerificationMeta('code');
-  late final GeneratedColumn<String> code = GeneratedColumn<String>(
-      'code', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'PRIMARY KEY NOT NULL');
-  final VerificationMeta _positionMeta = const VerificationMeta('position');
-  late final GeneratedColumn<int> position = GeneratedColumn<int>(
-      'position', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  final VerificationMeta _nameMeta = const VerificationMeta('name');
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-      'name', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  final VerificationMeta _sizeMeta = const VerificationMeta('size');
-  late final GeneratedColumn<int> size = GeneratedColumn<int>(
-      'size', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  final VerificationMeta _rotatedMeta = const VerificationMeta('rotated');
-  late final GeneratedColumn<bool> rotated = GeneratedColumn<bool>(
-      'rotated', aliasedName, false,
-      type: DriftSqlType.bool,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  @override
-  List<GeneratedColumn> get $columns => [code, position, name, size, rotated];
-  @override
-  String get aliasedName => _alias ?? 'cycle';
-  @override
-  String get actualTableName => 'cycle';
-  @override
-  VerificationContext validateIntegrity(Insertable<CycleData> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('code')) {
-      context.handle(
-          _codeMeta, code.isAcceptableOrUnknown(data['code']!, _codeMeta));
-    } else if (isInserting) {
-      context.missing(_codeMeta);
-    }
-    if (data.containsKey('position')) {
-      context.handle(_positionMeta,
-          position.isAcceptableOrUnknown(data['position']!, _positionMeta));
-    } else if (isInserting) {
-      context.missing(_positionMeta);
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
-    } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
-    if (data.containsKey('size')) {
-      context.handle(
-          _sizeMeta, size.isAcceptableOrUnknown(data['size']!, _sizeMeta));
-    } else if (isInserting) {
-      context.missing(_sizeMeta);
-    }
-    if (data.containsKey('rotated')) {
-      context.handle(_rotatedMeta,
-          rotated.isAcceptableOrUnknown(data['rotated']!, _rotatedMeta));
-    } else if (isInserting) {
-      context.missing(_rotatedMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {code};
-  @override
-  CycleData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return CycleData(
-      code: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
-      position: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}position'])!,
-      name: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      size: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}size'])!,
-      rotated: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}rotated'])!,
-    );
-  }
-
-  @override
-  Cycle createAlias(String alias) {
-    return Cycle(attachedDatabase, alias);
-  }
-
-  @override
-  bool get dontWriteConstraints => true;
-}
-
-class CollectionData extends DataClass implements Insertable<CollectionData> {
-  final String packCode;
-  const CollectionData({required this.packCode});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['pack_code'] = Variable<String>(packCode);
-    return map;
-  }
-
-  CollectionCompanion toCompanion(bool nullToAbsent) {
-    return CollectionCompanion(
-      packCode: Value(packCode),
-    );
-  }
-
-  factory CollectionData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return CollectionData(
-      packCode: serializer.fromJson<String>(json['pack_code']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'pack_code': serializer.toJson<String>(packCode),
-    };
-  }
-
-  CollectionData copyWith({String? packCode}) => CollectionData(
-        packCode: packCode ?? this.packCode,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('CollectionData(')
-          ..write('packCode: $packCode')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => packCode.hashCode;
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is CollectionData && other.packCode == this.packCode);
-}
-
-class CollectionCompanion extends UpdateCompanion<CollectionData> {
-  final Value<String> packCode;
-  const CollectionCompanion({
-    this.packCode = const Value.absent(),
-  });
-  CollectionCompanion.insert({
-    required String packCode,
-  }) : packCode = Value(packCode);
-  static Insertable<CollectionData> custom({
-    Expression<String>? packCode,
-  }) {
-    return RawValuesInsertable({
-      if (packCode != null) 'pack_code': packCode,
-    });
-  }
-
-  CollectionCompanion copyWith({Value<String>? packCode}) {
-    return CollectionCompanion(
-      packCode: packCode ?? this.packCode,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (packCode.present) {
-      map['pack_code'] = Variable<String>(packCode.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('CollectionCompanion(')
-          ..write('packCode: $packCode')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class Collection extends Table with TableInfo<Collection, CollectionData> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  Collection(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _packCodeMeta = const VerificationMeta('packCode');
-  late final GeneratedColumn<String> packCode = GeneratedColumn<String>(
-      'pack_code', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL PRIMARY KEY');
-  @override
-  List<GeneratedColumn> get $columns => [packCode];
-  @override
-  String get aliasedName => _alias ?? 'collection';
-  @override
-  String get actualTableName => 'collection';
-  @override
-  VerificationContext validateIntegrity(Insertable<CollectionData> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('pack_code')) {
-      context.handle(_packCodeMeta,
-          packCode.isAcceptableOrUnknown(data['pack_code']!, _packCodeMeta));
-    } else if (isInserting) {
-      context.missing(_packCodeMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {packCode};
-  @override
-  CollectionData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return CollectionData(
-      packCode: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}pack_code'])!,
-    );
-  }
-
-  @override
-  Collection createAlias(String alias) {
-    return Collection(attachedDatabase, alias);
-  }
-
+  List<String> get customConstraints => const [];
   @override
   bool get dontWriteConstraints => true;
 }
@@ -5917,152 +3584,164 @@ class Card extends Table with TableInfo<Card, CardData> {
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   Card(this.attachedDatabase, [this._alias]);
-  final VerificationMeta _codeMeta = const VerificationMeta('code');
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
   late final GeneratedColumn<String> code = GeneratedColumn<String>(
       'code', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'PRIMARY KEY NOT NULL');
-  final VerificationMeta _packCodeMeta = const VerificationMeta('packCode');
+  static const VerificationMeta _packCodeMeta =
+      const VerificationMeta('packCode');
   late final GeneratedColumn<String> packCode = GeneratedColumn<String>(
       'pack_code', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
-  final VerificationMeta _factionCodeMeta =
+  static const VerificationMeta _factionCodeMeta =
       const VerificationMeta('factionCode');
   late final GeneratedColumn<String> factionCode = GeneratedColumn<String>(
       'faction_code', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
-  final VerificationMeta _typeCodeMeta = const VerificationMeta('typeCode');
+  static const VerificationMeta _typeCodeMeta =
+      const VerificationMeta('typeCode');
   late final GeneratedColumn<String> typeCode = GeneratedColumn<String>(
       'type_code', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
-  final VerificationMeta _positionMeta = const VerificationMeta('position');
+  static const VerificationMeta _positionMeta =
+      const VerificationMeta('position');
   late final GeneratedColumn<int> position = GeneratedColumn<int>(
       'position', aliasedName, false,
       type: DriftSqlType.int,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
-  final VerificationMeta _titleMeta = const VerificationMeta('title');
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
   late final GeneratedColumn<String> title = GeneratedColumn<String>(
       'title', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
-  final VerificationMeta _bodyMeta = const VerificationMeta('body');
+  static const VerificationMeta _bodyMeta = const VerificationMeta('body');
   late final GeneratedColumn<String> body = GeneratedColumn<String>(
       'body', aliasedName, true,
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       $customConstraints: '');
-  final VerificationMeta _keywordsMeta = const VerificationMeta('keywords');
+  static const VerificationMeta _keywordsMeta =
+      const VerificationMeta('keywords');
   late final GeneratedColumn<String> keywords = GeneratedColumn<String>(
       'keywords', aliasedName, true,
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       $customConstraints: '');
-  final VerificationMeta _quantityMeta = const VerificationMeta('quantity');
+  static const VerificationMeta _quantityMeta =
+      const VerificationMeta('quantity');
   late final GeneratedColumn<int> quantity = GeneratedColumn<int>(
       'quantity', aliasedName, false,
       type: DriftSqlType.int,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
-  final VerificationMeta _costMeta = const VerificationMeta('cost');
+  static const VerificationMeta _costMeta = const VerificationMeta('cost');
   late final GeneratedColumn<int> cost = GeneratedColumn<int>(
       'cost', aliasedName, true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: '');
-  final VerificationMeta _deckLimitMeta = const VerificationMeta('deckLimit');
+  static const VerificationMeta _deckLimitMeta =
+      const VerificationMeta('deckLimit');
   late final GeneratedColumn<int> deckLimit = GeneratedColumn<int>(
       'deck_limit', aliasedName, false,
       type: DriftSqlType.int,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
-  final VerificationMeta _factionCostMeta =
+  static const VerificationMeta _factionCostMeta =
       const VerificationMeta('factionCost');
   late final GeneratedColumn<int> factionCost = GeneratedColumn<int>(
       'faction_cost', aliasedName, false,
       type: DriftSqlType.int,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
-  final VerificationMeta _uniquenessMeta = const VerificationMeta('uniqueness');
+  static const VerificationMeta _uniquenessMeta =
+      const VerificationMeta('uniqueness');
   late final GeneratedColumn<bool> uniqueness = GeneratedColumn<bool>(
       'uniqueness', aliasedName, false,
       type: DriftSqlType.bool,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
-  final VerificationMeta _strengthMeta = const VerificationMeta('strength');
+  static const VerificationMeta _strengthMeta =
+      const VerificationMeta('strength');
   late final GeneratedColumn<int> strength = GeneratedColumn<int>(
       'strength', aliasedName, true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: '');
-  final VerificationMeta _agendaPointsMeta =
+  static const VerificationMeta _agendaPointsMeta =
       const VerificationMeta('agendaPoints');
   late final GeneratedColumn<int> agendaPoints = GeneratedColumn<int>(
       'agenda_points', aliasedName, true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: '');
-  final VerificationMeta _memoryCostMeta = const VerificationMeta('memoryCost');
+  static const VerificationMeta _memoryCostMeta =
+      const VerificationMeta('memoryCost');
   late final GeneratedColumn<int> memoryCost = GeneratedColumn<int>(
       'memory_cost', aliasedName, true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: '');
-  final VerificationMeta _advancementCostMeta =
+  static const VerificationMeta _advancementCostMeta =
       const VerificationMeta('advancementCost');
   late final GeneratedColumn<int> advancementCost = GeneratedColumn<int>(
       'advancement_cost', aliasedName, true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: '');
-  final VerificationMeta _trashCostMeta = const VerificationMeta('trashCost');
+  static const VerificationMeta _trashCostMeta =
+      const VerificationMeta('trashCost');
   late final GeneratedColumn<int> trashCost = GeneratedColumn<int>(
       'trash_cost', aliasedName, true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: '');
-  final VerificationMeta _baseLinkMeta = const VerificationMeta('baseLink');
+  static const VerificationMeta _baseLinkMeta =
+      const VerificationMeta('baseLink');
   late final GeneratedColumn<int> baseLink = GeneratedColumn<int>(
       'base_link', aliasedName, true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: '');
-  final VerificationMeta _influenceLimitMeta =
+  static const VerificationMeta _influenceLimitMeta =
       const VerificationMeta('influenceLimit');
   late final GeneratedColumn<int> influenceLimit = GeneratedColumn<int>(
       'influence_limit', aliasedName, true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: '');
-  final VerificationMeta _minimumDeckSizeMeta =
+  static const VerificationMeta _minimumDeckSizeMeta =
       const VerificationMeta('minimumDeckSize');
   late final GeneratedColumn<int> minimumDeckSize = GeneratedColumn<int>(
       'minimum_deck_size', aliasedName, true,
       type: DriftSqlType.int,
       requiredDuringInsert: false,
       $customConstraints: '');
-  final VerificationMeta _flavorMeta = const VerificationMeta('flavor');
+  static const VerificationMeta _flavorMeta = const VerificationMeta('flavor');
   late final GeneratedColumn<String> flavor = GeneratedColumn<String>(
       'flavor', aliasedName, true,
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       $customConstraints: '');
-  final VerificationMeta _illustratorMeta =
+  static const VerificationMeta _illustratorMeta =
       const VerificationMeta('illustrator');
   late final GeneratedColumn<String> illustrator = GeneratedColumn<String>(
       'illustrator', aliasedName, true,
       type: DriftSqlType.string,
       requiredDuringInsert: false,
       $customConstraints: '');
-  final VerificationMeta _imageUrlMeta = const VerificationMeta('imageUrl');
+  static const VerificationMeta _imageUrlMeta =
+      const VerificationMeta('imageUrl');
   late final GeneratedColumn<String> imageUrl = GeneratedColumn<String>(
       'image_url', aliasedName, false,
       type: DriftSqlType.string,
@@ -6306,6 +3985,2396 @@ class Card extends Table with TableInfo<Card, CardData> {
   }
 
   @override
+  List<String> get customConstraints => const [];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class FactionData extends DataClass implements Insertable<FactionData> {
+  final String code;
+  final String sideCode;
+  final String name;
+  final Color color;
+  final bool isMini;
+  const FactionData(
+      {required this.code,
+      required this.sideCode,
+      required this.name,
+      required this.color,
+      required this.isMini});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['code'] = Variable<String>(code);
+    map['side_code'] = Variable<String>(sideCode);
+    map['name'] = Variable<String>(name);
+    {
+      final converter = Faction.$convertercolor;
+      map['color'] = Variable<int>(converter.toSql(color));
+    }
+    map['is_mini'] = Variable<bool>(isMini);
+    return map;
+  }
+
+  FactionCompanion toCompanion(bool nullToAbsent) {
+    return FactionCompanion(
+      code: Value(code),
+      sideCode: Value(sideCode),
+      name: Value(name),
+      color: Value(color),
+      isMini: Value(isMini),
+    );
+  }
+
+  factory FactionData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return FactionData(
+      code: serializer.fromJson<String>(json['code']),
+      sideCode: serializer.fromJson<String>(json['side_code']),
+      name: serializer.fromJson<String>(json['name']),
+      color: Faction.$convertercolor
+          .fromJson(serializer.fromJson<int>(json['color'])),
+      isMini: serializer.fromJson<bool>(json['is_mini']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'code': serializer.toJson<String>(code),
+      'side_code': serializer.toJson<String>(sideCode),
+      'name': serializer.toJson<String>(name),
+      'color': serializer.toJson<int>(Faction.$convertercolor.toJson(color)),
+      'is_mini': serializer.toJson<bool>(isMini),
+    };
+  }
+
+  FactionData copyWith(
+          {String? code,
+          String? sideCode,
+          String? name,
+          Color? color,
+          bool? isMini}) =>
+      FactionData(
+        code: code ?? this.code,
+        sideCode: sideCode ?? this.sideCode,
+        name: name ?? this.name,
+        color: color ?? this.color,
+        isMini: isMini ?? this.isMini,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('FactionData(')
+          ..write('code: $code, ')
+          ..write('sideCode: $sideCode, ')
+          ..write('name: $name, ')
+          ..write('color: $color, ')
+          ..write('isMini: $isMini')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(code, sideCode, name, color, isMini);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is FactionData &&
+          other.code == this.code &&
+          other.sideCode == this.sideCode &&
+          other.name == this.name &&
+          other.color == this.color &&
+          other.isMini == this.isMini);
+}
+
+class FactionCompanion extends UpdateCompanion<FactionData> {
+  final Value<String> code;
+  final Value<String> sideCode;
+  final Value<String> name;
+  final Value<Color> color;
+  final Value<bool> isMini;
+  const FactionCompanion({
+    this.code = const Value.absent(),
+    this.sideCode = const Value.absent(),
+    this.name = const Value.absent(),
+    this.color = const Value.absent(),
+    this.isMini = const Value.absent(),
+  });
+  FactionCompanion.insert({
+    required String code,
+    required String sideCode,
+    required String name,
+    required Color color,
+    required bool isMini,
+  })  : code = Value(code),
+        sideCode = Value(sideCode),
+        name = Value(name),
+        color = Value(color),
+        isMini = Value(isMini);
+  static Insertable<FactionData> custom({
+    Expression<String>? code,
+    Expression<String>? sideCode,
+    Expression<String>? name,
+    Expression<int>? color,
+    Expression<bool>? isMini,
+  }) {
+    return RawValuesInsertable({
+      if (code != null) 'code': code,
+      if (sideCode != null) 'side_code': sideCode,
+      if (name != null) 'name': name,
+      if (color != null) 'color': color,
+      if (isMini != null) 'is_mini': isMini,
+    });
+  }
+
+  FactionCompanion copyWith(
+      {Value<String>? code,
+      Value<String>? sideCode,
+      Value<String>? name,
+      Value<Color>? color,
+      Value<bool>? isMini}) {
+    return FactionCompanion(
+      code: code ?? this.code,
+      sideCode: sideCode ?? this.sideCode,
+      name: name ?? this.name,
+      color: color ?? this.color,
+      isMini: isMini ?? this.isMini,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (sideCode.present) {
+      map['side_code'] = Variable<String>(sideCode.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (color.present) {
+      final converter = Faction.$convertercolor;
+      map['color'] = Variable<int>(converter.toSql(color.value));
+    }
+    if (isMini.present) {
+      map['is_mini'] = Variable<bool>(isMini.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FactionCompanion(')
+          ..write('code: $code, ')
+          ..write('sideCode: $sideCode, ')
+          ..write('name: $name, ')
+          ..write('color: $color, ')
+          ..write('isMini: $isMini')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class Faction extends Table with TableInfo<Faction, FactionData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  Faction(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _codeMeta = const VerificationMeta('code');
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+      'code', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'PRIMARY KEY NOT NULL');
+  static const VerificationMeta _sideCodeMeta =
+      const VerificationMeta('sideCode');
+  late final GeneratedColumn<String> sideCode = GeneratedColumn<String>(
+      'side_code', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _colorMeta = const VerificationMeta('color');
+  late final GeneratedColumnWithTypeConverter<Color, int> color =
+      GeneratedColumn<int>('color', aliasedName, false,
+              type: DriftSqlType.int,
+              requiredDuringInsert: true,
+              $customConstraints: 'NOT NULL')
+          .withConverter<Color>(Faction.$convertercolor);
+  static const VerificationMeta _isMiniMeta = const VerificationMeta('isMini');
+  late final GeneratedColumn<bool> isMini = GeneratedColumn<bool>(
+      'is_mini', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  @override
+  List<GeneratedColumn> get $columns => [code, sideCode, name, color, isMini];
+  @override
+  String get aliasedName => _alias ?? 'faction';
+  @override
+  String get actualTableName => 'faction';
+  @override
+  VerificationContext validateIntegrity(Insertable<FactionData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('code')) {
+      context.handle(
+          _codeMeta, code.isAcceptableOrUnknown(data['code']!, _codeMeta));
+    } else if (isInserting) {
+      context.missing(_codeMeta);
+    }
+    if (data.containsKey('side_code')) {
+      context.handle(_sideCodeMeta,
+          sideCode.isAcceptableOrUnknown(data['side_code']!, _sideCodeMeta));
+    } else if (isInserting) {
+      context.missing(_sideCodeMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    context.handle(_colorMeta, const VerificationResult.success());
+    if (data.containsKey('is_mini')) {
+      context.handle(_isMiniMeta,
+          isMini.isAcceptableOrUnknown(data['is_mini']!, _isMiniMeta));
+    } else if (isInserting) {
+      context.missing(_isMiniMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {code};
+  @override
+  FactionData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return FactionData(
+      code: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
+      sideCode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}side_code'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      color: Faction.$convertercolor.fromSql(attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}color'])!),
+      isMini: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_mini'])!,
+    );
+  }
+
+  @override
+  Faction createAlias(String alias) {
+    return Faction(attachedDatabase, alias);
+  }
+
+  static JsonTypeConverter2<Color, int, int> $convertercolor =
+      const ColorConverter();
+  @override
+  List<String> get customConstraints => const [];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class NrdbData extends DataClass implements Insertable<NrdbData> {
+  final bool id;
+  final DateTime expires;
+  final DateTime cycleLastUpdated;
+  final DateTime packLastUpdated;
+  final DateTime sideLastUpdated;
+  final DateTime factionLastUpdated;
+  final DateTime typeLastUpdated;
+  final DateTime cardLastUpdated;
+  final DateTime formatLastUpdated;
+  final DateTime rotationLastUpdated;
+  final DateTime mwlLastUpdated;
+  const NrdbData(
+      {required this.id,
+      required this.expires,
+      required this.cycleLastUpdated,
+      required this.packLastUpdated,
+      required this.sideLastUpdated,
+      required this.factionLastUpdated,
+      required this.typeLastUpdated,
+      required this.cardLastUpdated,
+      required this.formatLastUpdated,
+      required this.rotationLastUpdated,
+      required this.mwlLastUpdated});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<bool>(id);
+    map['expires'] = Variable<DateTime>(expires);
+    map['cycle_last_updated'] = Variable<DateTime>(cycleLastUpdated);
+    map['pack_last_updated'] = Variable<DateTime>(packLastUpdated);
+    map['side_last_updated'] = Variable<DateTime>(sideLastUpdated);
+    map['faction_last_updated'] = Variable<DateTime>(factionLastUpdated);
+    map['type_last_updated'] = Variable<DateTime>(typeLastUpdated);
+    map['card_last_updated'] = Variable<DateTime>(cardLastUpdated);
+    map['format_last_updated'] = Variable<DateTime>(formatLastUpdated);
+    map['rotation_last_updated'] = Variable<DateTime>(rotationLastUpdated);
+    map['mwl_last_updated'] = Variable<DateTime>(mwlLastUpdated);
+    return map;
+  }
+
+  NrdbCompanion toCompanion(bool nullToAbsent) {
+    return NrdbCompanion(
+      id: Value(id),
+      expires: Value(expires),
+      cycleLastUpdated: Value(cycleLastUpdated),
+      packLastUpdated: Value(packLastUpdated),
+      sideLastUpdated: Value(sideLastUpdated),
+      factionLastUpdated: Value(factionLastUpdated),
+      typeLastUpdated: Value(typeLastUpdated),
+      cardLastUpdated: Value(cardLastUpdated),
+      formatLastUpdated: Value(formatLastUpdated),
+      rotationLastUpdated: Value(rotationLastUpdated),
+      mwlLastUpdated: Value(mwlLastUpdated),
+    );
+  }
+
+  factory NrdbData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return NrdbData(
+      id: serializer.fromJson<bool>(json['id']),
+      expires: serializer.fromJson<DateTime>(json['expires']),
+      cycleLastUpdated:
+          serializer.fromJson<DateTime>(json['cycle_last_updated']),
+      packLastUpdated: serializer.fromJson<DateTime>(json['pack_last_updated']),
+      sideLastUpdated: serializer.fromJson<DateTime>(json['side_last_updated']),
+      factionLastUpdated:
+          serializer.fromJson<DateTime>(json['faction_last_updated']),
+      typeLastUpdated: serializer.fromJson<DateTime>(json['type_last_updated']),
+      cardLastUpdated: serializer.fromJson<DateTime>(json['card_last_updated']),
+      formatLastUpdated:
+          serializer.fromJson<DateTime>(json['format_last_updated']),
+      rotationLastUpdated:
+          serializer.fromJson<DateTime>(json['rotation_last_updated']),
+      mwlLastUpdated: serializer.fromJson<DateTime>(json['mwl_last_updated']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<bool>(id),
+      'expires': serializer.toJson<DateTime>(expires),
+      'cycle_last_updated': serializer.toJson<DateTime>(cycleLastUpdated),
+      'pack_last_updated': serializer.toJson<DateTime>(packLastUpdated),
+      'side_last_updated': serializer.toJson<DateTime>(sideLastUpdated),
+      'faction_last_updated': serializer.toJson<DateTime>(factionLastUpdated),
+      'type_last_updated': serializer.toJson<DateTime>(typeLastUpdated),
+      'card_last_updated': serializer.toJson<DateTime>(cardLastUpdated),
+      'format_last_updated': serializer.toJson<DateTime>(formatLastUpdated),
+      'rotation_last_updated': serializer.toJson<DateTime>(rotationLastUpdated),
+      'mwl_last_updated': serializer.toJson<DateTime>(mwlLastUpdated),
+    };
+  }
+
+  NrdbData copyWith(
+          {bool? id,
+          DateTime? expires,
+          DateTime? cycleLastUpdated,
+          DateTime? packLastUpdated,
+          DateTime? sideLastUpdated,
+          DateTime? factionLastUpdated,
+          DateTime? typeLastUpdated,
+          DateTime? cardLastUpdated,
+          DateTime? formatLastUpdated,
+          DateTime? rotationLastUpdated,
+          DateTime? mwlLastUpdated}) =>
+      NrdbData(
+        id: id ?? this.id,
+        expires: expires ?? this.expires,
+        cycleLastUpdated: cycleLastUpdated ?? this.cycleLastUpdated,
+        packLastUpdated: packLastUpdated ?? this.packLastUpdated,
+        sideLastUpdated: sideLastUpdated ?? this.sideLastUpdated,
+        factionLastUpdated: factionLastUpdated ?? this.factionLastUpdated,
+        typeLastUpdated: typeLastUpdated ?? this.typeLastUpdated,
+        cardLastUpdated: cardLastUpdated ?? this.cardLastUpdated,
+        formatLastUpdated: formatLastUpdated ?? this.formatLastUpdated,
+        rotationLastUpdated: rotationLastUpdated ?? this.rotationLastUpdated,
+        mwlLastUpdated: mwlLastUpdated ?? this.mwlLastUpdated,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('NrdbData(')
+          ..write('id: $id, ')
+          ..write('expires: $expires, ')
+          ..write('cycleLastUpdated: $cycleLastUpdated, ')
+          ..write('packLastUpdated: $packLastUpdated, ')
+          ..write('sideLastUpdated: $sideLastUpdated, ')
+          ..write('factionLastUpdated: $factionLastUpdated, ')
+          ..write('typeLastUpdated: $typeLastUpdated, ')
+          ..write('cardLastUpdated: $cardLastUpdated, ')
+          ..write('formatLastUpdated: $formatLastUpdated, ')
+          ..write('rotationLastUpdated: $rotationLastUpdated, ')
+          ..write('mwlLastUpdated: $mwlLastUpdated')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      id,
+      expires,
+      cycleLastUpdated,
+      packLastUpdated,
+      sideLastUpdated,
+      factionLastUpdated,
+      typeLastUpdated,
+      cardLastUpdated,
+      formatLastUpdated,
+      rotationLastUpdated,
+      mwlLastUpdated);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is NrdbData &&
+          other.id == this.id &&
+          other.expires == this.expires &&
+          other.cycleLastUpdated == this.cycleLastUpdated &&
+          other.packLastUpdated == this.packLastUpdated &&
+          other.sideLastUpdated == this.sideLastUpdated &&
+          other.factionLastUpdated == this.factionLastUpdated &&
+          other.typeLastUpdated == this.typeLastUpdated &&
+          other.cardLastUpdated == this.cardLastUpdated &&
+          other.formatLastUpdated == this.formatLastUpdated &&
+          other.rotationLastUpdated == this.rotationLastUpdated &&
+          other.mwlLastUpdated == this.mwlLastUpdated);
+}
+
+class NrdbCompanion extends UpdateCompanion<NrdbData> {
+  final Value<bool> id;
+  final Value<DateTime> expires;
+  final Value<DateTime> cycleLastUpdated;
+  final Value<DateTime> packLastUpdated;
+  final Value<DateTime> sideLastUpdated;
+  final Value<DateTime> factionLastUpdated;
+  final Value<DateTime> typeLastUpdated;
+  final Value<DateTime> cardLastUpdated;
+  final Value<DateTime> formatLastUpdated;
+  final Value<DateTime> rotationLastUpdated;
+  final Value<DateTime> mwlLastUpdated;
+  const NrdbCompanion({
+    this.id = const Value.absent(),
+    this.expires = const Value.absent(),
+    this.cycleLastUpdated = const Value.absent(),
+    this.packLastUpdated = const Value.absent(),
+    this.sideLastUpdated = const Value.absent(),
+    this.factionLastUpdated = const Value.absent(),
+    this.typeLastUpdated = const Value.absent(),
+    this.cardLastUpdated = const Value.absent(),
+    this.formatLastUpdated = const Value.absent(),
+    this.rotationLastUpdated = const Value.absent(),
+    this.mwlLastUpdated = const Value.absent(),
+  });
+  NrdbCompanion.insert({
+    this.id = const Value.absent(),
+    required DateTime expires,
+    required DateTime cycleLastUpdated,
+    required DateTime packLastUpdated,
+    required DateTime sideLastUpdated,
+    required DateTime factionLastUpdated,
+    required DateTime typeLastUpdated,
+    required DateTime cardLastUpdated,
+    required DateTime formatLastUpdated,
+    required DateTime rotationLastUpdated,
+    required DateTime mwlLastUpdated,
+  })  : expires = Value(expires),
+        cycleLastUpdated = Value(cycleLastUpdated),
+        packLastUpdated = Value(packLastUpdated),
+        sideLastUpdated = Value(sideLastUpdated),
+        factionLastUpdated = Value(factionLastUpdated),
+        typeLastUpdated = Value(typeLastUpdated),
+        cardLastUpdated = Value(cardLastUpdated),
+        formatLastUpdated = Value(formatLastUpdated),
+        rotationLastUpdated = Value(rotationLastUpdated),
+        mwlLastUpdated = Value(mwlLastUpdated);
+  static Insertable<NrdbData> custom({
+    Expression<bool>? id,
+    Expression<DateTime>? expires,
+    Expression<DateTime>? cycleLastUpdated,
+    Expression<DateTime>? packLastUpdated,
+    Expression<DateTime>? sideLastUpdated,
+    Expression<DateTime>? factionLastUpdated,
+    Expression<DateTime>? typeLastUpdated,
+    Expression<DateTime>? cardLastUpdated,
+    Expression<DateTime>? formatLastUpdated,
+    Expression<DateTime>? rotationLastUpdated,
+    Expression<DateTime>? mwlLastUpdated,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (expires != null) 'expires': expires,
+      if (cycleLastUpdated != null) 'cycle_last_updated': cycleLastUpdated,
+      if (packLastUpdated != null) 'pack_last_updated': packLastUpdated,
+      if (sideLastUpdated != null) 'side_last_updated': sideLastUpdated,
+      if (factionLastUpdated != null)
+        'faction_last_updated': factionLastUpdated,
+      if (typeLastUpdated != null) 'type_last_updated': typeLastUpdated,
+      if (cardLastUpdated != null) 'card_last_updated': cardLastUpdated,
+      if (formatLastUpdated != null) 'format_last_updated': formatLastUpdated,
+      if (rotationLastUpdated != null)
+        'rotation_last_updated': rotationLastUpdated,
+      if (mwlLastUpdated != null) 'mwl_last_updated': mwlLastUpdated,
+    });
+  }
+
+  NrdbCompanion copyWith(
+      {Value<bool>? id,
+      Value<DateTime>? expires,
+      Value<DateTime>? cycleLastUpdated,
+      Value<DateTime>? packLastUpdated,
+      Value<DateTime>? sideLastUpdated,
+      Value<DateTime>? factionLastUpdated,
+      Value<DateTime>? typeLastUpdated,
+      Value<DateTime>? cardLastUpdated,
+      Value<DateTime>? formatLastUpdated,
+      Value<DateTime>? rotationLastUpdated,
+      Value<DateTime>? mwlLastUpdated}) {
+    return NrdbCompanion(
+      id: id ?? this.id,
+      expires: expires ?? this.expires,
+      cycleLastUpdated: cycleLastUpdated ?? this.cycleLastUpdated,
+      packLastUpdated: packLastUpdated ?? this.packLastUpdated,
+      sideLastUpdated: sideLastUpdated ?? this.sideLastUpdated,
+      factionLastUpdated: factionLastUpdated ?? this.factionLastUpdated,
+      typeLastUpdated: typeLastUpdated ?? this.typeLastUpdated,
+      cardLastUpdated: cardLastUpdated ?? this.cardLastUpdated,
+      formatLastUpdated: formatLastUpdated ?? this.formatLastUpdated,
+      rotationLastUpdated: rotationLastUpdated ?? this.rotationLastUpdated,
+      mwlLastUpdated: mwlLastUpdated ?? this.mwlLastUpdated,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<bool>(id.value);
+    }
+    if (expires.present) {
+      map['expires'] = Variable<DateTime>(expires.value);
+    }
+    if (cycleLastUpdated.present) {
+      map['cycle_last_updated'] = Variable<DateTime>(cycleLastUpdated.value);
+    }
+    if (packLastUpdated.present) {
+      map['pack_last_updated'] = Variable<DateTime>(packLastUpdated.value);
+    }
+    if (sideLastUpdated.present) {
+      map['side_last_updated'] = Variable<DateTime>(sideLastUpdated.value);
+    }
+    if (factionLastUpdated.present) {
+      map['faction_last_updated'] =
+          Variable<DateTime>(factionLastUpdated.value);
+    }
+    if (typeLastUpdated.present) {
+      map['type_last_updated'] = Variable<DateTime>(typeLastUpdated.value);
+    }
+    if (cardLastUpdated.present) {
+      map['card_last_updated'] = Variable<DateTime>(cardLastUpdated.value);
+    }
+    if (formatLastUpdated.present) {
+      map['format_last_updated'] = Variable<DateTime>(formatLastUpdated.value);
+    }
+    if (rotationLastUpdated.present) {
+      map['rotation_last_updated'] =
+          Variable<DateTime>(rotationLastUpdated.value);
+    }
+    if (mwlLastUpdated.present) {
+      map['mwl_last_updated'] = Variable<DateTime>(mwlLastUpdated.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NrdbCompanion(')
+          ..write('id: $id, ')
+          ..write('expires: $expires, ')
+          ..write('cycleLastUpdated: $cycleLastUpdated, ')
+          ..write('packLastUpdated: $packLastUpdated, ')
+          ..write('sideLastUpdated: $sideLastUpdated, ')
+          ..write('factionLastUpdated: $factionLastUpdated, ')
+          ..write('typeLastUpdated: $typeLastUpdated, ')
+          ..write('cardLastUpdated: $cardLastUpdated, ')
+          ..write('formatLastUpdated: $formatLastUpdated, ')
+          ..write('rotationLastUpdated: $rotationLastUpdated, ')
+          ..write('mwlLastUpdated: $mwlLastUpdated')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class Nrdb extends Table with TableInfo<Nrdb, NrdbData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  Nrdb(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  late final GeneratedColumn<bool> id = GeneratedColumn<bool>(
+      'id', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      $customConstraints: 'PRIMARY KEY NOT NULL DEFAULT TRUE',
+      defaultValue: const CustomExpression('TRUE'));
+  static const VerificationMeta _expiresMeta =
+      const VerificationMeta('expires');
+  late final GeneratedColumn<DateTime> expires = GeneratedColumn<DateTime>(
+      'expires', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _cycleLastUpdatedMeta =
+      const VerificationMeta('cycleLastUpdated');
+  late final GeneratedColumn<DateTime> cycleLastUpdated =
+      GeneratedColumn<DateTime>('cycle_last_updated', aliasedName, false,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
+  static const VerificationMeta _packLastUpdatedMeta =
+      const VerificationMeta('packLastUpdated');
+  late final GeneratedColumn<DateTime> packLastUpdated =
+      GeneratedColumn<DateTime>('pack_last_updated', aliasedName, false,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
+  static const VerificationMeta _sideLastUpdatedMeta =
+      const VerificationMeta('sideLastUpdated');
+  late final GeneratedColumn<DateTime> sideLastUpdated =
+      GeneratedColumn<DateTime>('side_last_updated', aliasedName, false,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
+  static const VerificationMeta _factionLastUpdatedMeta =
+      const VerificationMeta('factionLastUpdated');
+  late final GeneratedColumn<DateTime> factionLastUpdated =
+      GeneratedColumn<DateTime>('faction_last_updated', aliasedName, false,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
+  static const VerificationMeta _typeLastUpdatedMeta =
+      const VerificationMeta('typeLastUpdated');
+  late final GeneratedColumn<DateTime> typeLastUpdated =
+      GeneratedColumn<DateTime>('type_last_updated', aliasedName, false,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
+  static const VerificationMeta _cardLastUpdatedMeta =
+      const VerificationMeta('cardLastUpdated');
+  late final GeneratedColumn<DateTime> cardLastUpdated =
+      GeneratedColumn<DateTime>('card_last_updated', aliasedName, false,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
+  static const VerificationMeta _formatLastUpdatedMeta =
+      const VerificationMeta('formatLastUpdated');
+  late final GeneratedColumn<DateTime> formatLastUpdated =
+      GeneratedColumn<DateTime>('format_last_updated', aliasedName, false,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
+  static const VerificationMeta _rotationLastUpdatedMeta =
+      const VerificationMeta('rotationLastUpdated');
+  late final GeneratedColumn<DateTime> rotationLastUpdated =
+      GeneratedColumn<DateTime>('rotation_last_updated', aliasedName, false,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
+  static const VerificationMeta _mwlLastUpdatedMeta =
+      const VerificationMeta('mwlLastUpdated');
+  late final GeneratedColumn<DateTime> mwlLastUpdated =
+      GeneratedColumn<DateTime>('mwl_last_updated', aliasedName, false,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        expires,
+        cycleLastUpdated,
+        packLastUpdated,
+        sideLastUpdated,
+        factionLastUpdated,
+        typeLastUpdated,
+        cardLastUpdated,
+        formatLastUpdated,
+        rotationLastUpdated,
+        mwlLastUpdated
+      ];
+  @override
+  String get aliasedName => _alias ?? 'nrdb';
+  @override
+  String get actualTableName => 'nrdb';
+  @override
+  VerificationContext validateIntegrity(Insertable<NrdbData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('expires')) {
+      context.handle(_expiresMeta,
+          expires.isAcceptableOrUnknown(data['expires']!, _expiresMeta));
+    } else if (isInserting) {
+      context.missing(_expiresMeta);
+    }
+    if (data.containsKey('cycle_last_updated')) {
+      context.handle(
+          _cycleLastUpdatedMeta,
+          cycleLastUpdated.isAcceptableOrUnknown(
+              data['cycle_last_updated']!, _cycleLastUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_cycleLastUpdatedMeta);
+    }
+    if (data.containsKey('pack_last_updated')) {
+      context.handle(
+          _packLastUpdatedMeta,
+          packLastUpdated.isAcceptableOrUnknown(
+              data['pack_last_updated']!, _packLastUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_packLastUpdatedMeta);
+    }
+    if (data.containsKey('side_last_updated')) {
+      context.handle(
+          _sideLastUpdatedMeta,
+          sideLastUpdated.isAcceptableOrUnknown(
+              data['side_last_updated']!, _sideLastUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_sideLastUpdatedMeta);
+    }
+    if (data.containsKey('faction_last_updated')) {
+      context.handle(
+          _factionLastUpdatedMeta,
+          factionLastUpdated.isAcceptableOrUnknown(
+              data['faction_last_updated']!, _factionLastUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_factionLastUpdatedMeta);
+    }
+    if (data.containsKey('type_last_updated')) {
+      context.handle(
+          _typeLastUpdatedMeta,
+          typeLastUpdated.isAcceptableOrUnknown(
+              data['type_last_updated']!, _typeLastUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_typeLastUpdatedMeta);
+    }
+    if (data.containsKey('card_last_updated')) {
+      context.handle(
+          _cardLastUpdatedMeta,
+          cardLastUpdated.isAcceptableOrUnknown(
+              data['card_last_updated']!, _cardLastUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_cardLastUpdatedMeta);
+    }
+    if (data.containsKey('format_last_updated')) {
+      context.handle(
+          _formatLastUpdatedMeta,
+          formatLastUpdated.isAcceptableOrUnknown(
+              data['format_last_updated']!, _formatLastUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_formatLastUpdatedMeta);
+    }
+    if (data.containsKey('rotation_last_updated')) {
+      context.handle(
+          _rotationLastUpdatedMeta,
+          rotationLastUpdated.isAcceptableOrUnknown(
+              data['rotation_last_updated']!, _rotationLastUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_rotationLastUpdatedMeta);
+    }
+    if (data.containsKey('mwl_last_updated')) {
+      context.handle(
+          _mwlLastUpdatedMeta,
+          mwlLastUpdated.isAcceptableOrUnknown(
+              data['mwl_last_updated']!, _mwlLastUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_mwlLastUpdatedMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  NrdbData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return NrdbData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}id'])!,
+      expires: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}expires'])!,
+      cycleLastUpdated: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}cycle_last_updated'])!,
+      packLastUpdated: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}pack_last_updated'])!,
+      sideLastUpdated: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}side_last_updated'])!,
+      factionLastUpdated: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime,
+          data['${effectivePrefix}faction_last_updated'])!,
+      typeLastUpdated: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}type_last_updated'])!,
+      cardLastUpdated: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}card_last_updated'])!,
+      formatLastUpdated: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime,
+          data['${effectivePrefix}format_last_updated'])!,
+      rotationLastUpdated: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime,
+          data['${effectivePrefix}rotation_last_updated'])!,
+      mwlLastUpdated: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}mwl_last_updated'])!,
+    );
+  }
+
+  @override
+  Nrdb createAlias(String alias) {
+    return Nrdb(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints =>
+      const ['CONSTRAINT settings_id CHECK(id = TRUE)'];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class MwlCardData extends DataClass implements Insertable<MwlCardData> {
+  final String mwlCode;
+  final String cardCode;
+  final bool isRestricted;
+  final int? globalPenalty;
+  final int? universalFactionCost;
+  final int? deckLimit;
+  final int? points;
+  const MwlCardData(
+      {required this.mwlCode,
+      required this.cardCode,
+      required this.isRestricted,
+      this.globalPenalty,
+      this.universalFactionCost,
+      this.deckLimit,
+      this.points});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['mwl_code'] = Variable<String>(mwlCode);
+    map['card_code'] = Variable<String>(cardCode);
+    map['is_restricted'] = Variable<bool>(isRestricted);
+    if (!nullToAbsent || globalPenalty != null) {
+      map['global_penalty'] = Variable<int>(globalPenalty);
+    }
+    if (!nullToAbsent || universalFactionCost != null) {
+      map['universal_faction_cost'] = Variable<int>(universalFactionCost);
+    }
+    if (!nullToAbsent || deckLimit != null) {
+      map['deck_limit'] = Variable<int>(deckLimit);
+    }
+    if (!nullToAbsent || points != null) {
+      map['points'] = Variable<int>(points);
+    }
+    return map;
+  }
+
+  MwlCardCompanion toCompanion(bool nullToAbsent) {
+    return MwlCardCompanion(
+      mwlCode: Value(mwlCode),
+      cardCode: Value(cardCode),
+      isRestricted: Value(isRestricted),
+      globalPenalty: globalPenalty == null && nullToAbsent
+          ? const Value.absent()
+          : Value(globalPenalty),
+      universalFactionCost: universalFactionCost == null && nullToAbsent
+          ? const Value.absent()
+          : Value(universalFactionCost),
+      deckLimit: deckLimit == null && nullToAbsent
+          ? const Value.absent()
+          : Value(deckLimit),
+      points:
+          points == null && nullToAbsent ? const Value.absent() : Value(points),
+    );
+  }
+
+  factory MwlCardData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MwlCardData(
+      mwlCode: serializer.fromJson<String>(json['mwl_code']),
+      cardCode: serializer.fromJson<String>(json['card_code']),
+      isRestricted: serializer.fromJson<bool>(json['is_restricted']),
+      globalPenalty: serializer.fromJson<int?>(json['global_penalty']),
+      universalFactionCost:
+          serializer.fromJson<int?>(json['universal_faction_cost']),
+      deckLimit: serializer.fromJson<int?>(json['deck_limit']),
+      points: serializer.fromJson<int?>(json['points']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'mwl_code': serializer.toJson<String>(mwlCode),
+      'card_code': serializer.toJson<String>(cardCode),
+      'is_restricted': serializer.toJson<bool>(isRestricted),
+      'global_penalty': serializer.toJson<int?>(globalPenalty),
+      'universal_faction_cost': serializer.toJson<int?>(universalFactionCost),
+      'deck_limit': serializer.toJson<int?>(deckLimit),
+      'points': serializer.toJson<int?>(points),
+    };
+  }
+
+  MwlCardData copyWith(
+          {String? mwlCode,
+          String? cardCode,
+          bool? isRestricted,
+          Value<int?> globalPenalty = const Value.absent(),
+          Value<int?> universalFactionCost = const Value.absent(),
+          Value<int?> deckLimit = const Value.absent(),
+          Value<int?> points = const Value.absent()}) =>
+      MwlCardData(
+        mwlCode: mwlCode ?? this.mwlCode,
+        cardCode: cardCode ?? this.cardCode,
+        isRestricted: isRestricted ?? this.isRestricted,
+        globalPenalty:
+            globalPenalty.present ? globalPenalty.value : this.globalPenalty,
+        universalFactionCost: universalFactionCost.present
+            ? universalFactionCost.value
+            : this.universalFactionCost,
+        deckLimit: deckLimit.present ? deckLimit.value : this.deckLimit,
+        points: points.present ? points.value : this.points,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('MwlCardData(')
+          ..write('mwlCode: $mwlCode, ')
+          ..write('cardCode: $cardCode, ')
+          ..write('isRestricted: $isRestricted, ')
+          ..write('globalPenalty: $globalPenalty, ')
+          ..write('universalFactionCost: $universalFactionCost, ')
+          ..write('deckLimit: $deckLimit, ')
+          ..write('points: $points')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(mwlCode, cardCode, isRestricted,
+      globalPenalty, universalFactionCost, deckLimit, points);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MwlCardData &&
+          other.mwlCode == this.mwlCode &&
+          other.cardCode == this.cardCode &&
+          other.isRestricted == this.isRestricted &&
+          other.globalPenalty == this.globalPenalty &&
+          other.universalFactionCost == this.universalFactionCost &&
+          other.deckLimit == this.deckLimit &&
+          other.points == this.points);
+}
+
+class MwlCardCompanion extends UpdateCompanion<MwlCardData> {
+  final Value<String> mwlCode;
+  final Value<String> cardCode;
+  final Value<bool> isRestricted;
+  final Value<int?> globalPenalty;
+  final Value<int?> universalFactionCost;
+  final Value<int?> deckLimit;
+  final Value<int?> points;
+  const MwlCardCompanion({
+    this.mwlCode = const Value.absent(),
+    this.cardCode = const Value.absent(),
+    this.isRestricted = const Value.absent(),
+    this.globalPenalty = const Value.absent(),
+    this.universalFactionCost = const Value.absent(),
+    this.deckLimit = const Value.absent(),
+    this.points = const Value.absent(),
+  });
+  MwlCardCompanion.insert({
+    required String mwlCode,
+    required String cardCode,
+    required bool isRestricted,
+    this.globalPenalty = const Value.absent(),
+    this.universalFactionCost = const Value.absent(),
+    this.deckLimit = const Value.absent(),
+    this.points = const Value.absent(),
+  })  : mwlCode = Value(mwlCode),
+        cardCode = Value(cardCode),
+        isRestricted = Value(isRestricted);
+  static Insertable<MwlCardData> custom({
+    Expression<String>? mwlCode,
+    Expression<String>? cardCode,
+    Expression<bool>? isRestricted,
+    Expression<int>? globalPenalty,
+    Expression<int>? universalFactionCost,
+    Expression<int>? deckLimit,
+    Expression<int>? points,
+  }) {
+    return RawValuesInsertable({
+      if (mwlCode != null) 'mwl_code': mwlCode,
+      if (cardCode != null) 'card_code': cardCode,
+      if (isRestricted != null) 'is_restricted': isRestricted,
+      if (globalPenalty != null) 'global_penalty': globalPenalty,
+      if (universalFactionCost != null)
+        'universal_faction_cost': universalFactionCost,
+      if (deckLimit != null) 'deck_limit': deckLimit,
+      if (points != null) 'points': points,
+    });
+  }
+
+  MwlCardCompanion copyWith(
+      {Value<String>? mwlCode,
+      Value<String>? cardCode,
+      Value<bool>? isRestricted,
+      Value<int?>? globalPenalty,
+      Value<int?>? universalFactionCost,
+      Value<int?>? deckLimit,
+      Value<int?>? points}) {
+    return MwlCardCompanion(
+      mwlCode: mwlCode ?? this.mwlCode,
+      cardCode: cardCode ?? this.cardCode,
+      isRestricted: isRestricted ?? this.isRestricted,
+      globalPenalty: globalPenalty ?? this.globalPenalty,
+      universalFactionCost: universalFactionCost ?? this.universalFactionCost,
+      deckLimit: deckLimit ?? this.deckLimit,
+      points: points ?? this.points,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (mwlCode.present) {
+      map['mwl_code'] = Variable<String>(mwlCode.value);
+    }
+    if (cardCode.present) {
+      map['card_code'] = Variable<String>(cardCode.value);
+    }
+    if (isRestricted.present) {
+      map['is_restricted'] = Variable<bool>(isRestricted.value);
+    }
+    if (globalPenalty.present) {
+      map['global_penalty'] = Variable<int>(globalPenalty.value);
+    }
+    if (universalFactionCost.present) {
+      map['universal_faction_cost'] = Variable<int>(universalFactionCost.value);
+    }
+    if (deckLimit.present) {
+      map['deck_limit'] = Variable<int>(deckLimit.value);
+    }
+    if (points.present) {
+      map['points'] = Variable<int>(points.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MwlCardCompanion(')
+          ..write('mwlCode: $mwlCode, ')
+          ..write('cardCode: $cardCode, ')
+          ..write('isRestricted: $isRestricted, ')
+          ..write('globalPenalty: $globalPenalty, ')
+          ..write('universalFactionCost: $universalFactionCost, ')
+          ..write('deckLimit: $deckLimit, ')
+          ..write('points: $points')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class MwlCard extends Table with TableInfo<MwlCard, MwlCardData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  MwlCard(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _mwlCodeMeta =
+      const VerificationMeta('mwlCode');
+  late final GeneratedColumn<String> mwlCode = GeneratedColumn<String>(
+      'mwl_code', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _cardCodeMeta =
+      const VerificationMeta('cardCode');
+  late final GeneratedColumn<String> cardCode = GeneratedColumn<String>(
+      'card_code', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _isRestrictedMeta =
+      const VerificationMeta('isRestricted');
+  late final GeneratedColumn<bool> isRestricted = GeneratedColumn<bool>(
+      'is_restricted', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _globalPenaltyMeta =
+      const VerificationMeta('globalPenalty');
+  late final GeneratedColumn<int> globalPenalty = GeneratedColumn<int>(
+      'global_penalty', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  static const VerificationMeta _universalFactionCostMeta =
+      const VerificationMeta('universalFactionCost');
+  late final GeneratedColumn<int> universalFactionCost = GeneratedColumn<int>(
+      'universal_faction_cost', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  static const VerificationMeta _deckLimitMeta =
+      const VerificationMeta('deckLimit');
+  late final GeneratedColumn<int> deckLimit = GeneratedColumn<int>(
+      'deck_limit', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  static const VerificationMeta _pointsMeta = const VerificationMeta('points');
+  late final GeneratedColumn<int> points = GeneratedColumn<int>(
+      'points', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  @override
+  List<GeneratedColumn> get $columns => [
+        mwlCode,
+        cardCode,
+        isRestricted,
+        globalPenalty,
+        universalFactionCost,
+        deckLimit,
+        points
+      ];
+  @override
+  String get aliasedName => _alias ?? 'mwl_card';
+  @override
+  String get actualTableName => 'mwl_card';
+  @override
+  VerificationContext validateIntegrity(Insertable<MwlCardData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('mwl_code')) {
+      context.handle(_mwlCodeMeta,
+          mwlCode.isAcceptableOrUnknown(data['mwl_code']!, _mwlCodeMeta));
+    } else if (isInserting) {
+      context.missing(_mwlCodeMeta);
+    }
+    if (data.containsKey('card_code')) {
+      context.handle(_cardCodeMeta,
+          cardCode.isAcceptableOrUnknown(data['card_code']!, _cardCodeMeta));
+    } else if (isInserting) {
+      context.missing(_cardCodeMeta);
+    }
+    if (data.containsKey('is_restricted')) {
+      context.handle(
+          _isRestrictedMeta,
+          isRestricted.isAcceptableOrUnknown(
+              data['is_restricted']!, _isRestrictedMeta));
+    } else if (isInserting) {
+      context.missing(_isRestrictedMeta);
+    }
+    if (data.containsKey('global_penalty')) {
+      context.handle(
+          _globalPenaltyMeta,
+          globalPenalty.isAcceptableOrUnknown(
+              data['global_penalty']!, _globalPenaltyMeta));
+    }
+    if (data.containsKey('universal_faction_cost')) {
+      context.handle(
+          _universalFactionCostMeta,
+          universalFactionCost.isAcceptableOrUnknown(
+              data['universal_faction_cost']!, _universalFactionCostMeta));
+    }
+    if (data.containsKey('deck_limit')) {
+      context.handle(_deckLimitMeta,
+          deckLimit.isAcceptableOrUnknown(data['deck_limit']!, _deckLimitMeta));
+    }
+    if (data.containsKey('points')) {
+      context.handle(_pointsMeta,
+          points.isAcceptableOrUnknown(data['points']!, _pointsMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {mwlCode, cardCode};
+  @override
+  MwlCardData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MwlCardData(
+      mwlCode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}mwl_code'])!,
+      cardCode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}card_code'])!,
+      isRestricted: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_restricted'])!,
+      globalPenalty: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}global_penalty']),
+      universalFactionCost: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}universal_faction_cost']),
+      deckLimit: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}deck_limit']),
+      points: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}points']),
+    );
+  }
+
+  @override
+  MwlCard createAlias(String alias) {
+    return MwlCard(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints =>
+      const ['PRIMARY KEY(mwl_code, card_code)'];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class DeckData extends DataClass implements Insertable<DeckData> {
+  final String id;
+  final String identityCode;
+  final String? formatCode;
+  final String? rotationCode;
+  final String? mwlCode;
+  final String name;
+  final String description;
+  final DateTime created;
+  final DateTime updated;
+  final bool deleted;
+  final DateTime? remoteUpdated;
+  final DateTime? synced;
+  const DeckData(
+      {required this.id,
+      required this.identityCode,
+      this.formatCode,
+      this.rotationCode,
+      this.mwlCode,
+      required this.name,
+      required this.description,
+      required this.created,
+      required this.updated,
+      required this.deleted,
+      this.remoteUpdated,
+      this.synced});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<String>(id);
+    map['identity_code'] = Variable<String>(identityCode);
+    if (!nullToAbsent || formatCode != null) {
+      map['format_code'] = Variable<String>(formatCode);
+    }
+    if (!nullToAbsent || rotationCode != null) {
+      map['rotation_code'] = Variable<String>(rotationCode);
+    }
+    if (!nullToAbsent || mwlCode != null) {
+      map['mwl_code'] = Variable<String>(mwlCode);
+    }
+    map['name'] = Variable<String>(name);
+    map['description'] = Variable<String>(description);
+    map['created'] = Variable<DateTime>(created);
+    map['updated'] = Variable<DateTime>(updated);
+    map['deleted'] = Variable<bool>(deleted);
+    if (!nullToAbsent || remoteUpdated != null) {
+      map['remote_updated'] = Variable<DateTime>(remoteUpdated);
+    }
+    if (!nullToAbsent || synced != null) {
+      map['synced'] = Variable<DateTime>(synced);
+    }
+    return map;
+  }
+
+  DeckCompanion toCompanion(bool nullToAbsent) {
+    return DeckCompanion(
+      id: Value(id),
+      identityCode: Value(identityCode),
+      formatCode: formatCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(formatCode),
+      rotationCode: rotationCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(rotationCode),
+      mwlCode: mwlCode == null && nullToAbsent
+          ? const Value.absent()
+          : Value(mwlCode),
+      name: Value(name),
+      description: Value(description),
+      created: Value(created),
+      updated: Value(updated),
+      deleted: Value(deleted),
+      remoteUpdated: remoteUpdated == null && nullToAbsent
+          ? const Value.absent()
+          : Value(remoteUpdated),
+      synced:
+          synced == null && nullToAbsent ? const Value.absent() : Value(synced),
+    );
+  }
+
+  factory DeckData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DeckData(
+      id: serializer.fromJson<String>(json['id']),
+      identityCode: serializer.fromJson<String>(json['identity_code']),
+      formatCode: serializer.fromJson<String?>(json['format_code']),
+      rotationCode: serializer.fromJson<String?>(json['rotation_code']),
+      mwlCode: serializer.fromJson<String?>(json['mwl_code']),
+      name: serializer.fromJson<String>(json['name']),
+      description: serializer.fromJson<String>(json['description']),
+      created: serializer.fromJson<DateTime>(json['created']),
+      updated: serializer.fromJson<DateTime>(json['updated']),
+      deleted: serializer.fromJson<bool>(json['deleted']),
+      remoteUpdated: serializer.fromJson<DateTime?>(json['remote_updated']),
+      synced: serializer.fromJson<DateTime?>(json['synced']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<String>(id),
+      'identity_code': serializer.toJson<String>(identityCode),
+      'format_code': serializer.toJson<String?>(formatCode),
+      'rotation_code': serializer.toJson<String?>(rotationCode),
+      'mwl_code': serializer.toJson<String?>(mwlCode),
+      'name': serializer.toJson<String>(name),
+      'description': serializer.toJson<String>(description),
+      'created': serializer.toJson<DateTime>(created),
+      'updated': serializer.toJson<DateTime>(updated),
+      'deleted': serializer.toJson<bool>(deleted),
+      'remote_updated': serializer.toJson<DateTime?>(remoteUpdated),
+      'synced': serializer.toJson<DateTime?>(synced),
+    };
+  }
+
+  DeckData copyWith(
+          {String? id,
+          String? identityCode,
+          Value<String?> formatCode = const Value.absent(),
+          Value<String?> rotationCode = const Value.absent(),
+          Value<String?> mwlCode = const Value.absent(),
+          String? name,
+          String? description,
+          DateTime? created,
+          DateTime? updated,
+          bool? deleted,
+          Value<DateTime?> remoteUpdated = const Value.absent(),
+          Value<DateTime?> synced = const Value.absent()}) =>
+      DeckData(
+        id: id ?? this.id,
+        identityCode: identityCode ?? this.identityCode,
+        formatCode: formatCode.present ? formatCode.value : this.formatCode,
+        rotationCode:
+            rotationCode.present ? rotationCode.value : this.rotationCode,
+        mwlCode: mwlCode.present ? mwlCode.value : this.mwlCode,
+        name: name ?? this.name,
+        description: description ?? this.description,
+        created: created ?? this.created,
+        updated: updated ?? this.updated,
+        deleted: deleted ?? this.deleted,
+        remoteUpdated:
+            remoteUpdated.present ? remoteUpdated.value : this.remoteUpdated,
+        synced: synced.present ? synced.value : this.synced,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('DeckData(')
+          ..write('id: $id, ')
+          ..write('identityCode: $identityCode, ')
+          ..write('formatCode: $formatCode, ')
+          ..write('rotationCode: $rotationCode, ')
+          ..write('mwlCode: $mwlCode, ')
+          ..write('name: $name, ')
+          ..write('description: $description, ')
+          ..write('created: $created, ')
+          ..write('updated: $updated, ')
+          ..write('deleted: $deleted, ')
+          ..write('remoteUpdated: $remoteUpdated, ')
+          ..write('synced: $synced')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      id,
+      identityCode,
+      formatCode,
+      rotationCode,
+      mwlCode,
+      name,
+      description,
+      created,
+      updated,
+      deleted,
+      remoteUpdated,
+      synced);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DeckData &&
+          other.id == this.id &&
+          other.identityCode == this.identityCode &&
+          other.formatCode == this.formatCode &&
+          other.rotationCode == this.rotationCode &&
+          other.mwlCode == this.mwlCode &&
+          other.name == this.name &&
+          other.description == this.description &&
+          other.created == this.created &&
+          other.updated == this.updated &&
+          other.deleted == this.deleted &&
+          other.remoteUpdated == this.remoteUpdated &&
+          other.synced == this.synced);
+}
+
+class DeckCompanion extends UpdateCompanion<DeckData> {
+  final Value<String> id;
+  final Value<String> identityCode;
+  final Value<String?> formatCode;
+  final Value<String?> rotationCode;
+  final Value<String?> mwlCode;
+  final Value<String> name;
+  final Value<String> description;
+  final Value<DateTime> created;
+  final Value<DateTime> updated;
+  final Value<bool> deleted;
+  final Value<DateTime?> remoteUpdated;
+  final Value<DateTime?> synced;
+  const DeckCompanion({
+    this.id = const Value.absent(),
+    this.identityCode = const Value.absent(),
+    this.formatCode = const Value.absent(),
+    this.rotationCode = const Value.absent(),
+    this.mwlCode = const Value.absent(),
+    this.name = const Value.absent(),
+    this.description = const Value.absent(),
+    this.created = const Value.absent(),
+    this.updated = const Value.absent(),
+    this.deleted = const Value.absent(),
+    this.remoteUpdated = const Value.absent(),
+    this.synced = const Value.absent(),
+  });
+  DeckCompanion.insert({
+    required String id,
+    required String identityCode,
+    this.formatCode = const Value.absent(),
+    this.rotationCode = const Value.absent(),
+    this.mwlCode = const Value.absent(),
+    required String name,
+    required String description,
+    required DateTime created,
+    required DateTime updated,
+    required bool deleted,
+    this.remoteUpdated = const Value.absent(),
+    this.synced = const Value.absent(),
+  })  : id = Value(id),
+        identityCode = Value(identityCode),
+        name = Value(name),
+        description = Value(description),
+        created = Value(created),
+        updated = Value(updated),
+        deleted = Value(deleted);
+  static Insertable<DeckData> custom({
+    Expression<String>? id,
+    Expression<String>? identityCode,
+    Expression<String>? formatCode,
+    Expression<String>? rotationCode,
+    Expression<String>? mwlCode,
+    Expression<String>? name,
+    Expression<String>? description,
+    Expression<DateTime>? created,
+    Expression<DateTime>? updated,
+    Expression<bool>? deleted,
+    Expression<DateTime>? remoteUpdated,
+    Expression<DateTime>? synced,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (identityCode != null) 'identity_code': identityCode,
+      if (formatCode != null) 'format_code': formatCode,
+      if (rotationCode != null) 'rotation_code': rotationCode,
+      if (mwlCode != null) 'mwl_code': mwlCode,
+      if (name != null) 'name': name,
+      if (description != null) 'description': description,
+      if (created != null) 'created': created,
+      if (updated != null) 'updated': updated,
+      if (deleted != null) 'deleted': deleted,
+      if (remoteUpdated != null) 'remote_updated': remoteUpdated,
+      if (synced != null) 'synced': synced,
+    });
+  }
+
+  DeckCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? identityCode,
+      Value<String?>? formatCode,
+      Value<String?>? rotationCode,
+      Value<String?>? mwlCode,
+      Value<String>? name,
+      Value<String>? description,
+      Value<DateTime>? created,
+      Value<DateTime>? updated,
+      Value<bool>? deleted,
+      Value<DateTime?>? remoteUpdated,
+      Value<DateTime?>? synced}) {
+    return DeckCompanion(
+      id: id ?? this.id,
+      identityCode: identityCode ?? this.identityCode,
+      formatCode: formatCode ?? this.formatCode,
+      rotationCode: rotationCode ?? this.rotationCode,
+      mwlCode: mwlCode ?? this.mwlCode,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      created: created ?? this.created,
+      updated: updated ?? this.updated,
+      deleted: deleted ?? this.deleted,
+      remoteUpdated: remoteUpdated ?? this.remoteUpdated,
+      synced: synced ?? this.synced,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (identityCode.present) {
+      map['identity_code'] = Variable<String>(identityCode.value);
+    }
+    if (formatCode.present) {
+      map['format_code'] = Variable<String>(formatCode.value);
+    }
+    if (rotationCode.present) {
+      map['rotation_code'] = Variable<String>(rotationCode.value);
+    }
+    if (mwlCode.present) {
+      map['mwl_code'] = Variable<String>(mwlCode.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (created.present) {
+      map['created'] = Variable<DateTime>(created.value);
+    }
+    if (updated.present) {
+      map['updated'] = Variable<DateTime>(updated.value);
+    }
+    if (deleted.present) {
+      map['deleted'] = Variable<bool>(deleted.value);
+    }
+    if (remoteUpdated.present) {
+      map['remote_updated'] = Variable<DateTime>(remoteUpdated.value);
+    }
+    if (synced.present) {
+      map['synced'] = Variable<DateTime>(synced.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DeckCompanion(')
+          ..write('id: $id, ')
+          ..write('identityCode: $identityCode, ')
+          ..write('formatCode: $formatCode, ')
+          ..write('rotationCode: $rotationCode, ')
+          ..write('mwlCode: $mwlCode, ')
+          ..write('name: $name, ')
+          ..write('description: $description, ')
+          ..write('created: $created, ')
+          ..write('updated: $updated, ')
+          ..write('deleted: $deleted, ')
+          ..write('remoteUpdated: $remoteUpdated, ')
+          ..write('synced: $synced')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class Deck extends Table with TableInfo<Deck, DeckData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  Deck(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+      'id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'PRIMARY KEY NOT NULL');
+  static const VerificationMeta _identityCodeMeta =
+      const VerificationMeta('identityCode');
+  late final GeneratedColumn<String> identityCode = GeneratedColumn<String>(
+      'identity_code', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _formatCodeMeta =
+      const VerificationMeta('formatCode');
+  late final GeneratedColumn<String> formatCode = GeneratedColumn<String>(
+      'format_code', aliasedName, true,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  static const VerificationMeta _rotationCodeMeta =
+      const VerificationMeta('rotationCode');
+  late final GeneratedColumn<String> rotationCode = GeneratedColumn<String>(
+      'rotation_code', aliasedName, true,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  static const VerificationMeta _mwlCodeMeta =
+      const VerificationMeta('mwlCode');
+  late final GeneratedColumn<String> mwlCode = GeneratedColumn<String>(
+      'mwl_code', aliasedName, true,
+      type: DriftSqlType.string,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _descriptionMeta =
+      const VerificationMeta('description');
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+      'description', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _createdMeta =
+      const VerificationMeta('created');
+  late final GeneratedColumn<DateTime> created = GeneratedColumn<DateTime>(
+      'created', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _updatedMeta =
+      const VerificationMeta('updated');
+  late final GeneratedColumn<DateTime> updated = GeneratedColumn<DateTime>(
+      'updated', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _deletedMeta =
+      const VerificationMeta('deleted');
+  late final GeneratedColumn<bool> deleted = GeneratedColumn<bool>(
+      'deleted', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _remoteUpdatedMeta =
+      const VerificationMeta('remoteUpdated');
+  late final GeneratedColumn<DateTime> remoteUpdated =
+      GeneratedColumn<DateTime>('remote_updated', aliasedName, true,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: false,
+          $customConstraints: '');
+  static const VerificationMeta _syncedMeta = const VerificationMeta('synced');
+  late final GeneratedColumn<DateTime> synced = GeneratedColumn<DateTime>(
+      'synced', aliasedName, true,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        identityCode,
+        formatCode,
+        rotationCode,
+        mwlCode,
+        name,
+        description,
+        created,
+        updated,
+        deleted,
+        remoteUpdated,
+        synced
+      ];
+  @override
+  String get aliasedName => _alias ?? 'deck';
+  @override
+  String get actualTableName => 'deck';
+  @override
+  VerificationContext validateIntegrity(Insertable<DeckData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('identity_code')) {
+      context.handle(
+          _identityCodeMeta,
+          identityCode.isAcceptableOrUnknown(
+              data['identity_code']!, _identityCodeMeta));
+    } else if (isInserting) {
+      context.missing(_identityCodeMeta);
+    }
+    if (data.containsKey('format_code')) {
+      context.handle(
+          _formatCodeMeta,
+          formatCode.isAcceptableOrUnknown(
+              data['format_code']!, _formatCodeMeta));
+    }
+    if (data.containsKey('rotation_code')) {
+      context.handle(
+          _rotationCodeMeta,
+          rotationCode.isAcceptableOrUnknown(
+              data['rotation_code']!, _rotationCodeMeta));
+    }
+    if (data.containsKey('mwl_code')) {
+      context.handle(_mwlCodeMeta,
+          mwlCode.isAcceptableOrUnknown(data['mwl_code']!, _mwlCodeMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+          _descriptionMeta,
+          description.isAcceptableOrUnknown(
+              data['description']!, _descriptionMeta));
+    } else if (isInserting) {
+      context.missing(_descriptionMeta);
+    }
+    if (data.containsKey('created')) {
+      context.handle(_createdMeta,
+          created.isAcceptableOrUnknown(data['created']!, _createdMeta));
+    } else if (isInserting) {
+      context.missing(_createdMeta);
+    }
+    if (data.containsKey('updated')) {
+      context.handle(_updatedMeta,
+          updated.isAcceptableOrUnknown(data['updated']!, _updatedMeta));
+    } else if (isInserting) {
+      context.missing(_updatedMeta);
+    }
+    if (data.containsKey('deleted')) {
+      context.handle(_deletedMeta,
+          deleted.isAcceptableOrUnknown(data['deleted']!, _deletedMeta));
+    } else if (isInserting) {
+      context.missing(_deletedMeta);
+    }
+    if (data.containsKey('remote_updated')) {
+      context.handle(
+          _remoteUpdatedMeta,
+          remoteUpdated.isAcceptableOrUnknown(
+              data['remote_updated']!, _remoteUpdatedMeta));
+    }
+    if (data.containsKey('synced')) {
+      context.handle(_syncedMeta,
+          synced.isAcceptableOrUnknown(data['synced']!, _syncedMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  DeckData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DeckData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}id'])!,
+      identityCode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}identity_code'])!,
+      formatCode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}format_code']),
+      rotationCode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}rotation_code']),
+      mwlCode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}mwl_code']),
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      description: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}description'])!,
+      created: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created'])!,
+      updated: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated'])!,
+      deleted: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}deleted'])!,
+      remoteUpdated: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}remote_updated']),
+      synced: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}synced']),
+    );
+  }
+
+  @override
+  Deck createAlias(String alias) {
+    return Deck(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class DeckTagData extends DataClass implements Insertable<DeckTagData> {
+  final String deckId;
+  final String tag;
+  const DeckTagData({required this.deckId, required this.tag});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['deck_id'] = Variable<String>(deckId);
+    map['tag'] = Variable<String>(tag);
+    return map;
+  }
+
+  DeckTagCompanion toCompanion(bool nullToAbsent) {
+    return DeckTagCompanion(
+      deckId: Value(deckId),
+      tag: Value(tag),
+    );
+  }
+
+  factory DeckTagData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DeckTagData(
+      deckId: serializer.fromJson<String>(json['deck_id']),
+      tag: serializer.fromJson<String>(json['tag']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'deck_id': serializer.toJson<String>(deckId),
+      'tag': serializer.toJson<String>(tag),
+    };
+  }
+
+  DeckTagData copyWith({String? deckId, String? tag}) => DeckTagData(
+        deckId: deckId ?? this.deckId,
+        tag: tag ?? this.tag,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('DeckTagData(')
+          ..write('deckId: $deckId, ')
+          ..write('tag: $tag')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(deckId, tag);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DeckTagData &&
+          other.deckId == this.deckId &&
+          other.tag == this.tag);
+}
+
+class DeckTagCompanion extends UpdateCompanion<DeckTagData> {
+  final Value<String> deckId;
+  final Value<String> tag;
+  const DeckTagCompanion({
+    this.deckId = const Value.absent(),
+    this.tag = const Value.absent(),
+  });
+  DeckTagCompanion.insert({
+    required String deckId,
+    required String tag,
+  })  : deckId = Value(deckId),
+        tag = Value(tag);
+  static Insertable<DeckTagData> custom({
+    Expression<String>? deckId,
+    Expression<String>? tag,
+  }) {
+    return RawValuesInsertable({
+      if (deckId != null) 'deck_id': deckId,
+      if (tag != null) 'tag': tag,
+    });
+  }
+
+  DeckTagCompanion copyWith({Value<String>? deckId, Value<String>? tag}) {
+    return DeckTagCompanion(
+      deckId: deckId ?? this.deckId,
+      tag: tag ?? this.tag,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (deckId.present) {
+      map['deck_id'] = Variable<String>(deckId.value);
+    }
+    if (tag.present) {
+      map['tag'] = Variable<String>(tag.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DeckTagCompanion(')
+          ..write('deckId: $deckId, ')
+          ..write('tag: $tag')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class DeckTag extends Table with TableInfo<DeckTag, DeckTagData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  DeckTag(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _deckIdMeta = const VerificationMeta('deckId');
+  late final GeneratedColumn<String> deckId = GeneratedColumn<String>(
+      'deck_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _tagMeta = const VerificationMeta('tag');
+  late final GeneratedColumn<String> tag = GeneratedColumn<String>(
+      'tag', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  @override
+  List<GeneratedColumn> get $columns => [deckId, tag];
+  @override
+  String get aliasedName => _alias ?? 'deck_tag';
+  @override
+  String get actualTableName => 'deck_tag';
+  @override
+  VerificationContext validateIntegrity(Insertable<DeckTagData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('deck_id')) {
+      context.handle(_deckIdMeta,
+          deckId.isAcceptableOrUnknown(data['deck_id']!, _deckIdMeta));
+    } else if (isInserting) {
+      context.missing(_deckIdMeta);
+    }
+    if (data.containsKey('tag')) {
+      context.handle(
+          _tagMeta, tag.isAcceptableOrUnknown(data['tag']!, _tagMeta));
+    } else if (isInserting) {
+      context.missing(_tagMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {deckId, tag};
+  @override
+  DeckTagData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DeckTagData(
+      deckId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}deck_id'])!,
+      tag: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}tag'])!,
+    );
+  }
+
+  @override
+  DeckTag createAlias(String alias) {
+    return DeckTag(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(deck_id, tag)'];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class DeckCardData extends DataClass implements Insertable<DeckCardData> {
+  final String deckId;
+  final String cardCode;
+  final int quantity;
+  const DeckCardData(
+      {required this.deckId, required this.cardCode, required this.quantity});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['deck_id'] = Variable<String>(deckId);
+    map['card_code'] = Variable<String>(cardCode);
+    map['quantity'] = Variable<int>(quantity);
+    return map;
+  }
+
+  DeckCardCompanion toCompanion(bool nullToAbsent) {
+    return DeckCardCompanion(
+      deckId: Value(deckId),
+      cardCode: Value(cardCode),
+      quantity: Value(quantity),
+    );
+  }
+
+  factory DeckCardData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return DeckCardData(
+      deckId: serializer.fromJson<String>(json['deck_id']),
+      cardCode: serializer.fromJson<String>(json['card_code']),
+      quantity: serializer.fromJson<int>(json['quantity']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'deck_id': serializer.toJson<String>(deckId),
+      'card_code': serializer.toJson<String>(cardCode),
+      'quantity': serializer.toJson<int>(quantity),
+    };
+  }
+
+  DeckCardData copyWith({String? deckId, String? cardCode, int? quantity}) =>
+      DeckCardData(
+        deckId: deckId ?? this.deckId,
+        cardCode: cardCode ?? this.cardCode,
+        quantity: quantity ?? this.quantity,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('DeckCardData(')
+          ..write('deckId: $deckId, ')
+          ..write('cardCode: $cardCode, ')
+          ..write('quantity: $quantity')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(deckId, cardCode, quantity);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is DeckCardData &&
+          other.deckId == this.deckId &&
+          other.cardCode == this.cardCode &&
+          other.quantity == this.quantity);
+}
+
+class DeckCardCompanion extends UpdateCompanion<DeckCardData> {
+  final Value<String> deckId;
+  final Value<String> cardCode;
+  final Value<int> quantity;
+  const DeckCardCompanion({
+    this.deckId = const Value.absent(),
+    this.cardCode = const Value.absent(),
+    this.quantity = const Value.absent(),
+  });
+  DeckCardCompanion.insert({
+    required String deckId,
+    required String cardCode,
+    required int quantity,
+  })  : deckId = Value(deckId),
+        cardCode = Value(cardCode),
+        quantity = Value(quantity);
+  static Insertable<DeckCardData> custom({
+    Expression<String>? deckId,
+    Expression<String>? cardCode,
+    Expression<int>? quantity,
+  }) {
+    return RawValuesInsertable({
+      if (deckId != null) 'deck_id': deckId,
+      if (cardCode != null) 'card_code': cardCode,
+      if (quantity != null) 'quantity': quantity,
+    });
+  }
+
+  DeckCardCompanion copyWith(
+      {Value<String>? deckId, Value<String>? cardCode, Value<int>? quantity}) {
+    return DeckCardCompanion(
+      deckId: deckId ?? this.deckId,
+      cardCode: cardCode ?? this.cardCode,
+      quantity: quantity ?? this.quantity,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (deckId.present) {
+      map['deck_id'] = Variable<String>(deckId.value);
+    }
+    if (cardCode.present) {
+      map['card_code'] = Variable<String>(cardCode.value);
+    }
+    if (quantity.present) {
+      map['quantity'] = Variable<int>(quantity.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DeckCardCompanion(')
+          ..write('deckId: $deckId, ')
+          ..write('cardCode: $cardCode, ')
+          ..write('quantity: $quantity')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class DeckCard extends Table with TableInfo<DeckCard, DeckCardData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  DeckCard(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _deckIdMeta = const VerificationMeta('deckId');
+  late final GeneratedColumn<String> deckId = GeneratedColumn<String>(
+      'deck_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _cardCodeMeta =
+      const VerificationMeta('cardCode');
+  late final GeneratedColumn<String> cardCode = GeneratedColumn<String>(
+      'card_code', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _quantityMeta =
+      const VerificationMeta('quantity');
+  late final GeneratedColumn<int> quantity = GeneratedColumn<int>(
+      'quantity', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  @override
+  List<GeneratedColumn> get $columns => [deckId, cardCode, quantity];
+  @override
+  String get aliasedName => _alias ?? 'deck_card';
+  @override
+  String get actualTableName => 'deck_card';
+  @override
+  VerificationContext validateIntegrity(Insertable<DeckCardData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('deck_id')) {
+      context.handle(_deckIdMeta,
+          deckId.isAcceptableOrUnknown(data['deck_id']!, _deckIdMeta));
+    } else if (isInserting) {
+      context.missing(_deckIdMeta);
+    }
+    if (data.containsKey('card_code')) {
+      context.handle(_cardCodeMeta,
+          cardCode.isAcceptableOrUnknown(data['card_code']!, _cardCodeMeta));
+    } else if (isInserting) {
+      context.missing(_cardCodeMeta);
+    }
+    if (data.containsKey('quantity')) {
+      context.handle(_quantityMeta,
+          quantity.isAcceptableOrUnknown(data['quantity']!, _quantityMeta));
+    } else if (isInserting) {
+      context.missing(_quantityMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {deckId, cardCode};
+  @override
+  DeckCardData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DeckCardData(
+      deckId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}deck_id'])!,
+      cardCode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}card_code'])!,
+      quantity: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}quantity'])!,
+    );
+  }
+
+  @override
+  DeckCard createAlias(String alias) {
+    return DeckCard(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints =>
+      const ['PRIMARY KEY(deck_id, card_code)'];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class CollectionData extends DataClass implements Insertable<CollectionData> {
+  final String packCode;
+  const CollectionData({required this.packCode});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['pack_code'] = Variable<String>(packCode);
+    return map;
+  }
+
+  CollectionCompanion toCompanion(bool nullToAbsent) {
+    return CollectionCompanion(
+      packCode: Value(packCode),
+    );
+  }
+
+  factory CollectionData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return CollectionData(
+      packCode: serializer.fromJson<String>(json['pack_code']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'pack_code': serializer.toJson<String>(packCode),
+    };
+  }
+
+  CollectionData copyWith({String? packCode}) => CollectionData(
+        packCode: packCode ?? this.packCode,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('CollectionData(')
+          ..write('packCode: $packCode')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => packCode.hashCode;
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is CollectionData && other.packCode == this.packCode);
+}
+
+class CollectionCompanion extends UpdateCompanion<CollectionData> {
+  final Value<String> packCode;
+  const CollectionCompanion({
+    this.packCode = const Value.absent(),
+  });
+  CollectionCompanion.insert({
+    required String packCode,
+  }) : packCode = Value(packCode);
+  static Insertable<CollectionData> custom({
+    Expression<String>? packCode,
+  }) {
+    return RawValuesInsertable({
+      if (packCode != null) 'pack_code': packCode,
+    });
+  }
+
+  CollectionCompanion copyWith({Value<String>? packCode}) {
+    return CollectionCompanion(
+      packCode: packCode ?? this.packCode,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (packCode.present) {
+      map['pack_code'] = Variable<String>(packCode.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CollectionCompanion(')
+          ..write('packCode: $packCode')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class Collection extends Table with TableInfo<Collection, CollectionData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  Collection(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _packCodeMeta =
+      const VerificationMeta('packCode');
+  late final GeneratedColumn<String> packCode = GeneratedColumn<String>(
+      'pack_code', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL PRIMARY KEY');
+  @override
+  List<GeneratedColumn> get $columns => [packCode];
+  @override
+  String get aliasedName => _alias ?? 'collection';
+  @override
+  String get actualTableName => 'collection';
+  @override
+  VerificationContext validateIntegrity(Insertable<CollectionData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('pack_code')) {
+      context.handle(_packCodeMeta,
+          packCode.isAcceptableOrUnknown(data['pack_code']!, _packCodeMeta));
+    } else if (isInserting) {
+      context.missing(_packCodeMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {packCode};
+  @override
+  CollectionData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CollectionData(
+      packCode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}pack_code'])!,
+    );
+  }
+
+  @override
+  Collection createAlias(String alias) {
+    return Collection(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const [];
+  @override
   bool get dontWriteConstraints => true;
 }
 
@@ -6315,20 +6384,20 @@ abstract class _$Database extends GeneratedDatabase {
   late final Type type = Type(this);
   late final Side side = Side(this);
   late final Settings settings = Settings(this);
-  late final Rotation rotation = Rotation(this);
-  late final RotationCycle rotationCycle = RotationCycle(this);
-  late final Pack pack = Pack(this);
-  late final Nrdb nrdb = Nrdb(this);
-  late final Mwl mwl = Mwl(this);
-  late final MwlCard mwlCard = MwlCard(this);
   late final Format format = Format(this);
+  late final Rotation rotation = Rotation(this);
+  late final Mwl mwl = Mwl(this);
+  late final RotationCycle rotationCycle = RotationCycle(this);
+  late final Cycle cycle = Cycle(this);
+  late final Pack pack = Pack(this);
+  late final Card card = Card(this);
   late final Faction faction = Faction(this);
+  late final Nrdb nrdb = Nrdb(this);
+  late final MwlCard mwlCard = MwlCard(this);
   late final Deck deck = Deck(this);
   late final DeckTag deckTag = DeckTag(this);
   late final DeckCard deckCard = DeckCard(this);
-  late final Cycle cycle = Cycle(this);
   late final Collection collection = Collection(this);
-  late final Card card = Card(this);
   Selectable<TypeResult> listTypes({ListTypes$where? where}) {
     var $arrayStartIndex = 1;
     final generatedwhere = $write(
@@ -7037,28 +7106,28 @@ abstract class _$Database extends GeneratedDatabase {
   }
 
   @override
-  Iterable<TableInfo<Table, dynamic>> get allTables =>
+  Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
   List<DatabaseSchemaEntity> get allSchemaEntities => [
         type,
         side,
         settings,
-        OnCreateQuery('INSERT INTO settings DEFAULT VALUES'),
-        rotation,
-        rotationCycle,
-        pack,
-        nrdb,
-        mwl,
-        mwlCard,
         format,
+        rotation,
+        mwl,
+        OnCreateQuery('INSERT INTO settings DEFAULT VALUES'),
+        rotationCycle,
+        cycle,
+        pack,
+        card,
         faction,
+        nrdb,
+        mwlCard,
         deck,
         deckTag,
         deckCard,
-        cycle,
-        collection,
-        card
+        collection
       ];
   @override
   DriftDatabaseOptions get options =>
