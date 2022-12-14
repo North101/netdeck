@@ -82,8 +82,17 @@
       "format_code": "startup",
       "name": "Startup First Rotation",
       "current": true,
-      "latest": true,
+      "latest": false,
       "rotated": ["ashes", "system-gateway", "system-update-2021", "borealis"]
+    },
+    {
+      "code": "startup-2022",
+      "date_start": "2022-12-28",
+      "format_code": "startup",
+      "name": "Startup Second Rotation",
+      "current": false,
+      "latest": true,
+      "rotated": ["system-gateway", "system-update-2021", "borealis"]
     },
     {
       "code": "snapshot-2018",
@@ -109,5 +118,5 @@
       ]
     }
   ],
-  "last_updated": "2022-08-05T00:00:00+00:00"
+  "last_updated": "2022-12-12T00:00:00+00:00"
 }
