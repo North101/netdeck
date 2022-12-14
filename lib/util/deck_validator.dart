@@ -7,18 +7,23 @@ import '/db/database.dart';
 import 'card_influence.dart';
 
 class DeckValidator {
+  static const lookup = {
+    TheProfessorDeckValidator.identityCode: TheProfessorDeckValidator.new,
+    ApexDeckValidator.identityCode: ApexDeckValidator.new,
+    CustomBioticsDeckValidator.identityCode: CustomBioticsDeckValidator.new,
+    NovaInitiumiaDeckValidator.identityCode: NovaInitiumiaDeckValidator.new,
+    AmpereDeckValidator.identityCode: AmpereDeckValidator.new,
+  };
+
   factory DeckValidator(
     SettingResult settings,
     DeckFullResult deck,
     Set<String>? formatCardSet,
     Map<String, MwlCardData> mwlCardMap,
   ) {
-    if (deck.identity.code == TheProfessorDeckValidator.identityCode) {
-      return TheProfessorDeckValidator(settings, deck, formatCardSet, mwlCardMap);
-    } else if (deck.identity.code == ApexDeckValidator.identityCode) {
-      return ApexDeckValidator(settings, deck, formatCardSet, mwlCardMap);
-    } else if (deck.identity.code == CustomBioticsDeckValidator.identityCode) {
-      return CustomBioticsDeckValidator(settings, deck, formatCardSet, mwlCardMap);
+    final validator = lookup[deck.identity.code];
+    if (validator != null) {
+      return validator(settings, deck, formatCardSet, mwlCardMap);
     }
 
     if (deck.side.code == RunnerDeckValidator.sideCode) {
@@ -294,5 +299,50 @@ class CustomBioticsDeckValidator extends CorpDeckValidator {
       super.filter(db),
       db.faction.code.equals('jinteki').not(),
     ]);
+  }
+}
+
+class NovaInitiumiaDeckValidator extends RunnerDeckValidator {
+  NovaInitiumiaDeckValidator(
+    super.settings,
+    super.deck,
+    super.formatCardSet,
+    super.mwlCardMap,
+  );
+
+  static const identityCode = '33093';
+
+  @override
+  String? cardError(CardResult card, int quantity) {
+    if (quantity > 1) {
+      return 'Your deck cannot include more than 1 copy of any card.';
+    }
+
+    return super.cardError(card, quantity);
+  }
+}
+
+class AmpereDeckValidator extends CorpDeckValidator {
+  AmpereDeckValidator(
+    super.settings,
+    super.deck,
+    super.formatCardSet,
+    super.mwlCardMap,
+  );
+
+  static const identityCode = '33128';
+
+  @override
+  String? cardError(CardResult card, int quantity) {
+    if (quantity > 1) {
+      return 'Your deck cannot include more than 1 copy of any card.';
+    } else if (card.type.code == 'agenda') {
+      final factionAgendas = cardList.keys.where((e) => e.type.code == 'agenda' && e.faction == card.faction);
+      if (factionAgendas.length > 2) {
+        return 'Your deck cannot include more than 2 different agenda cards from each Corp faction.';
+      }
+    }
+
+    return super.cardError(card, quantity);
   }
 }
