@@ -48,28 +48,6 @@ dev_dependencies:
   flutter_launcher_icons: any
   flutter_lints: any
 
-dependency_overrides:
-  drift:
-    git:
-      url: https://github.com/simolus3/drift.git
-      ref: develop
-      path: drift
-  drift_dev:
-    git:
-      url: https://github.com/simolus3/drift.git
-      ref: develop
-      path: drift_dev
-  sqlparser:
-    git:
-      url: https://github.com/simolus3/drift.git
-      ref: develop
-      path: sqlparser
-  sqlite3_flutter_libs:
-    git:
-      url: https://github.com/simolus3/sqlite3.dart.git
-      ref: main
-      path: sqlite3_flutter_libs
-
 flutter_icons:
   ios: true
   macos: true

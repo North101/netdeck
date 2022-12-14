@@ -11,7 +11,7 @@ PODS:
   - flutter_appauth (0.0.1):
     - AppAuth (= 1.6.0)
     - FlutterMacOS
-  - flutter_secure_storage_macos (3.3.1):
+  - flutter_secure_storage_macos (6.1.1):
     - FlutterMacOS
   - FlutterMacOS (1.0.0)
   - FMDB (2.7.5):
@@ -23,18 +23,18 @@ PODS:
   - sqflite (0.0.2):
     - FlutterMacOS
     - FMDB (>= 2.7.5)
-  - sqlite3 (3.39.4):
-    - sqlite3/common (= 3.39.4)
-  - sqlite3/common (3.39.4)
-  - sqlite3/fts5 (3.39.4):
+  - sqlite3 (3.40.0):
+    - sqlite3/common (= 3.40.0)
+  - sqlite3/common (3.40.0)
+  - sqlite3/fts5 (3.40.0):
     - sqlite3/common
-  - sqlite3/perf-threadsafe (3.39.4):
+  - sqlite3/perf-threadsafe (3.40.0):
     - sqlite3/common
-  - sqlite3/rtree (3.39.4):
+  - sqlite3/rtree (3.40.0):
     - sqlite3/common
   - sqlite3_flutter_libs (0.0.1):
     - FlutterMacOS
-    - sqlite3 (~> 3.39.4)
+    - sqlite3 (~> 3.40.0)
     - sqlite3/fts5
     - sqlite3/perf-threadsafe
     - sqlite3/rtree
@@ -80,16 +80,16 @@ SPEC CHECKSUMS:
   AppAuth: 8fca6b5563a5baef2c04bee27538025e4ceb2add
   connectivity_plus: 18d3c32514c886e046de60e9c13895109866c747
   flutter_appauth: adacee57756dd4640e12db56bd96812f0a0207b5
-  flutter_secure_storage_macos: 6ceee8fbc7f484553ad17f79361b556259df89aa
-  FlutterMacOS: 85f90bfb3f1703249cf1539e4dfbff31e8584698
+  flutter_secure_storage_macos: 75c8cadfdba05ca007c0fa4ea0c16e5cf85e521b
+  FlutterMacOS: 8f6f14fa908a6fb3fba0cd85dbd81ec4b251fb24
   FMDB: 2ce00b547f966261cd18927a3ddb07cb6f3db82a
   path_provider_macos: 3c0c3b4b0d4a76d2bf989a913c2de869c5641a19
   ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
   sqflite: a5789cceda41d54d23f31d6de539d65bb14100ea
-  sqlite3: 401936402fe5aa242c07f87fccfee5fc2b606f45
-  sqlite3_flutter_libs: db076bb9ff5f17c4e32bdebdec78c382703c71e1
+  sqlite3: 88dd99ef4ac3945f5a15facdd752933c52fd93bf
+  sqlite3_flutter_libs: 7523e007b12584944a26feaa9975ea741eab136f
   url_launcher_macos: 597e05b8e514239626bcf4a850fcf9ef5c856ec3
 
-PODFILE CHECKSUM: 1e599825e64ae2bda97035db1759447dc33ff502
+PODFILE CHECKSUM: fa3a861f8698ff80d4a0ba1101011c5a819dc010
 
 COCOAPODS: 1.11.3
