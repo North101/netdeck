@@ -87,9 +87,7 @@ class DeckValidator {
 
   int get mwlPoints {
     return _mwlPoints ??= (mwlCard(deck.identity)?.points ?? 0) +
-        cardList.entries.map((e) {
-          return mwlCard(e.key.card)?.points ?? 0;
-        }).sum;
+        cardList.keys.map((e) => mwlCard(e.card)).toSet().map((e) => e?.points ?? 0).sum;
   }
 
   int? get maxMwlPoints => _maxMwlPoints ??= deck.mwl?.points(deck.side);
@@ -107,9 +105,7 @@ class DeckValidator {
   int cardInfluence(CardResult card, int quantity) {
     final factionCost = mwlCard(card.card)?.universalFactionCost ??
         (card.faction.code != deck.faction.code ? card.card.factionCost : 0);
-    if (factionCost == 0) {
-      return 0;
-    }
+    if (factionCost == 0) return 0;
 
     final cardInfluence = cardInfluenceLookup[card.code] ?? const CardInfluence();
     return cardInfluence(cardList, card, quantity, factionCost);

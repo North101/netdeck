@@ -29,42 +29,31 @@ NrdbDeckResult _$NrdbDeckResultFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$NrdbDeckResult {
-  @JsonKey(name: 'version_number')
   String get versionNumber => throw _privateConstructorUsedError;
   bool get success => throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(
-            @JsonKey(name: 'version_number') String versionNumber,
-            bool success,
-            NrdbDeck data,
-            int total)
+            String versionNumber, bool success, NrdbDeck data, int total)
         success,
-    required TResult Function(
-            @JsonKey(name: 'version_number') String versionNumber,
-            bool success,
-            String msg)
+    required TResult Function(String versionNumber, bool success, String msg)
         failure,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(@JsonKey(name: 'version_number') String versionNumber,
-            bool success, NrdbDeck data, int total)?
+    TResult? Function(
+            String versionNumber, bool success, NrdbDeck data, int total)?
         success,
-    TResult? Function(@JsonKey(name: 'version_number') String versionNumber,
-            bool success, String msg)?
-        failure,
+    TResult? Function(String versionNumber, bool success, String msg)? failure,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(@JsonKey(name: 'version_number') String versionNumber,
-            bool success, NrdbDeck data, int total)?
+    TResult Function(
+            String versionNumber, bool success, NrdbDeck data, int total)?
         success,
-    TResult Function(@JsonKey(name: 'version_number') String versionNumber,
-            bool success, String msg)?
-        failure,
+    TResult Function(String versionNumber, bool success, String msg)? failure,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -99,8 +88,7 @@ abstract class $NrdbDeckResultCopyWith<$Res> {
           NrdbDeckResult value, $Res Function(NrdbDeckResult) then) =
       _$NrdbDeckResultCopyWithImpl<$Res, NrdbDeckResult>;
   @useResult
-  $Res call(
-      {@JsonKey(name: 'version_number') String versionNumber, bool success});
+  $Res call({String versionNumber, bool success});
 }
 
 /// @nodoc
@@ -140,11 +128,7 @@ abstract class _$$NrdbDeckSuccessResultCopyWith<$Res>
       __$$NrdbDeckSuccessResultCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {@JsonKey(name: 'version_number') String versionNumber,
-      bool success,
-      NrdbDeck data,
-      int total});
+  $Res call({String versionNumber, bool success, NrdbDeck data, int total});
 
   $NrdbDeckCopyWith<$Res> get data;
 }
@@ -198,10 +182,7 @@ class __$$NrdbDeckSuccessResultCopyWithImpl<$Res>
 @JsonSerializable(createToJson: false)
 class _$NrdbDeckSuccessResult implements NrdbDeckSuccessResult {
   const _$NrdbDeckSuccessResult(
-      @JsonKey(name: 'version_number') this.versionNumber,
-      this.success,
-      this.data,
-      this.total,
+      this.versionNumber, this.success, this.data, this.total,
       {final String? $type})
       : $type = $type ?? 'success';
 
@@ -209,7 +190,6 @@ class _$NrdbDeckSuccessResult implements NrdbDeckSuccessResult {
       _$$NrdbDeckSuccessResultFromJson(json);
 
   @override
-  @JsonKey(name: 'version_number')
   final String versionNumber;
   @override
   final bool success;
@@ -254,15 +234,9 @@ class _$NrdbDeckSuccessResult implements NrdbDeckSuccessResult {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(
-            @JsonKey(name: 'version_number') String versionNumber,
-            bool success,
-            NrdbDeck data,
-            int total)
+            String versionNumber, bool success, NrdbDeck data, int total)
         success,
-    required TResult Function(
-            @JsonKey(name: 'version_number') String versionNumber,
-            bool success,
-            String msg)
+    required TResult Function(String versionNumber, bool success, String msg)
         failure,
   }) {
     return success(versionNumber, this.success, data, total);
@@ -271,12 +245,10 @@ class _$NrdbDeckSuccessResult implements NrdbDeckSuccessResult {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(@JsonKey(name: 'version_number') String versionNumber,
-            bool success, NrdbDeck data, int total)?
+    TResult? Function(
+            String versionNumber, bool success, NrdbDeck data, int total)?
         success,
-    TResult? Function(@JsonKey(name: 'version_number') String versionNumber,
-            bool success, String msg)?
-        failure,
+    TResult? Function(String versionNumber, bool success, String msg)? failure,
   }) {
     return success?.call(versionNumber, this.success, data, total);
   }
@@ -284,12 +256,10 @@ class _$NrdbDeckSuccessResult implements NrdbDeckSuccessResult {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(@JsonKey(name: 'version_number') String versionNumber,
-            bool success, NrdbDeck data, int total)?
+    TResult Function(
+            String versionNumber, bool success, NrdbDeck data, int total)?
         success,
-    TResult Function(@JsonKey(name: 'version_number') String versionNumber,
-            bool success, String msg)?
-        failure,
+    TResult Function(String versionNumber, bool success, String msg)? failure,
     required TResult orElse(),
   }) {
     if (success != null) {
@@ -332,7 +302,7 @@ class _$NrdbDeckSuccessResult implements NrdbDeckSuccessResult {
 
 abstract class NrdbDeckSuccessResult implements NrdbDeckResult {
   const factory NrdbDeckSuccessResult(
-      @JsonKey(name: 'version_number') final String versionNumber,
+      final String versionNumber,
       final bool success,
       final NrdbDeck data,
       final int total) = _$NrdbDeckSuccessResult;
@@ -341,7 +311,6 @@ abstract class NrdbDeckSuccessResult implements NrdbDeckResult {
       _$NrdbDeckSuccessResult.fromJson;
 
   @override
-  @JsonKey(name: 'version_number')
   String get versionNumber;
   @override
   bool get success;
@@ -361,10 +330,7 @@ abstract class _$$NrdbDeckFailureResultCopyWith<$Res>
       __$$NrdbDeckFailureResultCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {@JsonKey(name: 'version_number') String versionNumber,
-      bool success,
-      String msg});
+  $Res call({String versionNumber, bool success, String msg});
 }
 
 /// @nodoc
@@ -402,10 +368,7 @@ class __$$NrdbDeckFailureResultCopyWithImpl<$Res>
 /// @nodoc
 @JsonSerializable(createToJson: false)
 class _$NrdbDeckFailureResult implements NrdbDeckFailureResult {
-  const _$NrdbDeckFailureResult(
-      @JsonKey(name: 'version_number') this.versionNumber,
-      this.success,
-      this.msg,
+  const _$NrdbDeckFailureResult(this.versionNumber, this.success, this.msg,
       {final String? $type})
       : $type = $type ?? 'failure';
 
@@ -413,7 +376,6 @@ class _$NrdbDeckFailureResult implements NrdbDeckFailureResult {
       _$$NrdbDeckFailureResultFromJson(json);
 
   @override
-  @JsonKey(name: 'version_number')
   final String versionNumber;
   @override
   final bool success;
@@ -454,15 +416,9 @@ class _$NrdbDeckFailureResult implements NrdbDeckFailureResult {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(
-            @JsonKey(name: 'version_number') String versionNumber,
-            bool success,
-            NrdbDeck data,
-            int total)
+            String versionNumber, bool success, NrdbDeck data, int total)
         success,
-    required TResult Function(
-            @JsonKey(name: 'version_number') String versionNumber,
-            bool success,
-            String msg)
+    required TResult Function(String versionNumber, bool success, String msg)
         failure,
   }) {
     return failure(versionNumber, this.success, msg);
@@ -471,12 +427,10 @@ class _$NrdbDeckFailureResult implements NrdbDeckFailureResult {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(@JsonKey(name: 'version_number') String versionNumber,
-            bool success, NrdbDeck data, int total)?
+    TResult? Function(
+            String versionNumber, bool success, NrdbDeck data, int total)?
         success,
-    TResult? Function(@JsonKey(name: 'version_number') String versionNumber,
-            bool success, String msg)?
-        failure,
+    TResult? Function(String versionNumber, bool success, String msg)? failure,
   }) {
     return failure?.call(versionNumber, this.success, msg);
   }
@@ -484,12 +438,10 @@ class _$NrdbDeckFailureResult implements NrdbDeckFailureResult {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(@JsonKey(name: 'version_number') String versionNumber,
-            bool success, NrdbDeck data, int total)?
+    TResult Function(
+            String versionNumber, bool success, NrdbDeck data, int total)?
         success,
-    TResult Function(@JsonKey(name: 'version_number') String versionNumber,
-            bool success, String msg)?
-        failure,
+    TResult Function(String versionNumber, bool success, String msg)? failure,
     required TResult orElse(),
   }) {
     if (failure != null) {
@@ -532,15 +484,13 @@ class _$NrdbDeckFailureResult implements NrdbDeckFailureResult {
 
 abstract class NrdbDeckFailureResult implements NrdbDeckResult {
   const factory NrdbDeckFailureResult(
-      @JsonKey(name: 'version_number') final String versionNumber,
-      final bool success,
-      final String msg) = _$NrdbDeckFailureResult;
+          final String versionNumber, final bool success, final String msg) =
+      _$NrdbDeckFailureResult;
 
   factory NrdbDeckFailureResult.fromJson(Map<String, dynamic> json) =
       _$NrdbDeckFailureResult.fromJson;
 
   @override
-  @JsonKey(name: 'version_number')
   String get versionNumber;
   @override
   bool get success;
@@ -561,7 +511,7 @@ mixin _$NrdbUser {
   String get username => throw _privateConstructorUsedError;
   String get email => throw _privateConstructorUsedError;
   int get reputation => throw _privateConstructorUsedError;
-  String get sharing => throw _privateConstructorUsedError;
+  bool get sharing => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -575,7 +525,7 @@ abstract class $NrdbUserCopyWith<$Res> {
       _$NrdbUserCopyWithImpl<$Res, NrdbUser>;
   @useResult
   $Res call(
-      {int id, String username, String email, int reputation, String sharing});
+      {int id, String username, String email, int reputation, bool sharing});
 }
 
 /// @nodoc
@@ -617,7 +567,7 @@ class _$NrdbUserCopyWithImpl<$Res, $Val extends NrdbUser>
       sharing: null == sharing
           ? _value.sharing
           : sharing // ignore: cast_nullable_to_non_nullable
-              as String,
+              as bool,
     ) as $Val);
   }
 }
@@ -630,7 +580,7 @@ abstract class _$$_NrdbUserCopyWith<$Res> implements $NrdbUserCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {int id, String username, String email, int reputation, String sharing});
+      {int id, String username, String email, int reputation, bool sharing});
 }
 
 /// @nodoc
@@ -670,7 +620,7 @@ class __$$_NrdbUserCopyWithImpl<$Res>
       null == sharing
           ? _value.sharing
           : sharing // ignore: cast_nullable_to_non_nullable
-              as String,
+              as bool,
     ));
   }
 }
@@ -693,7 +643,7 @@ class _$_NrdbUser implements _NrdbUser {
   @override
   final int reputation;
   @override
-  final String sharing;
+  final bool sharing;
 
   @override
   String toString() {
@@ -739,7 +689,7 @@ abstract class _NrdbUser implements NrdbUser {
       final String username,
       final String email,
       final int reputation,
-      final String sharing) = _$_NrdbUser;
+      final bool sharing) = _$_NrdbUser;
 
   factory _NrdbUser.fromJson(Map<String, dynamic> json) = _$_NrdbUser.fromJson;
 
@@ -752,7 +702,7 @@ abstract class _NrdbUser implements NrdbUser {
   @override
   int get reputation;
   @override
-  String get sharing;
+  bool get sharing;
   @override
   @JsonKey(ignore: true)
   _$$_NrdbUserCopyWith<_$_NrdbUser> get copyWith =>
@@ -765,18 +715,15 @@ NrdbDeck _$NrdbDeckFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$NrdbDeck {
-  @JsonKey(fromJson: _idFromJson)
+  @JsonKey(fromJson: idFromJson)
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
-  @JsonKey(name: 'mwl_code')
   String? get mwlCode => throw _privateConstructorUsedError;
-  @JsonKey(name: 'date_creation')
-  DateTime get created => throw _privateConstructorUsedError;
-  @JsonKey(name: 'date_update')
-  DateTime get updated => throw _privateConstructorUsedError;
+  DateTime get dateCreation => throw _privateConstructorUsedError;
+  DateTime get dateUpdate => throw _privateConstructorUsedError;
   Map<String, int> get cards => throw _privateConstructorUsedError;
-  @JsonKey(fromJson: _tagsFromJson, toJson: _tagsToJson)
+  @JsonKey(fromJson: tagsFromJson, toJson: tagsToJson)
   List<String> get tags => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -791,19 +738,14 @@ abstract class $NrdbDeckCopyWith<$Res> {
       _$NrdbDeckCopyWithImpl<$Res, NrdbDeck>;
   @useResult
   $Res call(
-      {@JsonKey(fromJson: _idFromJson)
-          String id,
+      {@JsonKey(fromJson: idFromJson) String id,
       String name,
       String description,
-      @JsonKey(name: 'mwl_code')
-          String? mwlCode,
-      @JsonKey(name: 'date_creation')
-          DateTime created,
-      @JsonKey(name: 'date_update')
-          DateTime updated,
+      String? mwlCode,
+      DateTime dateCreation,
+      DateTime dateUpdate,
       Map<String, int> cards,
-      @JsonKey(fromJson: _tagsFromJson, toJson: _tagsToJson)
-          List<String> tags});
+      @JsonKey(fromJson: tagsFromJson, toJson: tagsToJson) List<String> tags});
 }
 
 /// @nodoc
@@ -823,8 +765,8 @@ class _$NrdbDeckCopyWithImpl<$Res, $Val extends NrdbDeck>
     Object? name = null,
     Object? description = null,
     Object? mwlCode = freezed,
-    Object? created = null,
-    Object? updated = null,
+    Object? dateCreation = null,
+    Object? dateUpdate = null,
     Object? cards = null,
     Object? tags = null,
   }) {
@@ -845,13 +787,13 @@ class _$NrdbDeckCopyWithImpl<$Res, $Val extends NrdbDeck>
           ? _value.mwlCode
           : mwlCode // ignore: cast_nullable_to_non_nullable
               as String?,
-      created: null == created
-          ? _value.created
-          : created // ignore: cast_nullable_to_non_nullable
+      dateCreation: null == dateCreation
+          ? _value.dateCreation
+          : dateCreation // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      updated: null == updated
-          ? _value.updated
-          : updated // ignore: cast_nullable_to_non_nullable
+      dateUpdate: null == dateUpdate
+          ? _value.dateUpdate
+          : dateUpdate // ignore: cast_nullable_to_non_nullable
               as DateTime,
       cards: null == cards
           ? _value.cards
@@ -873,19 +815,14 @@ abstract class _$$_NrdbDeckCopyWith<$Res> implements $NrdbDeckCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {@JsonKey(fromJson: _idFromJson)
-          String id,
+      {@JsonKey(fromJson: idFromJson) String id,
       String name,
       String description,
-      @JsonKey(name: 'mwl_code')
-          String? mwlCode,
-      @JsonKey(name: 'date_creation')
-          DateTime created,
-      @JsonKey(name: 'date_update')
-          DateTime updated,
+      String? mwlCode,
+      DateTime dateCreation,
+      DateTime dateUpdate,
       Map<String, int> cards,
-      @JsonKey(fromJson: _tagsFromJson, toJson: _tagsToJson)
-          List<String> tags});
+      @JsonKey(fromJson: tagsFromJson, toJson: tagsToJson) List<String> tags});
 }
 
 /// @nodoc
@@ -903,8 +840,8 @@ class __$$_NrdbDeckCopyWithImpl<$Res>
     Object? name = null,
     Object? description = null,
     Object? mwlCode = freezed,
-    Object? created = null,
-    Object? updated = null,
+    Object? dateCreation = null,
+    Object? dateUpdate = null,
     Object? cards = null,
     Object? tags = null,
   }) {
@@ -925,13 +862,13 @@ class __$$_NrdbDeckCopyWithImpl<$Res>
           ? _value.mwlCode
           : mwlCode // ignore: cast_nullable_to_non_nullable
               as String?,
-      created: null == created
-          ? _value.created
-          : created // ignore: cast_nullable_to_non_nullable
+      dateCreation: null == dateCreation
+          ? _value.dateCreation
+          : dateCreation // ignore: cast_nullable_to_non_nullable
               as DateTime,
-      updated: null == updated
-          ? _value.updated
-          : updated // ignore: cast_nullable_to_non_nullable
+      dateUpdate: null == dateUpdate
+          ? _value.dateUpdate
+          : dateUpdate // ignore: cast_nullable_to_non_nullable
               as DateTime,
       cards: null == cards
           ? _value._cards
@@ -949,18 +886,15 @@ class __$$_NrdbDeckCopyWithImpl<$Res>
 @JsonSerializable()
 class _$_NrdbDeck implements _NrdbDeck {
   const _$_NrdbDeck(
-      {@JsonKey(fromJson: _idFromJson)
+      {@JsonKey(fromJson: idFromJson)
           required this.id,
       required this.name,
       required this.description,
-      @JsonKey(name: 'mwl_code')
-          required this.mwlCode,
-      @JsonKey(name: 'date_creation')
-          required this.created,
-      @JsonKey(name: 'date_update')
-          required this.updated,
+      required this.mwlCode,
+      required this.dateCreation,
+      required this.dateUpdate,
       required final Map<String, int> cards,
-      @JsonKey(fromJson: _tagsFromJson, toJson: _tagsToJson)
+      @JsonKey(fromJson: tagsFromJson, toJson: tagsToJson)
           required final List<String> tags})
       : _cards = cards,
         _tags = tags;
@@ -969,21 +903,18 @@ class _$_NrdbDeck implements _NrdbDeck {
       _$$_NrdbDeckFromJson(json);
 
   @override
-  @JsonKey(fromJson: _idFromJson)
+  @JsonKey(fromJson: idFromJson)
   final String id;
   @override
   final String name;
   @override
   final String description;
   @override
-  @JsonKey(name: 'mwl_code')
   final String? mwlCode;
   @override
-  @JsonKey(name: 'date_creation')
-  final DateTime created;
+  final DateTime dateCreation;
   @override
-  @JsonKey(name: 'date_update')
-  final DateTime updated;
+  final DateTime dateUpdate;
   final Map<String, int> _cards;
   @override
   Map<String, int> get cards {
@@ -994,7 +925,7 @@ class _$_NrdbDeck implements _NrdbDeck {
 
   final List<String> _tags;
   @override
-  @JsonKey(fromJson: _tagsFromJson, toJson: _tagsToJson)
+  @JsonKey(fromJson: tagsFromJson, toJson: tagsToJson)
   List<String> get tags {
     if (_tags is EqualUnmodifiableListView) return _tags;
     // ignore: implicit_dynamic_type
@@ -1003,7 +934,7 @@ class _$_NrdbDeck implements _NrdbDeck {
 
   @override
   String toString() {
-    return 'NrdbDeck(id: $id, name: $name, description: $description, mwlCode: $mwlCode, created: $created, updated: $updated, cards: $cards, tags: $tags)';
+    return 'NrdbDeck(id: $id, name: $name, description: $description, mwlCode: $mwlCode, dateCreation: $dateCreation, dateUpdate: $dateUpdate, cards: $cards, tags: $tags)';
   }
 
   @override
@@ -1016,8 +947,10 @@ class _$_NrdbDeck implements _NrdbDeck {
             (identical(other.description, description) ||
                 other.description == description) &&
             (identical(other.mwlCode, mwlCode) || other.mwlCode == mwlCode) &&
-            (identical(other.created, created) || other.created == created) &&
-            (identical(other.updated, updated) || other.updated == updated) &&
+            (identical(other.dateCreation, dateCreation) ||
+                other.dateCreation == dateCreation) &&
+            (identical(other.dateUpdate, dateUpdate) ||
+                other.dateUpdate == dateUpdate) &&
             const DeepCollectionEquality().equals(other._cards, _cards) &&
             const DeepCollectionEquality().equals(other._tags, _tags));
   }
@@ -1030,8 +963,8 @@ class _$_NrdbDeck implements _NrdbDeck {
       name,
       description,
       mwlCode,
-      created,
-      updated,
+      dateCreation,
+      dateUpdate,
       const DeepCollectionEquality().hash(_cards),
       const DeepCollectionEquality().hash(_tags));
 
@@ -1051,42 +984,36 @@ class _$_NrdbDeck implements _NrdbDeck {
 
 abstract class _NrdbDeck implements NrdbDeck {
   const factory _NrdbDeck(
-      {@JsonKey(fromJson: _idFromJson)
+      {@JsonKey(fromJson: idFromJson)
           required final String id,
       required final String name,
       required final String description,
-      @JsonKey(name: 'mwl_code')
-          required final String? mwlCode,
-      @JsonKey(name: 'date_creation')
-          required final DateTime created,
-      @JsonKey(name: 'date_update')
-          required final DateTime updated,
+      required final String? mwlCode,
+      required final DateTime dateCreation,
+      required final DateTime dateUpdate,
       required final Map<String, int> cards,
-      @JsonKey(fromJson: _tagsFromJson, toJson: _tagsToJson)
+      @JsonKey(fromJson: tagsFromJson, toJson: tagsToJson)
           required final List<String> tags}) = _$_NrdbDeck;
 
   factory _NrdbDeck.fromJson(Map<String, dynamic> json) = _$_NrdbDeck.fromJson;
 
   @override
-  @JsonKey(fromJson: _idFromJson)
+  @JsonKey(fromJson: idFromJson)
   String get id;
   @override
   String get name;
   @override
   String get description;
   @override
-  @JsonKey(name: 'mwl_code')
   String? get mwlCode;
   @override
-  @JsonKey(name: 'date_creation')
-  DateTime get created;
+  DateTime get dateCreation;
   @override
-  @JsonKey(name: 'date_update')
-  DateTime get updated;
+  DateTime get dateUpdate;
   @override
   Map<String, int> get cards;
   @override
-  @JsonKey(fromJson: _tagsFromJson, toJson: _tagsToJson)
+  @JsonKey(fromJson: tagsFromJson, toJson: tagsToJson)
   List<String> get tags;
   @override
   @JsonKey(ignore: true)

@@ -914,11 +914,12 @@ class CardMwlQueryBuilder extends MwlQueryBuilder {
   drift.Expression<bool> call(String? op, TextQuery query) {
     final inQuery = db.selectOnly(card).join([
       drift.crossJoin(db.mwl),
-      drift.leftOuterJoin(
-          db.mwlCardTitle, db.mwlCardTitle.mwlCode.equalsExp(db.mwl.code) & db.mwlCardTitle.cardTitle.equalsExp(card.title)),
+      drift.leftOuterJoin(db.mwlCardTitle,
+          db.mwlCardTitle.mwlCode.equalsExp(db.mwl.code) & db.mwlCardTitle.cardTitle.equalsExp(card.title)),
     ]).also((q) {
       q.addColumns([card.code]);
-      q.where(super.call(op, query) & (db.mwlCardTitle.deckLimit.isNull() | db.mwlCardTitle.deckLimit.isBiggerThanValue(0)));
+      q.where(super.call(op, query) &
+          (db.mwlCardTitle.deckLimit.isNull() | db.mwlCardTitle.deckLimit.isBiggerThanValue(0)));
     });
 
     return card.code.isInQuery(inQuery);

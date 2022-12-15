@@ -100,7 +100,8 @@ final collectionProvider = StreamProvider.family<List<CollectionResult>, bool>((
   yield* db.listCollection(inCollection: inCollection).watch();
 });
 
-final collectionByCycleProvider = StreamProvider.family<Map<CycleData, List<CollectionResult>>, bool>((ref, inCollection) async* {
+final collectionByCycleProvider =
+    StreamProvider.family<Map<CycleData, List<CollectionResult>>, bool>((ref, inCollection) async* {
   final collection = await ref.watch(collectionProvider(inCollection).future);
   yield collection.groupListsBy((item) => item.cycle);
 });

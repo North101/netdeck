@@ -20,13 +20,13 @@ part 'private.g.dart';
 @Freezed(fromJson: true)
 class NrdbDeckResult with _$NrdbDeckResult {
   const factory NrdbDeckResult.success(
-    @JsonKey(name: 'version_number') String versionNumber,
+    String versionNumber,
     bool success,
     NrdbDeck data,
     int total,
   ) = NrdbDeckSuccessResult;
   const factory NrdbDeckResult.failure(
-    @JsonKey(name: 'version_number') String versionNumber,
+    String versionNumber,
     bool success,
     String msg,
   ) = NrdbDeckFailureResult;
@@ -52,30 +52,30 @@ class NrdbUser with _$NrdbUser {
     String username,
     String email,
     int reputation,
-    String sharing,
+    bool sharing,
   ) = _NrdbUser;
 
   factory NrdbUser.fromJson(Map<String, dynamic> json) => _$NrdbUserFromJson(json);
 }
 
+idFromJson(dynamic id) => id.toString();
+tagsFromJson(String? tags) => tags?.split(' ').where((e) => e.isNotEmpty).toList() ?? [];
+tagsToJson(List<String> tags) => tags.isNotEmpty ? tags.join(' ') : null;
+
 @freezed
 class NrdbDeck with _$NrdbDeck {
   const factory NrdbDeck({
-    @JsonKey(fromJson: _idFromJson) required String id,
+    @JsonKey(fromJson: idFromJson) required String id,
     required String name,
     required String description,
-    @JsonKey(name: 'mwl_code') required String? mwlCode,
-    @JsonKey(name: 'date_creation') required DateTime created,
-    @JsonKey(name: 'date_update') required DateTime updated,
+    required String? mwlCode,
+    required DateTime dateCreation,
+    required DateTime dateUpdate,
     required Map<String, int> cards,
-    @JsonKey(fromJson: _tagsFromJson, toJson: _tagsToJson) required List<String> tags,
+    @JsonKey(fromJson: tagsFromJson, toJson: tagsToJson) required List<String> tags,
   }) = _NrdbDeck;
 
   factory NrdbDeck.fromJson(Map<String, dynamic> json) => _$NrdbDeckFromJson(json);
-
-  static _idFromJson(int id) => id.toString();
-  static _tagsFromJson(String? tags) => tags?.split(' ').where((e) => e.isNotEmpty).toList() ?? [];
-  static _tagsToJson(List<String> tags) => tags.isNotEmpty ? tags.join(' ') : null;
 }
 
 class AuthStateNotifier extends StateNotifier<AuthState> {
@@ -126,23 +126,25 @@ class AuthState with _$AuthState {
 
   static Future<AuthState> _login(final StateNotifierProviderRef<AuthStateNotifier, AuthState> ref) async {
     try {
-      final token = await AuthState.appAuth.authorizeAndExchangeCode(
-        AuthorizationTokenRequest(
-          EnvData.nrdbClientId,
-          EnvData.nrdbRedirectUrl,
-          clientSecret: EnvData.nrdbClientSecret,
-          serviceConfiguration: const AuthorizationServiceConfiguration(
-            authorizationEndpoint: EnvData.nrdbAuthUrl,
-            tokenEndpoint: EnvData.nrdbTokenUrl,
-          ),
-        ),
-      );
+      final token = await AuthState.appAuth
+          .authorizeAndExchangeCode(
+            AuthorizationTokenRequest(
+              EnvData.nrdbClientId,
+              EnvData.nrdbRedirectUrl,
+              clientSecret: EnvData.nrdbClientSecret,
+              serviceConfiguration: const AuthorizationServiceConfiguration(
+                authorizationEndpoint: EnvData.nrdbAuthUrl,
+                tokenEndpoint: EnvData.nrdbTokenUrl,
+              ),
+            ),
+          )
+          .catchError((e) => null);
       if (token == null) {
         return AuthState.unauthenticated(ref);
       } else if (token.refreshToken != null) {
         await saveRefreshToken(token.refreshToken!);
       }
-      final user = await AuthState.getUser(token);
+      final user = await AuthState.getUser(token).catchError((e) => null);
       if (user == null) {
         return AuthState.unauthenticated(ref);
       }
@@ -358,7 +360,7 @@ extension OnlineAuthStateEx on OnlineAuthState {
       if (localDeck == null) {
         updateLocalDecks[remoteDeck] = null;
       } else {
-        final syncIssues = localDeck.syncIssues(remoteDeck.updated);
+        final syncIssues = localDeck.syncIssues(remoteDeck.dateUpdate);
         if (syncIssues == SyncIssues.both) {
           updateRemoteDecksStatus.add(remoteDeck);
         } else if (syncIssues == SyncIssues.local) {
@@ -381,7 +383,7 @@ extension OnlineAuthStateEx on OnlineAuthState {
         batch.update<Deck, DeckData>(
           db.deck,
           DeckCompanion(
-            remoteUpdated: drift.Value(remoteDeck.updated),
+            remoteUpdated: drift.Value(remoteDeck.dateUpdate),
           ),
           where: (tbl) => tbl.id.equals(remoteDeck.id),
         );
@@ -461,10 +463,10 @@ extension OnlineAuthStateEx on OnlineAuthState {
         identityCode: identityCode,
         name: deck.name,
         description: deck.description,
-        created: deck.created,
-        updated: deck.updated,
-        synced: drift.Value(deck.updated),
-        remoteUpdated: drift.Value(deck.updated),
+        created: deck.dateCreation,
+        updated: deck.dateUpdate,
+        synced: drift.Value(deck.dateUpdate),
+        remoteUpdated: drift.Value(deck.dateUpdate),
         formatCode: formatCode,
         rotationCode: rotationCode,
         mwlCode: mwlCode,

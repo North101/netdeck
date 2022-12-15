@@ -28,7 +28,7 @@ _$_NrdbUser _$$_NrdbUserFromJson(Map json) => _$_NrdbUser(
       json['username'] as String,
       json['email'] as String,
       json['reputation'] as int,
-      json['sharing'] as String,
+      json['sharing'] as bool,
     );
 
 Map<String, dynamic> _$$_NrdbUserToJson(_$_NrdbUser instance) =>
@@ -41,14 +41,14 @@ Map<String, dynamic> _$$_NrdbUserToJson(_$_NrdbUser instance) =>
     };
 
 _$_NrdbDeck _$$_NrdbDeckFromJson(Map json) => _$_NrdbDeck(
-      id: json['id'] as String,
+      id: idFromJson(json['id']),
       name: json['name'] as String,
       description: json['description'] as String,
       mwlCode: json['mwl_code'] as String?,
-      created: DateTime.parse(json['date_creation'] as String),
-      updated: DateTime.parse(json['date_update'] as String),
+      dateCreation: DateTime.parse(json['date_creation'] as String),
+      dateUpdate: DateTime.parse(json['date_update'] as String),
       cards: Map<String, int>.from(json['cards'] as Map),
-      tags: (json['tags'] as List<dynamic>).map((e) => e as String).toList(),
+      tags: tagsFromJson(json['tags'] as String?),
     );
 
 Map<String, dynamic> _$$_NrdbDeckToJson(_$_NrdbDeck instance) =>
@@ -57,8 +57,8 @@ Map<String, dynamic> _$$_NrdbDeckToJson(_$_NrdbDeck instance) =>
       'name': instance.name,
       'description': instance.description,
       'mwl_code': instance.mwlCode,
-      'date_creation': instance.created.toIso8601String(),
-      'date_update': instance.updated.toIso8601String(),
+      'date_creation': instance.dateCreation.toIso8601String(),
+      'date_update': instance.dateUpdate.toIso8601String(),
       'cards': instance.cards,
-      'tags': instance.tags,
+      'tags': tagsToJson(instance.tags),
     };
