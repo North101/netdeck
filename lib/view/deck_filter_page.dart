@@ -29,8 +29,8 @@ class DeckFilterArguments {
   factory DeckFilterArguments.fromJson(Map<String, dynamic> data) {
     return DeckFilterArguments(
       format: (data['format'] as Map?)?.let((e) => FormatData.fromJson(e.cast())),
-      rotation: (data['rotation'] as Map?)?.let((e) => RotationData.fromJson(e.cast())),
-      mwl: (data['mwl'] as Map?)?.let((e) => MwlData.fromJson(e.cast())),
+      rotation: (data['rotation'] as Map?)?.let((e) => RotationViewData.fromJson(e.cast())),
+      mwl: (data['mwl'] as Map?)?.let((e) => MwlViewData.fromJson(e.cast())),
       packs: FilterType<String>.fromJson((data['packs'] as Map).cast()),
       sides: FilterType<String>.fromJson((data['sides'] as Map).cast()),
       factions: FilterType<String>.fromJson((data['factions'] as Map).cast()),
@@ -53,8 +53,8 @@ class DeckFilterArguments {
   }
 
   final FormatData? format;
-  final RotationData? rotation;
-  final MwlData? mwl;
+  final RotationViewData? rotation;
+  final MwlViewData? mwl;
   final FilterType<String> packs;
   final FilterType<String> sides;
   final FilterType<String> factions;
@@ -162,7 +162,7 @@ class DeckFilterFormat extends ConsumerWidget {
 class DeckFilterRotation extends ConsumerWidget {
   const DeckFilterRotation({super.key});
 
-  void setRotation(WidgetRef ref, RotationData? value) {
+  void setRotation(WidgetRef ref, RotationViewData? value) {
     final rotation = ref.read(filterRotationProvider);
     rotation.value = value;
   }
@@ -185,7 +185,7 @@ class DeckFilterRotation extends ConsumerWidget {
 class DeckFilterMwl extends ConsumerWidget {
   const DeckFilterMwl({super.key});
 
-  void setMwl(WidgetRef ref, MwlData? value) {
+  void setMwl(WidgetRef ref, MwlViewData? value) {
     final mwl = ref.read(filterMwlProvider);
     mwl.value = value;
   }
@@ -199,7 +199,7 @@ class DeckFilterMwl extends ConsumerWidget {
       child: MwlDropdown.withOverrides(
         format: format,
         mwl: mwl,
-        onChanged: (MwlData? value) => setMwl(ref, value),
+        onChanged: (MwlViewData? value) => setMwl(ref, value),
       ),
     );
   }

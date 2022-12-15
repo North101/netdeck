@@ -31,10 +31,10 @@ FROM settings
 LEFT JOIN format AS filter_format
   ON filter_format.code = settings.filter_format_code
 
-LEFT JOIN rotation AS filter_rotation
+LEFT JOIN rotation_view AS filter_rotation
   ON filter_rotation.code = settings.filter_rotation_code
 
-LEFT JOIN mwl AS filter_mwl
+LEFT JOIN mwl_view AS filter_mwl
   ON filter_mwl.code = settings.filter_mwl_code
 
 LIMIT 1;

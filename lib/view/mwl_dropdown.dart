@@ -9,8 +9,8 @@ class MwlDropdown extends ConsumerWidget {
 
   static Widget withOverrides({
     required FormatData? format,
-    required MwlData? mwl,
-    required void Function(MwlData? value)? onChanged,
+    required MwlViewData? mwl,
+    required void Function(MwlViewData? value)? onChanged,
   }) {
     return ProviderScope(
       overrides: [
@@ -21,7 +21,7 @@ class MwlDropdown extends ConsumerWidget {
     );
   }
 
-  final void Function(MwlData? value)? onChanged;
+  final void Function(MwlViewData? value)? onChanged;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,13 +33,13 @@ class MwlDropdown extends ConsumerWidget {
         ...items,
       ];
     });
-    return DropdownButtonFormField<MwlData>(
+    return DropdownButtonFormField<MwlViewData>(
       isExpanded: true,
       value: mwl,
       decoration: const InputDecoration(
         labelText: 'Most Wanted',
       ),
-      onChanged: mwlList.whenOrNull<void Function(MwlData?)?>(
+      onChanged: mwlList.whenOrNull<void Function(MwlViewData?)?>(
         data: (items) => onChanged,
       ),
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),

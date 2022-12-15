@@ -39,7 +39,7 @@ extension on Query {
   bool within(int position) => position >= this.position.start && position <= this.position.end;
 }
 
-abstract class QueryBuilder<T extends drift.TableInfo> {
+abstract class QueryBuilder<T extends drift.ResultSetImplementation<drift.HasResultSet, dynamic>> {
   const QueryBuilder({
     required this.table,
     this.fields = const {},
@@ -233,7 +233,8 @@ abstract class QueryBuilder<T extends drift.TableInfo> {
       ];
 }
 
-abstract class ColumnQueryBuilder<T extends drift.TableInfo, C extends drift.GeneratedColumn> extends QueryBuilder<T> {
+abstract class ColumnQueryBuilder<T extends drift.ResultSetImplementation<drift.HasResultSet, dynamic>,
+    C extends drift.GeneratedColumn> extends QueryBuilder<T> {
   const ColumnQueryBuilder({
     required super.table,
     required this.column,
@@ -248,7 +249,8 @@ abstract class ColumnQueryBuilder<T extends drift.TableInfo, C extends drift.Gen
   drift.Expression get optionColumn => column;
 }
 
-class StringQueryBuilder<T extends drift.TableInfo> extends ColumnQueryBuilder<T, drift.GeneratedColumn<String>> {
+class StringQueryBuilder<T extends drift.ResultSetImplementation<drift.HasResultSet, dynamic>>
+    extends ColumnQueryBuilder<T, drift.GeneratedColumn<String>> {
   const StringQueryBuilder({
     required super.table,
     required super.column,
@@ -264,7 +266,8 @@ class StringQueryBuilder<T extends drift.TableInfo> extends ColumnQueryBuilder<T
   }
 }
 
-class ContainsStringQueryBuilder<T extends drift.TableInfo> extends StringQueryBuilder<T> {
+class ContainsStringQueryBuilder<T extends drift.ResultSetImplementation<drift.HasResultSet, dynamic>>
+    extends StringQueryBuilder<T> {
   const ContainsStringQueryBuilder({
     required super.table,
     required super.column,
@@ -280,7 +283,8 @@ class ContainsStringQueryBuilder<T extends drift.TableInfo> extends StringQueryB
   }
 }
 
-class CodeNameQueryBuilder<T extends drift.TableInfo> extends QueryBuilder<T> {
+class CodeNameQueryBuilder<T extends drift.ResultSetImplementation<drift.HasResultSet, dynamic>>
+    extends QueryBuilder<T> {
   const CodeNameQueryBuilder(
     this.code,
     this.name, {
@@ -303,7 +307,8 @@ class CodeNameQueryBuilder<T extends drift.TableInfo> extends QueryBuilder<T> {
   drift.Expression get optionColumn => name;
 }
 
-class IntQueryBuilder<T extends drift.TableInfo> extends ColumnQueryBuilder<T, drift.GeneratedColumn<int>> {
+class IntQueryBuilder<T extends drift.ResultSetImplementation<drift.HasResultSet, dynamic>>
+    extends ColumnQueryBuilder<T, drift.GeneratedColumn<int>> {
   const IntQueryBuilder({
     required super.table,
     required super.column,
@@ -340,7 +345,8 @@ class IntQueryBuilder<T extends drift.TableInfo> extends ColumnQueryBuilder<T, d
   drift.Variable<int> parse(TextQuery query) => drift.Variable(int.tryParse(query.text));
 }
 
-class BoolQueryBuilder<T extends drift.TableInfo> extends ColumnQueryBuilder<T, drift.GeneratedColumn<bool>> {
+class BoolQueryBuilder<T extends drift.ResultSetImplementation<drift.HasResultSet, dynamic>>
+    extends ColumnQueryBuilder<T, drift.GeneratedColumn<bool>> {
   const BoolQueryBuilder({
     required super.table,
     required super.column,
@@ -368,7 +374,8 @@ class BoolQueryBuilder<T extends drift.TableInfo> extends ColumnQueryBuilder<T, 
   }
 }
 
-class DateTimeQueryBuilder<T extends drift.TableInfo> extends ColumnQueryBuilder<T, drift.GeneratedColumn<DateTime>> {
+class DateTimeQueryBuilder<T extends drift.ResultSetImplementation<drift.HasResultSet, dynamic>>
+    extends ColumnQueryBuilder<T, drift.GeneratedColumn<DateTime>> {
   const DateTimeQueryBuilder({
     required super.table,
     required super.column,
@@ -619,7 +626,7 @@ class CardQueryBuilder extends CodeNameQueryBuilder<Card> {
     Side side,
     Type type,
     Type subtype,
-    MwlCardTitle mwlCard,
+    MwlCard mwlCard,
   ) {
     final FieldMap extraFields = {};
     extraFields.addAll({
@@ -629,9 +636,9 @@ class CardQueryBuilder extends CodeNameQueryBuilder<Card> {
       'side': SideQueryBuilder(db, table: side, extraFields: extraFields, help: 'side code or name'),
       'faction': FactionQueryBuilder(db, table: faction, extraFields: extraFields, help: 'faction code or name'),
       'type': TypeQueryBuilder(db, table: type, extraFields: extraFields, help: 'type code or name'),
-      'rotation': CardRotationQueryBuilder(db, table: db.rotation, extraFields: extraFields, help: 'card rotation'),
+      'rotation': CardRotationQueryBuilder(db, table: db.rotationView, extraFields: extraFields, help: 'card rotation'),
       'mwl': CardMwlQueryBuilder(db,
-          card: card, format: db.format, table: db.mwl, extraFields: extraFields, help: 'card mwl'),
+          card: card, format: db.format, table: db.mwlView, extraFields: extraFields, help: 'card mwl'),
     });
     return CardQueryBuilder._(db, table: card, extraFields: extraFields, help: 'card title');
   }
@@ -671,8 +678,8 @@ class DeckQueryBuilder extends ContainsStringQueryBuilder<Deck> {
     Type type,
     Type subtype,
     Format format,
-    Rotation rotation,
-    Mwl mwl,
+    RotationView rotation,
+    MwlView mwl,
   ) {
     final FieldMap extraFields = {};
     extraFields.addAll({
@@ -796,7 +803,7 @@ class FormatQueryBuilder extends CodeNameQueryBuilder<Format> {
         );
 }
 
-class RotationQueryBuilder extends CodeNameQueryBuilder<Rotation> {
+class RotationQueryBuilder extends CodeNameQueryBuilder<RotationView> {
   RotationQueryBuilder(
     this.db, {
     required super.table,
@@ -829,8 +836,8 @@ class RotationQueryBuilder extends CodeNameQueryBuilder<Rotation> {
   @override
   List<drift.OrderingTerm> get optionOrderBy => [
         drift.OrderingTerm(expression: db.format.id, mode: drift.OrderingMode.asc),
-        drift.OrderingTerm(expression: table.type.equalsValue(RotationType.current), mode: drift.OrderingMode.desc),
-        drift.OrderingTerm(expression: table.type.equalsValue(RotationType.latest), mode: drift.OrderingMode.desc),
+        drift.OrderingTerm(expression: table.type.equals(RotationType.current.name), mode: drift.OrderingMode.desc),
+        drift.OrderingTerm(expression: table.type.equals(RotationType.latest.name), mode: drift.OrderingMode.desc),
         drift.OrderingTerm(expression: table.dateStart, mode: drift.OrderingMode.desc),
       ];
 }
@@ -846,7 +853,7 @@ class CardRotationQueryBuilder extends RotationQueryBuilder {
   @override
   drift.Expression<bool> call(String? op, TextQuery query) {
     final inQuery = db.selectOnly(table).join([
-      drift.innerJoin(db.rotationCycle, db.rotationCycle.rotationCode.equalsExp(table.code)),
+      drift.innerJoin(db.rotationCycle, db.rotationCycle.rotationCode.equalsExp(table.rotationCode)),
       drift.innerJoin(db.pack, db.pack.cycleCode.equalsExp(db.rotationCycle.cycleCode)),
     ]).also((q) {
       q.addColumns([db.pack.code]);
@@ -857,7 +864,7 @@ class CardRotationQueryBuilder extends RotationQueryBuilder {
   }
 }
 
-class MwlQueryBuilder extends CodeNameQueryBuilder<Mwl> {
+class MwlQueryBuilder extends CodeNameQueryBuilder<MwlView> {
   MwlQueryBuilder(
     this.db, {
     required this.format,
@@ -892,8 +899,7 @@ class MwlQueryBuilder extends CodeNameQueryBuilder<Mwl> {
   @override
   List<drift.OrderingTerm> get optionOrderBy => [
         drift.OrderingTerm(expression: format.id, mode: drift.OrderingMode.asc),
-        drift.OrderingTerm(expression: table.type.equalsValue(MwlType.active), mode: drift.OrderingMode.desc),
-        drift.OrderingTerm(expression: table.type.equalsValue(MwlType.latest), mode: drift.OrderingMode.asc),
+        drift.OrderingTerm(expression: table.type, mode: drift.OrderingMode.desc, nulls: drift.NullsOrder.last),
         drift.OrderingTerm(expression: table.dateStart, mode: drift.OrderingMode.desc),
       ];
 }
@@ -913,13 +919,13 @@ class CardMwlQueryBuilder extends MwlQueryBuilder {
   @override
   drift.Expression<bool> call(String? op, TextQuery query) {
     final inQuery = db.selectOnly(card).join([
-      drift.crossJoin(db.mwl),
-      drift.leftOuterJoin(db.mwlCardTitle,
-          db.mwlCardTitle.mwlCode.equalsExp(db.mwl.code) & db.mwlCardTitle.cardTitle.equalsExp(card.title)),
+      drift.crossJoin(db.mwlView),
+      drift.leftOuterJoin(db.mwlCard,
+          db.mwlCard.mwlCode.equalsExp(db.mwlView.mwlCode) & db.mwlCard.cardTitle.equalsExp(card.title)),
     ]).also((q) {
       q.addColumns([card.code]);
       q.where(super.call(op, query) &
-          (db.mwlCardTitle.deckLimit.isNull() | db.mwlCardTitle.deckLimit.isBiggerThanValue(0)));
+          (db.mwlCard.deckLimit.isNull() | db.mwlCard.deckLimit.isBiggerThanValue(0)));
     });
 
     return card.code.isInQuery(inQuery);

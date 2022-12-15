@@ -54,8 +54,8 @@ class DeckSearchAppBarState extends ConsumerState<DeckSearchAppBar> {
       type: db.type,
       subtype: db.type.createAlias('subtype'),
       format: db.format,
-      rotation: db.rotation,
-      mwl: db.mwl,
+      rotation: db.rotationView,
+      mwl: db.mwlView,
     )));
     return WillPopScope(
       onWillPop: () async {

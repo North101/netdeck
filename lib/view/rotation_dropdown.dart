@@ -10,8 +10,8 @@ class RotationDropdown extends ConsumerWidget {
 
   static Widget withOverrides({
     required FormatData? format,
-    required RotationData? rotation,
-    required void Function(RotationData? value)? onChanged,
+    required RotationViewData? rotation,
+    required void Function(RotationViewData? value)? onChanged,
   }) {
     return ProviderScope(
       overrides: [
@@ -22,22 +22,22 @@ class RotationDropdown extends ConsumerWidget {
     );
   }
 
-  final void Function(RotationData? value)? onChanged;
+  final void Function(RotationViewData? value)? onChanged;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final format = ref.watch(formatProvider);
     final rotation = ref.watch(rotationProvider);
     final rotationList = ref.watch(rotationListProvider(format));
-    return DropdownButtonFormField<RotationData>(
+    return DropdownButtonFormField<RotationViewData>(
       isExpanded: true,
-      value: rotationList.whenOrNull<RotationData?>(
+      value: rotationList.whenOrNull<RotationViewData?>(
         data: (items) => items.firstWhereOrNull((e) => e == rotation),
       ),
       decoration: const InputDecoration(
         labelText: 'Rotation',
       ),
-      onChanged: rotationList.whenOrNull<void Function(RotationData?)?>(
+      onChanged: rotationList.whenOrNull<void Function(RotationViewData?)?>(
         data: (items) => onChanged,
       ),
       onTap: () => FocusManager.instance.primaryFocus?.unfocus(),

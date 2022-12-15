@@ -36,18 +36,18 @@ class RestorableFormatData extends RestorableData<FormatData?> {
   fromPrimitives(Object? data) => data != null ? FormatData.fromJson((data as Map).cast()) : null;
 }
 
-class RestorableRotationData extends RestorableData<RotationData?> {
+class RestorableRotationData extends RestorableData<RotationViewData?> {
   RestorableRotationData(super.defaultValue);
 
   @override
-  fromPrimitives(Object? data) => data != null ? RotationData.fromJson((data as Map).cast()) : null;
+  fromPrimitives(Object? data) => data != null ? RotationViewData.fromJson((data as Map).cast()) : null;
 }
 
-class RestorableMwlData extends RestorableData<MwlData?> {
+class RestorableMwlData extends RestorableData<MwlViewData?> {
   RestorableMwlData(super.defaultValue);
 
   @override
-  fromPrimitives(Object? data) => data != null ? MwlData.fromJson((data as Map).cast()) : null;
+  fromPrimitives(Object? data) => data != null ? MwlViewData.fromJson((data as Map).cast()) : null;
 }
 
 class RestorableFilterType extends RestorableValue<FilterType<String>> {

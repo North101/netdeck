@@ -5,24 +5,13 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart' hide Card;
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
+import 'package:kotlin_flavor/scope_functions.dart';
 
 import '/db/database.dart';
 import '/util/assets.gen.dart';
 import 'public_data.dart';
 
 const headerIfNotModifiedSince = 'if-modified-since';
-
-String currentFormatCode(String formatCode) => '$formatCode@current';
-
-String currentFormatName(String name, String? subName) => '$name Current (${subName ?? 'None'})';
-
-String latestFormatCode(String formatCode) => '$formatCode@latest';
-
-String latestFormatName(String name, String? subName) => '$name Latest (${subName ?? 'None'})';
-
-String activeFormatCode(String formatCode) => '$formatCode@active';
-
-String activeFormatName(String name, String? subName) => '$name Active (${subName ?? 'None'})';
 
 class NrdbPublicApi {
   NrdbPublicApi(this._db);
@@ -285,71 +274,28 @@ class NrdbPublicApi {
     return result;
   }
 
-  RotationApiData currentRotationData(FormatData format, List<RotationApiData> rotations) {
-    final rotation = rotations.where((e) => e.formatCode == format.code && e.current).singleOrNull;
-    return RotationApiData(
-      code: currentFormatCode(format.code),
-      name: currentFormatName(format.name, rotation?.name),
-      formatCode: format.code,
-      dateStart: rotation?.dateStart,
-      current: true,
-      latest: false,
-      rotated: rotation?.rotated ?? const [],
-    );
-  }
-
-  RotationApiData latestRotationData(FormatData format, List<RotationApiData> rotations) {
-    final rotation = rotations.where((e) => e.formatCode == format.code && e.latest).singleOrNull;
-    return RotationApiData(
-      code: latestFormatCode(format.code),
-      name: latestFormatName(format.name, rotation?.name),
-      formatCode: format.code,
-      dateStart: rotation?.dateStart,
-      current: false,
-      latest: true,
-      rotated: rotation?.rotated ?? const [],
-    );
-  }
-
   Future<void> updateRotations(RotationApi result) async {
-    final formats = await _db.listFormats().map((e) => e.format).get();
-    final rotations = {
-      for (final format in formats) currentFormatCode(format.code): currentRotationData(format, result.data),
-      for (final format in formats) latestFormatCode(format.code): latestRotationData(format, result.data),
-      for (final e in result.data)
-        e.code: e.copyWith(
-          current: false,
-          latest: false,
-        ),
-    };
     await _db.batch((b) async {
       b.deleteAll<Rotation, RotationData>(_db.rotation);
       b.insertAll<Rotation, RotationData>(
         _db.rotation,
-        rotations.values.map((e) => RotationData(
+        result.data.map((e) => RotationData(
               code: e.code,
               formatCode: e.formatCode,
               name: e.name,
               dateStart: e.dateStart,
-              type: e.latest
-                  ? RotationType.latest
-                  : e.current
-                      ? RotationType.current
-                      : null,
             )),
       );
 
       b.deleteAll<RotationCycle, RotationCycleData>(_db.rotationCycle);
       b.insertAll(
         _db.rotationCycle,
-        [
-          for (final rotation in rotations.entries)
-            for (final cycleCode in rotation.value.rotated)
-              RotationCycleData(
-                rotationCode: rotation.key,
-                cycleCode: cycleCode,
-              ),
-        ],
+        result.data
+            .map((rotation) => rotation.rotated.map((cycleCode) => RotationCycleData(
+                  rotationCode: rotation.code,
+                  cycleCode: cycleCode,
+                )))
+            .flattened,
       );
     });
   }
@@ -360,92 +306,43 @@ class NrdbPublicApi {
     return result;
   }
 
-  Future<ApiResult> fetchMwl(DateTime lastUpdated, [bool force = false]) async {
-    final result = await fetchData(fetchMwlEndpoint, lastUpdated, force);
+  Future<ApiResult> fetchMwl(DateTime lastUpdated) async {
+    final result = await fetchData(fetchMwlEndpoint, lastUpdated);
     if (result is! ModifiedApiResult) return result;
 
     await updateMwl(MwlApi.fromJson(result.data));
     return result;
   }
 
-  MwlApiData activeMwlData(FormatData format, List<MwlApiData> mwlList) {
-    final mwl = mwlList.where((e) => e.formatCode == format.code && e.active).singleOrNull;
-    return MwlApiData(
-      code: activeFormatCode(format.code),
-      name: activeFormatName(format.name, mwl?.name),
-      formatCode: format.code,
-      dateStart: mwl?.dateStart,
-      active: true,
-      latest: false,
-      cards: mwl?.cards ?? const {},
-      cardTitles: mwl?.cardTitles ?? const {},
-      runnerPoints: mwl?.runnerPoints,
-      corpPoints: mwl?.corpPoints,
-    );
-  }
-
-  MwlApiData latestMwlData(FormatData format, List<MwlApiData> mwlList) {
-    final mwl = mwlList.where((e) => e.formatCode == format.code && e.latest).singleOrNull;
-    return MwlApiData(
-      code: latestFormatCode(format.code),
-      name: latestFormatName(format.name, mwl?.name),
-      formatCode: format.code,
-      dateStart: mwl?.dateStart,
-      active: false,
-      latest: true,
-      cards: mwl?.cards ?? const {},
-      cardTitles: mwl?.cardTitles ?? const {},
-      runnerPoints: mwl?.runnerPoints,
-      corpPoints: mwl?.corpPoints,
-    );
-  }
-
   Future<void> updateMwl(MwlApi result) async {
-    final formats = await _db.listFormats().map((e) => e.format).get();
-    final mwl = {
-      for (final format in formats) activeFormatCode(format.code): activeMwlData(format, result.data),
-      for (final format in formats) latestFormatCode(format.code): latestMwlData(format, result.data),
-      for (final e in result.data)
-        e.code: e.copyWith(
-          active: false,
-          latest: false,
-        ),
-    };
     await _db.batch((b) {
       b.deleteAll<Mwl, MwlData>(_db.mwl);
       b.insertAll<Mwl, MwlData>(
         _db.mwl,
-        mwl.values.map((e) => MwlData(
+        result.data.map((e) => MwlData(
               code: e.code,
               name: e.name,
               formatCode: e.formatCode,
               dateStart: e.dateStart,
-              type: e.active
-                  ? MwlType.active
-                  : e.latest
-                      ? MwlType.latest
-                      : null,
               runnerPoints: e.runnerPoints,
               corpPoints: e.corpPoints,
             )),
       );
 
-      b.deleteAll<MwlCardTitle, MwlCardTitleData>(_db.mwlCardTitle);
+      b.deleteAll<MwlCard, MwlCardData>(_db.mwlCard);
       b.insertAll(
-        _db.mwlCardTitle,
-        [
-          for (final mwl in mwl.entries)
-            for (final e in mwl.value.cardTitles.entries)
-              MwlCardTitleData(
-                mwlCode: mwl.key,
-                cardTitle: e.key,
-                isRestricted: e.value.isRestricted == 1,
-                globalPenalty: e.value.globalPenalty,
-                universalFactionCost: e.value.universalFactionCost,
-                deckLimit: e.value.deckLimit,
-                points: e.value.points,
-              ),
-        ],
+        _db.mwlCard,
+        result.data
+            .map((mwl) => mwl.cardTitles.entries.map((mwlCard) => MwlCardData(
+                  mwlCode: mwl.code,
+                  cardTitle: mwlCard.key,
+                  isRestricted: mwlCard.value.isRestricted == 1,
+                  globalPenalty: mwlCard.value.globalPenalty,
+                  universalFactionCost: mwlCard.value.universalFactionCost,
+                  deckLimit: mwlCard.value.deckLimit,
+                  points: mwlCard.value.points,
+                )))
+            .flattened,
       );
     });
   }
@@ -509,7 +406,7 @@ class NrdbPublicApi {
       final rotationResult = await fetchRotations(nrdb.rotationLastUpdated, formatChanged).catchError((e) {
         return ApiResult.unmodified(nrdb.rotationLastUpdated);
       });
-      final mwlResult = await fetchMwl(nrdb.mwlLastUpdated, formatChanged).catchError((e) {
+      final mwlResult = await fetchMwl(nrdb.mwlLastUpdated).catchError((e) {
         return ApiResult.unmodified(nrdb.mwlLastUpdated);
       });
 

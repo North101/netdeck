@@ -99,7 +99,7 @@ class CardFilterFormat extends ConsumerWidget {
 class CardFilterRotation extends ConsumerWidget {
   const CardFilterRotation({super.key});
 
-  void setRotation(WidgetRef ref, RotationData? value) {
+  void setRotation(WidgetRef ref, RotationViewData? value) {
     final db = ref.read(dbProvider);
     db.update(db.settings).write(SettingsCompanion(
           filterRotationCode: Value(value?.code),
@@ -125,7 +125,7 @@ class CardFilterRotation extends ConsumerWidget {
 class CardFilterMwl extends ConsumerWidget {
   const CardFilterMwl({super.key});
 
-  void setMwl(WidgetRef ref, MwlData? value) {
+  void setMwl(WidgetRef ref, MwlViewData? value) {
     final db = ref.read(dbProvider);
     db.update(db.settings).write(SettingsCompanion(
           filterMwlCode: Value(value?.code),

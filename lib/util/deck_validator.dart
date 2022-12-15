@@ -19,7 +19,7 @@ class DeckValidator {
     SettingResult settings,
     DeckFullResult deck,
     Set<String>? formatCardSet,
-    Map<String, MwlCardTitleData> mwlCardMap,
+    Map<String, MwlCardData> mwlCardMap,
   ) {
     final validator = lookup[deck.identity.code];
     if (validator != null) {
@@ -45,7 +45,7 @@ class DeckValidator {
   final SettingResult settings;
   final DeckFullResult deck;
   final Set<String>? formatCardSet;
-  final Map<String, MwlCardTitleData> mwlCardMap;
+  final Map<String, MwlCardData> mwlCardMap;
 
   int? _agendaPoints;
   Map<CardResult, String?>? _cardErrorList;
@@ -58,7 +58,7 @@ class DeckValidator {
   int? _mwlPoints;
   int? _maxMwlPoints;
 
-  MwlCardTitleData? mwlCard(CardData card) => mwlCardMap[card.title];
+  MwlCardData? mwlCard(CardData card) => mwlCardMap[card.title];
 
   Map<CardResult, int> get cardList => deck.cards;
 
@@ -118,9 +118,8 @@ class DeckValidator {
     return _maxInfluence ??= max(
         influenceLimit -
             cardList.entries.map((e) {
-              if (mwlCard(e.key.card) == null) return 0;
-
-              return (mwlCard(e.key.card)?.globalPenalty ?? 0) * e.value;
+              final globalPenalty = mwlCard(e.key.card)?.globalPenalty ?? 0;
+              return globalPenalty * e.value;
             }).sum,
         1);
   }
@@ -143,11 +142,12 @@ class DeckValidator {
   }
 
   String? cardError(CardResult card, int quantity) {
+    final mwlCard = this.mwlCard(card.card);
     if (card.type.code == 'identity') {
       return 'Cannot include identities in your deck.';
-    } else if ((mwlCard(card.card)?.isRestricted ?? false) && restrictedCount > 1) {
+    } else if ((mwlCard?.isRestricted ?? false) && restrictedCount > 1) {
       return 'Too many restriced cards.';
-    } else if (quantity > (mwlCard(card.card)?.deckLimit ?? card.card.deckLimit)) {
+    } else if (quantity > (mwlCard?.deckLimit ?? card.card.deckLimit)) {
       return 'Too many copies.';
     } else if (!(formatCardSet?.contains(card.card.title) ?? true)) {
       return 'Not valid for format.';

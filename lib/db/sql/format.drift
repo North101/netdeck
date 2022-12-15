@@ -17,19 +17,19 @@ SELECT
   latest_mwl.**
 FROM format
 
-LEFT JOIN rotation AS current_rotation
+LEFT JOIN rotation_view AS current_rotation
   ON current_rotation.format_code = format.code
   AND current_rotation.type = 'current'
 
-LEFT JOIN rotation AS latest_rotation
+LEFT JOIN rotation_view AS latest_rotation
   ON latest_rotation.format_code = format.code
   AND latest_rotation.type = 'latest'
 
-LEFT JOIN mwl AS active_mwl
+LEFT JOIN mwl_view AS active_mwl
   ON active_mwl.format_code = format.code
   AND active_mwl.type = 'active'
 
-LEFT JOIN mwl AS latest_mwl
+LEFT JOIN mwl_view AS latest_mwl
   ON latest_mwl.format_code = format.code
   AND latest_mwl.type = 'latest'
 

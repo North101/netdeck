@@ -28,8 +28,8 @@ class CardFilterArguments {
   factory CardFilterArguments.fromJson(Map<String, dynamic> data) {
     return CardFilterArguments(
       format: (data['format'] as Map?)?.let((e) => FormatData.fromJson(e.cast())),
-      rotation: (data['rotation'] as Map?)?.let((e) => RotationData.fromJson(e.cast())),
-      mwl: (data['mwl'] as Map?)?.let((e) => MwlData.fromJson(e.cast())),
+      rotation: (data['rotation'] as Map?)?.let((e) => RotationViewData.fromJson(e.cast())),
+      mwl: (data['mwl'] as Map?)?.let((e) => MwlViewData.fromJson(e.cast())),
       collection: data['collection'] as bool,
       packs: FilterType<String>.fromJson((data['packs'] as Map).cast()),
       sides: FilterType<String>.fromJson((data['sides'] as Map).cast()),
@@ -52,8 +52,8 @@ class CardFilterArguments {
   }
 
   final FormatData? format;
-  final RotationData? rotation;
-  final MwlData? mwl;
+  final RotationViewData? rotation;
+  final MwlViewData? mwl;
   final bool collection;
   final FilterType<String> packs;
   final FilterType<String> sides;
@@ -182,7 +182,7 @@ class CardFilterFormat extends ConsumerWidget {
 class CardFilterRotation extends ConsumerWidget {
   const CardFilterRotation({super.key});
 
-  void setRotation(WidgetRef ref, RotationData? value) {
+  void setRotation(WidgetRef ref, RotationViewData? value) {
     final rotation = ref.read(filterRotationProvider);
     rotation.value = value;
   }
@@ -205,7 +205,7 @@ class CardFilterRotation extends ConsumerWidget {
 class CardFilterMwl extends ConsumerWidget {
   const CardFilterMwl({super.key});
 
-  void setMwl(WidgetRef ref, MwlData? value) {
+  void setMwl(WidgetRef ref, MwlViewData? value) {
     final mwl = ref.read(filterMwlProvider);
     mwl.value = value;
   }
@@ -219,7 +219,7 @@ class CardFilterMwl extends ConsumerWidget {
       child: MwlDropdown.withOverrides(
         format: format,
         mwl: mwl,
-        onChanged: (MwlData? value) => setMwl(ref, value),
+        onChanged: (MwlViewData? value) => setMwl(ref, value),
       ),
     );
   }

@@ -1416,13 +1416,11 @@ class RotationData extends DataClass implements Insertable<RotationData> {
   final String formatCode;
   final String name;
   final DateTime? dateStart;
-  final RotationType? type;
   const RotationData(
       {required this.code,
       required this.formatCode,
       required this.name,
-      this.dateStart,
-      this.type});
+      this.dateStart});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1431,10 +1429,6 @@ class RotationData extends DataClass implements Insertable<RotationData> {
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || dateStart != null) {
       map['date_start'] = Variable<DateTime>(dateStart);
-    }
-    if (!nullToAbsent || type != null) {
-      final converter = Rotation.$convertertypen;
-      map['type'] = Variable<String>(converter.toSql(type));
     }
     return map;
   }
@@ -1447,7 +1441,6 @@ class RotationData extends DataClass implements Insertable<RotationData> {
       dateStart: dateStart == null && nullToAbsent
           ? const Value.absent()
           : Value(dateStart),
-      type: type == null && nullToAbsent ? const Value.absent() : Value(type),
     );
   }
 
@@ -1459,8 +1452,6 @@ class RotationData extends DataClass implements Insertable<RotationData> {
       formatCode: serializer.fromJson<String>(json['format_code']),
       name: serializer.fromJson<String>(json['name']),
       dateStart: serializer.fromJson<DateTime?>(json['date_start']),
-      type: Rotation.$convertertypen
-          .fromJson(serializer.fromJson<String?>(json['type'])),
     );
   }
   @override
@@ -1471,7 +1462,6 @@ class RotationData extends DataClass implements Insertable<RotationData> {
       'format_code': serializer.toJson<String>(formatCode),
       'name': serializer.toJson<String>(name),
       'date_start': serializer.toJson<DateTime?>(dateStart),
-      'type': serializer.toJson<String?>(Rotation.$convertertypen.toJson(type)),
     };
   }
 
@@ -1479,14 +1469,12 @@ class RotationData extends DataClass implements Insertable<RotationData> {
           {String? code,
           String? formatCode,
           String? name,
-          Value<DateTime?> dateStart = const Value.absent(),
-          Value<RotationType?> type = const Value.absent()}) =>
+          Value<DateTime?> dateStart = const Value.absent()}) =>
       RotationData(
         code: code ?? this.code,
         formatCode: formatCode ?? this.formatCode,
         name: name ?? this.name,
         dateStart: dateStart.present ? dateStart.value : this.dateStart,
-        type: type.present ? type.value : this.type,
       );
   @override
   String toString() {
@@ -1494,14 +1482,13 @@ class RotationData extends DataClass implements Insertable<RotationData> {
           ..write('code: $code, ')
           ..write('formatCode: $formatCode, ')
           ..write('name: $name, ')
-          ..write('dateStart: $dateStart, ')
-          ..write('type: $type')
+          ..write('dateStart: $dateStart')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(code, formatCode, name, dateStart, type);
+  int get hashCode => Object.hash(code, formatCode, name, dateStart);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1509,8 +1496,7 @@ class RotationData extends DataClass implements Insertable<RotationData> {
           other.code == this.code &&
           other.formatCode == this.formatCode &&
           other.name == this.name &&
-          other.dateStart == this.dateStart &&
-          other.type == this.type);
+          other.dateStart == this.dateStart);
 }
 
 class RotationCompanion extends UpdateCompanion<RotationData> {
@@ -1518,20 +1504,17 @@ class RotationCompanion extends UpdateCompanion<RotationData> {
   final Value<String> formatCode;
   final Value<String> name;
   final Value<DateTime?> dateStart;
-  final Value<RotationType?> type;
   const RotationCompanion({
     this.code = const Value.absent(),
     this.formatCode = const Value.absent(),
     this.name = const Value.absent(),
     this.dateStart = const Value.absent(),
-    this.type = const Value.absent(),
   });
   RotationCompanion.insert({
     required String code,
     required String formatCode,
     required String name,
     this.dateStart = const Value.absent(),
-    this.type = const Value.absent(),
   })  : code = Value(code),
         formatCode = Value(formatCode),
         name = Value(name);
@@ -1540,14 +1523,12 @@ class RotationCompanion extends UpdateCompanion<RotationData> {
     Expression<String>? formatCode,
     Expression<String>? name,
     Expression<DateTime>? dateStart,
-    Expression<String>? type,
   }) {
     return RawValuesInsertable({
       if (code != null) 'code': code,
       if (formatCode != null) 'format_code': formatCode,
       if (name != null) 'name': name,
       if (dateStart != null) 'date_start': dateStart,
-      if (type != null) 'type': type,
     });
   }
 
@@ -1555,14 +1536,12 @@ class RotationCompanion extends UpdateCompanion<RotationData> {
       {Value<String>? code,
       Value<String>? formatCode,
       Value<String>? name,
-      Value<DateTime?>? dateStart,
-      Value<RotationType?>? type}) {
+      Value<DateTime?>? dateStart}) {
     return RotationCompanion(
       code: code ?? this.code,
       formatCode: formatCode ?? this.formatCode,
       name: name ?? this.name,
       dateStart: dateStart ?? this.dateStart,
-      type: type ?? this.type,
     );
   }
 
@@ -1581,10 +1560,6 @@ class RotationCompanion extends UpdateCompanion<RotationData> {
     if (dateStart.present) {
       map['date_start'] = Variable<DateTime>(dateStart.value);
     }
-    if (type.present) {
-      final converter = Rotation.$convertertypen;
-      map['type'] = Variable<String>(converter.toSql(type.value));
-    }
     return map;
   }
 
@@ -1594,8 +1569,7 @@ class RotationCompanion extends UpdateCompanion<RotationData> {
           ..write('code: $code, ')
           ..write('formatCode: $formatCode, ')
           ..write('name: $name, ')
-          ..write('dateStart: $dateStart, ')
-          ..write('type: $type')
+          ..write('dateStart: $dateStart')
           ..write(')'))
         .toString();
   }
@@ -1632,16 +1606,8 @@ class Rotation extends Table with TableInfo<Rotation, RotationData> {
       type: DriftSqlType.dateTime,
       requiredDuringInsert: false,
       $customConstraints: '');
-  static const VerificationMeta _typeMeta = const VerificationMeta('type');
-  late final GeneratedColumnWithTypeConverter<RotationType?, String> type =
-      GeneratedColumn<String>('type', aliasedName, true,
-              type: DriftSqlType.string,
-              requiredDuringInsert: false,
-              $customConstraints: '')
-          .withConverter<RotationType?>(Rotation.$convertertypen);
   @override
-  List<GeneratedColumn> get $columns =>
-      [code, formatCode, name, dateStart, type];
+  List<GeneratedColumn> get $columns => [code, formatCode, name, dateStart];
   @override
   String get aliasedName => _alias ?? 'rotation';
   @override
@@ -1675,7 +1641,6 @@ class Rotation extends Table with TableInfo<Rotation, RotationData> {
       context.handle(_dateStartMeta,
           dateStart.isAcceptableOrUnknown(data['date_start']!, _dateStartMeta));
     }
-    context.handle(_typeMeta, const VerificationResult.success());
     return context;
   }
 
@@ -1693,8 +1658,6 @@ class Rotation extends Table with TableInfo<Rotation, RotationData> {
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       dateStart: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_start']),
-      type: Rotation.$convertertypen.fromSql(attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}type'])),
     );
   }
 
@@ -1703,14 +1666,197 @@ class Rotation extends Table with TableInfo<Rotation, RotationData> {
     return Rotation(attachedDatabase, alias);
   }
 
-  static JsonTypeConverter2<RotationType, String, String> $convertertype =
-      const EnumNameConverter<RotationType>(RotationType.values);
-  static JsonTypeConverter2<RotationType?, String?, String?> $convertertypen =
-      JsonTypeConverter2.asNullable($convertertype);
   @override
   List<String> get customConstraints => const [];
   @override
   bool get dontWriteConstraints => true;
+}
+
+class RotationViewData extends DataClass {
+  final String code;
+  final String formatCode;
+  final String? rotationCode;
+  final String name;
+  final DateTime? dateStart;
+  final String? type;
+  final int id;
+  final String code1;
+  final String name1;
+  const RotationViewData(
+      {required this.code,
+      required this.formatCode,
+      this.rotationCode,
+      required this.name,
+      this.dateStart,
+      this.type,
+      required this.id,
+      required this.code1,
+      required this.name1});
+  factory RotationViewData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RotationViewData(
+      code: serializer.fromJson<String>(json['code']),
+      formatCode: serializer.fromJson<String>(json['format_code']),
+      rotationCode: serializer.fromJson<String?>(json['rotation_code']),
+      name: serializer.fromJson<String>(json['name']),
+      dateStart: serializer.fromJson<DateTime?>(json['date_start']),
+      type: serializer.fromJson<String?>(json['type']),
+      id: serializer.fromJson<int>(json['id']),
+      code1: serializer.fromJson<String>(json['code']),
+      name1: serializer.fromJson<String>(json['name']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'code': serializer.toJson<String>(code),
+      'format_code': serializer.toJson<String>(formatCode),
+      'rotation_code': serializer.toJson<String?>(rotationCode),
+      'name': serializer.toJson<String>(name),
+      'date_start': serializer.toJson<DateTime?>(dateStart),
+      'type': serializer.toJson<String?>(type),
+      'id': serializer.toJson<int>(id),
+      'code': serializer.toJson<String>(code1),
+      'name': serializer.toJson<String>(name1),
+    };
+  }
+
+  RotationViewData copyWith(
+          {String? code,
+          String? formatCode,
+          Value<String?> rotationCode = const Value.absent(),
+          String? name,
+          Value<DateTime?> dateStart = const Value.absent(),
+          Value<String?> type = const Value.absent(),
+          int? id,
+          String? code1,
+          String? name1}) =>
+      RotationViewData(
+        code: code ?? this.code,
+        formatCode: formatCode ?? this.formatCode,
+        rotationCode:
+            rotationCode.present ? rotationCode.value : this.rotationCode,
+        name: name ?? this.name,
+        dateStart: dateStart.present ? dateStart.value : this.dateStart,
+        type: type.present ? type.value : this.type,
+        id: id ?? this.id,
+        code1: code1 ?? this.code1,
+        name1: name1 ?? this.name1,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('RotationViewData(')
+          ..write('code: $code, ')
+          ..write('formatCode: $formatCode, ')
+          ..write('rotationCode: $rotationCode, ')
+          ..write('name: $name, ')
+          ..write('dateStart: $dateStart, ')
+          ..write('type: $type, ')
+          ..write('id: $id, ')
+          ..write('code1: $code1, ')
+          ..write('name1: $name1')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+      code, formatCode, rotationCode, name, dateStart, type, id, code1, name1);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RotationViewData &&
+          other.code == this.code &&
+          other.formatCode == this.formatCode &&
+          other.rotationCode == this.rotationCode &&
+          other.name == this.name &&
+          other.dateStart == this.dateStart &&
+          other.type == this.type &&
+          other.id == this.id &&
+          other.code1 == this.code1 &&
+          other.name1 == this.name1);
+}
+
+class RotationView extends ViewInfo<RotationView, RotationViewData>
+    implements HasResultSet {
+  final String? _alias;
+  @override
+  final _$Database attachedDatabase;
+  RotationView(this.attachedDatabase, [this._alias]);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [code, formatCode, rotationCode, name, dateStart, type, id, code1, name1];
+  @override
+  String get aliasedName => _alias ?? entityName;
+  @override
+  String get entityName => 'rotation_view';
+  @override
+  String get createViewStmt =>
+      'CREATE VIEW rotation_view AS SELECT * FROM (SELECT format.code || \'@current\' AS code, format.code AS format_code, rotation.code AS rotation_code, format.name || \' Current (\' || COALESCE(rotation.name, \'None\') || \')\' AS name, rotation.date_start, \'current\' AS type FROM format LEFT JOIN (SELECT *, MAX(date_start) FROM rotation WHERE DATE(date_start) <= DATE(\'NOW\') GROUP BY rotation.format_code) AS rotation ON rotation.format_code = format.code UNION ALL SELECT format.code || \'@latest\' AS code, format.code AS format_code, rotation.code AS rotation_code, format.name || \' Latest (\' || COALESCE(rotation.name, \'None\') || \')\' AS name, rotation.date_start, \'latest\' AS type FROM format LEFT JOIN (SELECT *, MAX(date_start) FROM rotation GROUP BY rotation.format_code) AS rotation ON rotation.format_code = format.code UNION ALL SELECT rotation.code, rotation.format_code, rotation.code, rotation.name, rotation.date_start, NULL AS type FROM rotation) AS rotation INNER JOIN format ON format.code = rotation.format_code ORDER BY format.id, rotation.type DESC NULLS LAST, rotation.date_start DESC';
+  @override
+  RotationView get asDslTable => this;
+  @override
+  RotationViewData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RotationViewData(
+      code: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
+      formatCode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}format_code'])!,
+      rotationCode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}rotation_code']),
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      dateStart: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date_start']),
+      type: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}type']),
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      code1: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
+      name1: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+    );
+  }
+
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+      'code', aliasedName, false,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<String> formatCode = GeneratedColumn<String>(
+      'format_code', aliasedName, false,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<String> rotationCode = GeneratedColumn<String>(
+      'rotation_code', aliasedName, true,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<DateTime> dateStart = GeneratedColumn<DateTime>(
+      'date_start', aliasedName, true,
+      type: DriftSqlType.dateTime);
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+      'type', aliasedName, true,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<int> id =
+      GeneratedColumn<int>('id', aliasedName, false, type: DriftSqlType.int);
+  late final GeneratedColumn<String> code1 = GeneratedColumn<String>(
+      'code', aliasedName, false,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<String> name1 = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string);
+  @override
+  RotationView createAlias(String alias) {
+    return RotationView(attachedDatabase, alias);
+  }
+
+  @override
+  Query? get query => null;
+  @override
+  Set<String> get readTables => const {'format', 'rotation'};
 }
 
 class MwlData extends DataClass implements Insertable<MwlData> {
@@ -1718,7 +1864,6 @@ class MwlData extends DataClass implements Insertable<MwlData> {
   final String formatCode;
   final String name;
   final DateTime? dateStart;
-  final MwlType? type;
   final int? runnerPoints;
   final int? corpPoints;
   const MwlData(
@@ -1726,7 +1871,6 @@ class MwlData extends DataClass implements Insertable<MwlData> {
       required this.formatCode,
       required this.name,
       this.dateStart,
-      this.type,
       this.runnerPoints,
       this.corpPoints});
   @override
@@ -1737,10 +1881,6 @@ class MwlData extends DataClass implements Insertable<MwlData> {
     map['name'] = Variable<String>(name);
     if (!nullToAbsent || dateStart != null) {
       map['date_start'] = Variable<DateTime>(dateStart);
-    }
-    if (!nullToAbsent || type != null) {
-      final converter = Mwl.$convertertypen;
-      map['type'] = Variable<String>(converter.toSql(type));
     }
     if (!nullToAbsent || runnerPoints != null) {
       map['runner_points'] = Variable<int>(runnerPoints);
@@ -1759,7 +1899,6 @@ class MwlData extends DataClass implements Insertable<MwlData> {
       dateStart: dateStart == null && nullToAbsent
           ? const Value.absent()
           : Value(dateStart),
-      type: type == null && nullToAbsent ? const Value.absent() : Value(type),
       runnerPoints: runnerPoints == null && nullToAbsent
           ? const Value.absent()
           : Value(runnerPoints),
@@ -1777,8 +1916,6 @@ class MwlData extends DataClass implements Insertable<MwlData> {
       formatCode: serializer.fromJson<String>(json['format_code']),
       name: serializer.fromJson<String>(json['name']),
       dateStart: serializer.fromJson<DateTime?>(json['date_start']),
-      type: Mwl.$convertertypen
-          .fromJson(serializer.fromJson<String?>(json['type'])),
       runnerPoints: serializer.fromJson<int?>(json['runner_points']),
       corpPoints: serializer.fromJson<int?>(json['corp_points']),
     );
@@ -1791,7 +1928,6 @@ class MwlData extends DataClass implements Insertable<MwlData> {
       'format_code': serializer.toJson<String>(formatCode),
       'name': serializer.toJson<String>(name),
       'date_start': serializer.toJson<DateTime?>(dateStart),
-      'type': serializer.toJson<String?>(Mwl.$convertertypen.toJson(type)),
       'runner_points': serializer.toJson<int?>(runnerPoints),
       'corp_points': serializer.toJson<int?>(corpPoints),
     };
@@ -1802,7 +1938,6 @@ class MwlData extends DataClass implements Insertable<MwlData> {
           String? formatCode,
           String? name,
           Value<DateTime?> dateStart = const Value.absent(),
-          Value<MwlType?> type = const Value.absent(),
           Value<int?> runnerPoints = const Value.absent(),
           Value<int?> corpPoints = const Value.absent()}) =>
       MwlData(
@@ -1810,7 +1945,6 @@ class MwlData extends DataClass implements Insertable<MwlData> {
         formatCode: formatCode ?? this.formatCode,
         name: name ?? this.name,
         dateStart: dateStart.present ? dateStart.value : this.dateStart,
-        type: type.present ? type.value : this.type,
         runnerPoints:
             runnerPoints.present ? runnerPoints.value : this.runnerPoints,
         corpPoints: corpPoints.present ? corpPoints.value : this.corpPoints,
@@ -1822,7 +1956,6 @@ class MwlData extends DataClass implements Insertable<MwlData> {
           ..write('formatCode: $formatCode, ')
           ..write('name: $name, ')
           ..write('dateStart: $dateStart, ')
-          ..write('type: $type, ')
           ..write('runnerPoints: $runnerPoints, ')
           ..write('corpPoints: $corpPoints')
           ..write(')'))
@@ -1830,8 +1963,8 @@ class MwlData extends DataClass implements Insertable<MwlData> {
   }
 
   @override
-  int get hashCode => Object.hash(
-      code, formatCode, name, dateStart, type, runnerPoints, corpPoints);
+  int get hashCode =>
+      Object.hash(code, formatCode, name, dateStart, runnerPoints, corpPoints);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1840,7 +1973,6 @@ class MwlData extends DataClass implements Insertable<MwlData> {
           other.formatCode == this.formatCode &&
           other.name == this.name &&
           other.dateStart == this.dateStart &&
-          other.type == this.type &&
           other.runnerPoints == this.runnerPoints &&
           other.corpPoints == this.corpPoints);
 }
@@ -1850,7 +1982,6 @@ class MwlCompanion extends UpdateCompanion<MwlData> {
   final Value<String> formatCode;
   final Value<String> name;
   final Value<DateTime?> dateStart;
-  final Value<MwlType?> type;
   final Value<int?> runnerPoints;
   final Value<int?> corpPoints;
   const MwlCompanion({
@@ -1858,7 +1989,6 @@ class MwlCompanion extends UpdateCompanion<MwlData> {
     this.formatCode = const Value.absent(),
     this.name = const Value.absent(),
     this.dateStart = const Value.absent(),
-    this.type = const Value.absent(),
     this.runnerPoints = const Value.absent(),
     this.corpPoints = const Value.absent(),
   });
@@ -1867,7 +1997,6 @@ class MwlCompanion extends UpdateCompanion<MwlData> {
     required String formatCode,
     required String name,
     this.dateStart = const Value.absent(),
-    this.type = const Value.absent(),
     this.runnerPoints = const Value.absent(),
     this.corpPoints = const Value.absent(),
   })  : code = Value(code),
@@ -1878,7 +2007,6 @@ class MwlCompanion extends UpdateCompanion<MwlData> {
     Expression<String>? formatCode,
     Expression<String>? name,
     Expression<DateTime>? dateStart,
-    Expression<String>? type,
     Expression<int>? runnerPoints,
     Expression<int>? corpPoints,
   }) {
@@ -1887,7 +2015,6 @@ class MwlCompanion extends UpdateCompanion<MwlData> {
       if (formatCode != null) 'format_code': formatCode,
       if (name != null) 'name': name,
       if (dateStart != null) 'date_start': dateStart,
-      if (type != null) 'type': type,
       if (runnerPoints != null) 'runner_points': runnerPoints,
       if (corpPoints != null) 'corp_points': corpPoints,
     });
@@ -1898,7 +2025,6 @@ class MwlCompanion extends UpdateCompanion<MwlData> {
       Value<String>? formatCode,
       Value<String>? name,
       Value<DateTime?>? dateStart,
-      Value<MwlType?>? type,
       Value<int?>? runnerPoints,
       Value<int?>? corpPoints}) {
     return MwlCompanion(
@@ -1906,7 +2032,6 @@ class MwlCompanion extends UpdateCompanion<MwlData> {
       formatCode: formatCode ?? this.formatCode,
       name: name ?? this.name,
       dateStart: dateStart ?? this.dateStart,
-      type: type ?? this.type,
       runnerPoints: runnerPoints ?? this.runnerPoints,
       corpPoints: corpPoints ?? this.corpPoints,
     );
@@ -1927,10 +2052,6 @@ class MwlCompanion extends UpdateCompanion<MwlData> {
     if (dateStart.present) {
       map['date_start'] = Variable<DateTime>(dateStart.value);
     }
-    if (type.present) {
-      final converter = Mwl.$convertertypen;
-      map['type'] = Variable<String>(converter.toSql(type.value));
-    }
     if (runnerPoints.present) {
       map['runner_points'] = Variable<int>(runnerPoints.value);
     }
@@ -1947,7 +2068,6 @@ class MwlCompanion extends UpdateCompanion<MwlData> {
           ..write('formatCode: $formatCode, ')
           ..write('name: $name, ')
           ..write('dateStart: $dateStart, ')
-          ..write('type: $type, ')
           ..write('runnerPoints: $runnerPoints, ')
           ..write('corpPoints: $corpPoints')
           ..write(')'))
@@ -1986,13 +2106,6 @@ class Mwl extends Table with TableInfo<Mwl, MwlData> {
       type: DriftSqlType.dateTime,
       requiredDuringInsert: false,
       $customConstraints: '');
-  static const VerificationMeta _typeMeta = const VerificationMeta('type');
-  late final GeneratedColumnWithTypeConverter<MwlType?, String> type =
-      GeneratedColumn<String>('type', aliasedName, true,
-              type: DriftSqlType.string,
-              requiredDuringInsert: false,
-              $customConstraints: '')
-          .withConverter<MwlType?>(Mwl.$convertertypen);
   static const VerificationMeta _runnerPointsMeta =
       const VerificationMeta('runnerPoints');
   late final GeneratedColumn<int> runnerPoints = GeneratedColumn<int>(
@@ -2009,7 +2122,7 @@ class Mwl extends Table with TableInfo<Mwl, MwlData> {
       $customConstraints: '');
   @override
   List<GeneratedColumn> get $columns =>
-      [code, formatCode, name, dateStart, type, runnerPoints, corpPoints];
+      [code, formatCode, name, dateStart, runnerPoints, corpPoints];
   @override
   String get aliasedName => _alias ?? 'mwl';
   @override
@@ -2043,7 +2156,6 @@ class Mwl extends Table with TableInfo<Mwl, MwlData> {
       context.handle(_dateStartMeta,
           dateStart.isAcceptableOrUnknown(data['date_start']!, _dateStartMeta));
     }
-    context.handle(_typeMeta, const VerificationResult.success());
     if (data.containsKey('runner_points')) {
       context.handle(
           _runnerPointsMeta,
@@ -2073,8 +2185,6 @@ class Mwl extends Table with TableInfo<Mwl, MwlData> {
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       dateStart: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_start']),
-      type: Mwl.$convertertypen.fromSql(attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}type'])),
       runnerPoints: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}runner_points']),
       corpPoints: attachedDatabase.typeMapping
@@ -2087,14 +2197,233 @@ class Mwl extends Table with TableInfo<Mwl, MwlData> {
     return Mwl(attachedDatabase, alias);
   }
 
-  static JsonTypeConverter2<MwlType, String, String> $convertertype =
-      const EnumNameConverter<MwlType>(MwlType.values);
-  static JsonTypeConverter2<MwlType?, String?, String?> $convertertypen =
-      JsonTypeConverter2.asNullable($convertertype);
   @override
   List<String> get customConstraints => const [];
   @override
   bool get dontWriteConstraints => true;
+}
+
+class MwlViewData extends DataClass {
+  final String code;
+  final String formatCode;
+  final String? mwlCode;
+  final String name;
+  final DateTime? dateStart;
+  final int? runnerPoints;
+  final int? corpPoints;
+  final String? type;
+  final int id;
+  final String code1;
+  final String name1;
+  const MwlViewData(
+      {required this.code,
+      required this.formatCode,
+      this.mwlCode,
+      required this.name,
+      this.dateStart,
+      this.runnerPoints,
+      this.corpPoints,
+      this.type,
+      required this.id,
+      required this.code1,
+      required this.name1});
+  factory MwlViewData.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MwlViewData(
+      code: serializer.fromJson<String>(json['code']),
+      formatCode: serializer.fromJson<String>(json['format_code']),
+      mwlCode: serializer.fromJson<String?>(json['mwl_code']),
+      name: serializer.fromJson<String>(json['name']),
+      dateStart: serializer.fromJson<DateTime?>(json['date_start']),
+      runnerPoints: serializer.fromJson<int?>(json['runner_points']),
+      corpPoints: serializer.fromJson<int?>(json['corp_points']),
+      type: serializer.fromJson<String?>(json['type']),
+      id: serializer.fromJson<int>(json['id']),
+      code1: serializer.fromJson<String>(json['code']),
+      name1: serializer.fromJson<String>(json['name']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'code': serializer.toJson<String>(code),
+      'format_code': serializer.toJson<String>(formatCode),
+      'mwl_code': serializer.toJson<String?>(mwlCode),
+      'name': serializer.toJson<String>(name),
+      'date_start': serializer.toJson<DateTime?>(dateStart),
+      'runner_points': serializer.toJson<int?>(runnerPoints),
+      'corp_points': serializer.toJson<int?>(corpPoints),
+      'type': serializer.toJson<String?>(type),
+      'id': serializer.toJson<int>(id),
+      'code': serializer.toJson<String>(code1),
+      'name': serializer.toJson<String>(name1),
+    };
+  }
+
+  MwlViewData copyWith(
+          {String? code,
+          String? formatCode,
+          Value<String?> mwlCode = const Value.absent(),
+          String? name,
+          Value<DateTime?> dateStart = const Value.absent(),
+          Value<int?> runnerPoints = const Value.absent(),
+          Value<int?> corpPoints = const Value.absent(),
+          Value<String?> type = const Value.absent(),
+          int? id,
+          String? code1,
+          String? name1}) =>
+      MwlViewData(
+        code: code ?? this.code,
+        formatCode: formatCode ?? this.formatCode,
+        mwlCode: mwlCode.present ? mwlCode.value : this.mwlCode,
+        name: name ?? this.name,
+        dateStart: dateStart.present ? dateStart.value : this.dateStart,
+        runnerPoints:
+            runnerPoints.present ? runnerPoints.value : this.runnerPoints,
+        corpPoints: corpPoints.present ? corpPoints.value : this.corpPoints,
+        type: type.present ? type.value : this.type,
+        id: id ?? this.id,
+        code1: code1 ?? this.code1,
+        name1: name1 ?? this.name1,
+      );
+  @override
+  String toString() {
+    return (StringBuffer('MwlViewData(')
+          ..write('code: $code, ')
+          ..write('formatCode: $formatCode, ')
+          ..write('mwlCode: $mwlCode, ')
+          ..write('name: $name, ')
+          ..write('dateStart: $dateStart, ')
+          ..write('runnerPoints: $runnerPoints, ')
+          ..write('corpPoints: $corpPoints, ')
+          ..write('type: $type, ')
+          ..write('id: $id, ')
+          ..write('code1: $code1, ')
+          ..write('name1: $name1')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(code, formatCode, mwlCode, name, dateStart,
+      runnerPoints, corpPoints, type, id, code1, name1);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MwlViewData &&
+          other.code == this.code &&
+          other.formatCode == this.formatCode &&
+          other.mwlCode == this.mwlCode &&
+          other.name == this.name &&
+          other.dateStart == this.dateStart &&
+          other.runnerPoints == this.runnerPoints &&
+          other.corpPoints == this.corpPoints &&
+          other.type == this.type &&
+          other.id == this.id &&
+          other.code1 == this.code1 &&
+          other.name1 == this.name1);
+}
+
+class MwlView extends ViewInfo<MwlView, MwlViewData> implements HasResultSet {
+  final String? _alias;
+  @override
+  final _$Database attachedDatabase;
+  MwlView(this.attachedDatabase, [this._alias]);
+  @override
+  List<GeneratedColumn> get $columns => [
+        code,
+        formatCode,
+        mwlCode,
+        name,
+        dateStart,
+        runnerPoints,
+        corpPoints,
+        type,
+        id,
+        code1,
+        name1
+      ];
+  @override
+  String get aliasedName => _alias ?? entityName;
+  @override
+  String get entityName => 'mwl_view';
+  @override
+  String get createViewStmt =>
+      'CREATE VIEW mwl_view AS SELECT * FROM (SELECT format.code || \'@active\' AS code, format.code AS format_code, mwl.code AS mwl_code, format.name || \' Active (\' || COALESCE(mwl.name, \'None\') || \')\' AS name, mwl.date_start, mwl.runner_points, mwl.corp_points, \'active\' AS type FROM format LEFT JOIN (SELECT *, MAX(date_start) FROM mwl WHERE DATE(date_start) <= DATE(\'NOW\') GROUP BY mwl.format_code) AS mwl ON mwl.format_code = format.code UNION ALL SELECT format.code || \'@latest\' AS code, format.code AS format_code, mwl.code AS mwl_code, format.name || \' Latest (\' || COALESCE(mwl.name, \'None\') || \')\' AS name, mwl.date_start, mwl.runner_points, mwl.corp_points, \'latest\' AS type FROM format LEFT JOIN (SELECT *, MAX(date_start) FROM mwl GROUP BY mwl.format_code) AS mwl ON mwl.format_code = format.code UNION ALL SELECT mwl.code, mwl.format_code, mwl.code, mwl.name, mwl.date_start, mwl.runner_points, mwl.corp_points, NULL AS type FROM mwl) AS mwl INNER JOIN format ON format.code = mwl.format_code ORDER BY format.id, mwl.type DESC NULLS LAST, mwl.date_start DESC';
+  @override
+  MwlView get asDslTable => this;
+  @override
+  MwlViewData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MwlViewData(
+      code: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
+      formatCode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}format_code'])!,
+      mwlCode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}mwl_code']),
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      dateStart: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date_start']),
+      runnerPoints: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}runner_points']),
+      corpPoints: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}corp_points']),
+      type: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}type']),
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      code1: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
+      name1: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+    );
+  }
+
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+      'code', aliasedName, false,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<String> formatCode = GeneratedColumn<String>(
+      'format_code', aliasedName, false,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<String> mwlCode = GeneratedColumn<String>(
+      'mwl_code', aliasedName, true,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<DateTime> dateStart = GeneratedColumn<DateTime>(
+      'date_start', aliasedName, true,
+      type: DriftSqlType.dateTime);
+  late final GeneratedColumn<int> runnerPoints = GeneratedColumn<int>(
+      'runner_points', aliasedName, true,
+      type: DriftSqlType.int);
+  late final GeneratedColumn<int> corpPoints = GeneratedColumn<int>(
+      'corp_points', aliasedName, true,
+      type: DriftSqlType.int);
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+      'type', aliasedName, true,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<int> id =
+      GeneratedColumn<int>('id', aliasedName, false, type: DriftSqlType.int);
+  late final GeneratedColumn<String> code1 = GeneratedColumn<String>(
+      'code', aliasedName, false,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<String> name1 = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string);
+  @override
+  MwlView createAlias(String alias) {
+    return MwlView(attachedDatabase, alias);
+  }
+
+  @override
+  Query? get query => null;
+  @override
+  Set<String> get readTables => const {'format', 'mwl'};
 }
 
 class RotationCycleData extends DataClass
@@ -4854,8 +5183,7 @@ class Nrdb extends Table with TableInfo<Nrdb, NrdbData> {
   bool get dontWriteConstraints => true;
 }
 
-class MwlCardTitleData extends DataClass
-    implements Insertable<MwlCardTitleData> {
+class MwlCardData extends DataClass implements Insertable<MwlCardData> {
   final String mwlCode;
   final String cardTitle;
   final bool isRestricted;
@@ -4863,7 +5191,7 @@ class MwlCardTitleData extends DataClass
   final int? universalFactionCost;
   final int? deckLimit;
   final int? points;
-  const MwlCardTitleData(
+  const MwlCardData(
       {required this.mwlCode,
       required this.cardTitle,
       required this.isRestricted,
@@ -4892,8 +5220,8 @@ class MwlCardTitleData extends DataClass
     return map;
   }
 
-  MwlCardTitleCompanion toCompanion(bool nullToAbsent) {
-    return MwlCardTitleCompanion(
+  MwlCardCompanion toCompanion(bool nullToAbsent) {
+    return MwlCardCompanion(
       mwlCode: Value(mwlCode),
       cardTitle: Value(cardTitle),
       isRestricted: Value(isRestricted),
@@ -4911,10 +5239,10 @@ class MwlCardTitleData extends DataClass
     );
   }
 
-  factory MwlCardTitleData.fromJson(Map<String, dynamic> json,
+  factory MwlCardData.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return MwlCardTitleData(
+    return MwlCardData(
       mwlCode: serializer.fromJson<String>(json['mwl_code']),
       cardTitle: serializer.fromJson<String>(json['card_title']),
       isRestricted: serializer.fromJson<bool>(json['is_restricted']),
@@ -4939,7 +5267,7 @@ class MwlCardTitleData extends DataClass
     };
   }
 
-  MwlCardTitleData copyWith(
+  MwlCardData copyWith(
           {String? mwlCode,
           String? cardTitle,
           bool? isRestricted,
@@ -4947,7 +5275,7 @@ class MwlCardTitleData extends DataClass
           Value<int?> universalFactionCost = const Value.absent(),
           Value<int?> deckLimit = const Value.absent(),
           Value<int?> points = const Value.absent()}) =>
-      MwlCardTitleData(
+      MwlCardData(
         mwlCode: mwlCode ?? this.mwlCode,
         cardTitle: cardTitle ?? this.cardTitle,
         isRestricted: isRestricted ?? this.isRestricted,
@@ -4961,7 +5289,7 @@ class MwlCardTitleData extends DataClass
       );
   @override
   String toString() {
-    return (StringBuffer('MwlCardTitleData(')
+    return (StringBuffer('MwlCardData(')
           ..write('mwlCode: $mwlCode, ')
           ..write('cardTitle: $cardTitle, ')
           ..write('isRestricted: $isRestricted, ')
@@ -4979,7 +5307,7 @@ class MwlCardTitleData extends DataClass
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is MwlCardTitleData &&
+      (other is MwlCardData &&
           other.mwlCode == this.mwlCode &&
           other.cardTitle == this.cardTitle &&
           other.isRestricted == this.isRestricted &&
@@ -4989,7 +5317,7 @@ class MwlCardTitleData extends DataClass
           other.points == this.points);
 }
 
-class MwlCardTitleCompanion extends UpdateCompanion<MwlCardTitleData> {
+class MwlCardCompanion extends UpdateCompanion<MwlCardData> {
   final Value<String> mwlCode;
   final Value<String> cardTitle;
   final Value<bool> isRestricted;
@@ -4997,7 +5325,7 @@ class MwlCardTitleCompanion extends UpdateCompanion<MwlCardTitleData> {
   final Value<int?> universalFactionCost;
   final Value<int?> deckLimit;
   final Value<int?> points;
-  const MwlCardTitleCompanion({
+  const MwlCardCompanion({
     this.mwlCode = const Value.absent(),
     this.cardTitle = const Value.absent(),
     this.isRestricted = const Value.absent(),
@@ -5006,7 +5334,7 @@ class MwlCardTitleCompanion extends UpdateCompanion<MwlCardTitleData> {
     this.deckLimit = const Value.absent(),
     this.points = const Value.absent(),
   });
-  MwlCardTitleCompanion.insert({
+  MwlCardCompanion.insert({
     required String mwlCode,
     required String cardTitle,
     required bool isRestricted,
@@ -5017,7 +5345,7 @@ class MwlCardTitleCompanion extends UpdateCompanion<MwlCardTitleData> {
   })  : mwlCode = Value(mwlCode),
         cardTitle = Value(cardTitle),
         isRestricted = Value(isRestricted);
-  static Insertable<MwlCardTitleData> custom({
+  static Insertable<MwlCardData> custom({
     Expression<String>? mwlCode,
     Expression<String>? cardTitle,
     Expression<bool>? isRestricted,
@@ -5038,7 +5366,7 @@ class MwlCardTitleCompanion extends UpdateCompanion<MwlCardTitleData> {
     });
   }
 
-  MwlCardTitleCompanion copyWith(
+  MwlCardCompanion copyWith(
       {Value<String>? mwlCode,
       Value<String>? cardTitle,
       Value<bool>? isRestricted,
@@ -5046,7 +5374,7 @@ class MwlCardTitleCompanion extends UpdateCompanion<MwlCardTitleData> {
       Value<int?>? universalFactionCost,
       Value<int?>? deckLimit,
       Value<int?>? points}) {
-    return MwlCardTitleCompanion(
+    return MwlCardCompanion(
       mwlCode: mwlCode ?? this.mwlCode,
       cardTitle: cardTitle ?? this.cardTitle,
       isRestricted: isRestricted ?? this.isRestricted,
@@ -5086,7 +5414,7 @@ class MwlCardTitleCompanion extends UpdateCompanion<MwlCardTitleData> {
 
   @override
   String toString() {
-    return (StringBuffer('MwlCardTitleCompanion(')
+    return (StringBuffer('MwlCardCompanion(')
           ..write('mwlCode: $mwlCode, ')
           ..write('cardTitle: $cardTitle, ')
           ..write('isRestricted: $isRestricted, ')
@@ -5099,12 +5427,11 @@ class MwlCardTitleCompanion extends UpdateCompanion<MwlCardTitleData> {
   }
 }
 
-class MwlCardTitle extends Table
-    with TableInfo<MwlCardTitle, MwlCardTitleData> {
+class MwlCard extends Table with TableInfo<MwlCard, MwlCardData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  MwlCardTitle(this.attachedDatabase, [this._alias]);
+  MwlCard(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _mwlCodeMeta =
       const VerificationMeta('mwlCode');
   late final GeneratedColumn<String> mwlCode = GeneratedColumn<String>(
@@ -5164,11 +5491,11 @@ class MwlCardTitle extends Table
         points
       ];
   @override
-  String get aliasedName => _alias ?? 'mwl_card_title';
+  String get aliasedName => _alias ?? 'mwl_card';
   @override
-  String get actualTableName => 'mwl_card_title';
+  String get actualTableName => 'mwl_card';
   @override
-  VerificationContext validateIntegrity(Insertable<MwlCardTitleData> instance,
+  VerificationContext validateIntegrity(Insertable<MwlCardData> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -5218,9 +5545,9 @@ class MwlCardTitle extends Table
   @override
   Set<GeneratedColumn> get $primaryKey => {mwlCode, cardTitle};
   @override
-  MwlCardTitleData map(Map<String, dynamic> data, {String? tablePrefix}) {
+  MwlCardData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return MwlCardTitleData(
+    return MwlCardData(
       mwlCode: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}mwl_code'])!,
       cardTitle: attachedDatabase.typeMapping
@@ -5239,8 +5566,8 @@ class MwlCardTitle extends Table
   }
 
   @override
-  MwlCardTitle createAlias(String alias) {
-    return MwlCardTitle(attachedDatabase, alias);
+  MwlCard createAlias(String alias) {
+    return MwlCard(attachedDatabase, alias);
   }
 
   @override
@@ -6388,14 +6715,16 @@ abstract class _$Database extends GeneratedDatabase {
   late final Settings settings = Settings(this);
   late final Format format = Format(this);
   late final Rotation rotation = Rotation(this);
+  late final RotationView rotationView = RotationView(this);
   late final Mwl mwl = Mwl(this);
+  late final MwlView mwlView = MwlView(this);
   late final RotationCycle rotationCycle = RotationCycle(this);
   late final Cycle cycle = Cycle(this);
   late final Pack pack = Pack(this);
   late final Card card = Card(this);
   late final Faction faction = Faction(this);
   late final Nrdb nrdb = Nrdb(this);
-  late final MwlCardTitle mwlCardTitle = MwlCardTitle(this);
+  late final MwlCard mwlCard = MwlCard(this);
   late final Deck deck = Deck(this);
   late final DeckTag deckTag = DeckTag(this);
   late final DeckCard deckCard = DeckCard(this);
@@ -6442,7 +6771,7 @@ abstract class _$Database extends GeneratedDatabase {
 
   Selectable<SettingResult> getSettings() {
     return customSelect(
-        'SELECT"settings"."id" AS "nested_0.id", "settings"."filter_format_code" AS "nested_0.filter_format_code", "settings"."filter_rotation_code" AS "nested_0.filter_rotation_code", "settings"."filter_mwl_code" AS "nested_0.filter_mwl_code", "settings"."filter_collection" AS "nested_0.filter_collection", "settings"."card_sort" AS "nested_0.card_sort", "settings"."card_group" AS "nested_0.card_group", "settings"."deck_sort" AS "nested_0.deck_sort", "settings"."deck_group" AS "nested_0.deck_group", "settings"."deck_card_sort" AS "nested_0.deck_card_sort", "settings"."deck_card_group" AS "nested_0.deck_card_group", "settings"."compare_card_sort" AS "nested_0.compare_card_sort", "settings"."apex_resources" AS "nested_0.apex_resources", "settings"."card_gallery_view" AS "nested_0.card_gallery_view","filter_format"."id" AS "nested_1.id", "filter_format"."code" AS "nested_1.code", "filter_format"."name" AS "nested_1.name","filter_rotation"."code" AS "nested_2.code", "filter_rotation"."format_code" AS "nested_2.format_code", "filter_rotation"."name" AS "nested_2.name", "filter_rotation"."date_start" AS "nested_2.date_start", "filter_rotation"."type" AS "nested_2.type","filter_mwl"."code" AS "nested_3.code", "filter_mwl"."format_code" AS "nested_3.format_code", "filter_mwl"."name" AS "nested_3.name", "filter_mwl"."date_start" AS "nested_3.date_start", "filter_mwl"."type" AS "nested_3.type", "filter_mwl"."runner_points" AS "nested_3.runner_points", "filter_mwl"."corp_points" AS "nested_3.corp_points" FROM settings LEFT JOIN format AS filter_format ON filter_format.code = settings.filter_format_code LEFT JOIN rotation AS filter_rotation ON filter_rotation.code = settings.filter_rotation_code LEFT JOIN mwl AS filter_mwl ON filter_mwl.code = settings.filter_mwl_code LIMIT 1',
+        'SELECT"settings"."id" AS "nested_0.id", "settings"."filter_format_code" AS "nested_0.filter_format_code", "settings"."filter_rotation_code" AS "nested_0.filter_rotation_code", "settings"."filter_mwl_code" AS "nested_0.filter_mwl_code", "settings"."filter_collection" AS "nested_0.filter_collection", "settings"."card_sort" AS "nested_0.card_sort", "settings"."card_group" AS "nested_0.card_group", "settings"."deck_sort" AS "nested_0.deck_sort", "settings"."deck_group" AS "nested_0.deck_group", "settings"."deck_card_sort" AS "nested_0.deck_card_sort", "settings"."deck_card_group" AS "nested_0.deck_card_group", "settings"."compare_card_sort" AS "nested_0.compare_card_sort", "settings"."apex_resources" AS "nested_0.apex_resources", "settings"."card_gallery_view" AS "nested_0.card_gallery_view","filter_format"."id" AS "nested_1.id", "filter_format"."code" AS "nested_1.code", "filter_format"."name" AS "nested_1.name","filter_rotation"."code" AS "nested_2.code", "filter_rotation"."format_code" AS "nested_2.format_code", "filter_rotation"."rotation_code" AS "nested_2.rotation_code", "filter_rotation"."name" AS "nested_2.name", "filter_rotation"."date_start" AS "nested_2.date_start", "filter_rotation"."type" AS "nested_2.type", "filter_rotation"."id" AS "nested_2.id", "filter_rotation"."code" AS "nested_2.code", "filter_rotation"."name" AS "nested_2.name","filter_mwl"."code" AS "nested_3.code", "filter_mwl"."format_code" AS "nested_3.format_code", "filter_mwl"."mwl_code" AS "nested_3.mwl_code", "filter_mwl"."name" AS "nested_3.name", "filter_mwl"."date_start" AS "nested_3.date_start", "filter_mwl"."runner_points" AS "nested_3.runner_points", "filter_mwl"."corp_points" AS "nested_3.corp_points", "filter_mwl"."type" AS "nested_3.type", "filter_mwl"."id" AS "nested_3.id", "filter_mwl"."code" AS "nested_3.code", "filter_mwl"."name" AS "nested_3.name" FROM settings LEFT JOIN format AS filter_format ON filter_format.code = settings.filter_format_code LEFT JOIN rotation_view AS filter_rotation ON filter_rotation.code = settings.filter_rotation_code LEFT JOIN mwl_view AS filter_mwl ON filter_mwl.code = settings.filter_mwl_code LIMIT 1',
         variables: [],
         readsFrom: {
           settings,
@@ -6455,58 +6784,57 @@ abstract class _$Database extends GeneratedDatabase {
         filterFormat:
             await format.mapFromRowOrNull(row, tablePrefix: 'nested_1'),
         filterRotation:
-            await rotation.mapFromRowOrNull(row, tablePrefix: 'nested_2'),
-        filterMwl: await mwl.mapFromRowOrNull(row, tablePrefix: 'nested_3'),
+            await rotationView.mapFromRowOrNull(row, tablePrefix: 'nested_2'),
+        filterMwl: await mwlView.mapFromRowOrNull(row, tablePrefix: 'nested_3'),
       );
     });
   }
 
-  Selectable<RotationData> listRotations({ListRotations$where? where}) {
+  Selectable<RotationViewData> listRotations({ListRotations$where? where}) {
     var $arrayStartIndex = 1;
     final generatedwhere = $write(
-        where?.call(this.rotation, this.format) ??
+        where?.call(alias(this.rotationView, 'rotation')) ??
             const CustomExpression('(TRUE)'),
-        hasMultipleTables: true,
         startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT rotation.* FROM rotation INNER JOIN format ON format.code = rotation.format_code WHERE ${generatedwhere.sql} ORDER BY format.id, rotation.type = \'latest\' DESC, rotation.type = \'current\' DESC, rotation.date_start DESC',
+        'SELECT rotation.* FROM rotation_view AS rotation WHERE ${generatedwhere.sql}',
         variables: [
           ...generatedwhere.introducedVariables
         ],
         readsFrom: {
-          rotation,
           format,
+          rotation,
           ...generatedwhere.watchedTables,
-        }).asyncMap(rotation.mapFromRow);
+        }).asyncMap(rotationView.mapFromRow);
   }
 
   Selectable<RotationPackResult> listRotationPacks(
       {ListRotationPacks$where? where}) {
     var $arrayStartIndex = 1;
     final generatedwhere = $write(
-        where?.call(this.rotation, this.format, this.rotationCycle, this.cycle,
-                this.pack) ??
+        where?.call(alias(this.rotationView, 'rotation'), this.format,
+                this.rotationCycle, this.cycle, this.pack) ??
             const CustomExpression('(TRUE)'),
         hasMultipleTables: true,
         startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT"format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name","rotation"."code" AS "nested_1.code", "rotation"."format_code" AS "nested_1.format_code", "rotation"."name" AS "nested_1.name", "rotation"."date_start" AS "nested_1.date_start", "rotation"."type" AS "nested_1.type","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated" FROM rotation INNER JOIN format ON format.code = rotation.format_code LEFT JOIN rotation_cycle ON rotation_cycle.rotation_code = rotation.code INNER JOIN cycle ON cycle.code = rotation_cycle.cycle_code INNER JOIN pack ON pack.cycle_code = cycle.code WHERE ${generatedwhere.sql} ORDER BY format.id, rotation.type = \'latest\', rotation.type = \'current\', rotation.date_start DESC, cycle.position DESC, pack.position',
+        'SELECT"format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name","rotation"."code" AS "nested_1.code", "rotation"."format_code" AS "nested_1.format_code", "rotation"."rotation_code" AS "nested_1.rotation_code", "rotation"."name" AS "nested_1.name", "rotation"."date_start" AS "nested_1.date_start", "rotation"."type" AS "nested_1.type", "rotation"."id" AS "nested_1.id", "rotation"."code" AS "nested_1.code", "rotation"."name" AS "nested_1.name","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated" FROM rotation_view AS rotation INNER JOIN format ON format.code = rotation.format_code LEFT JOIN rotation_cycle ON rotation_cycle.rotation_code = rotation.code INNER JOIN cycle ON cycle.code = rotation_cycle.cycle_code INNER JOIN pack ON pack.cycle_code = cycle.code WHERE ${generatedwhere.sql} ORDER BY format.id, rotation.type DESC NULLS LAST, rotation.date_start DESC, cycle.position DESC, pack.position',
         variables: [
           ...generatedwhere.introducedVariables
         ],
         readsFrom: {
-          rotation,
           format,
           rotationCycle,
           cycle,
           pack,
+          rotation,
           ...generatedwhere.watchedTables,
         }).asyncMap((QueryRow row) async {
       return RotationPackResult(
         format: await format.mapFromRow(row, tablePrefix: 'nested_0'),
-        rotation: await rotation.mapFromRow(row, tablePrefix: 'nested_1'),
+        rotation: await rotationView.mapFromRow(row, tablePrefix: 'nested_1'),
         pack: await pack.mapFromRow(row, tablePrefix: 'nested_2'),
         cycle: await cycle.mapFromRow(row, tablePrefix: 'nested_3'),
       );
@@ -6515,19 +6843,19 @@ abstract class _$Database extends GeneratedDatabase {
 
   Selectable<FormatPackResult> listDefaultFormatPacks() {
     return customSelect(
-        'SELECT"format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name","rotation"."code" AS "nested_1.code", "rotation"."format_code" AS "nested_1.format_code", "rotation"."name" AS "nested_1.name", "rotation"."date_start" AS "nested_1.date_start", "rotation"."type" AS "nested_1.type","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated" FROM settings INNER JOIN format ON format.code = settings.filter_format_code INNER JOIN rotation ON rotation.format_code = format.code AND rotation.type = \'current\' LEFT JOIN rotation_cycle ON rotation_cycle.rotation_code = rotation.code INNER JOIN cycle ON cycle.code = rotation_cycle.cycle_code INNER JOIN pack ON pack.cycle_code = cycle.code ORDER BY cycle.position DESC, pack.position',
+        'SELECT"format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name","rotation"."code" AS "nested_1.code", "rotation"."format_code" AS "nested_1.format_code", "rotation"."rotation_code" AS "nested_1.rotation_code", "rotation"."name" AS "nested_1.name", "rotation"."date_start" AS "nested_1.date_start", "rotation"."type" AS "nested_1.type", "rotation"."id" AS "nested_1.id", "rotation"."code" AS "nested_1.code", "rotation"."name" AS "nested_1.name","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated" FROM settings INNER JOIN format ON format.code = settings.filter_format_code INNER JOIN rotation_view AS rotation ON rotation.format_code = format.code AND rotation.type = \'current\' LEFT JOIN rotation_cycle ON rotation_cycle.rotation_code = rotation.code INNER JOIN cycle ON cycle.code = rotation_cycle.cycle_code INNER JOIN pack ON pack.cycle_code = cycle.code ORDER BY cycle.position DESC, pack.position',
         variables: [],
         readsFrom: {
           settings,
           format,
-          rotation,
           rotationCycle,
           cycle,
           pack,
+          rotation,
         }).asyncMap((QueryRow row) async {
       return FormatPackResult(
         format: await format.mapFromRow(row, tablePrefix: 'nested_0'),
-        rotation: await rotation.mapFromRow(row, tablePrefix: 'nested_1'),
+        rotation: await rotationView.mapFromRow(row, tablePrefix: 'nested_1'),
         pack: await pack.mapFromRow(row, tablePrefix: 'nested_2'),
         cycle: await cycle.mapFromRow(row, tablePrefix: 'nested_3'),
       );
@@ -6538,29 +6866,29 @@ abstract class _$Database extends GeneratedDatabase {
       {ListRotationCards$where? where}) {
     var $arrayStartIndex = 1;
     final generatedwhere = $write(
-        where?.call(this.rotation, this.format, this.rotationCycle, this.cycle,
-                this.pack, this.card) ??
+        where?.call(alias(this.rotationView, 'rotation'), this.format,
+                this.rotationCycle, this.cycle, this.pack, this.card) ??
             const CustomExpression('(TRUE)'),
         hasMultipleTables: true,
         startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT"format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name","rotation"."code" AS "nested_1.code", "rotation"."format_code" AS "nested_1.format_code", "rotation"."name" AS "nested_1.name", "rotation"."date_start" AS "nested_1.date_start", "rotation"."type" AS "nested_1.type","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated","card"."code" AS "nested_4.code", "card"."pack_code" AS "nested_4.pack_code", "card"."faction_code" AS "nested_4.faction_code", "card"."type_code" AS "nested_4.type_code", "card"."position" AS "nested_4.position", "card"."title" AS "nested_4.title", "card"."body" AS "nested_4.body", "card"."keywords" AS "nested_4.keywords", "card"."quantity" AS "nested_4.quantity", "card"."cost" AS "nested_4.cost", "card"."deck_limit" AS "nested_4.deck_limit", "card"."faction_cost" AS "nested_4.faction_cost", "card"."uniqueness" AS "nested_4.uniqueness", "card"."strength" AS "nested_4.strength", "card"."agenda_points" AS "nested_4.agenda_points", "card"."memory_cost" AS "nested_4.memory_cost", "card"."advancement_cost" AS "nested_4.advancement_cost", "card"."trash_cost" AS "nested_4.trash_cost", "card"."base_link" AS "nested_4.base_link", "card"."influence_limit" AS "nested_4.influence_limit", "card"."minimum_deck_size" AS "nested_4.minimum_deck_size", "card"."flavor" AS "nested_4.flavor", "card"."illustrator" AS "nested_4.illustrator", "card"."image_url" AS "nested_4.image_url" FROM rotation INNER JOIN format ON format.code = rotation.format_code LEFT JOIN rotation_cycle ON rotation_cycle.rotation_code = rotation.code INNER JOIN cycle ON cycle.code = rotation_cycle.cycle_code INNER JOIN pack ON pack.cycle_code = cycle.code INNER JOIN card ON card.pack_code = pack.code WHERE ${generatedwhere.sql} ORDER BY rotation.date_start DESC, cycle.position DESC, pack.position, card.position',
+        'SELECT"format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name","rotation"."code" AS "nested_1.code", "rotation"."format_code" AS "nested_1.format_code", "rotation"."rotation_code" AS "nested_1.rotation_code", "rotation"."name" AS "nested_1.name", "rotation"."date_start" AS "nested_1.date_start", "rotation"."type" AS "nested_1.type", "rotation"."id" AS "nested_1.id", "rotation"."code" AS "nested_1.code", "rotation"."name" AS "nested_1.name","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated","card"."code" AS "nested_4.code", "card"."pack_code" AS "nested_4.pack_code", "card"."faction_code" AS "nested_4.faction_code", "card"."type_code" AS "nested_4.type_code", "card"."position" AS "nested_4.position", "card"."title" AS "nested_4.title", "card"."body" AS "nested_4.body", "card"."keywords" AS "nested_4.keywords", "card"."quantity" AS "nested_4.quantity", "card"."cost" AS "nested_4.cost", "card"."deck_limit" AS "nested_4.deck_limit", "card"."faction_cost" AS "nested_4.faction_cost", "card"."uniqueness" AS "nested_4.uniqueness", "card"."strength" AS "nested_4.strength", "card"."agenda_points" AS "nested_4.agenda_points", "card"."memory_cost" AS "nested_4.memory_cost", "card"."advancement_cost" AS "nested_4.advancement_cost", "card"."trash_cost" AS "nested_4.trash_cost", "card"."base_link" AS "nested_4.base_link", "card"."influence_limit" AS "nested_4.influence_limit", "card"."minimum_deck_size" AS "nested_4.minimum_deck_size", "card"."flavor" AS "nested_4.flavor", "card"."illustrator" AS "nested_4.illustrator", "card"."image_url" AS "nested_4.image_url" FROM rotation_view AS rotation INNER JOIN format ON format.code = rotation.format_code LEFT JOIN rotation_cycle ON rotation_cycle.rotation_code = rotation.code INNER JOIN cycle ON cycle.code = rotation_cycle.cycle_code INNER JOIN pack ON pack.cycle_code = cycle.code INNER JOIN card ON card.pack_code = pack.code WHERE ${generatedwhere.sql} ORDER BY rotation.date_start DESC, cycle.position DESC, pack.position, card.position',
         variables: [
           ...generatedwhere.introducedVariables
         ],
         readsFrom: {
-          rotation,
           format,
           rotationCycle,
           cycle,
           pack,
           card,
+          rotation,
           ...generatedwhere.watchedTables,
         }).asyncMap((QueryRow row) async {
       return RotationCardResult(
         format: await format.mapFromRow(row, tablePrefix: 'nested_0'),
-        rotation: await rotation.mapFromRow(row, tablePrefix: 'nested_1'),
+        rotation: await rotationView.mapFromRow(row, tablePrefix: 'nested_1'),
         pack: await pack.mapFromRow(row, tablePrefix: 'nested_2'),
         cycle: await cycle.mapFromRow(row, tablePrefix: 'nested_3'),
         card: await card.mapFromRow(row, tablePrefix: 'nested_4'),
@@ -6672,41 +7000,39 @@ abstract class _$Database extends GeneratedDatabase {
     }).asyncMap(nrdb.mapFromRow);
   }
 
-  Selectable<MwlData> listMwl({ListMwl$where? where}) {
+  Selectable<MwlViewData> listMwl({ListMwl$where? where}) {
     var $arrayStartIndex = 1;
     final generatedwhere = $write(
-        where?.call(this.mwl, this.format) ?? const CustomExpression('(TRUE)'),
-        hasMultipleTables: true,
+        where?.call(alias(this.mwlView, 'mwl')) ??
+            const CustomExpression('(TRUE)'),
         startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT mwl.* FROM mwl INNER JOIN format ON format.code = mwl.format_code WHERE ${generatedwhere.sql} ORDER BY format.id, mwl.type = \'latest\' DESC, mwl.type = \'active\' DESC, mwl.date_start DESC',
+        'SELECT mwl.* FROM mwl_view AS mwl WHERE ${generatedwhere.sql}',
         variables: [
           ...generatedwhere.introducedVariables
         ],
         readsFrom: {
-          mwl,
           format,
+          mwl,
           ...generatedwhere.watchedTables,
-        }).asyncMap(mwl.mapFromRow);
+        }).asyncMap(mwlView.mapFromRow);
   }
 
-  Selectable<MwlCardTitleData> listMwlCardTitle(
-      {ListMwlCardTitle$where? where}) {
+  Selectable<MwlCardData> listMwlCard({ListMwlCard$where? where}) {
     var $arrayStartIndex = 1;
     final generatedwhere = $write(
-        where?.call(this.mwlCardTitle) ?? const CustomExpression('(TRUE)'),
+        where?.call(this.mwlCard) ?? const CustomExpression('(TRUE)'),
         startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
-    return customSelect(
-        'SELECT * FROM mwl_card_title WHERE ${generatedwhere.sql}',
+    return customSelect('SELECT * FROM mwl_card WHERE ${generatedwhere.sql}',
         variables: [
           ...generatedwhere.introducedVariables
         ],
         readsFrom: {
-          mwlCardTitle,
+          mwlCard,
           ...generatedwhere.watchedTables,
-        }).asyncMap(mwlCardTitle.mapFromRow);
+        }).asyncMap(mwlCard.mapFromRow);
   }
 
   Selectable<FormatResult> listFormats({ListFormats$where? where}) {
@@ -6714,16 +7040,16 @@ abstract class _$Database extends GeneratedDatabase {
     final generatedwhere = $write(
         where?.call(
                 this.format,
-                alias(this.rotation, 'current_rotation'),
-                alias(this.rotation, 'latest_rotation'),
-                alias(this.mwl, 'active_mwl'),
-                alias(this.mwl, 'latest_mwl')) ??
+                alias(this.rotationView, 'current_rotation'),
+                alias(this.rotationView, 'latest_rotation'),
+                alias(this.mwlView, 'active_mwl'),
+                alias(this.mwlView, 'latest_mwl')) ??
             const CustomExpression('(TRUE)'),
         hasMultipleTables: true,
         startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT"format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name","current_rotation"."code" AS "nested_1.code", "current_rotation"."format_code" AS "nested_1.format_code", "current_rotation"."name" AS "nested_1.name", "current_rotation"."date_start" AS "nested_1.date_start", "current_rotation"."type" AS "nested_1.type","latest_rotation"."code" AS "nested_2.code", "latest_rotation"."format_code" AS "nested_2.format_code", "latest_rotation"."name" AS "nested_2.name", "latest_rotation"."date_start" AS "nested_2.date_start", "latest_rotation"."type" AS "nested_2.type","active_mwl"."code" AS "nested_3.code", "active_mwl"."format_code" AS "nested_3.format_code", "active_mwl"."name" AS "nested_3.name", "active_mwl"."date_start" AS "nested_3.date_start", "active_mwl"."type" AS "nested_3.type", "active_mwl"."runner_points" AS "nested_3.runner_points", "active_mwl"."corp_points" AS "nested_3.corp_points","latest_mwl"."code" AS "nested_4.code", "latest_mwl"."format_code" AS "nested_4.format_code", "latest_mwl"."name" AS "nested_4.name", "latest_mwl"."date_start" AS "nested_4.date_start", "latest_mwl"."type" AS "nested_4.type", "latest_mwl"."runner_points" AS "nested_4.runner_points", "latest_mwl"."corp_points" AS "nested_4.corp_points" FROM format LEFT JOIN rotation AS current_rotation ON current_rotation.format_code = format.code AND current_rotation.type = \'current\' LEFT JOIN rotation AS latest_rotation ON latest_rotation.format_code = format.code AND latest_rotation.type = \'latest\' LEFT JOIN mwl AS active_mwl ON active_mwl.format_code = format.code AND active_mwl.type = \'active\' LEFT JOIN mwl AS latest_mwl ON latest_mwl.format_code = format.code AND latest_mwl.type = \'latest\' WHERE ${generatedwhere.sql} ORDER BY format.id',
+        'SELECT"format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name","current_rotation"."code" AS "nested_1.code", "current_rotation"."format_code" AS "nested_1.format_code", "current_rotation"."rotation_code" AS "nested_1.rotation_code", "current_rotation"."name" AS "nested_1.name", "current_rotation"."date_start" AS "nested_1.date_start", "current_rotation"."type" AS "nested_1.type", "current_rotation"."id" AS "nested_1.id", "current_rotation"."code" AS "nested_1.code", "current_rotation"."name" AS "nested_1.name","latest_rotation"."code" AS "nested_2.code", "latest_rotation"."format_code" AS "nested_2.format_code", "latest_rotation"."rotation_code" AS "nested_2.rotation_code", "latest_rotation"."name" AS "nested_2.name", "latest_rotation"."date_start" AS "nested_2.date_start", "latest_rotation"."type" AS "nested_2.type", "latest_rotation"."id" AS "nested_2.id", "latest_rotation"."code" AS "nested_2.code", "latest_rotation"."name" AS "nested_2.name","active_mwl"."code" AS "nested_3.code", "active_mwl"."format_code" AS "nested_3.format_code", "active_mwl"."mwl_code" AS "nested_3.mwl_code", "active_mwl"."name" AS "nested_3.name", "active_mwl"."date_start" AS "nested_3.date_start", "active_mwl"."runner_points" AS "nested_3.runner_points", "active_mwl"."corp_points" AS "nested_3.corp_points", "active_mwl"."type" AS "nested_3.type", "active_mwl"."id" AS "nested_3.id", "active_mwl"."code" AS "nested_3.code", "active_mwl"."name" AS "nested_3.name","latest_mwl"."code" AS "nested_4.code", "latest_mwl"."format_code" AS "nested_4.format_code", "latest_mwl"."mwl_code" AS "nested_4.mwl_code", "latest_mwl"."name" AS "nested_4.name", "latest_mwl"."date_start" AS "nested_4.date_start", "latest_mwl"."runner_points" AS "nested_4.runner_points", "latest_mwl"."corp_points" AS "nested_4.corp_points", "latest_mwl"."type" AS "nested_4.type", "latest_mwl"."id" AS "nested_4.id", "latest_mwl"."code" AS "nested_4.code", "latest_mwl"."name" AS "nested_4.name" FROM format LEFT JOIN rotation_view AS current_rotation ON current_rotation.format_code = format.code AND current_rotation.type = \'current\' LEFT JOIN rotation_view AS latest_rotation ON latest_rotation.format_code = format.code AND latest_rotation.type = \'latest\' LEFT JOIN mwl_view AS active_mwl ON active_mwl.format_code = format.code AND active_mwl.type = \'active\' LEFT JOIN mwl_view AS latest_mwl ON latest_mwl.format_code = format.code AND latest_mwl.type = \'latest\' WHERE ${generatedwhere.sql} ORDER BY format.id',
         variables: [
           ...generatedwhere.introducedVariables
         ],
@@ -6736,11 +7062,11 @@ abstract class _$Database extends GeneratedDatabase {
       return FormatResult(
         format: await format.mapFromRow(row, tablePrefix: 'nested_0'),
         currentRotation:
-            await rotation.mapFromRowOrNull(row, tablePrefix: 'nested_1'),
+            await rotationView.mapFromRowOrNull(row, tablePrefix: 'nested_1'),
         latestRotation:
-            await rotation.mapFromRowOrNull(row, tablePrefix: 'nested_2'),
-        activeMwl: await mwl.mapFromRowOrNull(row, tablePrefix: 'nested_3'),
-        latestMwl: await mwl.mapFromRowOrNull(row, tablePrefix: 'nested_4'),
+            await rotationView.mapFromRowOrNull(row, tablePrefix: 'nested_2'),
+        activeMwl: await mwlView.mapFromRowOrNull(row, tablePrefix: 'nested_3'),
+        latestMwl: await mwlView.mapFromRowOrNull(row, tablePrefix: 'nested_4'),
       );
     });
   }
@@ -6783,14 +7109,14 @@ abstract class _$Database extends GeneratedDatabase {
                 this.type,
                 alias(this.type, 'subtype'),
                 this.format,
-                this.rotation,
-                this.mwl) ??
+                alias(this.rotationView, 'rotation'),
+                alias(this.mwlView, 'mwl')) ??
             const CustomExpression('(TRUE)'),
         hasMultipleTables: true,
         startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT"deck"."id" AS "nested_0.id", "deck"."identity_code" AS "nested_0.identity_code", "deck"."format_code" AS "nested_0.format_code", "deck"."rotation_code" AS "nested_0.rotation_code", "deck"."mwl_code" AS "nested_0.mwl_code", "deck"."name" AS "nested_0.name", "deck"."description" AS "nested_0.description", "deck"."created" AS "nested_0.created", "deck"."updated" AS "nested_0.updated", "deck"."deleted" AS "nested_0.deleted", "deck"."remote_updated" AS "nested_0.remote_updated", "deck"."synced" AS "nested_0.synced","identity"."code" AS "nested_1.code", "identity"."pack_code" AS "nested_1.pack_code", "identity"."faction_code" AS "nested_1.faction_code", "identity"."type_code" AS "nested_1.type_code", "identity"."position" AS "nested_1.position", "identity"."title" AS "nested_1.title", "identity"."body" AS "nested_1.body", "identity"."keywords" AS "nested_1.keywords", "identity"."quantity" AS "nested_1.quantity", "identity"."cost" AS "nested_1.cost", "identity"."deck_limit" AS "nested_1.deck_limit", "identity"."faction_cost" AS "nested_1.faction_cost", "identity"."uniqueness" AS "nested_1.uniqueness", "identity"."strength" AS "nested_1.strength", "identity"."agenda_points" AS "nested_1.agenda_points", "identity"."memory_cost" AS "nested_1.memory_cost", "identity"."advancement_cost" AS "nested_1.advancement_cost", "identity"."trash_cost" AS "nested_1.trash_cost", "identity"."base_link" AS "nested_1.base_link", "identity"."influence_limit" AS "nested_1.influence_limit", "identity"."minimum_deck_size" AS "nested_1.minimum_deck_size", "identity"."flavor" AS "nested_1.flavor", "identity"."illustrator" AS "nested_1.illustrator", "identity"."image_url" AS "nested_1.image_url","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated","faction"."code" AS "nested_4.code", "faction"."side_code" AS "nested_4.side_code", "faction"."name" AS "nested_4.name", "faction"."color" AS "nested_4.color", "faction"."is_mini" AS "nested_4.is_mini","side"."code" AS "nested_5.code", "side"."name" AS "nested_5.name","type"."code" AS "nested_6.code", "type"."side_code" AS "nested_6.side_code", "type"."position" AS "nested_6.position", "type"."name" AS "nested_6.name", "type"."is_subtype" AS "nested_6.is_subtype","subtype"."code" AS "nested_7.code", "subtype"."side_code" AS "nested_7.side_code", "subtype"."position" AS "nested_7.position", "subtype"."name" AS "nested_7.name", "subtype"."is_subtype" AS "nested_7.is_subtype","format"."id" AS "nested_8.id", "format"."code" AS "nested_8.code", "format"."name" AS "nested_8.name","rotation"."code" AS "nested_9.code", "rotation"."format_code" AS "nested_9.format_code", "rotation"."name" AS "nested_9.name", "rotation"."date_start" AS "nested_9.date_start", "rotation"."type" AS "nested_9.type","mwl"."code" AS "nested_10.code", "mwl"."format_code" AS "nested_10.format_code", "mwl"."name" AS "nested_10.name", "mwl"."date_start" AS "nested_10.date_start", "mwl"."type" AS "nested_10.type", "mwl"."runner_points" AS "nested_10.runner_points", "mwl"."corp_points" AS "nested_10.corp_points" FROM deck INNER JOIN card AS identity ON identity.code = deck.identity_code INNER JOIN pack ON pack.code = identity.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = identity.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = identity.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = identity.keywords OR identity.keywords LIKE(subtype.name || \' - %\'))LEFT JOIN format ON format.code = deck.format_code LEFT JOIN rotation ON rotation.code = deck.rotation_code LEFT JOIN mwl ON mwl.code = deck.mwl_code WHERE ${generatedwhere.sql}',
+        'SELECT"deck"."id" AS "nested_0.id", "deck"."identity_code" AS "nested_0.identity_code", "deck"."format_code" AS "nested_0.format_code", "deck"."rotation_code" AS "nested_0.rotation_code", "deck"."mwl_code" AS "nested_0.mwl_code", "deck"."name" AS "nested_0.name", "deck"."description" AS "nested_0.description", "deck"."created" AS "nested_0.created", "deck"."updated" AS "nested_0.updated", "deck"."deleted" AS "nested_0.deleted", "deck"."remote_updated" AS "nested_0.remote_updated", "deck"."synced" AS "nested_0.synced","identity"."code" AS "nested_1.code", "identity"."pack_code" AS "nested_1.pack_code", "identity"."faction_code" AS "nested_1.faction_code", "identity"."type_code" AS "nested_1.type_code", "identity"."position" AS "nested_1.position", "identity"."title" AS "nested_1.title", "identity"."body" AS "nested_1.body", "identity"."keywords" AS "nested_1.keywords", "identity"."quantity" AS "nested_1.quantity", "identity"."cost" AS "nested_1.cost", "identity"."deck_limit" AS "nested_1.deck_limit", "identity"."faction_cost" AS "nested_1.faction_cost", "identity"."uniqueness" AS "nested_1.uniqueness", "identity"."strength" AS "nested_1.strength", "identity"."agenda_points" AS "nested_1.agenda_points", "identity"."memory_cost" AS "nested_1.memory_cost", "identity"."advancement_cost" AS "nested_1.advancement_cost", "identity"."trash_cost" AS "nested_1.trash_cost", "identity"."base_link" AS "nested_1.base_link", "identity"."influence_limit" AS "nested_1.influence_limit", "identity"."minimum_deck_size" AS "nested_1.minimum_deck_size", "identity"."flavor" AS "nested_1.flavor", "identity"."illustrator" AS "nested_1.illustrator", "identity"."image_url" AS "nested_1.image_url","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated","faction"."code" AS "nested_4.code", "faction"."side_code" AS "nested_4.side_code", "faction"."name" AS "nested_4.name", "faction"."color" AS "nested_4.color", "faction"."is_mini" AS "nested_4.is_mini","side"."code" AS "nested_5.code", "side"."name" AS "nested_5.name","type"."code" AS "nested_6.code", "type"."side_code" AS "nested_6.side_code", "type"."position" AS "nested_6.position", "type"."name" AS "nested_6.name", "type"."is_subtype" AS "nested_6.is_subtype","subtype"."code" AS "nested_7.code", "subtype"."side_code" AS "nested_7.side_code", "subtype"."position" AS "nested_7.position", "subtype"."name" AS "nested_7.name", "subtype"."is_subtype" AS "nested_7.is_subtype","format"."id" AS "nested_8.id", "format"."code" AS "nested_8.code", "format"."name" AS "nested_8.name","rotation"."code" AS "nested_9.code", "rotation"."format_code" AS "nested_9.format_code", "rotation"."rotation_code" AS "nested_9.rotation_code", "rotation"."name" AS "nested_9.name", "rotation"."date_start" AS "nested_9.date_start", "rotation"."type" AS "nested_9.type", "rotation"."id" AS "nested_9.id", "rotation"."code" AS "nested_9.code", "rotation"."name" AS "nested_9.name","mwl"."code" AS "nested_10.code", "mwl"."format_code" AS "nested_10.format_code", "mwl"."mwl_code" AS "nested_10.mwl_code", "mwl"."name" AS "nested_10.name", "mwl"."date_start" AS "nested_10.date_start", "mwl"."runner_points" AS "nested_10.runner_points", "mwl"."corp_points" AS "nested_10.corp_points", "mwl"."type" AS "nested_10.type", "mwl"."id" AS "nested_10.id", "mwl"."code" AS "nested_10.code", "mwl"."name" AS "nested_10.name" FROM deck INNER JOIN card AS identity ON identity.code = deck.identity_code INNER JOIN pack ON pack.code = identity.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = identity.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = identity.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = identity.keywords OR identity.keywords LIKE(subtype.name || \' - %\'))LEFT JOIN format ON format.code = deck.format_code LEFT JOIN rotation_view AS rotation ON rotation.code = deck.rotation_code LEFT JOIN mwl_view AS mwl ON mwl.code = deck.mwl_code WHERE ${generatedwhere.sql}',
         variables: [
           ...generatedwhere.introducedVariables
         ],
@@ -6817,8 +7143,9 @@ abstract class _$Database extends GeneratedDatabase {
         type: await type.mapFromRow(row, tablePrefix: 'nested_6'),
         subtype: await type.mapFromRowOrNull(row, tablePrefix: 'nested_7'),
         format: await format.mapFromRowOrNull(row, tablePrefix: 'nested_8'),
-        rotation: await rotation.mapFromRowOrNull(row, tablePrefix: 'nested_9'),
-        mwl: await mwl.mapFromRowOrNull(row, tablePrefix: 'nested_10'),
+        rotation:
+            await rotationView.mapFromRowOrNull(row, tablePrefix: 'nested_9'),
+        mwl: await mwlView.mapFromRowOrNull(row, tablePrefix: 'nested_10'),
       );
     });
   }
@@ -6849,7 +7176,7 @@ abstract class _$Database extends GeneratedDatabase {
       String? mwlCode,
       required String identityCode}) {
     return customSelect(
-        'SELECT"identity"."code" AS "nested_0.code", "identity"."pack_code" AS "nested_0.pack_code", "identity"."faction_code" AS "nested_0.faction_code", "identity"."type_code" AS "nested_0.type_code", "identity"."position" AS "nested_0.position", "identity"."title" AS "nested_0.title", "identity"."body" AS "nested_0.body", "identity"."keywords" AS "nested_0.keywords", "identity"."quantity" AS "nested_0.quantity", "identity"."cost" AS "nested_0.cost", "identity"."deck_limit" AS "nested_0.deck_limit", "identity"."faction_cost" AS "nested_0.faction_cost", "identity"."uniqueness" AS "nested_0.uniqueness", "identity"."strength" AS "nested_0.strength", "identity"."agenda_points" AS "nested_0.agenda_points", "identity"."memory_cost" AS "nested_0.memory_cost", "identity"."advancement_cost" AS "nested_0.advancement_cost", "identity"."trash_cost" AS "nested_0.trash_cost", "identity"."base_link" AS "nested_0.base_link", "identity"."influence_limit" AS "nested_0.influence_limit", "identity"."minimum_deck_size" AS "nested_0.minimum_deck_size", "identity"."flavor" AS "nested_0.flavor", "identity"."illustrator" AS "nested_0.illustrator", "identity"."image_url" AS "nested_0.image_url","pack"."code" AS "nested_1.code", "pack"."cycle_code" AS "nested_1.cycle_code", "pack"."position" AS "nested_1.position", "pack"."name" AS "nested_1.name", "pack"."date_release" AS "nested_1.date_release", "pack"."size" AS "nested_1.size","cycle"."code" AS "nested_2.code", "cycle"."position" AS "nested_2.position", "cycle"."name" AS "nested_2.name", "cycle"."size" AS "nested_2.size", "cycle"."rotated" AS "nested_2.rotated","faction"."code" AS "nested_3.code", "faction"."side_code" AS "nested_3.side_code", "faction"."name" AS "nested_3.name", "faction"."color" AS "nested_3.color", "faction"."is_mini" AS "nested_3.is_mini","side"."code" AS "nested_4.code", "side"."name" AS "nested_4.name","type"."code" AS "nested_5.code", "type"."side_code" AS "nested_5.side_code", "type"."position" AS "nested_5.position", "type"."name" AS "nested_5.name", "type"."is_subtype" AS "nested_5.is_subtype","subtype"."code" AS "nested_6.code", "subtype"."side_code" AS "nested_6.side_code", "subtype"."position" AS "nested_6.position", "subtype"."name" AS "nested_6.name", "subtype"."is_subtype" AS "nested_6.is_subtype","format"."id" AS "nested_7.id", "format"."code" AS "nested_7.code", "format"."name" AS "nested_7.name","rotation"."code" AS "nested_8.code", "rotation"."format_code" AS "nested_8.format_code", "rotation"."name" AS "nested_8.name", "rotation"."date_start" AS "nested_8.date_start", "rotation"."type" AS "nested_8.type","mwl"."code" AS "nested_9.code", "mwl"."format_code" AS "nested_9.format_code", "mwl"."name" AS "nested_9.name", "mwl"."date_start" AS "nested_9.date_start", "mwl"."type" AS "nested_9.type", "mwl"."runner_points" AS "nested_9.runner_points", "mwl"."corp_points" AS "nested_9.corp_points" FROM card AS identity INNER JOIN pack ON pack.code = identity.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = identity.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = identity.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = identity.keywords OR identity.keywords LIKE(subtype.name || \' - %\'))LEFT JOIN format ON format.code = ?1 LEFT JOIN rotation ON rotation.code = ?2 LEFT JOIN mwl ON mwl.code = ?3 WHERE identity.code = ?4',
+        'SELECT"identity"."code" AS "nested_0.code", "identity"."pack_code" AS "nested_0.pack_code", "identity"."faction_code" AS "nested_0.faction_code", "identity"."type_code" AS "nested_0.type_code", "identity"."position" AS "nested_0.position", "identity"."title" AS "nested_0.title", "identity"."body" AS "nested_0.body", "identity"."keywords" AS "nested_0.keywords", "identity"."quantity" AS "nested_0.quantity", "identity"."cost" AS "nested_0.cost", "identity"."deck_limit" AS "nested_0.deck_limit", "identity"."faction_cost" AS "nested_0.faction_cost", "identity"."uniqueness" AS "nested_0.uniqueness", "identity"."strength" AS "nested_0.strength", "identity"."agenda_points" AS "nested_0.agenda_points", "identity"."memory_cost" AS "nested_0.memory_cost", "identity"."advancement_cost" AS "nested_0.advancement_cost", "identity"."trash_cost" AS "nested_0.trash_cost", "identity"."base_link" AS "nested_0.base_link", "identity"."influence_limit" AS "nested_0.influence_limit", "identity"."minimum_deck_size" AS "nested_0.minimum_deck_size", "identity"."flavor" AS "nested_0.flavor", "identity"."illustrator" AS "nested_0.illustrator", "identity"."image_url" AS "nested_0.image_url","pack"."code" AS "nested_1.code", "pack"."cycle_code" AS "nested_1.cycle_code", "pack"."position" AS "nested_1.position", "pack"."name" AS "nested_1.name", "pack"."date_release" AS "nested_1.date_release", "pack"."size" AS "nested_1.size","cycle"."code" AS "nested_2.code", "cycle"."position" AS "nested_2.position", "cycle"."name" AS "nested_2.name", "cycle"."size" AS "nested_2.size", "cycle"."rotated" AS "nested_2.rotated","faction"."code" AS "nested_3.code", "faction"."side_code" AS "nested_3.side_code", "faction"."name" AS "nested_3.name", "faction"."color" AS "nested_3.color", "faction"."is_mini" AS "nested_3.is_mini","side"."code" AS "nested_4.code", "side"."name" AS "nested_4.name","type"."code" AS "nested_5.code", "type"."side_code" AS "nested_5.side_code", "type"."position" AS "nested_5.position", "type"."name" AS "nested_5.name", "type"."is_subtype" AS "nested_5.is_subtype","subtype"."code" AS "nested_6.code", "subtype"."side_code" AS "nested_6.side_code", "subtype"."position" AS "nested_6.position", "subtype"."name" AS "nested_6.name", "subtype"."is_subtype" AS "nested_6.is_subtype","format"."id" AS "nested_7.id", "format"."code" AS "nested_7.code", "format"."name" AS "nested_7.name","rotation"."code" AS "nested_8.code", "rotation"."format_code" AS "nested_8.format_code", "rotation"."rotation_code" AS "nested_8.rotation_code", "rotation"."name" AS "nested_8.name", "rotation"."date_start" AS "nested_8.date_start", "rotation"."type" AS "nested_8.type", "rotation"."id" AS "nested_8.id", "rotation"."code" AS "nested_8.code", "rotation"."name" AS "nested_8.name","mwl"."code" AS "nested_9.code", "mwl"."format_code" AS "nested_9.format_code", "mwl"."mwl_code" AS "nested_9.mwl_code", "mwl"."name" AS "nested_9.name", "mwl"."date_start" AS "nested_9.date_start", "mwl"."runner_points" AS "nested_9.runner_points", "mwl"."corp_points" AS "nested_9.corp_points", "mwl"."type" AS "nested_9.type", "mwl"."id" AS "nested_9.id", "mwl"."code" AS "nested_9.code", "mwl"."name" AS "nested_9.name" FROM card AS identity INNER JOIN pack ON pack.code = identity.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = identity.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = identity.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = identity.keywords OR identity.keywords LIKE(subtype.name || \' - %\'))LEFT JOIN format ON format.code = ?1 LEFT JOIN rotation_view AS rotation ON rotation.code = ?2 LEFT JOIN mwl_view AS mwl ON mwl.code = ?3 WHERE identity.code = ?4',
         variables: [
           Variable<String>(formatCode),
           Variable<String>(rotationCode),
@@ -6876,8 +7203,9 @@ abstract class _$Database extends GeneratedDatabase {
         type: await type.mapFromRow(row, tablePrefix: 'nested_5'),
         subtype: await type.mapFromRowOrNull(row, tablePrefix: 'nested_6'),
         format: await format.mapFromRowOrNull(row, tablePrefix: 'nested_7'),
-        rotation: await rotation.mapFromRowOrNull(row, tablePrefix: 'nested_8'),
-        mwl: await mwl.mapFromRowOrNull(row, tablePrefix: 'nested_9'),
+        rotation:
+            await rotationView.mapFromRowOrNull(row, tablePrefix: 'nested_8'),
+        mwl: await mwlView.mapFromRowOrNull(row, tablePrefix: 'nested_9'),
       );
     });
   }
@@ -7048,13 +7376,13 @@ abstract class _$Database extends GeneratedDatabase {
     var $arrayStartIndex = 2;
     final generatedwhere = $write(
         where?.call(this.card, this.pack, this.cycle, this.faction, this.side,
-                this.type, alias(this.type, 'subtype'), this.mwlCardTitle) ??
+                this.type, alias(this.type, 'subtype'), this.mwlCard) ??
             const CustomExpression('(TRUE)'),
         hasMultipleTables: true,
         startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT"card"."code" AS "nested_0.code", "card"."pack_code" AS "nested_0.pack_code", "card"."faction_code" AS "nested_0.faction_code", "card"."type_code" AS "nested_0.type_code", "card"."position" AS "nested_0.position", "card"."title" AS "nested_0.title", "card"."body" AS "nested_0.body", "card"."keywords" AS "nested_0.keywords", "card"."quantity" AS "nested_0.quantity", "card"."cost" AS "nested_0.cost", "card"."deck_limit" AS "nested_0.deck_limit", "card"."faction_cost" AS "nested_0.faction_cost", "card"."uniqueness" AS "nested_0.uniqueness", "card"."strength" AS "nested_0.strength", "card"."agenda_points" AS "nested_0.agenda_points", "card"."memory_cost" AS "nested_0.memory_cost", "card"."advancement_cost" AS "nested_0.advancement_cost", "card"."trash_cost" AS "nested_0.trash_cost", "card"."base_link" AS "nested_0.base_link", "card"."influence_limit" AS "nested_0.influence_limit", "card"."minimum_deck_size" AS "nested_0.minimum_deck_size", "card"."flavor" AS "nested_0.flavor", "card"."illustrator" AS "nested_0.illustrator", "card"."image_url" AS "nested_0.image_url","pack"."code" AS "nested_1.code", "pack"."cycle_code" AS "nested_1.cycle_code", "pack"."position" AS "nested_1.position", "pack"."name" AS "nested_1.name", "pack"."date_release" AS "nested_1.date_release", "pack"."size" AS "nested_1.size","cycle"."code" AS "nested_2.code", "cycle"."position" AS "nested_2.position", "cycle"."name" AS "nested_2.name", "cycle"."size" AS "nested_2.size", "cycle"."rotated" AS "nested_2.rotated","faction"."code" AS "nested_3.code", "faction"."side_code" AS "nested_3.side_code", "faction"."name" AS "nested_3.name", "faction"."color" AS "nested_3.color", "faction"."is_mini" AS "nested_3.is_mini","side"."code" AS "nested_4.code", "side"."name" AS "nested_4.name","type"."code" AS "nested_5.code", "type"."side_code" AS "nested_5.side_code", "type"."position" AS "nested_5.position", "type"."name" AS "nested_5.name", "type"."is_subtype" AS "nested_5.is_subtype","subtype"."code" AS "nested_6.code", "subtype"."side_code" AS "nested_6.side_code", "subtype"."position" AS "nested_6.position", "subtype"."name" AS "nested_6.name", "subtype"."is_subtype" AS "nested_6.is_subtype" FROM card INNER JOIN pack ON pack.code = card.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = card.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = card.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = card.keywords OR card.keywords LIKE(subtype.name || \' - %\'))LEFT JOIN mwl_card_title ON mwl_card_title.mwl_code = ?1 AND mwl_card_title.card_title = card.title WHERE ${generatedwhere.sql}',
+        'SELECT"card"."code" AS "nested_0.code", "card"."pack_code" AS "nested_0.pack_code", "card"."faction_code" AS "nested_0.faction_code", "card"."type_code" AS "nested_0.type_code", "card"."position" AS "nested_0.position", "card"."title" AS "nested_0.title", "card"."body" AS "nested_0.body", "card"."keywords" AS "nested_0.keywords", "card"."quantity" AS "nested_0.quantity", "card"."cost" AS "nested_0.cost", "card"."deck_limit" AS "nested_0.deck_limit", "card"."faction_cost" AS "nested_0.faction_cost", "card"."uniqueness" AS "nested_0.uniqueness", "card"."strength" AS "nested_0.strength", "card"."agenda_points" AS "nested_0.agenda_points", "card"."memory_cost" AS "nested_0.memory_cost", "card"."advancement_cost" AS "nested_0.advancement_cost", "card"."trash_cost" AS "nested_0.trash_cost", "card"."base_link" AS "nested_0.base_link", "card"."influence_limit" AS "nested_0.influence_limit", "card"."minimum_deck_size" AS "nested_0.minimum_deck_size", "card"."flavor" AS "nested_0.flavor", "card"."illustrator" AS "nested_0.illustrator", "card"."image_url" AS "nested_0.image_url","pack"."code" AS "nested_1.code", "pack"."cycle_code" AS "nested_1.cycle_code", "pack"."position" AS "nested_1.position", "pack"."name" AS "nested_1.name", "pack"."date_release" AS "nested_1.date_release", "pack"."size" AS "nested_1.size","cycle"."code" AS "nested_2.code", "cycle"."position" AS "nested_2.position", "cycle"."name" AS "nested_2.name", "cycle"."size" AS "nested_2.size", "cycle"."rotated" AS "nested_2.rotated","faction"."code" AS "nested_3.code", "faction"."side_code" AS "nested_3.side_code", "faction"."name" AS "nested_3.name", "faction"."color" AS "nested_3.color", "faction"."is_mini" AS "nested_3.is_mini","side"."code" AS "nested_4.code", "side"."name" AS "nested_4.name","type"."code" AS "nested_5.code", "type"."side_code" AS "nested_5.side_code", "type"."position" AS "nested_5.position", "type"."name" AS "nested_5.name", "type"."is_subtype" AS "nested_5.is_subtype","subtype"."code" AS "nested_6.code", "subtype"."side_code" AS "nested_6.side_code", "subtype"."position" AS "nested_6.position", "subtype"."name" AS "nested_6.name", "subtype"."is_subtype" AS "nested_6.is_subtype" FROM card INNER JOIN pack ON pack.code = card.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = card.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = card.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = card.keywords OR card.keywords LIKE(subtype.name || \' - %\'))LEFT JOIN mwl_card ON mwl_card.mwl_code = ?1 AND mwl_card.card_title = card.title WHERE ${generatedwhere.sql}',
         variables: [
           Variable<String>(mwlCode),
           ...generatedwhere.introducedVariables
@@ -7066,7 +7394,7 @@ abstract class _$Database extends GeneratedDatabase {
           faction,
           side,
           type,
-          mwlCardTitle,
+          mwlCard,
           ...generatedwhere.watchedTables,
         }).asyncMap((QueryRow row) async {
       return CardResult(
@@ -7119,7 +7447,9 @@ abstract class _$Database extends GeneratedDatabase {
         settings,
         format,
         rotation,
+        rotationView,
         mwl,
+        mwlView,
         OnCreateQuery('INSERT INTO settings DEFAULT VALUES'),
         rotationCycle,
         cycle,
@@ -7127,7 +7457,7 @@ abstract class _$Database extends GeneratedDatabase {
         card,
         faction,
         nrdb,
-        mwlCardTitle,
+        mwlCard,
         deck,
         deckTag,
         deckCard,
@@ -7169,8 +7499,8 @@ typedef ListSides$where = Expression<bool> Function(Side side);
 class SettingResult {
   final SettingsData settings;
   final FormatData? filterFormat;
-  final RotationData? filterRotation;
-  final MwlData? filterMwl;
+  final RotationViewData? filterRotation;
+  final MwlViewData? filterMwl;
   SettingResult({
     required this.settings,
     this.filterFormat,
@@ -7200,12 +7530,11 @@ class SettingResult {
   }
 }
 
-typedef ListRotations$where = Expression<bool> Function(
-    Rotation rotation, Format format);
+typedef ListRotations$where = Expression<bool> Function(RotationView rotation);
 
 class RotationPackResult {
   final FormatData format;
-  final RotationData rotation;
+  final RotationViewData rotation;
   final PackData pack;
   final CycleData cycle;
   RotationPackResult({
@@ -7236,12 +7565,16 @@ class RotationPackResult {
   }
 }
 
-typedef ListRotationPacks$where = Expression<bool> Function(Rotation rotation,
-    Format format, RotationCycle rotation_cycle, Cycle cycle, Pack pack);
+typedef ListRotationPacks$where = Expression<bool> Function(
+    RotationView rotation,
+    Format format,
+    RotationCycle rotation_cycle,
+    Cycle cycle,
+    Pack pack);
 
 class FormatPackResult {
   final FormatData format;
-  final RotationData rotation;
+  final RotationViewData rotation;
   final PackData pack;
   final CycleData cycle;
   FormatPackResult({
@@ -7274,7 +7607,7 @@ class FormatPackResult {
 
 class RotationCardResult {
   final FormatData format;
-  final RotationData rotation;
+  final RotationViewData rotation;
   final PackData pack;
   final CycleData cycle;
   final CardData card;
@@ -7310,7 +7643,7 @@ class RotationCardResult {
 }
 
 typedef ListRotationCards$where = Expression<bool> Function(
-    Rotation rotation,
+    RotationView rotation,
     Format format,
     RotationCycle rotation_cycle,
     Cycle cycle,
@@ -7393,16 +7726,15 @@ class PackResult {
 }
 
 typedef ListPacks$where = Expression<bool> Function(Pack pack, Cycle cycle);
-typedef ListMwl$where = Expression<bool> Function(Mwl mwl, Format format);
-typedef ListMwlCardTitle$where = Expression<bool> Function(
-    MwlCardTitle mwl_card_title);
+typedef ListMwl$where = Expression<bool> Function(MwlView mwl);
+typedef ListMwlCard$where = Expression<bool> Function(MwlCard mwl_card);
 
 class FormatResult {
   final FormatData format;
-  final RotationData? currentRotation;
-  final RotationData? latestRotation;
-  final MwlData? activeMwl;
-  final MwlData? latestMwl;
+  final RotationViewData? currentRotation;
+  final RotationViewData? latestRotation;
+  final MwlViewData? activeMwl;
+  final MwlViewData? latestMwl;
   FormatResult({
     required this.format,
     this.currentRotation,
@@ -7437,10 +7769,10 @@ class FormatResult {
 
 typedef ListFormats$where = Expression<bool> Function(
     Format format,
-    Rotation current_rotation,
-    Rotation latest_rotation,
-    Mwl active_mwl,
-    Mwl latest_mwl);
+    RotationView current_rotation,
+    RotationView latest_rotation,
+    MwlView active_mwl,
+    MwlView latest_mwl);
 
 class FactionResult {
   final FactionData faction;
@@ -7480,8 +7812,8 @@ class DeckResult {
   final TypeData type;
   final TypeData? subtype;
   final FormatData? format;
-  final RotationData? rotation;
-  final MwlData? mwl;
+  final RotationViewData? rotation;
+  final MwlViewData? mwl;
   DeckResult({
     required this.deck,
     required this.identity,
@@ -7542,8 +7874,8 @@ typedef ListDecks$where = Expression<bool> Function(
     Type type,
     Type subtype,
     Format format,
-    Rotation rotation,
-    Mwl mwl);
+    RotationView rotation,
+    MwlView mwl);
 
 class GetDeckFromDataResult {
   final CardData identity;
@@ -7554,8 +7886,8 @@ class GetDeckFromDataResult {
   final TypeData type;
   final TypeData? subtype;
   final FormatData? format;
-  final RotationData? rotation;
-  final MwlData? mwl;
+  final RotationViewData? rotation;
+  final MwlViewData? mwl;
   GetDeckFromDataResult({
     required this.identity,
     required this.pack,
@@ -7751,4 +8083,4 @@ typedef ListCards$where = Expression<bool> Function(
     Side side,
     Type type,
     Type subtype,
-    MwlCardTitle mwl_card_title);
+    MwlCard mwl_card);

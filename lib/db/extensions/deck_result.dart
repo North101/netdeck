@@ -14,8 +14,8 @@ extension DeckResultEx on DeckResult {
         type: TypeData.fromJson((json['type'] as Map).cast()),
         subtype: (json['subtype'] as Map?)?.let((e) => TypeData.fromJson(e.cast())),
         format: (json['format'] as Map?)?.let((e) => FormatData.fromJson(e.cast())),
-        rotation: (json['rotation'] as Map?)?.let((e) => RotationData.fromJson(e.cast())),
-        mwl: (json['mwl'] as Map?)?.let((e) => MwlData.fromJson(e.cast())),
+        rotation: (json['rotation'] as Map?)?.let((e) => RotationViewData.fromJson(e.cast())),
+        mwl: (json['mwl'] as Map?)?.let((e) => MwlViewData.fromJson(e.cast())),
       );
 
   Map<String, dynamic> toJson() {
@@ -57,8 +57,8 @@ extension DeckResultEx on DeckResult {
   DeckResult copyWith({
     DeckData? deck,
     Value<FormatData?> format = const Value.absent(),
-    Value<RotationData?> rotation = const Value.absent(),
-    Value<MwlData?> mwl = const Value.absent(),
+    Value<RotationViewData?> rotation = const Value.absent(),
+    Value<MwlViewData?> mwl = const Value.absent(),
   }) {
     return DeckResult(
       deck: (deck ?? this.deck).copyWith(

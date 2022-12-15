@@ -1,6 +1,6 @@
 import '/db/database.dart';
 
-extension MwlDataEx on MwlData {
+extension MwlDataEx on MwlViewData {
   int? points(SideData side) {
     switch (side.code) {
       case 'corp':

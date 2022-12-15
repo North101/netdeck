@@ -66,10 +66,10 @@ LEFT JOIN type as subtype
 LEFT JOIN format
   ON format.code = deck.format_code
 
-LEFT JOIN rotation
+LEFT JOIN rotation_view AS rotation
   ON rotation.code = deck.rotation_code
 
-LEFT JOIN mwl
+LEFT JOIN mwl_view AS mwl
   ON mwl.code = deck.mwl_code
 
 WHERE $where;
@@ -122,10 +122,10 @@ LEFT JOIN type as subtype
 LEFT JOIN format
   ON format.code = :formatCode
 
-LEFT JOIN rotation
+LEFT JOIN rotation_view AS rotation
   ON rotation.code = :rotationCode
 
-LEFT JOIN mwl
+LEFT JOIN mwl_view AS mwl
   ON mwl.code = :mwlCode
 
 WHERE identity.code = :identityCode;

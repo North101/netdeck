@@ -77,20 +77,20 @@ final formatListProvider = StreamProvider((ref) {
   return db.listFormats().watch();
 });
 
-final rotationProvider = Provider<RotationData?>((ref) => throw UnimplementedError());
+final rotationProvider = Provider<RotationViewData?>((ref) => throw UnimplementedError());
 
-final rotationListProvider = StreamProvider.family<List<RotationData>, FormatData?>((ref, formatFilter) {
+final rotationListProvider = StreamProvider.family<List<RotationViewData>, FormatData?>((ref, formatFilter) {
   final db = ref.watch(dbProvider);
-  return db.listRotations(where: (rotation, format) {
+  return db.listRotations(where: (rotation) {
     return formatFilter?.code.let(rotation.formatCode.equals) ?? trueExpression;
   }).watch();
 });
 
-final mwlProvider = Provider<MwlData?>((ref) => throw UnimplementedError());
+final mwlProvider = Provider<MwlViewData?>((ref) => throw UnimplementedError());
 
-final mwlListProvider = StreamProvider.family<List<MwlData>, FormatData?>((ref, formatFilter) {
+final mwlListProvider = StreamProvider.family<List<MwlViewData>, FormatData?>((ref, formatFilter) {
   final db = ref.watch(dbProvider);
-  return db.listMwl(where: (mwl, format) {
+  return db.listMwl(where: (mwl) {
     return formatFilter?.code.let(db.mwl.formatCode.equals) ?? trueExpression;
   }).watch();
 });

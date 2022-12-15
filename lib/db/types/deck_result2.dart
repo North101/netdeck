@@ -33,8 +33,8 @@ class DeckFullResult extends DeckResult {
         type: TypeData.fromJson((json['type'] as Map).cast()),
         subtype: (json['subtype'] as Map?)?.let((e) => TypeData.fromJson(e.cast())),
         format: (json['format'] as Map?)?.let((e) => FormatData.fromJson(e.cast())),
-        rotation: (json['rotation'] as Map?)?.let((e) => RotationData.fromJson(e.cast())),
-        mwl: (json['mwl'] as Map?)?.let((e) => MwlData.fromJson(e.cast())),
+        rotation: (json['rotation'] as Map?)?.let((e) => RotationViewData.fromJson(e.cast())),
+        mwl: (json['mwl'] as Map?)?.let((e) => MwlViewData.fromJson(e.cast())),
         cards: (json['cards'] as List).cast<Map>().map<MapEntry<CardResult, int>>((e) {
           return MapEntry(CardResultEx.fromJson(e.cast()), e['count'] as int);
         }).toMap(),
@@ -71,8 +71,8 @@ class DeckFullResult extends DeckResult {
     DeckData? deck,
     CardData? identity,
     Value<FormatData?> format = const Value.absent(),
-    Value<RotationData?> rotation = const Value.absent(),
-    Value<MwlData?> mwl = const Value.absent(),
+    Value<RotationViewData?> rotation = const Value.absent(),
+    Value<MwlViewData?> mwl = const Value.absent(),
     Map<CardResult, int>? cards,
     List<String>? tags,
   }) {

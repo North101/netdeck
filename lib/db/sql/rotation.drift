@@ -12,9 +12,67 @@ CREATE TABLE rotation(
   code TEXT NOT NULL PRIMARY KEY,
   format_code TEXT NOT NULL,
   name TEXT NOT NULL,
-  date_start DATETIME,
-  type ENUMNAME(RotationType)
+  date_start DATETIME
 );
+
+CREATE VIEW rotation_view AS
+SELECT *
+FROM (
+  -- current
+  SELECT
+    format.code || '@current' AS code,
+    format.code AS format_code,
+    rotation.code AS rotation_code,
+    format.name || ' Current (' || COALESCE(rotation.name, 'None') || ')' AS name,
+    rotation.date_start,
+    'current' AS type
+  FROM format
+  LEFT JOIN (
+    SELECT *, MAX(date_start)
+    FROM rotation
+    WHERE DATE(date_start) <= DATE('NOW')
+    GROUP BY rotation.format_code
+  ) AS rotation
+    ON rotation.format_code = format.code
+
+  UNION ALL
+
+  -- latest
+  SELECT
+    format.code || '@latest' AS code,
+    format.code AS format_code,
+    rotation.code AS rotation_code,
+    format.name || ' Latest (' || COALESCE(rotation.name, 'None') || ')' AS name,
+    rotation.date_start,
+    'latest' AS type
+  FROM format
+  LEFT JOIN (
+    SELECT *, MAX(date_start)
+    FROM rotation
+    GROUP BY rotation.format_code
+  ) AS rotation
+    ON rotation.format_code = format.code
+
+  UNION ALL
+
+  -- rest
+  SELECT
+    rotation.code,
+    rotation.format_code,
+    rotation.code,
+    rotation.name,
+    rotation.date_start,
+    NULL as type
+  FROM rotation
+) AS rotation
+
+INNER JOIN format
+  ON format.code = rotation.format_code
+
+ORDER BY
+	format.id,
+  rotation.type DESC NULLS LAST,
+	rotation.date_start DESC;
 
 CREATE TABLE rotation_cycle(
   rotation_code TEXT NOT NULL,
@@ -24,21 +82,9 @@ CREATE TABLE rotation_cycle(
 );
 
 listRotations($where = TRUE):
-SELECT
-  rotation.*
-
-FROM rotation
-
-INNER JOIN format
-  ON format.code = rotation.format_code
-
-WHERE $where
-
-ORDER BY
-  format.id,
-  rotation.type = 'latest' DESC,
-  rotation.type = 'current' DESC,
-  rotation.date_start DESC;
+SELECT rotation.*
+FROM rotation_view AS rotation
+WHERE $where;
 
 listRotationPacks($where = TRUE) AS RotationPackResult:
 SELECT
@@ -46,7 +92,7 @@ SELECT
   rotation.**,
   pack.**,
   cycle.**
-FROM rotation
+FROM rotation_view AS rotation
 
 INNER JOIN format
   ON format.code = rotation.format_code
@@ -64,8 +110,7 @@ WHERE $where
 
 ORDER BY
   format.id,
-  rotation.type = 'latest',
-  rotation.type = 'current',
+  rotation.type DESC NULLS LAST,
   rotation.date_start DESC,
   cycle.position DESC,
   pack.position;
@@ -81,7 +126,7 @@ FROM settings
 INNER JOIN format
   ON format.code = settings.filter_format_code
 
-INNER JOIN rotation
+INNER JOIN rotation_view AS rotation
   ON rotation.format_code = format.code
   AND rotation.type = 'current'
 
@@ -105,7 +150,7 @@ SELECT
   pack.**,
   cycle.**,
   card.**
-FROM rotation
+FROM rotation_view AS rotation
 
 INNER JOIN format
   ON format.code = rotation.format_code

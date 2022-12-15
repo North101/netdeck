@@ -9,23 +9,77 @@ CREATE TABLE mwl(
   format_code TEXT NOT NULL,
   name TEXT NOT NULL,
   date_start DATETIME,
-  type ENUMNAME(MwlType),
   runner_points INT,
   corp_points INT
 );
 
-listMwl($where = TRUE):
-SELECT
-  mwl.*
-FROM mwl
+CREATE VIEW mwl_view AS
+SELECT *
+FROM (
+  -- active
+  SELECT
+    format.code || '@active' AS code,
+    format.code AS format_code,
+    mwl.code AS mwl_code,
+    format.name || ' Active (' || COALESCE(mwl.name, 'None') || ')' AS name,
+    mwl.date_start,
+    mwl.runner_points,
+    mwl.corp_points,
+    'active' AS type
+  FROM format
+  LEFT JOIN (
+    SELECT *, MAX(date_start)
+    FROM mwl
+    WHERE DATE(date_start) <= DATE('NOW')
+    GROUP BY mwl.format_code
+  ) AS mwl
+    ON mwl.format_code = format.code
+
+  UNION ALL
+
+  -- latest
+  SELECT
+    format.code || '@latest' AS code,
+    format.code AS format_code,
+    mwl.code AS mwl_code,
+    format.name || ' Latest (' || COALESCE(mwl.name, 'None') || ')' AS name,
+    mwl.date_start,
+    mwl.runner_points,
+    mwl.corp_points,
+    'latest' AS type
+  FROM format
+  LEFT JOIN (
+    SELECT *, MAX(date_start)
+    FROM mwl
+    GROUP BY mwl.format_code
+  ) AS mwl
+    ON mwl.format_code = format.code
+
+  UNION ALL
+
+  -- rest
+  SELECT
+    mwl.code,
+    mwl.format_code,
+    mwl.code,
+    mwl.name,
+    mwl.date_start,
+    mwl.runner_points,
+    mwl.corp_points,
+    NULL as type
+  FROM mwl
+) AS mwl
 
 INNER JOIN format
   ON format.code = mwl.format_code
 
-WHERE $where
-
 ORDER BY
-  format.id,
-  mwl.type = 'latest' DESC,
-  mwl.type = 'active' DESC,
-  mwl.date_start DESC;
+	format.id,
+  mwl.type DESC NULLS LAST,
+	mwl.date_start DESC;
+
+listMwl($where = TRUE):
+SELECT mwl.*
+FROM mwl_view AS mwl
+
+WHERE $where;

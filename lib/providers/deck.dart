@@ -262,7 +262,7 @@ final deckRotationCardListProvider = StreamProvider.family<List<RotationCardResu
     where: (rotation, format, rotationCycle, cycle, pack, card) {
       return buildAnd([
         card.code.isIn(deck.cards.keys.map((e) => e.code).toList()),
-        rotation.code.equalsExp(drift.Variable(deck.rotation?.code)),
+        rotation.code.equalsExp(drift.Variable(deck.rotation?.rotationCode)),
       ]);
     },
   ).watch();
@@ -270,10 +270,10 @@ final deckRotationCardListProvider = StreamProvider.family<List<RotationCardResu
   dbProvider,
 ]);
 
-final deckMwlCardListProvider = StreamProvider.family<List<MwlCardTitleData>, DeckFullResult>((ref, deck) {
+final deckMwlCardListProvider = StreamProvider.family<List<MwlCardData>, DeckFullResult>((ref, deck) {
   final db = ref.watch(dbProvider);
   return db //
-      .listMwlCardTitle(where: (mwlCard) => mwlCard.mwlCode.equalsExp(drift.Variable(deck.mwl?.code))) //
+      .listMwlCard(where: (mwlCard) => mwlCard.mwlCode.equalsExp(drift.Variable(deck.mwl?.mwlCode))) //
       .watch();
 }, dependencies: [
   dbProvider,

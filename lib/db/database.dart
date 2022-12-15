@@ -32,8 +32,7 @@ extension RemoveDiacriticsExpression on Expression<String> {
   'sql/deck.drift',
   'sql/faction.drift',
   'sql/format.drift',
-  'sql/mwl_card_title.drift',
-  //'sql/mwl_card.drift',
+  'sql/mwl_card.drift',
   'sql/mwl.drift',
   'sql/nrdb.drift',
   'sql/pack.drift',
@@ -57,7 +56,7 @@ class Database extends _$Database {
   }
 
   @override
-  int schemaVersion = 7;
+  int schemaVersion = 8;
 
   @override
   MigrationStrategy get migration => migrationStrategy(this);

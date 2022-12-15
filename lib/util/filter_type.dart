@@ -70,11 +70,11 @@ abstract class FormatFilter implements FilterState {
 }
 
 abstract class RotationFilter implements FilterState {
-  Rotation get rotation;
+  RotationView get rotation;
 }
 
 abstract class MwlFilter implements FilterState {
-  Mwl get mwl;
+  MwlView get mwl;
 }
 
 abstract class CycleFilter implements FilterState {
@@ -245,7 +245,7 @@ class CardFilterState extends FilterState implements PackFilter, CycleFilter, Fa
   final Type type;
   @override
   final Type subtype;
-  final MwlCardTitle mwlCard;
+  final MwlCard mwlCard;
 
   @override
   int get hashCode => Object.hash(
@@ -319,13 +319,13 @@ class DeckFilterState extends FilterState
   final Format format;
 
   @override
-  final Mwl mwl;
+  final MwlView mwl;
 
   @override
   final Pack pack;
 
   @override
-  final Rotation rotation;
+  final RotationView rotation;
 
   @override
   final Side side;

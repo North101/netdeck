@@ -299,20 +299,16 @@ packages:
   drift:
     dependency: "direct main"
     description:
-      path: drift
-      ref: develop
-      resolved-ref: e5371afe92a236b64db48045433674de9115bdcb
-      url: "https://github.com/simolus3/drift.git"
-    source: git
+      path: "../drift/drift"
+      relative: true
+    source: path
     version: "2.4.0-dev"
   drift_dev:
     dependency: "direct dev"
     description:
-      path: drift_dev
-      ref: develop
-      resolved-ref: e5371afe92a236b64db48045433674de9115bdcb
-      url: "https://github.com/simolus3/drift.git"
-    source: git
+      path: "../drift/drift_dev"
+      relative: true
+    source: path
     version: "2.4.0-dev"
   ffi:
     dependency: transitive
@@ -925,11 +921,9 @@ packages:
   sqlparser:
     dependency: "direct overridden"
     description:
-      path: sqlparser
-      ref: develop
-      resolved-ref: e5371afe92a236b64db48045433674de9115bdcb
-      url: "https://github.com/simolus3/drift.git"
-    source: git
+      path: "../drift/sqlparser"
+      relative: true
+    source: path
     version: "0.24.0"
   stack_trace:
     dependency: transitive

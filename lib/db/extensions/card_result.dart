@@ -32,7 +32,7 @@ extension CardResultEx on CardResult {
   DeckFullResult toDeck({
     required DeckData deck,
     FormatData? format,
-    MwlData? mwl,
+    MwlViewData? mwl,
     required Map<CardResult, int> cards,
     required List<String> tags,
   }) {
