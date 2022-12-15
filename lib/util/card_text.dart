@@ -19,7 +19,7 @@ class CardUniquenessSpan extends TextSpan {
 }
 
 class CardInfluenceSpan extends TextSpan {
-  factory CardInfluenceSpan(CardResult card, {FactionData? faction, MwlCardData? mwlCard, TextStyle? style}) {
+  factory CardInfluenceSpan(CardResult card, {FactionData? faction, MwlCardTitleData? mwlCard, TextStyle? style}) {
     final factionCost = mwlCard?.universalFactionCost ?? (card.faction == faction ? 0 : card.card.factionCost);
     return CardInfluenceSpan._(
       children: [
@@ -34,7 +34,7 @@ class CardInfluenceSpan extends TextSpan {
 }
 
 class CardPointsSpan extends TextSpan {
-  factory CardPointsSpan(MwlCardData mwlCard, {TextStyle? style}) {
+  factory CardPointsSpan(MwlCardTitleData mwlCard, {TextStyle? style}) {
     final points = mwlCard.points;
     if (points == null) return const CardPointsSpan._(children: [], style: TextStyle());
 

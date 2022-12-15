@@ -4854,17 +4854,18 @@ class Nrdb extends Table with TableInfo<Nrdb, NrdbData> {
   bool get dontWriteConstraints => true;
 }
 
-class MwlCardData extends DataClass implements Insertable<MwlCardData> {
+class MwlCardTitleData extends DataClass
+    implements Insertable<MwlCardTitleData> {
   final String mwlCode;
-  final String cardCode;
+  final String cardTitle;
   final bool isRestricted;
   final int? globalPenalty;
   final int? universalFactionCost;
   final int? deckLimit;
   final int? points;
-  const MwlCardData(
+  const MwlCardTitleData(
       {required this.mwlCode,
-      required this.cardCode,
+      required this.cardTitle,
       required this.isRestricted,
       this.globalPenalty,
       this.universalFactionCost,
@@ -4874,7 +4875,7 @@ class MwlCardData extends DataClass implements Insertable<MwlCardData> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['mwl_code'] = Variable<String>(mwlCode);
-    map['card_code'] = Variable<String>(cardCode);
+    map['card_title'] = Variable<String>(cardTitle);
     map['is_restricted'] = Variable<bool>(isRestricted);
     if (!nullToAbsent || globalPenalty != null) {
       map['global_penalty'] = Variable<int>(globalPenalty);
@@ -4891,10 +4892,10 @@ class MwlCardData extends DataClass implements Insertable<MwlCardData> {
     return map;
   }
 
-  MwlCardCompanion toCompanion(bool nullToAbsent) {
-    return MwlCardCompanion(
+  MwlCardTitleCompanion toCompanion(bool nullToAbsent) {
+    return MwlCardTitleCompanion(
       mwlCode: Value(mwlCode),
-      cardCode: Value(cardCode),
+      cardTitle: Value(cardTitle),
       isRestricted: Value(isRestricted),
       globalPenalty: globalPenalty == null && nullToAbsent
           ? const Value.absent()
@@ -4910,12 +4911,12 @@ class MwlCardData extends DataClass implements Insertable<MwlCardData> {
     );
   }
 
-  factory MwlCardData.fromJson(Map<String, dynamic> json,
+  factory MwlCardTitleData.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return MwlCardData(
+    return MwlCardTitleData(
       mwlCode: serializer.fromJson<String>(json['mwl_code']),
-      cardCode: serializer.fromJson<String>(json['card_code']),
+      cardTitle: serializer.fromJson<String>(json['card_title']),
       isRestricted: serializer.fromJson<bool>(json['is_restricted']),
       globalPenalty: serializer.fromJson<int?>(json['global_penalty']),
       universalFactionCost:
@@ -4929,7 +4930,7 @@ class MwlCardData extends DataClass implements Insertable<MwlCardData> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'mwl_code': serializer.toJson<String>(mwlCode),
-      'card_code': serializer.toJson<String>(cardCode),
+      'card_title': serializer.toJson<String>(cardTitle),
       'is_restricted': serializer.toJson<bool>(isRestricted),
       'global_penalty': serializer.toJson<int?>(globalPenalty),
       'universal_faction_cost': serializer.toJson<int?>(universalFactionCost),
@@ -4938,17 +4939,17 @@ class MwlCardData extends DataClass implements Insertable<MwlCardData> {
     };
   }
 
-  MwlCardData copyWith(
+  MwlCardTitleData copyWith(
           {String? mwlCode,
-          String? cardCode,
+          String? cardTitle,
           bool? isRestricted,
           Value<int?> globalPenalty = const Value.absent(),
           Value<int?> universalFactionCost = const Value.absent(),
           Value<int?> deckLimit = const Value.absent(),
           Value<int?> points = const Value.absent()}) =>
-      MwlCardData(
+      MwlCardTitleData(
         mwlCode: mwlCode ?? this.mwlCode,
-        cardCode: cardCode ?? this.cardCode,
+        cardTitle: cardTitle ?? this.cardTitle,
         isRestricted: isRestricted ?? this.isRestricted,
         globalPenalty:
             globalPenalty.present ? globalPenalty.value : this.globalPenalty,
@@ -4960,9 +4961,9 @@ class MwlCardData extends DataClass implements Insertable<MwlCardData> {
       );
   @override
   String toString() {
-    return (StringBuffer('MwlCardData(')
+    return (StringBuffer('MwlCardTitleData(')
           ..write('mwlCode: $mwlCode, ')
-          ..write('cardCode: $cardCode, ')
+          ..write('cardTitle: $cardTitle, ')
           ..write('isRestricted: $isRestricted, ')
           ..write('globalPenalty: $globalPenalty, ')
           ..write('universalFactionCost: $universalFactionCost, ')
@@ -4973,14 +4974,14 @@ class MwlCardData extends DataClass implements Insertable<MwlCardData> {
   }
 
   @override
-  int get hashCode => Object.hash(mwlCode, cardCode, isRestricted,
+  int get hashCode => Object.hash(mwlCode, cardTitle, isRestricted,
       globalPenalty, universalFactionCost, deckLimit, points);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is MwlCardData &&
+      (other is MwlCardTitleData &&
           other.mwlCode == this.mwlCode &&
-          other.cardCode == this.cardCode &&
+          other.cardTitle == this.cardTitle &&
           other.isRestricted == this.isRestricted &&
           other.globalPenalty == this.globalPenalty &&
           other.universalFactionCost == this.universalFactionCost &&
@@ -4988,37 +4989,37 @@ class MwlCardData extends DataClass implements Insertable<MwlCardData> {
           other.points == this.points);
 }
 
-class MwlCardCompanion extends UpdateCompanion<MwlCardData> {
+class MwlCardTitleCompanion extends UpdateCompanion<MwlCardTitleData> {
   final Value<String> mwlCode;
-  final Value<String> cardCode;
+  final Value<String> cardTitle;
   final Value<bool> isRestricted;
   final Value<int?> globalPenalty;
   final Value<int?> universalFactionCost;
   final Value<int?> deckLimit;
   final Value<int?> points;
-  const MwlCardCompanion({
+  const MwlCardTitleCompanion({
     this.mwlCode = const Value.absent(),
-    this.cardCode = const Value.absent(),
+    this.cardTitle = const Value.absent(),
     this.isRestricted = const Value.absent(),
     this.globalPenalty = const Value.absent(),
     this.universalFactionCost = const Value.absent(),
     this.deckLimit = const Value.absent(),
     this.points = const Value.absent(),
   });
-  MwlCardCompanion.insert({
+  MwlCardTitleCompanion.insert({
     required String mwlCode,
-    required String cardCode,
+    required String cardTitle,
     required bool isRestricted,
     this.globalPenalty = const Value.absent(),
     this.universalFactionCost = const Value.absent(),
     this.deckLimit = const Value.absent(),
     this.points = const Value.absent(),
   })  : mwlCode = Value(mwlCode),
-        cardCode = Value(cardCode),
+        cardTitle = Value(cardTitle),
         isRestricted = Value(isRestricted);
-  static Insertable<MwlCardData> custom({
+  static Insertable<MwlCardTitleData> custom({
     Expression<String>? mwlCode,
-    Expression<String>? cardCode,
+    Expression<String>? cardTitle,
     Expression<bool>? isRestricted,
     Expression<int>? globalPenalty,
     Expression<int>? universalFactionCost,
@@ -5027,7 +5028,7 @@ class MwlCardCompanion extends UpdateCompanion<MwlCardData> {
   }) {
     return RawValuesInsertable({
       if (mwlCode != null) 'mwl_code': mwlCode,
-      if (cardCode != null) 'card_code': cardCode,
+      if (cardTitle != null) 'card_title': cardTitle,
       if (isRestricted != null) 'is_restricted': isRestricted,
       if (globalPenalty != null) 'global_penalty': globalPenalty,
       if (universalFactionCost != null)
@@ -5037,17 +5038,17 @@ class MwlCardCompanion extends UpdateCompanion<MwlCardData> {
     });
   }
 
-  MwlCardCompanion copyWith(
+  MwlCardTitleCompanion copyWith(
       {Value<String>? mwlCode,
-      Value<String>? cardCode,
+      Value<String>? cardTitle,
       Value<bool>? isRestricted,
       Value<int?>? globalPenalty,
       Value<int?>? universalFactionCost,
       Value<int?>? deckLimit,
       Value<int?>? points}) {
-    return MwlCardCompanion(
+    return MwlCardTitleCompanion(
       mwlCode: mwlCode ?? this.mwlCode,
-      cardCode: cardCode ?? this.cardCode,
+      cardTitle: cardTitle ?? this.cardTitle,
       isRestricted: isRestricted ?? this.isRestricted,
       globalPenalty: globalPenalty ?? this.globalPenalty,
       universalFactionCost: universalFactionCost ?? this.universalFactionCost,
@@ -5062,8 +5063,8 @@ class MwlCardCompanion extends UpdateCompanion<MwlCardData> {
     if (mwlCode.present) {
       map['mwl_code'] = Variable<String>(mwlCode.value);
     }
-    if (cardCode.present) {
-      map['card_code'] = Variable<String>(cardCode.value);
+    if (cardTitle.present) {
+      map['card_title'] = Variable<String>(cardTitle.value);
     }
     if (isRestricted.present) {
       map['is_restricted'] = Variable<bool>(isRestricted.value);
@@ -5085,9 +5086,9 @@ class MwlCardCompanion extends UpdateCompanion<MwlCardData> {
 
   @override
   String toString() {
-    return (StringBuffer('MwlCardCompanion(')
+    return (StringBuffer('MwlCardTitleCompanion(')
           ..write('mwlCode: $mwlCode, ')
-          ..write('cardCode: $cardCode, ')
+          ..write('cardTitle: $cardTitle, ')
           ..write('isRestricted: $isRestricted, ')
           ..write('globalPenalty: $globalPenalty, ')
           ..write('universalFactionCost: $universalFactionCost, ')
@@ -5098,11 +5099,12 @@ class MwlCardCompanion extends UpdateCompanion<MwlCardData> {
   }
 }
 
-class MwlCard extends Table with TableInfo<MwlCard, MwlCardData> {
+class MwlCardTitle extends Table
+    with TableInfo<MwlCardTitle, MwlCardTitleData> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  MwlCard(this.attachedDatabase, [this._alias]);
+  MwlCardTitle(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _mwlCodeMeta =
       const VerificationMeta('mwlCode');
   late final GeneratedColumn<String> mwlCode = GeneratedColumn<String>(
@@ -5110,10 +5112,10 @@ class MwlCard extends Table with TableInfo<MwlCard, MwlCardData> {
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
-  static const VerificationMeta _cardCodeMeta =
-      const VerificationMeta('cardCode');
-  late final GeneratedColumn<String> cardCode = GeneratedColumn<String>(
-      'card_code', aliasedName, false,
+  static const VerificationMeta _cardTitleMeta =
+      const VerificationMeta('cardTitle');
+  late final GeneratedColumn<String> cardTitle = GeneratedColumn<String>(
+      'card_title', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
@@ -5154,7 +5156,7 @@ class MwlCard extends Table with TableInfo<MwlCard, MwlCardData> {
   @override
   List<GeneratedColumn> get $columns => [
         mwlCode,
-        cardCode,
+        cardTitle,
         isRestricted,
         globalPenalty,
         universalFactionCost,
@@ -5162,11 +5164,11 @@ class MwlCard extends Table with TableInfo<MwlCard, MwlCardData> {
         points
       ];
   @override
-  String get aliasedName => _alias ?? 'mwl_card';
+  String get aliasedName => _alias ?? 'mwl_card_title';
   @override
-  String get actualTableName => 'mwl_card';
+  String get actualTableName => 'mwl_card_title';
   @override
-  VerificationContext validateIntegrity(Insertable<MwlCardData> instance,
+  VerificationContext validateIntegrity(Insertable<MwlCardTitleData> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -5176,11 +5178,11 @@ class MwlCard extends Table with TableInfo<MwlCard, MwlCardData> {
     } else if (isInserting) {
       context.missing(_mwlCodeMeta);
     }
-    if (data.containsKey('card_code')) {
-      context.handle(_cardCodeMeta,
-          cardCode.isAcceptableOrUnknown(data['card_code']!, _cardCodeMeta));
+    if (data.containsKey('card_title')) {
+      context.handle(_cardTitleMeta,
+          cardTitle.isAcceptableOrUnknown(data['card_title']!, _cardTitleMeta));
     } else if (isInserting) {
-      context.missing(_cardCodeMeta);
+      context.missing(_cardTitleMeta);
     }
     if (data.containsKey('is_restricted')) {
       context.handle(
@@ -5214,15 +5216,15 @@ class MwlCard extends Table with TableInfo<MwlCard, MwlCardData> {
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {mwlCode, cardCode};
+  Set<GeneratedColumn> get $primaryKey => {mwlCode, cardTitle};
   @override
-  MwlCardData map(Map<String, dynamic> data, {String? tablePrefix}) {
+  MwlCardTitleData map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return MwlCardData(
+    return MwlCardTitleData(
       mwlCode: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}mwl_code'])!,
-      cardCode: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}card_code'])!,
+      cardTitle: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}card_title'])!,
       isRestricted: attachedDatabase.typeMapping
           .read(DriftSqlType.bool, data['${effectivePrefix}is_restricted'])!,
       globalPenalty: attachedDatabase.typeMapping
@@ -5237,13 +5239,13 @@ class MwlCard extends Table with TableInfo<MwlCard, MwlCardData> {
   }
 
   @override
-  MwlCard createAlias(String alias) {
-    return MwlCard(attachedDatabase, alias);
+  MwlCardTitle createAlias(String alias) {
+    return MwlCardTitle(attachedDatabase, alias);
   }
 
   @override
   List<String> get customConstraints =>
-      const ['PRIMARY KEY(mwl_code, card_code)'];
+      const ['PRIMARY KEY(mwl_code, card_title)'];
   @override
   bool get dontWriteConstraints => true;
 }
@@ -6393,7 +6395,7 @@ abstract class _$Database extends GeneratedDatabase {
   late final Card card = Card(this);
   late final Faction faction = Faction(this);
   late final Nrdb nrdb = Nrdb(this);
-  late final MwlCard mwlCard = MwlCard(this);
+  late final MwlCardTitle mwlCardTitle = MwlCardTitle(this);
   late final Deck deck = Deck(this);
   late final DeckTag deckTag = DeckTag(this);
   late final DeckCard deckCard = DeckCard(this);
@@ -6689,20 +6691,22 @@ abstract class _$Database extends GeneratedDatabase {
         }).asyncMap(mwl.mapFromRow);
   }
 
-  Selectable<MwlCardData> listMwlCard({ListMwlCard$where? where}) {
+  Selectable<MwlCardTitleData> listMwlCardTitle(
+      {ListMwlCardTitle$where? where}) {
     var $arrayStartIndex = 1;
     final generatedwhere = $write(
-        where?.call(this.mwlCard) ?? const CustomExpression('(TRUE)'),
+        where?.call(this.mwlCardTitle) ?? const CustomExpression('(TRUE)'),
         startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
-    return customSelect('SELECT * FROM mwl_card WHERE ${generatedwhere.sql}',
+    return customSelect(
+        'SELECT * FROM mwl_card_title WHERE ${generatedwhere.sql}',
         variables: [
           ...generatedwhere.introducedVariables
         ],
         readsFrom: {
-          mwlCard,
+          mwlCardTitle,
           ...generatedwhere.watchedTables,
-        }).asyncMap(mwlCard.mapFromRow);
+        }).asyncMap(mwlCardTitle.mapFromRow);
   }
 
   Selectable<FormatResult> listFormats({ListFormats$where? where}) {
@@ -7044,13 +7048,13 @@ abstract class _$Database extends GeneratedDatabase {
     var $arrayStartIndex = 2;
     final generatedwhere = $write(
         where?.call(this.card, this.pack, this.cycle, this.faction, this.side,
-                this.type, alias(this.type, 'subtype'), this.mwlCard) ??
+                this.type, alias(this.type, 'subtype'), this.mwlCardTitle) ??
             const CustomExpression('(TRUE)'),
         hasMultipleTables: true,
         startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT"card"."code" AS "nested_0.code", "card"."pack_code" AS "nested_0.pack_code", "card"."faction_code" AS "nested_0.faction_code", "card"."type_code" AS "nested_0.type_code", "card"."position" AS "nested_0.position", "card"."title" AS "nested_0.title", "card"."body" AS "nested_0.body", "card"."keywords" AS "nested_0.keywords", "card"."quantity" AS "nested_0.quantity", "card"."cost" AS "nested_0.cost", "card"."deck_limit" AS "nested_0.deck_limit", "card"."faction_cost" AS "nested_0.faction_cost", "card"."uniqueness" AS "nested_0.uniqueness", "card"."strength" AS "nested_0.strength", "card"."agenda_points" AS "nested_0.agenda_points", "card"."memory_cost" AS "nested_0.memory_cost", "card"."advancement_cost" AS "nested_0.advancement_cost", "card"."trash_cost" AS "nested_0.trash_cost", "card"."base_link" AS "nested_0.base_link", "card"."influence_limit" AS "nested_0.influence_limit", "card"."minimum_deck_size" AS "nested_0.minimum_deck_size", "card"."flavor" AS "nested_0.flavor", "card"."illustrator" AS "nested_0.illustrator", "card"."image_url" AS "nested_0.image_url","pack"."code" AS "nested_1.code", "pack"."cycle_code" AS "nested_1.cycle_code", "pack"."position" AS "nested_1.position", "pack"."name" AS "nested_1.name", "pack"."date_release" AS "nested_1.date_release", "pack"."size" AS "nested_1.size","cycle"."code" AS "nested_2.code", "cycle"."position" AS "nested_2.position", "cycle"."name" AS "nested_2.name", "cycle"."size" AS "nested_2.size", "cycle"."rotated" AS "nested_2.rotated","faction"."code" AS "nested_3.code", "faction"."side_code" AS "nested_3.side_code", "faction"."name" AS "nested_3.name", "faction"."color" AS "nested_3.color", "faction"."is_mini" AS "nested_3.is_mini","side"."code" AS "nested_4.code", "side"."name" AS "nested_4.name","type"."code" AS "nested_5.code", "type"."side_code" AS "nested_5.side_code", "type"."position" AS "nested_5.position", "type"."name" AS "nested_5.name", "type"."is_subtype" AS "nested_5.is_subtype","subtype"."code" AS "nested_6.code", "subtype"."side_code" AS "nested_6.side_code", "subtype"."position" AS "nested_6.position", "subtype"."name" AS "nested_6.name", "subtype"."is_subtype" AS "nested_6.is_subtype" FROM card INNER JOIN pack ON pack.code = card.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = card.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = card.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = card.keywords OR card.keywords LIKE(subtype.name || \' - %\'))LEFT JOIN mwl_card ON mwl_card.mwl_code = ?1 AND mwl_card.card_code = card.code WHERE ${generatedwhere.sql}',
+        'SELECT"card"."code" AS "nested_0.code", "card"."pack_code" AS "nested_0.pack_code", "card"."faction_code" AS "nested_0.faction_code", "card"."type_code" AS "nested_0.type_code", "card"."position" AS "nested_0.position", "card"."title" AS "nested_0.title", "card"."body" AS "nested_0.body", "card"."keywords" AS "nested_0.keywords", "card"."quantity" AS "nested_0.quantity", "card"."cost" AS "nested_0.cost", "card"."deck_limit" AS "nested_0.deck_limit", "card"."faction_cost" AS "nested_0.faction_cost", "card"."uniqueness" AS "nested_0.uniqueness", "card"."strength" AS "nested_0.strength", "card"."agenda_points" AS "nested_0.agenda_points", "card"."memory_cost" AS "nested_0.memory_cost", "card"."advancement_cost" AS "nested_0.advancement_cost", "card"."trash_cost" AS "nested_0.trash_cost", "card"."base_link" AS "nested_0.base_link", "card"."influence_limit" AS "nested_0.influence_limit", "card"."minimum_deck_size" AS "nested_0.minimum_deck_size", "card"."flavor" AS "nested_0.flavor", "card"."illustrator" AS "nested_0.illustrator", "card"."image_url" AS "nested_0.image_url","pack"."code" AS "nested_1.code", "pack"."cycle_code" AS "nested_1.cycle_code", "pack"."position" AS "nested_1.position", "pack"."name" AS "nested_1.name", "pack"."date_release" AS "nested_1.date_release", "pack"."size" AS "nested_1.size","cycle"."code" AS "nested_2.code", "cycle"."position" AS "nested_2.position", "cycle"."name" AS "nested_2.name", "cycle"."size" AS "nested_2.size", "cycle"."rotated" AS "nested_2.rotated","faction"."code" AS "nested_3.code", "faction"."side_code" AS "nested_3.side_code", "faction"."name" AS "nested_3.name", "faction"."color" AS "nested_3.color", "faction"."is_mini" AS "nested_3.is_mini","side"."code" AS "nested_4.code", "side"."name" AS "nested_4.name","type"."code" AS "nested_5.code", "type"."side_code" AS "nested_5.side_code", "type"."position" AS "nested_5.position", "type"."name" AS "nested_5.name", "type"."is_subtype" AS "nested_5.is_subtype","subtype"."code" AS "nested_6.code", "subtype"."side_code" AS "nested_6.side_code", "subtype"."position" AS "nested_6.position", "subtype"."name" AS "nested_6.name", "subtype"."is_subtype" AS "nested_6.is_subtype" FROM card INNER JOIN pack ON pack.code = card.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = card.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = card.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = card.keywords OR card.keywords LIKE(subtype.name || \' - %\'))LEFT JOIN mwl_card_title ON mwl_card_title.mwl_code = ?1 AND mwl_card_title.card_title = card.title WHERE ${generatedwhere.sql}',
         variables: [
           Variable<String>(mwlCode),
           ...generatedwhere.introducedVariables
@@ -7062,7 +7066,7 @@ abstract class _$Database extends GeneratedDatabase {
           faction,
           side,
           type,
-          mwlCard,
+          mwlCardTitle,
           ...generatedwhere.watchedTables,
         }).asyncMap((QueryRow row) async {
       return CardResult(
@@ -7123,7 +7127,7 @@ abstract class _$Database extends GeneratedDatabase {
         card,
         faction,
         nrdb,
-        mwlCard,
+        mwlCardTitle,
         deck,
         deckTag,
         deckCard,
@@ -7390,7 +7394,8 @@ class PackResult {
 
 typedef ListPacks$where = Expression<bool> Function(Pack pack, Cycle cycle);
 typedef ListMwl$where = Expression<bool> Function(Mwl mwl, Format format);
-typedef ListMwlCard$where = Expression<bool> Function(MwlCard mwl_card);
+typedef ListMwlCardTitle$where = Expression<bool> Function(
+    MwlCardTitle mwl_card_title);
 
 class FormatResult {
   final FormatData format;
@@ -7746,4 +7751,4 @@ typedef ListCards$where = Expression<bool> Function(
     Side side,
     Type type,
     Type subtype,
-    MwlCard mwl_card);
+    MwlCardTitle mwl_card_title);

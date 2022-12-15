@@ -213,8 +213,8 @@ final cardItemBuilderProvider =
 final mwlCardMapProvider = StreamProvider((ref) {
   final db = ref.watch(dbProvider);
   final mwl = ref.watch(filterMwlProvider).value;
-  final mwlCardList = db.listMwlCard(where: (mwlCard) => mwlCard.mwlCode.equalsExp(drift.Variable(mwl?.code))).watch();
+  final mwlCardList = db.listMwlCardTitle(where: (mwlCard) => mwlCard.mwlCode.equalsExp(drift.Variable(mwl?.code))).watch();
   return mwlCardList.map((event) {
-    return event.map((e) => MapEntry(e.cardCode, e)).toMap();
+    return event.map((e) => MapEntry(e.cardTitle, e)).toMap();
   });
 }, dependencies: [dbProvider, filterMwlProvider]);

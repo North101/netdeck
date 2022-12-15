@@ -224,13 +224,13 @@ class CardTileWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final mwlCardMap = ref.watch(mwlCardMapProvider.select((value) {
-      return value.whenOrNull(data: (data) => data);
+    final mwlCard = ref.watch(mwlCardMapProvider.select((value) {
+      return value.whenOrNull(data: (data) => data[card.card.title]);
     }));
     return CardTile(
       card,
       key: ValueKey(card),
-      mwlCard: mwlCardMap?[card.code],
+      mwlCard: mwlCard,
       onTap: () async {
         final navigator = Navigator.of(context);
         final groupedCardList = await ref.read(groupedCardListProvider.future);

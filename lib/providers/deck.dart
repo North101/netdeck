@@ -270,10 +270,10 @@ final deckRotationCardListProvider = StreamProvider.family<List<RotationCardResu
   dbProvider,
 ]);
 
-final deckMwlCardListProvider = StreamProvider.family<List<MwlCardData>, DeckFullResult>((ref, deck) {
+final deckMwlCardListProvider = StreamProvider.family<List<MwlCardTitleData>, DeckFullResult>((ref, deck) {
   final db = ref.watch(dbProvider);
   return db //
-      .listMwlCard(where: (mwlCard) => mwlCard.mwlCode.equalsExp(drift.Variable(deck.mwl?.code))) //
+      .listMwlCardTitle(where: (mwlCard) => mwlCard.mwlCode.equalsExp(drift.Variable(deck.mwl?.code))) //
       .watch();
 }, dependencies: [
   dbProvider,
@@ -285,7 +285,7 @@ final deckValidatorProvider = StreamProvider.family<DeckValidator, DeckFullResul
     return value.then((event) => event.map((e) => e.card.code).toSet());
   }));
   final mwlCardMap = await ref.watch(deckMwlCardListProvider(deck).future.select((value) {
-    return value.then((event) => event.map((e) => MapEntry(e.cardCode, e)).toMap());
+    return value.then((event) => event.map((e) => MapEntry(e.cardTitle, e)).toMap());
   }));
   yield DeckValidator(
     settings,

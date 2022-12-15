@@ -619,7 +619,7 @@ class CardQueryBuilder extends CodeNameQueryBuilder<Card> {
     Side side,
     Type type,
     Type subtype,
-    MwlCard mwlCard,
+    MwlCardTitle mwlCard,
   ) {
     final FieldMap extraFields = {};
     extraFields.addAll({
@@ -915,10 +915,10 @@ class CardMwlQueryBuilder extends MwlQueryBuilder {
     final inQuery = db.selectOnly(card).join([
       drift.crossJoin(db.mwl),
       drift.leftOuterJoin(
-          db.mwlCard, db.mwlCard.mwlCode.equalsExp(db.mwl.code) & db.mwlCard.cardCode.equalsExp(card.code)),
+          db.mwlCardTitle, db.mwlCardTitle.mwlCode.equalsExp(db.mwl.code) & db.mwlCardTitle.cardTitle.equalsExp(card.title)),
     ]).also((q) {
       q.addColumns([card.code]);
-      q.where(super.call(op, query) & (db.mwlCard.deckLimit.isNull() | db.mwlCard.deckLimit.isBiggerThanValue(0)));
+      q.where(super.call(op, query) & (db.mwlCardTitle.deckLimit.isNull() | db.mwlCardTitle.deckLimit.isBiggerThanValue(0)));
     });
 
     return card.code.isInQuery(inQuery);

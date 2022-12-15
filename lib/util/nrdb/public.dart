@@ -80,41 +80,6 @@ class ApiResult with _$ApiResult {
   }
 }
 
-class NrdbDeck {
-  NrdbDeck({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.mwlCode,
-    required this.dateCreation,
-    required this.dateUpdate,
-    required this.cards,
-    required this.tags,
-  });
-
-  factory NrdbDeck.fromJson(Map<String, dynamic> json) {
-    return NrdbDeck(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'],
-      mwlCode: json['mwl_code'],
-      dateCreation: DateTime.parse(json['date_creation']),
-      dateUpdate: DateTime.parse(json['date_update']),
-      cards: (json['cards'] as Map).cast<String, int>(),
-      tags: (json['tags'] as String?)?.split(' ').where((e) => e.isNotEmpty).toList() ?? [],
-    );
-  }
-
-  final Map<String, int> cards;
-  final DateTime dateCreation;
-  final DateTime dateUpdate;
-  final String description;
-  final int id;
-  final String? mwlCode;
-  final String name;
-  final List<String> tags;
-}
-
 class NrdbPublicApi {
   NrdbPublicApi(this._db);
 
@@ -437,7 +402,7 @@ class NrdbPublicApi {
           'format_code': format.code,
           'name': activeMwlName(null),
           'type': MwlType.active.name,
-          'cards': {},
+          'card_titles': {},
         },
       for (final e in result.data)
         if (e['active'])
@@ -453,7 +418,7 @@ class NrdbPublicApi {
           'format_code': format.code,
           'name': latestRotationName(null),
           'type': MwlType.latest.name,
-          'cards': {},
+          'card_titles': {},
         },
       for (final e in result.data)
         if (e['latest'])
@@ -474,18 +439,18 @@ class NrdbPublicApi {
 
       final mwlCards = mwl.map((result) {
         final mwlCode = result['code'] as String;
-        return MapEntry(mwlCode, (result['cards'] as Map).cast<String, Map>());
+        return MapEntry(mwlCode, (result['card_titles'] as Map).cast<String, Map>());
       }).toMap();
-      b.deleteAll<MwlCard, MwlCardData>(_db.mwlCard);
+      b.deleteAll<MwlCardTitle, MwlCardTitleData>(_db.mwlCardTitle);
       b.insertAll(
-        _db.mwlCard,
+        _db.mwlCardTitle,
         mwlCards.entries
-            .map<Iterable<MwlCardData>>((mwl) {
-              return mwl.value.cast<String, Map>().entries.map<MwlCardData>((e) {
-                return MwlCardData.fromJson({
+            .map<Iterable<MwlCardTitleData>>((mwl) {
+              return mwl.value.cast<String, Map>().entries.map<MwlCardTitleData>((e) {
+                return MwlCardTitleData.fromJson({
                   ...e.value,
                   'mwl_code': mwl.key,
-                  'card_code': e.key,
+                  'card_title': e.key,
                   'is_restricted': e.value['is_restricted'] == 1,
                 });
               });

@@ -19,7 +19,7 @@ class DeckValidator {
     SettingResult settings,
     DeckFullResult deck,
     Set<String>? formatCardSet,
-    Map<String, MwlCardData> mwlCardMap,
+    Map<String, MwlCardTitleData> mwlCardMap,
   ) {
     final validator = lookup[deck.identity.code];
     if (validator != null) {
@@ -45,7 +45,7 @@ class DeckValidator {
   final SettingResult settings;
   final DeckFullResult deck;
   final Set<String>? formatCardSet;
-  final Map<String, MwlCardData> mwlCardMap;
+  final Map<String, MwlCardTitleData> mwlCardMap;
 
   int? _agendaPoints;
   Map<CardResult, String?>? _cardErrorList;
@@ -57,6 +57,8 @@ class DeckValidator {
   int? _restrictedCount;
   int? _mwlPoints;
   int? _maxMwlPoints;
+
+  MwlCardTitleData? mwlCard(CardData card) => mwlCardMap[card.title];
 
   Map<CardResult, int> get cardList => deck.cards;
 
@@ -84,9 +86,9 @@ class DeckValidator {
   int get maxAgendaPoints => _maxAgendaPoints ??= minAgendaPoints + 1;
 
   int get mwlPoints {
-    return _mwlPoints ??= (mwlCardMap[deck.identity.code]?.points ?? 0) +
+    return _mwlPoints ??= (mwlCard(deck.identity)?.points ?? 0) +
         cardList.entries.map((e) {
-          return mwlCardMap[e.key.code]?.points ?? 0;
+          return mwlCard(e.key.card)?.points ?? 0;
         }).sum;
   }
 
@@ -103,7 +105,7 @@ class DeckValidator {
   int get influence => _influence ??= cardList.entries.map((e) => cardInfluence(e.key, e.value)).sum;
 
   int cardInfluence(CardResult card, int quantity) {
-    final factionCost = mwlCardMap[card.code]?.universalFactionCost ??
+    final factionCost = mwlCard(card.card)?.universalFactionCost ??
         (card.faction.code != deck.faction.code ? card.card.factionCost : 0);
     if (factionCost == 0) {
       return 0;
@@ -120,9 +122,9 @@ class DeckValidator {
     return _maxInfluence ??= max(
         influenceLimit -
             cardList.entries.map((e) {
-              if (mwlCardMap[e.key.code] == null) return 0;
+              if (mwlCard(e.key.card) == null) return 0;
 
-              return (mwlCardMap[e.key.code]?.globalPenalty ?? 0) * e.value;
+              return (mwlCard(e.key.card)?.globalPenalty ?? 0) * e.value;
             }).sum,
         1);
   }
@@ -135,7 +137,7 @@ class DeckValidator {
   }
 
   int get restrictedCount => _restrictedCount ??= cardList.keys.where((card) {
-        return mwlCardMap[card.code]?.isRestricted ?? false;
+        return mwlCard(card.card)?.isRestricted ?? false;
       }).length;
 
   Map<CardResult, String?> get cardErrorList {
@@ -147,11 +149,11 @@ class DeckValidator {
   String? cardError(CardResult card, int quantity) {
     if (card.type.code == 'identity') {
       return 'Cannot include identities in your deck.';
-    } else if ((mwlCardMap[card.code]?.isRestricted ?? false) && restrictedCount > 1) {
+    } else if ((mwlCard(card.card)?.isRestricted ?? false) && restrictedCount > 1) {
       return 'Too many restriced cards.';
-    } else if (quantity > (mwlCardMap[card.code]?.deckLimit ?? card.card.deckLimit)) {
+    } else if (quantity > (mwlCard(card.card)?.deckLimit ?? card.card.deckLimit)) {
       return 'Too many copies.';
-    } else if (!(formatCardSet?.contains(card.code) ?? true)) {
+    } else if (!(formatCardSet?.contains(card.card.title) ?? true)) {
       return 'Not valid for format.';
     }
     return null;

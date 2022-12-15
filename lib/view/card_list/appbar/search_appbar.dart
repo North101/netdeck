@@ -53,7 +53,7 @@ class CardSearchAppBarState extends ConsumerState<CardSearchAppBar> {
       side: db.side,
       type: db.type,
       subtype: subtype,
-      mwlCard: db.mwlCard,
+      mwlCard: db.mwlCardTitle,
     )));
     return WillPopScope(
       onWillPop: () async {

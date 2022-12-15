@@ -762,7 +762,7 @@ class DeckCardTile extends ConsumerWidget {
       return value.cardErrorList[card];
     }));
     final mwlCard = ref.watch(deckValidatorResultProvider.select((value) {
-      return value.mwlCardMap[card.code];
+      return value.mwlCardMap[card.card.title];
     }));
     return CardTile(
       card,

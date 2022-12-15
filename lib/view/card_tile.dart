@@ -27,7 +27,7 @@ class CardTile extends ConsumerWidget {
   final FactionData? faction;
   final Widget? trailing;
   final String? error;
-  final MwlCardData? mwlCard;
+  final MwlCardTitleData? mwlCard;
   final void Function()? onTap;
 
   @override

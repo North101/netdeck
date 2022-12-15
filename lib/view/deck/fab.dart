@@ -156,7 +156,7 @@ class DeckCardListTileState extends ConsumerState<DeckCardListTile> with Restora
       return value?.getCard(widget.card) ?? 0;
     }));
     final mwlCard = ref.watch(mwlCardMapProvider.select((value) {
-      return value.whenOrNull(data: (data) => data[widget.card.card.code]);
+      return value.whenOrNull(data: (data) => data[widget.card.card.title]);
     }));
     return CardTile(
       widget.card,

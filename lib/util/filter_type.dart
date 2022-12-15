@@ -245,7 +245,7 @@ class CardFilterState extends FilterState implements PackFilter, CycleFilter, Fa
   final Type type;
   @override
   final Type subtype;
-  final MwlCard mwlCard;
+  final MwlCardTitle mwlCard;
 
   @override
   int get hashCode => Object.hash(
