@@ -5126,8 +5126,8 @@
       "name": "Standard Ban List 21.10",
       "format_code": "standard",
       "date_start": "2021-10-29",
-      "active": true,
-      "latest": true,
+      "active": false,
+      "latest": false,
       "cards": {
         "01067": {
           "deck_limit": 0
@@ -5624,7 +5624,7 @@
       "name": "Standard Ban List 22.08",
       "format_code": "standard",
       "date_start": "2022-08-05",
-      "active": true,
+      "active": false,
       "latest": false,
       "cards": {
         "06022": {
@@ -6125,7 +6125,7 @@
       "name": "Standard Ban List 22.09",
       "format_code": "standard",
       "date_start": "2022-09-23",
-      "active": false,
+      "active": true,
       "latest": true,
       "cards": {
         "01058": {
