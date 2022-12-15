@@ -138,7 +138,6 @@ class CloseAngleBracketParser extends TextParser {
         );
     }
 
-    print('<$tag>');
     return TextSpan(children: [
       TextSpan(text: '<$tag>'),
       ...children,
@@ -256,7 +255,6 @@ class SquareBracketParser extends TextParser {
       case 'weyland-consortium':
         return TextScaledSpan((context, height) => Assets.images.weylandConsortium.image(height: height));
     }
-    print('[$value]');
     return TextSpan(text: '[$value]');
   }
 
