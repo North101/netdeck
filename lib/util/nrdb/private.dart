@@ -1,4 +1,4 @@
-// ignore_for_file: invalid_use_of_protected_member
+// ignore_for_file: invalid_use_of_protected_member, invalid_annotation_target
 
 import 'dart:convert';
 
@@ -15,65 +15,67 @@ import '/env.dart';
 import '/providers/nrdb.dart';
 
 part 'private.freezed.dart';
+part 'private.g.dart';
 
-class NrdbUser {
-  const NrdbUser(
-    this.id,
-    this.username,
-    this.email,
-    this.reputation,
-    this.sharing,
-  );
+@Freezed(fromJson: true)
+class NrdbDeckResult with _$NrdbDeckResult {
+  const factory NrdbDeckResult.success(
+    @JsonKey(name: 'version_number') String versionNumber,
+    bool success,
+    NrdbDeck data,
+    int total,
+  ) = NrdbDeckSuccessResult;
+  const factory NrdbDeckResult.failure(
+    @JsonKey(name: 'version_number') String versionNumber,
+    bool success,
+    String msg,
+  ) = NrdbDeckFailureResult;
 
-  NrdbUser.fromJson(Map<String, dynamic> json)
-      : this(
-          json['id'],
-          json['username'],
-          json['email'],
-          json['reputation'],
-          json['sharing'],
-        );
-
-  final String email;
-  final int id;
-  final int reputation;
-  final bool sharing;
-  final String username;
+  factory NrdbDeckResult.fromJson(Map<String, dynamic> json) {
+    final success = json['success'];
+    if (success is bool) {
+      if (success) {
+        return NrdbDeckSuccessResult.fromJson(json);
+      } else {
+        return NrdbDeckFailureResult.fromJson(json);
+      }
+    } else {
+      throw Exception('Could not determine the constructor for mapping from JSON');
+    }
+  }
 }
 
-class NrdbDeck {
-  const NrdbDeck({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.mwlCode,
-    required this.created,
-    required this.updated,
-    required this.cards,
-    required this.tags,
-  });
+@freezed
+class NrdbUser with _$NrdbUser {
+  const factory NrdbUser(
+    int id,
+    String username,
+    String email,
+    int reputation,
+    String sharing,
+  ) = _NrdbUser;
 
-  factory NrdbDeck.fromJson(Map<String, dynamic> json) {
-    return NrdbDeck(
-      id: json['id'].toString(),
-      name: json['name'],
-      description: json['description'],
-      mwlCode: json['mwl_code'],
-      created: DateTime.parse(json['date_creation']),
-      updated: DateTime.parse(json['date_update']),
-      cards: (json['cards'] as Map).cast<String, int>(),
-      tags: (json['tags'] as String?)?.split(' ').where((e) => e.isNotEmpty).toList() ?? [],
-    );
-  }
+  factory NrdbUser.fromJson(Map<String, dynamic> json) => _$NrdbUserFromJson(json);
+}
 
-  final String id;
-  final String name;
-  final String description;
-  final String? mwlCode;
-  final DateTime created;
-  final DateTime updated;
-  final Map<String, int> cards;
-  final List<String> tags;
+@freezed
+class NrdbDeck with _$NrdbDeck {
+  const factory NrdbDeck({
+    @JsonKey(fromJson: _idFromJson) required String id,
+    required String name,
+    required String description,
+    @JsonKey(name: 'mwl_code') required String? mwlCode,
+    @JsonKey(name: 'date_creation') required DateTime created,
+    @JsonKey(name: 'date_update') required DateTime updated,
+    required Map<String, int> cards,
+    @JsonKey(fromJson: _tagsFromJson, toJson: _tagsToJson) required List<String> tags,
+  }) = _NrdbDeck;
+
+  factory NrdbDeck.fromJson(Map<String, dynamic> json) => _$NrdbDeckFromJson(json);
+
+  static _idFromJson(int id) => id.toString();
+  static _tagsFromJson(String? tags) => tags?.split(' ').where((e) => e.isNotEmpty).toList() ?? [];
+  static _tagsToJson(List<String> tags) => tags.isNotEmpty ? tags.join(' ') : null;
 }
 
 class AuthStateNotifier extends StateNotifier<AuthState> {
@@ -311,7 +313,6 @@ extension OnlineAuthStateEx on OnlineAuthState {
   }
 
   Future<HttpResult<NrdbDeck>> saveDeck(DeckMiniResult deck) async {
-    print('saveDeck: ${deck.name}');
     final response = await http.post(
       saveDeckEndpoint,
       headers: authHeaders,
@@ -327,14 +328,17 @@ extension OnlineAuthStateEx on OnlineAuthState {
         'tags': deck.tags.join(' '),
       }),
     );
-    print(response.body);
     if (response.statusCode == 404) {
       return const HttpResult.notFound();
     } else if (response.statusCode != 200) {
       return const HttpResult.unknown();
     }
 
-    return HttpResult.success(NrdbDeck.fromJson(json.decode(response.body)['data'][0]));
+    final result = NrdbDeckResult.fromJson(json.decode(response.body));
+    return result.map(
+      success: (success) => HttpResult.success(success.data),
+      failure: (failure) => const HttpResult.unknown(),
+    );
   }
 
   Future<void> syncDecks(Database db, List<NrdbDeck> decks) async {
@@ -374,7 +378,6 @@ extension OnlineAuthStateEx on OnlineAuthState {
     await syncWithLocalDecks(db, updateLocalDecks);
     await db.batch((batch) async {
       for (final remoteDeck in updateRemoteDecksStatus) {
-        print('updateRemoteDeckStatus: ${remoteDeck.name}');
         batch.update<Deck, DeckData>(
           db.deck,
           DeckCompanion(
@@ -448,7 +451,6 @@ extension OnlineAuthStateEx on OnlineAuthState {
     drift.Value<String?> mwlCode = const drift.Value.absent(),
   }) async {
     final identityCodes = await db.listIdentityCards(codeList: deck.cards.keys.toList()).get();
-    print('syncLocalDeck: ${deck.name}');
     final identityCode = identityCodes.firstOrNull;
     if (identityCode == null) return;
 

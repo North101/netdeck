@@ -588,6 +588,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.7.0"
+  json_serializable:
+    dependency: "direct main"
+    description:
+      name: json_serializable
+      sha256: f3c2c18a7889580f71926f30c1937727c8c7d4f3a435f8f5e8b0ddd25253ef5d
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.5.4"
   kotlin_flavor:
     dependency: "direct main"
     description:

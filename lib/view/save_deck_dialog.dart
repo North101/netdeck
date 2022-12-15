@@ -57,8 +57,8 @@ class SaveDeckDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final dialogState = ref.watch(dialogStateProvider.notifier);
-    switch (dialogState.state) {
+    final dialogState = ref.watch(dialogStateProvider);
+    switch (dialogState) {
       case SaveDialogState.askToUpload:
         return AlertDialog(
           title: const Text('Upload?'),
@@ -66,11 +66,17 @@ class SaveDeckDialog extends ConsumerWidget {
           actions: [
             MaterialButton(
               child: const Text('No'),
-              onPressed: () => dialogState.state = SaveDialogState.saveLocal,
+              onPressed: () {
+                final dialogStateNotifier = ref.read(dialogStateProvider.notifier);
+                dialogStateNotifier.state = SaveDialogState.saveLocal;
+              },
             ),
             MaterialButton(
               child: const Text('Yes'),
-              onPressed: () => dialogState.state = SaveDialogState.saveRemote,
+              onPressed: () {
+                final dialogStateNotifier = ref.read(dialogStateProvider.notifier);
+                dialogStateNotifier.state = SaveDialogState.saveRemote;
+              },
             ),
           ],
         );
@@ -85,11 +91,17 @@ class SaveDeckDialog extends ConsumerWidget {
             ),
             MaterialButton(
               child: const Text('Overwrite'),
-              onPressed: () => dialogState.state = SaveDialogState.saveRemote,
+              onPressed: () {
+                final dialogStateNotifier = ref.read(dialogStateProvider.notifier);
+                dialogStateNotifier.state = SaveDialogState.saveRemote;
+              },
             ),
             MaterialButton(
               child: const Text('Save offline'),
-              onPressed: () => dialogState.state = SaveDialogState.saveLocal,
+              onPressed: () {
+                final dialogStateNotifier = ref.read(dialogStateProvider.notifier);
+                dialogStateNotifier.state = SaveDialogState.saveLocal;
+              },
             ),
           ],
         );
@@ -104,11 +116,17 @@ class SaveDeckDialog extends ConsumerWidget {
             ),
             MaterialButton(
               child: const Text('Overwrite'),
-              onPressed: () => dialogState.state = SaveDialogState.saveRemote,
+              onPressed: () {
+                final dialogStateNotifier = ref.read(dialogStateProvider.notifier);
+                dialogStateNotifier.state = SaveDialogState.saveRemote;
+              },
             ),
             MaterialButton(
               child: const Text('Save offline'),
-              onPressed: () => dialogState.state = SaveDialogState.saveLocal,
+              onPressed: () {
+                final dialogStateNotifier = ref.read(dialogStateProvider.notifier);
+                dialogStateNotifier.state = SaveDialogState.saveLocal;
+              },
             ),
           ],
         );
@@ -123,11 +141,17 @@ class SaveDeckDialog extends ConsumerWidget {
             ),
             MaterialButton(
               child: const Text('Try again'),
-              onPressed: () => dialogState.state = SaveDialogState.saveRemote,
+              onPressed: () {
+                final dialogStateNotifier = ref.read(dialogStateProvider.notifier);
+                dialogStateNotifier.state = SaveDialogState.saveRemote;
+              },
             ),
             MaterialButton(
               child: const Text('Save offline'),
-              onPressed: () => dialogState.state = SaveDialogState.saveLocal,
+              onPressed: () {
+                final dialogStateNotifier = ref.read(dialogStateProvider.notifier);
+                dialogStateNotifier.state = SaveDialogState.saveLocal;
+              },
             ),
           ],
         );
@@ -225,10 +249,12 @@ class SaveDeckRemoteDialogState extends ConsumerState<SaveDeckRemoteDialog> {
   }
 
   Future<void> save() async {
+    final dialogStateNotifier = ref.read(dialogStateProvider.notifier);
+
     final nrdbAuthState = ref.read(nrdbAuthStateProvider);
     final onlineAuthState = await nrdbAuthState.online();
     if (onlineAuthState == null) {
-      ref.read(dialogStateProvider.notifier).state = SaveDialogState.warnNotUploaded;
+      dialogStateNotifier.state = SaveDialogState.warnNotUploaded;
       return;
     }
 
@@ -237,7 +263,7 @@ class SaveDeckRemoteDialogState extends ConsumerState<SaveDeckRemoteDialog> {
         .saveDeck(deck) //
         .catchError((e) => const UnknownHttpResult<NrdbDeck>());
     if (result is! SuccessHttpResult<NrdbDeck>) {
-      ref.read(dialogStateProvider.notifier).state = SaveDialogState.warnNotUploaded;
+      dialogStateNotifier.state = SaveDialogState.warnNotUploaded;
       return;
     }
 
@@ -274,6 +300,7 @@ class SaveDeckRemoteDialogState extends ConsumerState<SaveDeckRemoteDialog> {
 
   @override
   Widget build(BuildContext context) {
+    print(ref.watch(dialogStateProvider));
     return const AlertDialog(
       title: Text('Uploading Deck...'),
       content: SizedBox(

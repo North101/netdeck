@@ -28,6 +28,7 @@ dependencies:
   freezed_annotation: any
   freezed: any
   http: any
+  json_serializable: any
   kotlin_flavor: any
   path_provider: any
   path: any
