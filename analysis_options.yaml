@@ -4,9 +4,14 @@ analyzer:
   exclude:
     - '**/*.freezed.dart'
     - '**/*.g.dart'
+    - 'lib/view/autocomplete.dart'
+    - 'lib/db/migrations/schema.dart'
+  errors:
+    invalid_annotation_target: ignore
 
 linter:
   rules:
     avoid_print: false
     lines_longer_than_80_chars: false
     prefer_single_quotes: true
+    use_build_context_synchronously: false

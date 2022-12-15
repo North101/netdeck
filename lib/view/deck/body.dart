@@ -629,6 +629,7 @@ class DeckTags extends ConsumerWidget {
                   return InkWell(
                     onTap: () => onSelected(tag),
                     child: Material(
+                      // ignore: deprecated_member_use
                       color: index == 0 ? Theme.of(context).selectedRowColor : null,
                       child: ListTile(title: Text(tag)),
                     ),
