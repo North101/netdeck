@@ -109,6 +109,7 @@ class DeckResultPage extends ConsumerWidget {
         );
         if (result != true) return result != null;
 
+        if (!context.mounted) return false;
         final saveResult = await showDialog<DeckNotifierResult>(
           context: context,
           barrierDismissible: false,

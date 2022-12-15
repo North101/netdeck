@@ -27,6 +27,7 @@ class DeckSelectedActions extends ConsumerWidget {
   Future<void> upload(BuildContext context, WidgetRef ref) async {
     final authState = await ref.read(nrdbAuthStateProvider).online();
     if (authState == null) {
+      if (!context.mounted) return;
       await showDialog(
         context: context,
         builder: (context) => const SimpleDialog(
@@ -36,6 +37,7 @@ class DeckSelectedActions extends ConsumerWidget {
       return;
     }
 
+    if (!context.mounted) return;
     final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -70,6 +72,7 @@ class DeckSelectedActions extends ConsumerWidget {
   Future<void> download(BuildContext context, WidgetRef ref) async {
     final authState = await ref.read(nrdbAuthStateProvider).online();
     if (authState == null) {
+      if (!context.mounted) return;
       await showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -85,6 +88,7 @@ class DeckSelectedActions extends ConsumerWidget {
       return;
     }
 
+    if (!context.mounted) return;
     final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
