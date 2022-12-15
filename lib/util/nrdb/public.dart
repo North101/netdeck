@@ -5,7 +5,6 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart' hide Card;
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:kotlin_flavor/scope_functions.dart';
 
 import '/db/database.dart';
 import '/util/assets.gen.dart';
@@ -148,8 +147,7 @@ class NrdbPublicApi {
                   name: e.name,
                   color: Color(e.color),
                   isMini: e.isMini,
-                ))
-            .toList(),
+                )),
       );
     });
   }
@@ -224,8 +222,7 @@ class NrdbPublicApi {
                   flavor: e.flavor,
                   illustrator: e.illustrator,
                   imageUrl: imageUrlTemplate.replaceAll('{code}', e.code),
-                ))
-            .toList(),
+                )),
       );
     });
   }
@@ -254,8 +251,7 @@ class NrdbPublicApi {
                   id: index,
                   code: e.code,
                   name: e.name,
-                ))
-            .toList(),
+                )),
       );
     });
   }

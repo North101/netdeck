@@ -4,6 +4,7 @@ import 'package:drift/drift.dart';
 import 'package:drift_dev/api/migrations.dart';
 import 'schema_v5.dart' as v5;
 import 'schema_v4.dart' as v4;
+import 'schema_v8.dart' as v8;
 import 'schema_v3.dart' as v3;
 import 'schema_v2.dart' as v2;
 import 'schema_v1.dart' as v1;
@@ -18,6 +19,8 @@ class GeneratedHelper implements SchemaInstantiationHelper {
         return v5.DatabaseAtV5(db);
       case 4:
         return v4.DatabaseAtV4(db);
+      case 8:
+        return v8.DatabaseAtV8(db);
       case 3:
         return v3.DatabaseAtV3(db);
       case 2:
@@ -29,7 +32,7 @@ class GeneratedHelper implements SchemaInstantiationHelper {
       case 6:
         return v6.DatabaseAtV6(db);
       default:
-        throw MissingSchemaException(version, const {5, 4, 3, 2, 1, 7, 6});
+        throw MissingSchemaException(version, const {5, 4, 8, 3, 2, 1, 7, 6});
     }
   }
 }

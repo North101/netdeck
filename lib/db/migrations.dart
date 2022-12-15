@@ -6,6 +6,7 @@ import '/db/migrations/schema_v4.dart' as v4;
 import '/db/migrations/schema_v5.dart' as v5;
 import '/db/migrations/schema_v6.dart' as v6;
 import '/db/migrations/schema_v7.dart' as v7;
+import '/db/migrations/schema_v8.dart' as v8;
 
 MigrationStrategy migrationStrategy(GeneratedDatabase $db) => MigrationStrategy(
       onUpgrade: (m, from, to) async {
@@ -74,6 +75,21 @@ MigrationStrategy migrationStrategy(GeneratedDatabase $db) => MigrationStrategy(
               db.settings.cardGalleryView.defaultValue!,
             ),
           }));
+        }
+        if (from < 8) {
+          final db = v8.DatabaseAtV8($db.executor);
+          await m.drop(db.mwlCard);
+          await m.create(db.mwlCard);
+
+          await m.drop(db.rotation);
+          await m.create(db.rotation);
+          await m.createView(db.rotationView);
+
+          await m.drop(db.mwl);
+          await m.create(db.mwl);
+          await m.createView(db.mwlView);
+
+          await db.delete(db.nrdb).go();
         }
       },
     );
