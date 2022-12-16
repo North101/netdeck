@@ -1366,7 +1366,7 @@ CycleApi _$CycleApiFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$CycleApi {
-  @JsonKey(fromJson: cycleFromJson)
+  @JsonKey(fromJson: CycleApi.cycleFromJson)
   List<CycleData> get data => throw _privateConstructorUsedError;
   int get total => throw _privateConstructorUsedError;
   bool get success => throw _privateConstructorUsedError;
@@ -1384,7 +1384,7 @@ abstract class $CycleApiCopyWith<$Res> {
       _$CycleApiCopyWithImpl<$Res, CycleApi>;
   @useResult
   $Res call(
-      {@JsonKey(fromJson: cycleFromJson) List<CycleData> data,
+      {@JsonKey(fromJson: CycleApi.cycleFromJson) List<CycleData> data,
       int total,
       bool success,
       String versionNumber,
@@ -1443,7 +1443,7 @@ abstract class _$$_CycleApiCopyWith<$Res> implements $CycleApiCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {@JsonKey(fromJson: cycleFromJson) List<CycleData> data,
+      {@JsonKey(fromJson: CycleApi.cycleFromJson) List<CycleData> data,
       int total,
       bool success,
       String versionNumber,
@@ -1496,7 +1496,8 @@ class __$$_CycleApiCopyWithImpl<$Res>
 @JsonSerializable(createToJson: false)
 class _$_CycleApi implements _CycleApi {
   const _$_CycleApi(
-      {@JsonKey(fromJson: cycleFromJson) required final List<CycleData> data,
+      {@JsonKey(fromJson: CycleApi.cycleFromJson)
+          required final List<CycleData> data,
       required this.total,
       required this.success,
       required this.versionNumber,
@@ -1508,7 +1509,7 @@ class _$_CycleApi implements _CycleApi {
 
   final List<CycleData> _data;
   @override
-  @JsonKey(fromJson: cycleFromJson)
+  @JsonKey(fromJson: CycleApi.cycleFromJson)
   List<CycleData> get data {
     if (_data is EqualUnmodifiableListView) return _data;
     // ignore: implicit_dynamic_type
@@ -1562,7 +1563,8 @@ class _$_CycleApi implements _CycleApi {
 
 abstract class _CycleApi implements CycleApi {
   const factory _CycleApi(
-      {@JsonKey(fromJson: cycleFromJson) required final List<CycleData> data,
+      {@JsonKey(fromJson: CycleApi.cycleFromJson)
+          required final List<CycleData> data,
       required final int total,
       required final bool success,
       required final String versionNumber,
@@ -1571,7 +1573,7 @@ abstract class _CycleApi implements CycleApi {
   factory _CycleApi.fromJson(Map<String, dynamic> json) = _$_CycleApi.fromJson;
 
   @override
-  @JsonKey(fromJson: cycleFromJson)
+  @JsonKey(fromJson: CycleApi.cycleFromJson)
   List<CycleData> get data;
   @override
   int get total;
@@ -1821,7 +1823,7 @@ FactionApiData _$FactionApiDataFromJson(Map<String, dynamic> json) {
 /// @nodoc
 mixin _$FactionApiData {
   String get code => throw _privateConstructorUsedError;
-  @JsonKey(fromJson: colorFromJson)
+  @JsonKey(fromJson: FactionApiData.colorFromJson)
   int get color => throw _privateConstructorUsedError;
   bool get isMini => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
@@ -1840,7 +1842,7 @@ abstract class $FactionApiDataCopyWith<$Res> {
   @useResult
   $Res call(
       {String code,
-      @JsonKey(fromJson: colorFromJson) int color,
+      @JsonKey(fromJson: FactionApiData.colorFromJson) int color,
       bool isMini,
       String name,
       String sideCode});
@@ -1900,7 +1902,7 @@ abstract class _$$_FactionApiDataCopyWith<$Res>
   @useResult
   $Res call(
       {String code,
-      @JsonKey(fromJson: colorFromJson) int color,
+      @JsonKey(fromJson: FactionApiData.colorFromJson) int color,
       bool isMini,
       String name,
       String sideCode});
@@ -1953,7 +1955,7 @@ class __$$_FactionApiDataCopyWithImpl<$Res>
 class _$_FactionApiData implements _FactionApiData {
   const _$_FactionApiData(
       {required this.code,
-      @JsonKey(fromJson: colorFromJson) required this.color,
+      @JsonKey(fromJson: FactionApiData.colorFromJson) required this.color,
       required this.isMini,
       required this.name,
       required this.sideCode});
@@ -1964,7 +1966,7 @@ class _$_FactionApiData implements _FactionApiData {
   @override
   final String code;
   @override
-  @JsonKey(fromJson: colorFromJson)
+  @JsonKey(fromJson: FactionApiData.colorFromJson)
   final int color;
   @override
   final bool isMini;
@@ -2006,7 +2008,7 @@ class _$_FactionApiData implements _FactionApiData {
 abstract class _FactionApiData implements FactionApiData {
   const factory _FactionApiData(
       {required final String code,
-      @JsonKey(fromJson: colorFromJson) required final int color,
+      @JsonKey(fromJson: FactionApiData.colorFromJson) required final int color,
       required final bool isMini,
       required final String name,
       required final String sideCode}) = _$_FactionApiData;
@@ -2017,7 +2019,7 @@ abstract class _FactionApiData implements FactionApiData {
   @override
   String get code;
   @override
-  @JsonKey(fromJson: colorFromJson)
+  @JsonKey(fromJson: FactionApiData.colorFromJson)
   int get color;
   @override
   bool get isMini;
@@ -2337,7 +2339,7 @@ PackApi _$PackApiFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$PackApi {
-  @JsonKey(fromJson: packFromJson)
+  @JsonKey(fromJson: PackApi.packFromJson)
   List<PackData> get data => throw _privateConstructorUsedError;
   int get total => throw _privateConstructorUsedError;
   bool get success => throw _privateConstructorUsedError;
@@ -2354,7 +2356,7 @@ abstract class $PackApiCopyWith<$Res> {
       _$PackApiCopyWithImpl<$Res, PackApi>;
   @useResult
   $Res call(
-      {@JsonKey(fromJson: packFromJson) List<PackData> data,
+      {@JsonKey(fromJson: PackApi.packFromJson) List<PackData> data,
       int total,
       bool success,
       String versionNumber,
@@ -2413,7 +2415,7 @@ abstract class _$$_PackApiCopyWith<$Res> implements $PackApiCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {@JsonKey(fromJson: packFromJson) List<PackData> data,
+      {@JsonKey(fromJson: PackApi.packFromJson) List<PackData> data,
       int total,
       bool success,
       String versionNumber,
@@ -2465,7 +2467,8 @@ class __$$_PackApiCopyWithImpl<$Res>
 @JsonSerializable(createToJson: false)
 class _$_PackApi implements _PackApi {
   const _$_PackApi(
-      {@JsonKey(fromJson: packFromJson) required final List<PackData> data,
+      {@JsonKey(fromJson: PackApi.packFromJson)
+          required final List<PackData> data,
       required this.total,
       required this.success,
       required this.versionNumber,
@@ -2477,7 +2480,7 @@ class _$_PackApi implements _PackApi {
 
   final List<PackData> _data;
   @override
-  @JsonKey(fromJson: packFromJson)
+  @JsonKey(fromJson: PackApi.packFromJson)
   List<PackData> get data {
     if (_data is EqualUnmodifiableListView) return _data;
     // ignore: implicit_dynamic_type
@@ -2531,7 +2534,8 @@ class _$_PackApi implements _PackApi {
 
 abstract class _PackApi implements PackApi {
   const factory _PackApi(
-      {@JsonKey(fromJson: packFromJson) required final List<PackData> data,
+      {@JsonKey(fromJson: PackApi.packFromJson)
+          required final List<PackData> data,
       required final int total,
       required final bool success,
       required final String versionNumber,
@@ -2540,7 +2544,7 @@ abstract class _PackApi implements PackApi {
   factory _PackApi.fromJson(Map<String, dynamic> json) = _$_PackApi.fromJson;
 
   @override
-  @JsonKey(fromJson: packFromJson)
+  @JsonKey(fromJson: PackApi.packFromJson)
   List<PackData> get data;
   @override
   int get total;
@@ -2562,7 +2566,7 @@ SideApi _$SideApiFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$SideApi {
-  @JsonKey(fromJson: sideFromJson)
+  @JsonKey(fromJson: SideApi.sideFromJson)
   List<SideData> get data => throw _privateConstructorUsedError;
   int get total => throw _privateConstructorUsedError;
   bool get success => throw _privateConstructorUsedError;
@@ -2579,7 +2583,7 @@ abstract class $SideApiCopyWith<$Res> {
       _$SideApiCopyWithImpl<$Res, SideApi>;
   @useResult
   $Res call(
-      {@JsonKey(fromJson: sideFromJson) List<SideData> data,
+      {@JsonKey(fromJson: SideApi.sideFromJson) List<SideData> data,
       int total,
       bool success,
       String versionNumber,
@@ -2638,7 +2642,7 @@ abstract class _$$_SideApiCopyWith<$Res> implements $SideApiCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {@JsonKey(fromJson: sideFromJson) List<SideData> data,
+      {@JsonKey(fromJson: SideApi.sideFromJson) List<SideData> data,
       int total,
       bool success,
       String versionNumber,
@@ -2690,7 +2694,8 @@ class __$$_SideApiCopyWithImpl<$Res>
 @JsonSerializable(createToJson: false)
 class _$_SideApi implements _SideApi {
   const _$_SideApi(
-      {@JsonKey(fromJson: sideFromJson) required final List<SideData> data,
+      {@JsonKey(fromJson: SideApi.sideFromJson)
+          required final List<SideData> data,
       required this.total,
       required this.success,
       required this.versionNumber,
@@ -2702,7 +2707,7 @@ class _$_SideApi implements _SideApi {
 
   final List<SideData> _data;
   @override
-  @JsonKey(fromJson: sideFromJson)
+  @JsonKey(fromJson: SideApi.sideFromJson)
   List<SideData> get data {
     if (_data is EqualUnmodifiableListView) return _data;
     // ignore: implicit_dynamic_type
@@ -2756,7 +2761,8 @@ class _$_SideApi implements _SideApi {
 
 abstract class _SideApi implements SideApi {
   const factory _SideApi(
-      {@JsonKey(fromJson: sideFromJson) required final List<SideData> data,
+      {@JsonKey(fromJson: SideApi.sideFromJson)
+          required final List<SideData> data,
       required final int total,
       required final bool success,
       required final String versionNumber,
@@ -2765,7 +2771,7 @@ abstract class _SideApi implements SideApi {
   factory _SideApi.fromJson(Map<String, dynamic> json) = _$_SideApi.fromJson;
 
   @override
-  @JsonKey(fromJson: sideFromJson)
+  @JsonKey(fromJson: SideApi.sideFromJson)
   List<SideData> get data;
   @override
   int get total;
@@ -2787,7 +2793,7 @@ TypeApi _$TypeApiFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$TypeApi {
-  @JsonKey(fromJson: typeFromJson)
+  @JsonKey(fromJson: TypeApi.typeFromJson)
   List<TypeData> get data => throw _privateConstructorUsedError;
   int get total => throw _privateConstructorUsedError;
   bool get success => throw _privateConstructorUsedError;
@@ -2804,7 +2810,7 @@ abstract class $TypeApiCopyWith<$Res> {
       _$TypeApiCopyWithImpl<$Res, TypeApi>;
   @useResult
   $Res call(
-      {@JsonKey(fromJson: typeFromJson) List<TypeData> data,
+      {@JsonKey(fromJson: TypeApi.typeFromJson) List<TypeData> data,
       int total,
       bool success,
       String versionNumber,
@@ -2863,7 +2869,7 @@ abstract class _$$_TypeApiCopyWith<$Res> implements $TypeApiCopyWith<$Res> {
   @override
   @useResult
   $Res call(
-      {@JsonKey(fromJson: typeFromJson) List<TypeData> data,
+      {@JsonKey(fromJson: TypeApi.typeFromJson) List<TypeData> data,
       int total,
       bool success,
       String versionNumber,
@@ -2915,7 +2921,8 @@ class __$$_TypeApiCopyWithImpl<$Res>
 @JsonSerializable(createToJson: false)
 class _$_TypeApi implements _TypeApi {
   const _$_TypeApi(
-      {@JsonKey(fromJson: typeFromJson) required final List<TypeData> data,
+      {@JsonKey(fromJson: TypeApi.typeFromJson)
+          required final List<TypeData> data,
       required this.total,
       required this.success,
       required this.versionNumber,
@@ -2927,7 +2934,7 @@ class _$_TypeApi implements _TypeApi {
 
   final List<TypeData> _data;
   @override
-  @JsonKey(fromJson: typeFromJson)
+  @JsonKey(fromJson: TypeApi.typeFromJson)
   List<TypeData> get data {
     if (_data is EqualUnmodifiableListView) return _data;
     // ignore: implicit_dynamic_type
@@ -2981,7 +2988,8 @@ class _$_TypeApi implements _TypeApi {
 
 abstract class _TypeApi implements TypeApi {
   const factory _TypeApi(
-      {@JsonKey(fromJson: typeFromJson) required final List<TypeData> data,
+      {@JsonKey(fromJson: TypeApi.typeFromJson)
+          required final List<TypeData> data,
       required final int total,
       required final bool success,
       required final String versionNumber,
@@ -2990,7 +2998,7 @@ abstract class _TypeApi implements TypeApi {
   factory _TypeApi.fromJson(Map<String, dynamic> json) = _$_TypeApi.fromJson;
 
   @override
-  @JsonKey(fromJson: typeFromJson)
+  @JsonKey(fromJson: TypeApi.typeFromJson)
   List<TypeData> get data;
   @override
   int get total;

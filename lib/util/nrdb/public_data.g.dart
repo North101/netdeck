@@ -60,7 +60,7 @@ _$_CardApiData _$$_CardApiDataFromJson(Map json) => _$_CardApiData(
     );
 
 _$_CycleApi _$$_CycleApiFromJson(Map json) => _$_CycleApi(
-      data: cycleFromJson(json['data'] as List),
+      data: CycleApi.cycleFromJson(json['data'] as List),
       total: json['total'] as int,
       success: json['success'] as bool,
       versionNumber: json['version_number'] as String,
@@ -80,7 +80,7 @@ _$_FactionApi _$$_FactionApiFromJson(Map json) => _$_FactionApi(
 
 _$_FactionApiData _$$_FactionApiDataFromJson(Map json) => _$_FactionApiData(
       code: json['code'] as String,
-      color: colorFromJson(json['color'] as String),
+      color: FactionApiData.colorFromJson(json['color'] as String),
       isMini: json['is_mini'] as bool,
       name: json['name'] as String,
       sideCode: json['side_code'] as String,
@@ -100,7 +100,7 @@ _$_FormatApiData _$$_FormatApiDataFromJson(Map json) => _$_FormatApiData(
     );
 
 _$_PackApi _$$_PackApiFromJson(Map json) => _$_PackApi(
-      data: packFromJson(json['data'] as List),
+      data: PackApi.packFromJson(json['data'] as List),
       total: json['total'] as int,
       success: json['success'] as bool,
       versionNumber: json['version_number'] as String,
@@ -108,7 +108,7 @@ _$_PackApi _$$_PackApiFromJson(Map json) => _$_PackApi(
     );
 
 _$_SideApi _$$_SideApiFromJson(Map json) => _$_SideApi(
-      data: sideFromJson(json['data'] as List),
+      data: SideApi.sideFromJson(json['data'] as List),
       total: json['total'] as int,
       success: json['success'] as bool,
       versionNumber: json['version_number'] as String,
@@ -116,7 +116,7 @@ _$_SideApi _$$_SideApiFromJson(Map json) => _$_SideApi(
     );
 
 _$_TypeApi _$$_TypeApiFromJson(Map json) => _$_TypeApi(
-      data: typeFromJson(json['data'] as List),
+      data: TypeApi.typeFromJson(json['data'] as List),
       total: json['total'] as int,
       success: json['success'] as bool,
       versionNumber: json['version_number'] as String,

@@ -8,6 +8,7 @@ import '/util/assets.gen.dart';
 import '/util/filter_type.dart';
 import '/util/grouped_card_code_list.dart';
 import '/util/nrdb/private.dart';
+import '/util/nrdb/private_model.dart';
 import 'card_gallery_page.dart';
 import 'card_list/page.dart';
 import 'card_tile.dart';

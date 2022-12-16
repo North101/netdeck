@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'private.dart';
+part of 'private_model.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
@@ -23,6 +23,29 @@ _$NrdbDeckFailureResult _$$NrdbDeckFailureResultFromJson(Map json) =>
       $type: json['type'] as String?,
     );
 
+_$_NrdbDeck _$$_NrdbDeckFromJson(Map json) => _$_NrdbDeck(
+      id: NrdbDeck.idFromJson(json['id']),
+      name: json['name'] as String,
+      description: json['description'] as String,
+      mwlCode: json['mwl_code'] as String?,
+      dateCreation: DateTime.parse(json['date_creation'] as String),
+      dateUpdate: DateTime.parse(json['date_update'] as String),
+      cards: Map<String, int>.from(json['cards'] as Map),
+      tags: NrdbDeck.tagsFromJson(json['tags'] as String?),
+    );
+
+Map<String, dynamic> _$$_NrdbDeckToJson(_$_NrdbDeck instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'description': instance.description,
+      'mwl_code': instance.mwlCode,
+      'date_creation': instance.dateCreation.toIso8601String(),
+      'date_update': instance.dateUpdate.toIso8601String(),
+      'cards': instance.cards,
+      'tags': NrdbDeck.tagsToJson(instance.tags),
+    };
+
 _$_NrdbUser _$$_NrdbUserFromJson(Map json) => _$_NrdbUser(
       json['id'] as int,
       json['username'] as String,
@@ -38,27 +61,4 @@ Map<String, dynamic> _$$_NrdbUserToJson(_$_NrdbUser instance) =>
       'email': instance.email,
       'reputation': instance.reputation,
       'sharing': instance.sharing,
-    };
-
-_$_NrdbDeck _$$_NrdbDeckFromJson(Map json) => _$_NrdbDeck(
-      id: idFromJson(json['id']),
-      name: json['name'] as String,
-      description: json['description'] as String,
-      mwlCode: json['mwl_code'] as String?,
-      dateCreation: DateTime.parse(json['date_creation'] as String),
-      dateUpdate: DateTime.parse(json['date_update'] as String),
-      cards: Map<String, int>.from(json['cards'] as Map),
-      tags: tagsFromJson(json['tags'] as String?),
-    );
-
-Map<String, dynamic> _$$_NrdbDeckToJson(_$_NrdbDeck instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'name': instance.name,
-      'description': instance.description,
-      'mwl_code': instance.mwlCode,
-      'date_creation': instance.dateCreation.toIso8601String(),
-      'date_update': instance.dateUpdate.toIso8601String(),
-      'cards': instance.cards,
-      'tags': tagsToJson(instance.tags),
     };

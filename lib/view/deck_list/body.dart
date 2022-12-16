@@ -7,6 +7,7 @@ import '/providers.dart';
 import '/util.dart';
 import '/util/header_list.dart';
 import '/util/nrdb/private.dart';
+import '/util/nrdb/private_model.dart';
 import '/view/async_value_builder.dart';
 import '/view/fab_spacer.dart';
 import '/view/filter_chips.dart';

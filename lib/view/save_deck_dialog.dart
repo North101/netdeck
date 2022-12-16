@@ -1,10 +1,11 @@
+import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:drift/drift.dart' as drift;
 
 import '/db/database.dart';
 import '/providers.dart';
 import '/util/nrdb/private.dart';
+import '/util/nrdb/private_model.dart';
 
 final deckResultProvider = Provider<DeckNotifierResult>((ref) => throw UnimplementedError());
 

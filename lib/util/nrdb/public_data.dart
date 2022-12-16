@@ -59,12 +59,10 @@ class CardApiData with _$CardApiData {
   factory CardApiData.fromJson(Map<String, dynamic> json) => _$CardApiDataFromJson(json);
 }
 
-List<CycleData> cycleFromJson(List<dynamic> data) => data.map((e) => CycleData.fromJson(e)).toList();
-
 @Freezed(toJson: false)
 class CycleApi with _$CycleApi {
   const factory CycleApi({
-    @JsonKey(fromJson: cycleFromJson) required List<CycleData> data,
+    @JsonKey(fromJson: CycleApi.cycleFromJson) required List<CycleData> data,
     required int total,
     required bool success,
     required String versionNumber,
@@ -72,6 +70,8 @@ class CycleApi with _$CycleApi {
   }) = _CycleApi;
 
   factory CycleApi.fromJson(Map<String, dynamic> json) => _$CycleApiFromJson(json);
+
+  static List<CycleData> cycleFromJson(List<dynamic> data) => data.map((e) => CycleData.fromJson(e)).toList();
 }
 
 @Freezed(toJson: false)
@@ -87,19 +87,19 @@ class FactionApi with _$FactionApi {
   factory FactionApi.fromJson(Map<String, dynamic> json) => _$FactionApiFromJson(json);
 }
 
-int colorFromJson(String value) => int.parse(value, radix: 16) + 0xFF000000;
-
 @Freezed(toJson: false)
 class FactionApiData with _$FactionApiData {
   const factory FactionApiData({
     required String code,
-    @JsonKey(fromJson: colorFromJson) required int color,
+    @JsonKey(fromJson: FactionApiData.colorFromJson) required int color,
     required bool isMini,
     required String name,
     required String sideCode,
   }) = _FactionApiData;
 
   factory FactionApiData.fromJson(Map<String, dynamic> json) => _$FactionApiDataFromJson(json);
+
+  static int colorFromJson(String value) => int.parse(value, radix: 16) + 0xFF000000;
 }
 
 @Freezed(toJson: false)
@@ -122,12 +122,10 @@ class FormatApiData with _$FormatApiData {
   factory FormatApiData.fromJson(Map<String, dynamic> json) => _$FormatApiDataFromJson(json);
 }
 
-List<PackData> packFromJson(List<dynamic> data) => data.map((e) => PackData.fromJson(e)).toList();
-
 @Freezed(toJson: false)
 class PackApi with _$PackApi {
   const factory PackApi({
-    @JsonKey(fromJson: packFromJson) required List<PackData> data,
+    @JsonKey(fromJson: PackApi.packFromJson) required List<PackData> data,
     required int total,
     required bool success,
     required String versionNumber,
@@ -135,14 +133,14 @@ class PackApi with _$PackApi {
   }) = _PackApi;
 
   factory PackApi.fromJson(Map<String, dynamic> json) => _$PackApiFromJson(json);
-}
 
-List<SideData> sideFromJson(List<dynamic> data) => data.map((e) => SideData.fromJson(e)).toList();
+  static List<PackData> packFromJson(List<dynamic> data) => data.map((e) => PackData.fromJson(e)).toList();
+}
 
 @Freezed(toJson: false)
 class SideApi with _$SideApi {
   const factory SideApi({
-    @JsonKey(fromJson: sideFromJson) required List<SideData> data,
+    @JsonKey(fromJson: SideApi.sideFromJson) required List<SideData> data,
     required int total,
     required bool success,
     required String versionNumber,
@@ -150,14 +148,14 @@ class SideApi with _$SideApi {
   }) = _SideApi;
 
   factory SideApi.fromJson(Map<String, dynamic> json) => _$SideApiFromJson(json);
-}
 
-List<TypeData> typeFromJson(List<dynamic> data) => data.map((e) => TypeData.fromJson(e)).toList();
+  static List<SideData> sideFromJson(List<dynamic> data) => data.map((e) => SideData.fromJson(e)).toList();
+}
 
 @Freezed(toJson: false)
 class TypeApi with _$TypeApi {
   const factory TypeApi({
-    @JsonKey(fromJson: typeFromJson) required List<TypeData> data,
+    @JsonKey(fromJson: TypeApi.typeFromJson) required List<TypeData> data,
     required int total,
     required bool success,
     required String versionNumber,
@@ -165,6 +163,8 @@ class TypeApi with _$TypeApi {
   }) = _TypeApi;
 
   factory TypeApi.fromJson(Map<String, dynamic> json) => _$TypeApiFromJson(json);
+
+  static List<TypeData> typeFromJson(List<dynamic> data) => data.map((e) => TypeData.fromJson(e)).toList();
 }
 
 @Freezed(toJson: false)

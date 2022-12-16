@@ -13,70 +13,9 @@ import 'package:http/http.dart' as http;
 import '/db/database.dart';
 import '/env.dart';
 import '/providers/nrdb.dart';
+import 'private_model.dart';
 
 part 'private.freezed.dart';
-part 'private.g.dart';
-
-@Freezed(fromJson: true)
-class NrdbDeckResult with _$NrdbDeckResult {
-  const factory NrdbDeckResult.success(
-    String versionNumber,
-    bool success,
-    NrdbDeck data,
-    int total,
-  ) = NrdbDeckSuccessResult;
-  const factory NrdbDeckResult.failure(
-    String versionNumber,
-    bool success,
-    String msg,
-  ) = NrdbDeckFailureResult;
-
-  factory NrdbDeckResult.fromJson(Map<String, dynamic> json) {
-    final success = json['success'];
-    if (success is bool) {
-      if (success) {
-        return NrdbDeckSuccessResult.fromJson(json);
-      } else {
-        return NrdbDeckFailureResult.fromJson(json);
-      }
-    } else {
-      throw Exception('Could not determine the constructor for mapping from JSON');
-    }
-  }
-}
-
-@freezed
-class NrdbUser with _$NrdbUser {
-  const factory NrdbUser(
-    int id,
-    String username,
-    String email,
-    int reputation,
-    bool sharing,
-  ) = _NrdbUser;
-
-  factory NrdbUser.fromJson(Map<String, dynamic> json) => _$NrdbUserFromJson(json);
-}
-
-idFromJson(dynamic id) => id.toString();
-tagsFromJson(String? tags) => tags?.split(' ').where((e) => e.isNotEmpty).toList() ?? [];
-tagsToJson(List<String> tags) => tags.isNotEmpty ? tags.join(' ') : null;
-
-@freezed
-class NrdbDeck with _$NrdbDeck {
-  const factory NrdbDeck({
-    @JsonKey(fromJson: idFromJson) required String id,
-    required String name,
-    required String description,
-    required String? mwlCode,
-    required DateTime dateCreation,
-    required DateTime dateUpdate,
-    required Map<String, int> cards,
-    @JsonKey(fromJson: tagsFromJson, toJson: tagsToJson) required List<String> tags,
-  }) = _NrdbDeck;
-
-  factory NrdbDeck.fromJson(Map<String, dynamic> json) => _$NrdbDeckFromJson(json);
-}
 
 class AuthStateNotifier extends StateNotifier<AuthState> {
   AuthStateNotifier(super.state);
