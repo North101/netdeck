@@ -295,8 +295,6 @@ class Type extends Table with TableInfo<Type, TypeData> {
   }
 
   @override
-  List<String> get customConstraints => const [];
-  @override
   bool get dontWriteConstraints => true;
 }
 
@@ -469,8 +467,6 @@ class Side extends Table with TableInfo<Side, SideData> {
     return Side(attachedDatabase, alias);
   }
 
-  @override
-  List<String> get customConstraints => const [];
   @override
   bool get dontWriteConstraints => true;
 }
@@ -1406,8 +1402,6 @@ class Format extends Table with TableInfo<Format, FormatData> {
   }
 
   @override
-  List<String> get customConstraints => const [];
-  @override
   bool get dontWriteConstraints => true;
 }
 
@@ -1666,8 +1660,6 @@ class Rotation extends Table with TableInfo<Rotation, RotationData> {
     return Rotation(attachedDatabase, alias);
   }
 
-  @override
-  List<String> get customConstraints => const [];
   @override
   bool get dontWriteConstraints => true;
 }
@@ -2197,8 +2189,6 @@ class Mwl extends Table with TableInfo<Mwl, MwlData> {
     return Mwl(attachedDatabase, alias);
   }
 
-  @override
-  List<String> get customConstraints => const [];
   @override
   bool get dontWriteConstraints => true;
 }
@@ -2902,8 +2892,6 @@ class Cycle extends Table with TableInfo<Cycle, CycleData> {
   }
 
   @override
-  List<String> get customConstraints => const [];
-  @override
   bool get dontWriteConstraints => true;
 }
 
@@ -3236,8 +3224,6 @@ class Pack extends Table with TableInfo<Pack, PackData> {
     return Pack(attachedDatabase, alias);
   }
 
-  @override
-  List<String> get customConstraints => const [];
   @override
   bool get dontWriteConstraints => true;
 }
@@ -4314,8 +4300,6 @@ class Card extends Table with TableInfo<Card, CardData> {
   }
 
   @override
-  List<String> get customConstraints => const [];
-  @override
   bool get dontWriteConstraints => true;
 }
 
@@ -4609,8 +4593,6 @@ class Faction extends Table with TableInfo<Faction, FactionData> {
 
   static JsonTypeConverter2<Color, int, int> $convertercolor =
       const ColorConverter();
-  @override
-  List<String> get customConstraints => const [];
   @override
   bool get dontWriteConstraints => true;
 }
@@ -6165,8 +6147,6 @@ class Deck extends Table with TableInfo<Deck, DeckData> {
   }
 
   @override
-  List<String> get customConstraints => const [];
-  @override
   bool get dontWriteConstraints => true;
 }
 
@@ -6701,8 +6681,6 @@ class Collection extends Table with TableInfo<Collection, CollectionData> {
     return Collection(attachedDatabase, alias);
   }
 
-  @override
-  List<String> get customConstraints => const [];
   @override
   bool get dontWriteConstraints => true;
 }

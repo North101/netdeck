@@ -5,7 +5,6 @@ analyzer:
     - '**/*.freezed.dart'
     - '**/*.g.dart'
     - 'lib/view/autocomplete.dart'
-    - 'lib/db/migrations/schema.dart'
   errors:
     invalid_annotation_target: ignore
 

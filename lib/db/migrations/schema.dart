@@ -1,7 +1,7 @@
 // GENERATED CODE, DO NOT EDIT BY HAND.
 //@dart=2.12
 import 'package:drift/drift.dart';
-import 'package:drift_dev/api/migrations.dart';
+import 'package:drift/internal/migrations.dart';
 import 'schema_v5.dart' as v5;
 import 'schema_v4.dart' as v4;
 import 'schema_v8.dart' as v8;

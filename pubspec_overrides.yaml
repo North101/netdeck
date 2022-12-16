@@ -1,10 +1,19 @@
 dependency_overrides:
   drift:
-    path: ../drift/drift
+    git:
+      url: https://github.com/simolus3/drift.git
+      ref: develop
+      path: drift
   drift_dev:
-    path: ../drift/drift_dev
+    git:
+      url: https://github.com/simolus3/drift.git
+      ref: develop
+      path: drift_dev
   sqlparser:
-    path: ../drift/sqlparser
+    git:
+      url: https://github.com/simolus3/drift.git
+      ref: develop
+      path: sqlparser
   sqlite3_flutter_libs:
     git:
       url: https://github.com/simolus3/sqlite3.dart.git
