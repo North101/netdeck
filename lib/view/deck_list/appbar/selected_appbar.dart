@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/providers.dart';
-import '/util/nrdb/private.dart';
 import '/view/deck_compare/page.dart';
 import '/view/search_theme.dart';
 

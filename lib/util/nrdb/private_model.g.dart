@@ -6,20 +6,42 @@ part of 'private_model.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$NrdbDeckSuccessResult _$$NrdbDeckSuccessResultFromJson(Map json) =>
-    _$NrdbDeckSuccessResult(
+_$SuccessHttpResult<T> _$$SuccessHttpResultFromJson<T>(
+  Map json,
+  T Function(Object? json) fromJsonT,
+) =>
+    _$SuccessHttpResult<T>(
       json['version_number'] as String,
       json['success'] as bool,
-      NrdbDeck.fromJson(Map<String, dynamic>.from(json['data'] as Map)),
+      fromJsonT(json['data']),
       json['total'] as int,
       $type: json['type'] as String?,
     );
 
-_$NrdbDeckFailureResult _$$NrdbDeckFailureResultFromJson(Map json) =>
-    _$NrdbDeckFailureResult(
+_$FailedHttpResult<T> _$$FailedHttpResultFromJson<T>(
+  Map json,
+  T Function(Object? json) fromJsonT,
+) =>
+    _$FailedHttpResult<T>(
       json['version_number'] as String,
       json['success'] as bool,
       json['msg'] as String,
+      $type: json['type'] as String?,
+    );
+
+_$NotFoundHttpResult<T> _$$NotFoundHttpResultFromJson<T>(
+  Map json,
+  T Function(Object? json) fromJsonT,
+) =>
+    _$NotFoundHttpResult<T>(
+      $type: json['type'] as String?,
+    );
+
+_$UnknownHttpResult<T> _$$UnknownHttpResultFromJson<T>(
+  Map json,
+  T Function(Object? json) fromJsonT,
+) =>
+    _$UnknownHttpResult<T>(
       $type: json['type'] as String?,
     );
 

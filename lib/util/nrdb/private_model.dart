@@ -3,31 +3,35 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'private_model.freezed.dart';
 part 'private_model.g.dart';
 
-@Freezed(fromJson: true)
-class NrdbDeckResult with _$NrdbDeckResult {
-  const factory NrdbDeckResult.success(
+@Freezed(genericArgumentFactories: true, fromJson: true)
+class HttpResult<T> with _$HttpResult<T> {
+  const factory HttpResult.success(
     String versionNumber,
     bool success,
-    NrdbDeck data,
+    T data,
     int total,
-  ) = NrdbDeckSuccessResult;
+  ) = SuccessHttpResult;
 
-  const factory NrdbDeckResult.failure(
+  const factory HttpResult.failed(
     String versionNumber,
     bool success,
     String msg,
-  ) = NrdbDeckFailureResult;
+  ) = FailedHttpResult;
 
-  factory NrdbDeckResult.fromJson(Map<String, dynamic> json) {
+  const factory HttpResult.notFound() = NotFoundHttpResult;
+
+  const factory HttpResult.unknown() = UnknownHttpResult;
+
+  factory HttpResult.fromJson(Map<String, dynamic> json, T Function(Object? json) fromJsonT) {
     final success = json['success'];
     if (success is bool) {
       if (success) {
-        return NrdbDeckSuccessResult.fromJson(json);
+        return SuccessHttpResult.fromJson(json, fromJsonT);
       } else {
-        return NrdbDeckFailureResult.fromJson(json);
+        return FailedHttpResult.fromJson(json, fromJsonT);
       }
     }
-    throw Exception('Could not determine the constructor for mapping from JSON');
+    return const HttpResult.unknown();
   }
 }
 

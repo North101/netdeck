@@ -185,8 +185,9 @@ class __$$InitAuthStateCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$InitAuthState implements InitAuthState {
-  const _$InitAuthState(this.ref);
+class _$InitAuthState extends InitAuthState
+    with AuthStateRefMixin, RefreshTokenMixin {
+  const _$InitAuthState(this.ref) : super._();
 
   @override
   final StateNotifierProviderRef<AuthStateNotifier, AuthState> ref;
@@ -332,10 +333,12 @@ class _$InitAuthState implements InitAuthState {
   }
 }
 
-abstract class InitAuthState implements AuthState {
+abstract class InitAuthState extends AuthState
+    implements AuthStateRefMixin, RefreshTokenMixin {
   const factory InitAuthState(
           final StateNotifierProviderRef<AuthStateNotifier, AuthState> ref) =
       _$InitAuthState;
+  const InitAuthState._() : super._();
 
   @override
   StateNotifierProviderRef<AuthStateNotifier, AuthState> get ref;
@@ -387,8 +390,8 @@ class __$$ConnectingAuthStateCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$ConnectingAuthState implements ConnectingAuthState {
-  const _$ConnectingAuthState(this.ref, this.future);
+class _$ConnectingAuthState extends ConnectingAuthState with AuthStateRefMixin {
+  const _$ConnectingAuthState(this.ref, this.future) : super._();
 
   @override
   final StateNotifierProviderRef<AuthStateNotifier, AuthState> ref;
@@ -538,10 +541,12 @@ class _$ConnectingAuthState implements ConnectingAuthState {
   }
 }
 
-abstract class ConnectingAuthState implements AuthState {
+abstract class ConnectingAuthState extends AuthState
+    implements AuthStateRefMixin {
   const factory ConnectingAuthState(
       final StateNotifierProviderRef<AuthStateNotifier, AuthState> ref,
       final Future<AuthState> future) = _$ConnectingAuthState;
+  const ConnectingAuthState._() : super._();
 
   @override
   StateNotifierProviderRef<AuthStateNotifier, AuthState> get ref;
@@ -594,8 +599,9 @@ class __$$OfflineAuthStateCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$OfflineAuthState implements OfflineAuthState {
-  const _$OfflineAuthState(this.ref, this.token);
+class _$OfflineAuthState extends OfflineAuthState
+    with AuthStateRefMixin, LogoutMixin, RefreshTokenMixin {
+  const _$OfflineAuthState(this.ref, this.token) : super._();
 
   @override
   final StateNotifierProviderRef<AuthStateNotifier, AuthState> ref;
@@ -744,10 +750,12 @@ class _$OfflineAuthState implements OfflineAuthState {
   }
 }
 
-abstract class OfflineAuthState implements AuthState {
+abstract class OfflineAuthState extends AuthState
+    implements AuthStateRefMixin, LogoutMixin, RefreshTokenMixin {
   const factory OfflineAuthState(
       final StateNotifierProviderRef<AuthStateNotifier, AuthState> ref,
       final TokenResponse? token) = _$OfflineAuthState;
+  const OfflineAuthState._() : super._();
 
   @override
   StateNotifierProviderRef<AuthStateNotifier, AuthState> get ref;
@@ -816,8 +824,13 @@ class __$$OnlineAuthStateCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$OnlineAuthState implements OnlineAuthState {
-  const _$OnlineAuthState(this.ref, this.token, this.user);
+class _$OnlineAuthState extends OnlineAuthState
+    with
+        AuthStateRefMixin,
+        LogoutMixin,
+        RefreshTokenMixin,
+        OnlineAuthStateMixin {
+  const _$OnlineAuthState(this.ref, this.token, this.user) : super._();
 
   @override
   final StateNotifierProviderRef<AuthStateNotifier, AuthState> ref;
@@ -969,11 +982,17 @@ class _$OnlineAuthState implements OnlineAuthState {
   }
 }
 
-abstract class OnlineAuthState implements AuthState {
+abstract class OnlineAuthState extends AuthState
+    implements
+        AuthStateRefMixin,
+        LogoutMixin,
+        RefreshTokenMixin,
+        OnlineAuthStateMixin {
   const factory OnlineAuthState(
       final StateNotifierProviderRef<AuthStateNotifier, AuthState> ref,
       final TokenResponse token,
       final NrdbUser user) = _$OnlineAuthState;
+  const OnlineAuthState._() : super._();
 
   @override
   StateNotifierProviderRef<AuthStateNotifier, AuthState> get ref;
@@ -1020,8 +1039,9 @@ class __$$UnauthenticatedAuthStateCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$UnauthenticatedAuthState implements UnauthenticatedAuthState {
-  const _$UnauthenticatedAuthState(this.ref);
+class _$UnauthenticatedAuthState extends UnauthenticatedAuthState
+    with AuthStateRefMixin, LoginMixin {
+  const _$UnauthenticatedAuthState(this.ref) : super._();
 
   @override
   final StateNotifierProviderRef<AuthStateNotifier, AuthState> ref;
@@ -1169,10 +1189,12 @@ class _$UnauthenticatedAuthState implements UnauthenticatedAuthState {
   }
 }
 
-abstract class UnauthenticatedAuthState implements AuthState {
+abstract class UnauthenticatedAuthState extends AuthState
+    implements AuthStateRefMixin, LoginMixin {
   const factory UnauthenticatedAuthState(
           final StateNotifierProviderRef<AuthStateNotifier, AuthState> ref) =
       _$UnauthenticatedAuthState;
+  const UnauthenticatedAuthState._() : super._();
 
   @override
   StateNotifierProviderRef<AuthStateNotifier, AuthState> get ref;
@@ -1180,427 +1202,4 @@ abstract class UnauthenticatedAuthState implements AuthState {
   @JsonKey(ignore: true)
   _$$UnauthenticatedAuthStateCopyWith<_$UnauthenticatedAuthState>
       get copyWith => throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-mixin _$HttpResult<T> {
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(T value) success,
-    required TResult Function() notFound,
-    required TResult Function() unknown,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(T value)? success,
-    TResult? Function()? notFound,
-    TResult? Function()? unknown,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(T value)? success,
-    TResult Function()? notFound,
-    TResult Function()? unknown,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(SuccessHttpResult<T> value) success,
-    required TResult Function(NotFoundHttpResult<T> value) notFound,
-    required TResult Function(UnknownHttpResult<T> value) unknown,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(SuccessHttpResult<T> value)? success,
-    TResult? Function(NotFoundHttpResult<T> value)? notFound,
-    TResult? Function(UnknownHttpResult<T> value)? unknown,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(SuccessHttpResult<T> value)? success,
-    TResult Function(NotFoundHttpResult<T> value)? notFound,
-    TResult Function(UnknownHttpResult<T> value)? unknown,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class $HttpResultCopyWith<T, $Res> {
-  factory $HttpResultCopyWith(
-          HttpResult<T> value, $Res Function(HttpResult<T>) then) =
-      _$HttpResultCopyWithImpl<T, $Res, HttpResult<T>>;
-}
-
-/// @nodoc
-class _$HttpResultCopyWithImpl<T, $Res, $Val extends HttpResult<T>>
-    implements $HttpResultCopyWith<T, $Res> {
-  _$HttpResultCopyWithImpl(this._value, this._then);
-
-  // ignore: unused_field
-  final $Val _value;
-  // ignore: unused_field
-  final $Res Function($Val) _then;
-}
-
-/// @nodoc
-abstract class _$$SuccessHttpResultCopyWith<T, $Res> {
-  factory _$$SuccessHttpResultCopyWith(_$SuccessHttpResult<T> value,
-          $Res Function(_$SuccessHttpResult<T>) then) =
-      __$$SuccessHttpResultCopyWithImpl<T, $Res>;
-  @useResult
-  $Res call({T value});
-}
-
-/// @nodoc
-class __$$SuccessHttpResultCopyWithImpl<T, $Res>
-    extends _$HttpResultCopyWithImpl<T, $Res, _$SuccessHttpResult<T>>
-    implements _$$SuccessHttpResultCopyWith<T, $Res> {
-  __$$SuccessHttpResultCopyWithImpl(_$SuccessHttpResult<T> _value,
-      $Res Function(_$SuccessHttpResult<T>) _then)
-      : super(_value, _then);
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? value = freezed,
-  }) {
-    return _then(_$SuccessHttpResult<T>(
-      freezed == value
-          ? _value.value
-          : value // ignore: cast_nullable_to_non_nullable
-              as T,
-    ));
-  }
-}
-
-/// @nodoc
-
-class _$SuccessHttpResult<T> implements SuccessHttpResult<T> {
-  const _$SuccessHttpResult(this.value);
-
-  @override
-  final T value;
-
-  @override
-  String toString() {
-    return 'HttpResult<$T>.success(value: $value)';
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$SuccessHttpResult<T> &&
-            const DeepCollectionEquality().equals(other.value, value));
-  }
-
-  @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(value));
-
-  @JsonKey(ignore: true)
-  @override
-  @pragma('vm:prefer-inline')
-  _$$SuccessHttpResultCopyWith<T, _$SuccessHttpResult<T>> get copyWith =>
-      __$$SuccessHttpResultCopyWithImpl<T, _$SuccessHttpResult<T>>(
-          this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(T value) success,
-    required TResult Function() notFound,
-    required TResult Function() unknown,
-  }) {
-    return success(value);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(T value)? success,
-    TResult? Function()? notFound,
-    TResult? Function()? unknown,
-  }) {
-    return success?.call(value);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(T value)? success,
-    TResult Function()? notFound,
-    TResult Function()? unknown,
-    required TResult orElse(),
-  }) {
-    if (success != null) {
-      return success(value);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(SuccessHttpResult<T> value) success,
-    required TResult Function(NotFoundHttpResult<T> value) notFound,
-    required TResult Function(UnknownHttpResult<T> value) unknown,
-  }) {
-    return success(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(SuccessHttpResult<T> value)? success,
-    TResult? Function(NotFoundHttpResult<T> value)? notFound,
-    TResult? Function(UnknownHttpResult<T> value)? unknown,
-  }) {
-    return success?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(SuccessHttpResult<T> value)? success,
-    TResult Function(NotFoundHttpResult<T> value)? notFound,
-    TResult Function(UnknownHttpResult<T> value)? unknown,
-    required TResult orElse(),
-  }) {
-    if (success != null) {
-      return success(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class SuccessHttpResult<T> implements HttpResult<T> {
-  const factory SuccessHttpResult(final T value) = _$SuccessHttpResult<T>;
-
-  T get value;
-  @JsonKey(ignore: true)
-  _$$SuccessHttpResultCopyWith<T, _$SuccessHttpResult<T>> get copyWith =>
-      throw _privateConstructorUsedError;
-}
-
-/// @nodoc
-abstract class _$$NotFoundHttpResultCopyWith<T, $Res> {
-  factory _$$NotFoundHttpResultCopyWith(_$NotFoundHttpResult<T> value,
-          $Res Function(_$NotFoundHttpResult<T>) then) =
-      __$$NotFoundHttpResultCopyWithImpl<T, $Res>;
-}
-
-/// @nodoc
-class __$$NotFoundHttpResultCopyWithImpl<T, $Res>
-    extends _$HttpResultCopyWithImpl<T, $Res, _$NotFoundHttpResult<T>>
-    implements _$$NotFoundHttpResultCopyWith<T, $Res> {
-  __$$NotFoundHttpResultCopyWithImpl(_$NotFoundHttpResult<T> _value,
-      $Res Function(_$NotFoundHttpResult<T>) _then)
-      : super(_value, _then);
-}
-
-/// @nodoc
-
-class _$NotFoundHttpResult<T> implements NotFoundHttpResult<T> {
-  const _$NotFoundHttpResult();
-
-  @override
-  String toString() {
-    return 'HttpResult<$T>.notFound()';
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$NotFoundHttpResult<T>);
-  }
-
-  @override
-  int get hashCode => runtimeType.hashCode;
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(T value) success,
-    required TResult Function() notFound,
-    required TResult Function() unknown,
-  }) {
-    return notFound();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(T value)? success,
-    TResult? Function()? notFound,
-    TResult? Function()? unknown,
-  }) {
-    return notFound?.call();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(T value)? success,
-    TResult Function()? notFound,
-    TResult Function()? unknown,
-    required TResult orElse(),
-  }) {
-    if (notFound != null) {
-      return notFound();
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(SuccessHttpResult<T> value) success,
-    required TResult Function(NotFoundHttpResult<T> value) notFound,
-    required TResult Function(UnknownHttpResult<T> value) unknown,
-  }) {
-    return notFound(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(SuccessHttpResult<T> value)? success,
-    TResult? Function(NotFoundHttpResult<T> value)? notFound,
-    TResult? Function(UnknownHttpResult<T> value)? unknown,
-  }) {
-    return notFound?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(SuccessHttpResult<T> value)? success,
-    TResult Function(NotFoundHttpResult<T> value)? notFound,
-    TResult Function(UnknownHttpResult<T> value)? unknown,
-    required TResult orElse(),
-  }) {
-    if (notFound != null) {
-      return notFound(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class NotFoundHttpResult<T> implements HttpResult<T> {
-  const factory NotFoundHttpResult() = _$NotFoundHttpResult<T>;
-}
-
-/// @nodoc
-abstract class _$$UnknownHttpResultCopyWith<T, $Res> {
-  factory _$$UnknownHttpResultCopyWith(_$UnknownHttpResult<T> value,
-          $Res Function(_$UnknownHttpResult<T>) then) =
-      __$$UnknownHttpResultCopyWithImpl<T, $Res>;
-}
-
-/// @nodoc
-class __$$UnknownHttpResultCopyWithImpl<T, $Res>
-    extends _$HttpResultCopyWithImpl<T, $Res, _$UnknownHttpResult<T>>
-    implements _$$UnknownHttpResultCopyWith<T, $Res> {
-  __$$UnknownHttpResultCopyWithImpl(_$UnknownHttpResult<T> _value,
-      $Res Function(_$UnknownHttpResult<T>) _then)
-      : super(_value, _then);
-}
-
-/// @nodoc
-
-class _$UnknownHttpResult<T> implements UnknownHttpResult<T> {
-  const _$UnknownHttpResult();
-
-  @override
-  String toString() {
-    return 'HttpResult<$T>.unknown()';
-  }
-
-  @override
-  bool operator ==(dynamic other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$UnknownHttpResult<T>);
-  }
-
-  @override
-  int get hashCode => runtimeType.hashCode;
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>({
-    required TResult Function(T value) success,
-    required TResult Function() notFound,
-    required TResult Function() unknown,
-  }) {
-    return unknown();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(T value)? success,
-    TResult? Function()? notFound,
-    TResult? Function()? unknown,
-  }) {
-    return unknown?.call();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>({
-    TResult Function(T value)? success,
-    TResult Function()? notFound,
-    TResult Function()? unknown,
-    required TResult orElse(),
-  }) {
-    if (unknown != null) {
-      return unknown();
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>({
-    required TResult Function(SuccessHttpResult<T> value) success,
-    required TResult Function(NotFoundHttpResult<T> value) notFound,
-    required TResult Function(UnknownHttpResult<T> value) unknown,
-  }) {
-    return unknown(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(SuccessHttpResult<T> value)? success,
-    TResult? Function(NotFoundHttpResult<T> value)? notFound,
-    TResult? Function(UnknownHttpResult<T> value)? unknown,
-  }) {
-    return unknown?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>({
-    TResult Function(SuccessHttpResult<T> value)? success,
-    TResult Function(NotFoundHttpResult<T> value)? notFound,
-    TResult Function(UnknownHttpResult<T> value)? unknown,
-    required TResult orElse(),
-  }) {
-    if (unknown != null) {
-      return unknown(this);
-    }
-    return orElse();
-  }
-}
-
-abstract class UnknownHttpResult<T> implements HttpResult<T> {
-  const factory UnknownHttpResult() = _$UnknownHttpResult<T>;
 }

@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/db/database.dart';
 import '/providers.dart';
-import '/util/nrdb/private.dart';
 import '/util/nrdb/private_model.dart';
 
 final deckResultProvider = Provider<DeckNotifierResult>((ref) => throw UnimplementedError());
@@ -263,14 +262,15 @@ class SaveDeckRemoteDialogState extends ConsumerState<SaveDeckRemoteDialog> {
     final result = await onlineAuthState
         .saveDeck(deck) //
         .catchError((e) => const UnknownHttpResult<NrdbDeck>());
-    if (result is! SuccessHttpResult<NrdbDeck>) {
+    
+    final uploadedDeck = result.mapOrNull(success: (result) => result.data);
+    if (uploadedDeck == null) {
       dialogStateNotifier.state = SaveDialogState.warnNotUploaded;
       return;
     }
 
     final db = ref.read(dbProvider);
     final savedDeck = await db.transaction(() async {
-      final uploadedDeck = result.value;
       if (deck.id != uploadedDeck.id) {
         await db.deleteDecks(deckIds: [deck.id]);
         await db.deleteDeckCards(deckIds: [deck.id]);
@@ -386,14 +386,15 @@ class DownloadDeckProgressDialogState extends ConsumerState<DownloadDeckProgress
     final result = await onlineAuthState
         .getDeck(deck.id) //
         .catchError((e) => const UnknownHttpResult<NrdbDeck>());
-    if (result is! SuccessHttpResult<NrdbDeck>) {
+    
+    final downloadedDeck = result.mapOrNull(success: (result) => result.data);
+    if (downloadedDeck == null) {
       ref.read(downloadDialogStateProvider.notifier).state = DownloadDialogState.warnNotDownloaded;
       return;
     }
 
     final db = ref.read(dbProvider);
     final savedDeck = await db.transaction(() async {
-      final downloadedDeck = result.value;
       if (deck.id != downloadedDeck.id) {
         await db.deleteDecks(deckIds: [deck.id]);
         await db.deleteDeckCards(deckIds: [deck.id]);

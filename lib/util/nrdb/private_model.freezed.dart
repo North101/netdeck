@@ -14,131 +14,116 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
-NrdbDeckResult _$NrdbDeckResultFromJson(Map<String, dynamic> json) {
+HttpResult<T> _$HttpResultFromJson<T>(
+    Map<String, dynamic> json, T Function(Object?) fromJsonT) {
   switch (json['type']) {
     case 'success':
-      return NrdbDeckSuccessResult.fromJson(json);
-    case 'failure':
-      return NrdbDeckFailureResult.fromJson(json);
+      return SuccessHttpResult<T>.fromJson(json, fromJsonT);
+    case 'failed':
+      return FailedHttpResult<T>.fromJson(json, fromJsonT);
+    case 'notFound':
+      return NotFoundHttpResult<T>.fromJson(json, fromJsonT);
+    case 'unknown':
+      return UnknownHttpResult<T>.fromJson(json, fromJsonT);
 
     default:
-      throw CheckedFromJsonException(json, 'type', 'NrdbDeckResult',
-          'Invalid union type "${json['type']}"!');
+      throw CheckedFromJsonException(
+          json, 'type', 'HttpResult', 'Invalid union type "${json['type']}"!');
   }
 }
 
 /// @nodoc
-mixin _$NrdbDeckResult {
-  String get versionNumber => throw _privateConstructorUsedError;
-  bool get success => throw _privateConstructorUsedError;
+mixin _$HttpResult<T> {
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(
-            String versionNumber, bool success, NrdbDeck data, int total)
+            String versionNumber, bool success, T data, int total)
         success,
     required TResult Function(String versionNumber, bool success, String msg)
-        failure,
+        failed,
+    required TResult Function() notFound,
+    required TResult Function() unknown,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(
-            String versionNumber, bool success, NrdbDeck data, int total)?
+    TResult? Function(String versionNumber, bool success, T data, int total)?
         success,
-    TResult? Function(String versionNumber, bool success, String msg)? failure,
+    TResult? Function(String versionNumber, bool success, String msg)? failed,
+    TResult? Function()? notFound,
+    TResult? Function()? unknown,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(
-            String versionNumber, bool success, NrdbDeck data, int total)?
+    TResult Function(String versionNumber, bool success, T data, int total)?
         success,
-    TResult Function(String versionNumber, bool success, String msg)? failure,
+    TResult Function(String versionNumber, bool success, String msg)? failed,
+    TResult Function()? notFound,
+    TResult Function()? unknown,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
-    required TResult Function(NrdbDeckSuccessResult value) success,
-    required TResult Function(NrdbDeckFailureResult value) failure,
+    required TResult Function(SuccessHttpResult<T> value) success,
+    required TResult Function(FailedHttpResult<T> value) failed,
+    required TResult Function(NotFoundHttpResult<T> value) notFound,
+    required TResult Function(UnknownHttpResult<T> value) unknown,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(NrdbDeckSuccessResult value)? success,
-    TResult? Function(NrdbDeckFailureResult value)? failure,
+    TResult? Function(SuccessHttpResult<T> value)? success,
+    TResult? Function(FailedHttpResult<T> value)? failed,
+    TResult? Function(NotFoundHttpResult<T> value)? notFound,
+    TResult? Function(UnknownHttpResult<T> value)? unknown,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
-    TResult Function(NrdbDeckSuccessResult value)? success,
-    TResult Function(NrdbDeckFailureResult value)? failure,
+    TResult Function(SuccessHttpResult<T> value)? success,
+    TResult Function(FailedHttpResult<T> value)? failed,
+    TResult Function(NotFoundHttpResult<T> value)? notFound,
+    TResult Function(UnknownHttpResult<T> value)? unknown,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
-
-  @JsonKey(ignore: true)
-  $NrdbDeckResultCopyWith<NrdbDeckResult> get copyWith =>
-      throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $NrdbDeckResultCopyWith<$Res> {
-  factory $NrdbDeckResultCopyWith(
-          NrdbDeckResult value, $Res Function(NrdbDeckResult) then) =
-      _$NrdbDeckResultCopyWithImpl<$Res, NrdbDeckResult>;
-  @useResult
-  $Res call({String versionNumber, bool success});
+abstract class $HttpResultCopyWith<T, $Res> {
+  factory $HttpResultCopyWith(
+          HttpResult<T> value, $Res Function(HttpResult<T>) then) =
+      _$HttpResultCopyWithImpl<T, $Res, HttpResult<T>>;
 }
 
 /// @nodoc
-class _$NrdbDeckResultCopyWithImpl<$Res, $Val extends NrdbDeckResult>
-    implements $NrdbDeckResultCopyWith<$Res> {
-  _$NrdbDeckResultCopyWithImpl(this._value, this._then);
+class _$HttpResultCopyWithImpl<T, $Res, $Val extends HttpResult<T>>
+    implements $HttpResultCopyWith<T, $Res> {
+  _$HttpResultCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
-
-  @pragma('vm:prefer-inline')
-  @override
-  $Res call({
-    Object? versionNumber = null,
-    Object? success = null,
-  }) {
-    return _then(_value.copyWith(
-      versionNumber: null == versionNumber
-          ? _value.versionNumber
-          : versionNumber // ignore: cast_nullable_to_non_nullable
-              as String,
-      success: null == success
-          ? _value.success
-          : success // ignore: cast_nullable_to_non_nullable
-              as bool,
-    ) as $Val);
-  }
 }
 
 /// @nodoc
-abstract class _$$NrdbDeckSuccessResultCopyWith<$Res>
-    implements $NrdbDeckResultCopyWith<$Res> {
-  factory _$$NrdbDeckSuccessResultCopyWith(_$NrdbDeckSuccessResult value,
-          $Res Function(_$NrdbDeckSuccessResult) then) =
-      __$$NrdbDeckSuccessResultCopyWithImpl<$Res>;
-  @override
+abstract class _$$SuccessHttpResultCopyWith<T, $Res> {
+  factory _$$SuccessHttpResultCopyWith(_$SuccessHttpResult<T> value,
+          $Res Function(_$SuccessHttpResult<T>) then) =
+      __$$SuccessHttpResultCopyWithImpl<T, $Res>;
   @useResult
-  $Res call({String versionNumber, bool success, NrdbDeck data, int total});
-
-  $NrdbDeckCopyWith<$Res> get data;
+  $Res call({String versionNumber, bool success, T data, int total});
 }
 
 /// @nodoc
-class __$$NrdbDeckSuccessResultCopyWithImpl<$Res>
-    extends _$NrdbDeckResultCopyWithImpl<$Res, _$NrdbDeckSuccessResult>
-    implements _$$NrdbDeckSuccessResultCopyWith<$Res> {
-  __$$NrdbDeckSuccessResultCopyWithImpl(_$NrdbDeckSuccessResult _value,
-      $Res Function(_$NrdbDeckSuccessResult) _then)
+class __$$SuccessHttpResultCopyWithImpl<T, $Res>
+    extends _$HttpResultCopyWithImpl<T, $Res, _$SuccessHttpResult<T>>
+    implements _$$SuccessHttpResultCopyWith<T, $Res> {
+  __$$SuccessHttpResultCopyWithImpl(_$SuccessHttpResult<T> _value,
+      $Res Function(_$SuccessHttpResult<T>) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -146,10 +131,10 @@ class __$$NrdbDeckSuccessResultCopyWithImpl<$Res>
   $Res call({
     Object? versionNumber = null,
     Object? success = null,
-    Object? data = null,
+    Object? data = freezed,
     Object? total = null,
   }) {
-    return _then(_$NrdbDeckSuccessResult(
+    return _then(_$SuccessHttpResult<T>(
       null == versionNumber
           ? _value.versionNumber
           : versionNumber // ignore: cast_nullable_to_non_nullable
@@ -158,43 +143,36 @@ class __$$NrdbDeckSuccessResultCopyWithImpl<$Res>
           ? _value.success
           : success // ignore: cast_nullable_to_non_nullable
               as bool,
-      null == data
+      freezed == data
           ? _value.data
           : data // ignore: cast_nullable_to_non_nullable
-              as NrdbDeck,
+              as T,
       null == total
           ? _value.total
           : total // ignore: cast_nullable_to_non_nullable
               as int,
     ));
   }
-
-  @override
-  @pragma('vm:prefer-inline')
-  $NrdbDeckCopyWith<$Res> get data {
-    return $NrdbDeckCopyWith<$Res>(_value.data, (value) {
-      return _then(_value.copyWith(data: value));
-    });
-  }
 }
 
 /// @nodoc
-@JsonSerializable(createToJson: false)
-class _$NrdbDeckSuccessResult implements NrdbDeckSuccessResult {
-  const _$NrdbDeckSuccessResult(
+@JsonSerializable(createToJson: false, genericArgumentFactories: true)
+class _$SuccessHttpResult<T> implements SuccessHttpResult<T> {
+  const _$SuccessHttpResult(
       this.versionNumber, this.success, this.data, this.total,
       {final String? $type})
       : $type = $type ?? 'success';
 
-  factory _$NrdbDeckSuccessResult.fromJson(Map<String, dynamic> json) =>
-      _$$NrdbDeckSuccessResultFromJson(json);
+  factory _$SuccessHttpResult.fromJson(
+          Map<String, dynamic> json, T Function(Object?) fromJsonT) =>
+      _$$SuccessHttpResultFromJson(json, fromJsonT);
 
   @override
   final String versionNumber;
   @override
   final bool success;
   @override
-  final NrdbDeck data;
+  final T data;
   @override
   final int total;
 
@@ -203,41 +181,43 @@ class _$NrdbDeckSuccessResult implements NrdbDeckSuccessResult {
 
   @override
   String toString() {
-    return 'NrdbDeckResult.success(versionNumber: $versionNumber, success: $success, data: $data, total: $total)';
+    return 'HttpResult<$T>.success(versionNumber: $versionNumber, success: $success, data: $data, total: $total)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$NrdbDeckSuccessResult &&
+            other is _$SuccessHttpResult<T> &&
             (identical(other.versionNumber, versionNumber) ||
                 other.versionNumber == versionNumber) &&
             (identical(other.success, success) || other.success == success) &&
-            (identical(other.data, data) || other.data == data) &&
+            const DeepCollectionEquality().equals(other.data, data) &&
             (identical(other.total, total) || other.total == total));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, versionNumber, success, data, total);
+  int get hashCode => Object.hash(runtimeType, versionNumber, success,
+      const DeepCollectionEquality().hash(data), total);
 
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$NrdbDeckSuccessResultCopyWith<_$NrdbDeckSuccessResult> get copyWith =>
-      __$$NrdbDeckSuccessResultCopyWithImpl<_$NrdbDeckSuccessResult>(
+  _$$SuccessHttpResultCopyWith<T, _$SuccessHttpResult<T>> get copyWith =>
+      __$$SuccessHttpResultCopyWithImpl<T, _$SuccessHttpResult<T>>(
           this, _$identity);
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(
-            String versionNumber, bool success, NrdbDeck data, int total)
+            String versionNumber, bool success, T data, int total)
         success,
     required TResult Function(String versionNumber, bool success, String msg)
-        failure,
+        failed,
+    required TResult Function() notFound,
+    required TResult Function() unknown,
   }) {
     return success(versionNumber, this.success, data, total);
   }
@@ -245,10 +225,11 @@ class _$NrdbDeckSuccessResult implements NrdbDeckSuccessResult {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(
-            String versionNumber, bool success, NrdbDeck data, int total)?
+    TResult? Function(String versionNumber, bool success, T data, int total)?
         success,
-    TResult? Function(String versionNumber, bool success, String msg)? failure,
+    TResult? Function(String versionNumber, bool success, String msg)? failed,
+    TResult? Function()? notFound,
+    TResult? Function()? unknown,
   }) {
     return success?.call(versionNumber, this.success, data, total);
   }
@@ -256,10 +237,11 @@ class _$NrdbDeckSuccessResult implements NrdbDeckSuccessResult {
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(
-            String versionNumber, bool success, NrdbDeck data, int total)?
+    TResult Function(String versionNumber, bool success, T data, int total)?
         success,
-    TResult Function(String versionNumber, bool success, String msg)? failure,
+    TResult Function(String versionNumber, bool success, String msg)? failed,
+    TResult Function()? notFound,
+    TResult Function()? unknown,
     required TResult orElse(),
   }) {
     if (success != null) {
@@ -271,8 +253,10 @@ class _$NrdbDeckSuccessResult implements NrdbDeckSuccessResult {
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
-    required TResult Function(NrdbDeckSuccessResult value) success,
-    required TResult Function(NrdbDeckFailureResult value) failure,
+    required TResult Function(SuccessHttpResult<T> value) success,
+    required TResult Function(FailedHttpResult<T> value) failed,
+    required TResult Function(NotFoundHttpResult<T> value) notFound,
+    required TResult Function(UnknownHttpResult<T> value) unknown,
   }) {
     return success(this);
   }
@@ -280,8 +264,10 @@ class _$NrdbDeckSuccessResult implements NrdbDeckSuccessResult {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(NrdbDeckSuccessResult value)? success,
-    TResult? Function(NrdbDeckFailureResult value)? failure,
+    TResult? Function(SuccessHttpResult<T> value)? success,
+    TResult? Function(FailedHttpResult<T> value)? failed,
+    TResult? Function(NotFoundHttpResult<T> value)? notFound,
+    TResult? Function(UnknownHttpResult<T> value)? unknown,
   }) {
     return success?.call(this);
   }
@@ -289,8 +275,10 @@ class _$NrdbDeckSuccessResult implements NrdbDeckSuccessResult {
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
-    TResult Function(NrdbDeckSuccessResult value)? success,
-    TResult Function(NrdbDeckFailureResult value)? failure,
+    TResult Function(SuccessHttpResult<T> value)? success,
+    TResult Function(FailedHttpResult<T> value)? failed,
+    TResult Function(NotFoundHttpResult<T> value)? notFound,
+    TResult Function(UnknownHttpResult<T> value)? unknown,
     required TResult orElse(),
   }) {
     if (success != null) {
@@ -300,45 +288,41 @@ class _$NrdbDeckSuccessResult implements NrdbDeckSuccessResult {
   }
 }
 
-abstract class NrdbDeckSuccessResult implements NrdbDeckResult {
-  const factory NrdbDeckSuccessResult(
+abstract class SuccessHttpResult<T> implements HttpResult<T> {
+  const factory SuccessHttpResult(
       final String versionNumber,
       final bool success,
-      final NrdbDeck data,
-      final int total) = _$NrdbDeckSuccessResult;
+      final T data,
+      final int total) = _$SuccessHttpResult<T>;
 
-  factory NrdbDeckSuccessResult.fromJson(Map<String, dynamic> json) =
-      _$NrdbDeckSuccessResult.fromJson;
+  factory SuccessHttpResult.fromJson(
+          Map<String, dynamic> json, T Function(Object?) fromJsonT) =
+      _$SuccessHttpResult<T>.fromJson;
 
-  @override
   String get versionNumber;
-  @override
   bool get success;
-  NrdbDeck get data;
+  T get data;
   int get total;
-  @override
   @JsonKey(ignore: true)
-  _$$NrdbDeckSuccessResultCopyWith<_$NrdbDeckSuccessResult> get copyWith =>
+  _$$SuccessHttpResultCopyWith<T, _$SuccessHttpResult<T>> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$NrdbDeckFailureResultCopyWith<$Res>
-    implements $NrdbDeckResultCopyWith<$Res> {
-  factory _$$NrdbDeckFailureResultCopyWith(_$NrdbDeckFailureResult value,
-          $Res Function(_$NrdbDeckFailureResult) then) =
-      __$$NrdbDeckFailureResultCopyWithImpl<$Res>;
-  @override
+abstract class _$$FailedHttpResultCopyWith<T, $Res> {
+  factory _$$FailedHttpResultCopyWith(_$FailedHttpResult<T> value,
+          $Res Function(_$FailedHttpResult<T>) then) =
+      __$$FailedHttpResultCopyWithImpl<T, $Res>;
   @useResult
   $Res call({String versionNumber, bool success, String msg});
 }
 
 /// @nodoc
-class __$$NrdbDeckFailureResultCopyWithImpl<$Res>
-    extends _$NrdbDeckResultCopyWithImpl<$Res, _$NrdbDeckFailureResult>
-    implements _$$NrdbDeckFailureResultCopyWith<$Res> {
-  __$$NrdbDeckFailureResultCopyWithImpl(_$NrdbDeckFailureResult _value,
-      $Res Function(_$NrdbDeckFailureResult) _then)
+class __$$FailedHttpResultCopyWithImpl<T, $Res>
+    extends _$HttpResultCopyWithImpl<T, $Res, _$FailedHttpResult<T>>
+    implements _$$FailedHttpResultCopyWith<T, $Res> {
+  __$$FailedHttpResultCopyWithImpl(
+      _$FailedHttpResult<T> _value, $Res Function(_$FailedHttpResult<T>) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -348,7 +332,7 @@ class __$$NrdbDeckFailureResultCopyWithImpl<$Res>
     Object? success = null,
     Object? msg = null,
   }) {
-    return _then(_$NrdbDeckFailureResult(
+    return _then(_$FailedHttpResult<T>(
       null == versionNumber
           ? _value.versionNumber
           : versionNumber // ignore: cast_nullable_to_non_nullable
@@ -366,14 +350,15 @@ class __$$NrdbDeckFailureResultCopyWithImpl<$Res>
 }
 
 /// @nodoc
-@JsonSerializable(createToJson: false)
-class _$NrdbDeckFailureResult implements NrdbDeckFailureResult {
-  const _$NrdbDeckFailureResult(this.versionNumber, this.success, this.msg,
+@JsonSerializable(createToJson: false, genericArgumentFactories: true)
+class _$FailedHttpResult<T> implements FailedHttpResult<T> {
+  const _$FailedHttpResult(this.versionNumber, this.success, this.msg,
       {final String? $type})
-      : $type = $type ?? 'failure';
+      : $type = $type ?? 'failed';
 
-  factory _$NrdbDeckFailureResult.fromJson(Map<String, dynamic> json) =>
-      _$$NrdbDeckFailureResultFromJson(json);
+  factory _$FailedHttpResult.fromJson(
+          Map<String, dynamic> json, T Function(Object?) fromJsonT) =>
+      _$$FailedHttpResultFromJson(json, fromJsonT);
 
   @override
   final String versionNumber;
@@ -387,14 +372,14 @@ class _$NrdbDeckFailureResult implements NrdbDeckFailureResult {
 
   @override
   String toString() {
-    return 'NrdbDeckResult.failure(versionNumber: $versionNumber, success: $success, msg: $msg)';
+    return 'HttpResult<$T>.failed(versionNumber: $versionNumber, success: $success, msg: $msg)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$NrdbDeckFailureResult &&
+            other is _$FailedHttpResult<T> &&
             (identical(other.versionNumber, versionNumber) ||
                 other.versionNumber == versionNumber) &&
             (identical(other.success, success) || other.success == success) &&
@@ -408,44 +393,48 @@ class _$NrdbDeckFailureResult implements NrdbDeckFailureResult {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$NrdbDeckFailureResultCopyWith<_$NrdbDeckFailureResult> get copyWith =>
-      __$$NrdbDeckFailureResultCopyWithImpl<_$NrdbDeckFailureResult>(
+  _$$FailedHttpResultCopyWith<T, _$FailedHttpResult<T>> get copyWith =>
+      __$$FailedHttpResultCopyWithImpl<T, _$FailedHttpResult<T>>(
           this, _$identity);
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function(
-            String versionNumber, bool success, NrdbDeck data, int total)
+            String versionNumber, bool success, T data, int total)
         success,
     required TResult Function(String versionNumber, bool success, String msg)
-        failure,
+        failed,
+    required TResult Function() notFound,
+    required TResult Function() unknown,
   }) {
-    return failure(versionNumber, this.success, msg);
+    return failed(versionNumber, this.success, msg);
   }
 
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult? Function(
-            String versionNumber, bool success, NrdbDeck data, int total)?
+    TResult? Function(String versionNumber, bool success, T data, int total)?
         success,
-    TResult? Function(String versionNumber, bool success, String msg)? failure,
+    TResult? Function(String versionNumber, bool success, String msg)? failed,
+    TResult? Function()? notFound,
+    TResult? Function()? unknown,
   }) {
-    return failure?.call(versionNumber, this.success, msg);
+    return failed?.call(versionNumber, this.success, msg);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
-    TResult Function(
-            String versionNumber, bool success, NrdbDeck data, int total)?
+    TResult Function(String versionNumber, bool success, T data, int total)?
         success,
-    TResult Function(String versionNumber, bool success, String msg)? failure,
+    TResult Function(String versionNumber, bool success, String msg)? failed,
+    TResult Function()? notFound,
+    TResult Function()? unknown,
     required TResult orElse(),
   }) {
-    if (failure != null) {
-      return failure(versionNumber, this.success, msg);
+    if (failed != null) {
+      return failed(versionNumber, this.success, msg);
     }
     return orElse();
   }
@@ -453,52 +442,319 @@ class _$NrdbDeckFailureResult implements NrdbDeckFailureResult {
   @override
   @optionalTypeArgs
   TResult map<TResult extends Object?>({
-    required TResult Function(NrdbDeckSuccessResult value) success,
-    required TResult Function(NrdbDeckFailureResult value) failure,
+    required TResult Function(SuccessHttpResult<T> value) success,
+    required TResult Function(FailedHttpResult<T> value) failed,
+    required TResult Function(NotFoundHttpResult<T> value) notFound,
+    required TResult Function(UnknownHttpResult<T> value) unknown,
   }) {
-    return failure(this);
+    return failed(this);
   }
 
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult? Function(NrdbDeckSuccessResult value)? success,
-    TResult? Function(NrdbDeckFailureResult value)? failure,
+    TResult? Function(SuccessHttpResult<T> value)? success,
+    TResult? Function(FailedHttpResult<T> value)? failed,
+    TResult? Function(NotFoundHttpResult<T> value)? notFound,
+    TResult? Function(UnknownHttpResult<T> value)? unknown,
   }) {
-    return failure?.call(this);
+    return failed?.call(this);
   }
 
   @override
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
-    TResult Function(NrdbDeckSuccessResult value)? success,
-    TResult Function(NrdbDeckFailureResult value)? failure,
+    TResult Function(SuccessHttpResult<T> value)? success,
+    TResult Function(FailedHttpResult<T> value)? failed,
+    TResult Function(NotFoundHttpResult<T> value)? notFound,
+    TResult Function(UnknownHttpResult<T> value)? unknown,
     required TResult orElse(),
   }) {
-    if (failure != null) {
-      return failure(this);
+    if (failed != null) {
+      return failed(this);
     }
     return orElse();
   }
 }
 
-abstract class NrdbDeckFailureResult implements NrdbDeckResult {
-  const factory NrdbDeckFailureResult(
+abstract class FailedHttpResult<T> implements HttpResult<T> {
+  const factory FailedHttpResult(
           final String versionNumber, final bool success, final String msg) =
-      _$NrdbDeckFailureResult;
+      _$FailedHttpResult<T>;
 
-  factory NrdbDeckFailureResult.fromJson(Map<String, dynamic> json) =
-      _$NrdbDeckFailureResult.fromJson;
+  factory FailedHttpResult.fromJson(
+          Map<String, dynamic> json, T Function(Object?) fromJsonT) =
+      _$FailedHttpResult<T>.fromJson;
 
-  @override
   String get versionNumber;
-  @override
   bool get success;
   String get msg;
-  @override
   @JsonKey(ignore: true)
-  _$$NrdbDeckFailureResultCopyWith<_$NrdbDeckFailureResult> get copyWith =>
+  _$$FailedHttpResultCopyWith<T, _$FailedHttpResult<T>> get copyWith =>
       throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$NotFoundHttpResultCopyWith<T, $Res> {
+  factory _$$NotFoundHttpResultCopyWith(_$NotFoundHttpResult<T> value,
+          $Res Function(_$NotFoundHttpResult<T>) then) =
+      __$$NotFoundHttpResultCopyWithImpl<T, $Res>;
+}
+
+/// @nodoc
+class __$$NotFoundHttpResultCopyWithImpl<T, $Res>
+    extends _$HttpResultCopyWithImpl<T, $Res, _$NotFoundHttpResult<T>>
+    implements _$$NotFoundHttpResultCopyWith<T, $Res> {
+  __$$NotFoundHttpResultCopyWithImpl(_$NotFoundHttpResult<T> _value,
+      $Res Function(_$NotFoundHttpResult<T>) _then)
+      : super(_value, _then);
+}
+
+/// @nodoc
+@JsonSerializable(createToJson: false, genericArgumentFactories: true)
+class _$NotFoundHttpResult<T> implements NotFoundHttpResult<T> {
+  const _$NotFoundHttpResult({final String? $type})
+      : $type = $type ?? 'notFound';
+
+  factory _$NotFoundHttpResult.fromJson(
+          Map<String, dynamic> json, T Function(Object?) fromJsonT) =>
+      _$$NotFoundHttpResultFromJson(json, fromJsonT);
+
+  @JsonKey(name: 'type')
+  final String $type;
+
+  @override
+  String toString() {
+    return 'HttpResult<$T>.notFound()';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$NotFoundHttpResult<T>);
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(
+            String versionNumber, bool success, T data, int total)
+        success,
+    required TResult Function(String versionNumber, bool success, String msg)
+        failed,
+    required TResult Function() notFound,
+    required TResult Function() unknown,
+  }) {
+    return notFound();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(String versionNumber, bool success, T data, int total)?
+        success,
+    TResult? Function(String versionNumber, bool success, String msg)? failed,
+    TResult? Function()? notFound,
+    TResult? Function()? unknown,
+  }) {
+    return notFound?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(String versionNumber, bool success, T data, int total)?
+        success,
+    TResult Function(String versionNumber, bool success, String msg)? failed,
+    TResult Function()? notFound,
+    TResult Function()? unknown,
+    required TResult orElse(),
+  }) {
+    if (notFound != null) {
+      return notFound();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(SuccessHttpResult<T> value) success,
+    required TResult Function(FailedHttpResult<T> value) failed,
+    required TResult Function(NotFoundHttpResult<T> value) notFound,
+    required TResult Function(UnknownHttpResult<T> value) unknown,
+  }) {
+    return notFound(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(SuccessHttpResult<T> value)? success,
+    TResult? Function(FailedHttpResult<T> value)? failed,
+    TResult? Function(NotFoundHttpResult<T> value)? notFound,
+    TResult? Function(UnknownHttpResult<T> value)? unknown,
+  }) {
+    return notFound?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(SuccessHttpResult<T> value)? success,
+    TResult Function(FailedHttpResult<T> value)? failed,
+    TResult Function(NotFoundHttpResult<T> value)? notFound,
+    TResult Function(UnknownHttpResult<T> value)? unknown,
+    required TResult orElse(),
+  }) {
+    if (notFound != null) {
+      return notFound(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class NotFoundHttpResult<T> implements HttpResult<T> {
+  const factory NotFoundHttpResult() = _$NotFoundHttpResult<T>;
+
+  factory NotFoundHttpResult.fromJson(
+          Map<String, dynamic> json, T Function(Object?) fromJsonT) =
+      _$NotFoundHttpResult<T>.fromJson;
+}
+
+/// @nodoc
+abstract class _$$UnknownHttpResultCopyWith<T, $Res> {
+  factory _$$UnknownHttpResultCopyWith(_$UnknownHttpResult<T> value,
+          $Res Function(_$UnknownHttpResult<T>) then) =
+      __$$UnknownHttpResultCopyWithImpl<T, $Res>;
+}
+
+/// @nodoc
+class __$$UnknownHttpResultCopyWithImpl<T, $Res>
+    extends _$HttpResultCopyWithImpl<T, $Res, _$UnknownHttpResult<T>>
+    implements _$$UnknownHttpResultCopyWith<T, $Res> {
+  __$$UnknownHttpResultCopyWithImpl(_$UnknownHttpResult<T> _value,
+      $Res Function(_$UnknownHttpResult<T>) _then)
+      : super(_value, _then);
+}
+
+/// @nodoc
+@JsonSerializable(createToJson: false, genericArgumentFactories: true)
+class _$UnknownHttpResult<T> implements UnknownHttpResult<T> {
+  const _$UnknownHttpResult({final String? $type}) : $type = $type ?? 'unknown';
+
+  factory _$UnknownHttpResult.fromJson(
+          Map<String, dynamic> json, T Function(Object?) fromJsonT) =>
+      _$$UnknownHttpResultFromJson(json, fromJsonT);
+
+  @JsonKey(name: 'type')
+  final String $type;
+
+  @override
+  String toString() {
+    return 'HttpResult<$T>.unknown()';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType && other is _$UnknownHttpResult<T>);
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => runtimeType.hashCode;
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(
+            String versionNumber, bool success, T data, int total)
+        success,
+    required TResult Function(String versionNumber, bool success, String msg)
+        failed,
+    required TResult Function() notFound,
+    required TResult Function() unknown,
+  }) {
+    return unknown();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(String versionNumber, bool success, T data, int total)?
+        success,
+    TResult? Function(String versionNumber, bool success, String msg)? failed,
+    TResult? Function()? notFound,
+    TResult? Function()? unknown,
+  }) {
+    return unknown?.call();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(String versionNumber, bool success, T data, int total)?
+        success,
+    TResult Function(String versionNumber, bool success, String msg)? failed,
+    TResult Function()? notFound,
+    TResult Function()? unknown,
+    required TResult orElse(),
+  }) {
+    if (unknown != null) {
+      return unknown();
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(SuccessHttpResult<T> value) success,
+    required TResult Function(FailedHttpResult<T> value) failed,
+    required TResult Function(NotFoundHttpResult<T> value) notFound,
+    required TResult Function(UnknownHttpResult<T> value) unknown,
+  }) {
+    return unknown(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(SuccessHttpResult<T> value)? success,
+    TResult? Function(FailedHttpResult<T> value)? failed,
+    TResult? Function(NotFoundHttpResult<T> value)? notFound,
+    TResult? Function(UnknownHttpResult<T> value)? unknown,
+  }) {
+    return unknown?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(SuccessHttpResult<T> value)? success,
+    TResult Function(FailedHttpResult<T> value)? failed,
+    TResult Function(NotFoundHttpResult<T> value)? notFound,
+    TResult Function(UnknownHttpResult<T> value)? unknown,
+    required TResult orElse(),
+  }) {
+    if (unknown != null) {
+      return unknown(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class UnknownHttpResult<T> implements HttpResult<T> {
+  const factory UnknownHttpResult() = _$UnknownHttpResult<T>;
+
+  factory UnknownHttpResult.fromJson(
+          Map<String, dynamic> json, T Function(Object?) fromJsonT) =
+      _$UnknownHttpResult<T>.fromJson;
 }
 
 NrdbDeck _$NrdbDeckFromJson(Map<String, dynamic> json) {

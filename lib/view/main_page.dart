@@ -8,7 +8,6 @@ import '/util/assets.gen.dart';
 import '/util/filter_type.dart';
 import '/util/grouped_card_code_list.dart';
 import '/util/nrdb/private.dart';
-import '/util/nrdb/private_model.dart';
 import 'card_gallery_page.dart';
 import 'card_list/page.dart';
 import 'card_tile.dart';
@@ -154,7 +153,7 @@ class MainPage extends ConsumerWidget {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final authState = ref.read(nrdbAuthStateProvider);
       if (authState is InitAuthState) {
-        AuthState.refreshToken(authState.ref);
+        authState.refreshToken();
       }
     });
 
@@ -169,16 +168,16 @@ class MainPage extends ConsumerWidget {
       });
     });
 
-    ref.listen<Object?>(shouldSyncProvider, (previous, next) async {
-      if (next is! OnlineAuthState) return;
+    ref.listen<OnlineAuthState?>(shouldSyncProvider, (previous, next) async {
+      if (next == null) return;
 
-      final decks = await next.listDecks();
-      if (decks is! SuccessHttpResult<List<NrdbDeck>>) return;
-
-      final db = ref.read(dbProvider);
-      await db.transaction(() async {
-        await next.syncDecks(db, decks.value);
-      });
+      final decks = (await next.listDecks()).mapOrNull(success: (result) => result.data);
+      if (decks != null) {
+        final db = ref.read(dbProvider);
+        await db.transaction(() async {
+          await next.syncDecks(db, decks);
+        });
+      }
     });
 
     final index = ref.watch(selectedIndexProvider);

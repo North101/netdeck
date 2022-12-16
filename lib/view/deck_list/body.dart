@@ -6,8 +6,6 @@ import '/db/database.dart';
 import '/providers.dart';
 import '/util.dart';
 import '/util/header_list.dart';
-import '/util/nrdb/private.dart';
-import '/util/nrdb/private_model.dart';
 import '/view/async_value_builder.dart';
 import '/view/fab_spacer.dart';
 import '/view/filter_chips.dart';
@@ -111,29 +109,27 @@ class DeckListBody extends ConsumerWidget {
         RefreshIndicator(
           onRefresh: () async {
             final scaffoldMessenger = ScaffoldMessenger.of(context);
-            final nrdbAuthState = ref.read(nrdbAuthStateProvider);
-            final online = nrdbAuthState.maybeMap(
-              online: (state) => state,
-              orElse: () => null,
-            );
-            if (online == null) {
+            final authState = ref.read(nrdbAuthStateProvider);
+            final onlineState = await authState.online();
+            if (onlineState == null) {
               scaffoldMessenger.showSnackBar(const SnackBar(
                 content: Text('You are not online or connected your netrunnerdb account'),
               ));
               return;
             }
 
-            final decks = await online.listDecks();
-            if (decks is SuccessHttpResult<List<NrdbDeck>>) {
-              final db = ref.read(dbProvider);
-              await db.transaction(() async {
-                await online.syncDecks(db, decks.value);
-              });
-            } else {
+            final decks = (await onlineState.listDecks()).mapOrNull(success: (result) => result.data);
+            if (decks == null) {
               scaffoldMessenger.showSnackBar(const SnackBar(
                 content: Text('Failed to refresh decks'),
               ));
+              return;
             }
+
+            final db = ref.read(dbProvider);
+            await db.transaction(() async {
+              await onlineState.syncDecks(db, decks);
+            });
           },
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

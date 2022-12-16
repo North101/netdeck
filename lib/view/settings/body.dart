@@ -5,7 +5,6 @@ import 'package:kotlin_flavor/scope_functions.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 import '/providers.dart';
-import '/util/nrdb/private.dart';
 import '/view/header_list_tile.dart';
 import 'collection_page.dart';
 import 'default_filter_page.dart';
