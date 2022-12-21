@@ -21,5 +21,8 @@
       "name": "NAPD"
     }
   ],
-  "last_updated": "2021-07-02T18:43:00+00:00"
+  "last_updated": "2022-12-20T00:00:00",
+  "version_number": "2.0",
+  "success": true,
+  "total": 5
 }

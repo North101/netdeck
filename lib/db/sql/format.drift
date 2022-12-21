@@ -4,7 +4,6 @@ import 'mwl.drift';
 CREATE TABLE format(
   id INT NOT NULL,
   code TEXT PRIMARY KEY NOT NULL,
-
   name TEXT NOT NULL
 );
 

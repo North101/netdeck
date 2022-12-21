@@ -2,27 +2,37 @@
   "data": [
     {
       "code": "standard-2017",
-      "date_start": "2017-10-01",
       "format_code": "standard",
       "name": "Standard First Rotation",
+      "date_start": "2017-10-01",
       "current": false,
       "latest": false,
-      "rotated": ["core", "genesis", "spin"]
+      "rotated": [
+        "core",
+        "genesis",
+        "spin"
+      ]
     },
     {
       "code": "standard-2018",
-      "date_start": "2018-12-21",
       "format_code": "standard",
       "name": "Standard Second Rotation",
+      "date_start": "2018-12-21",
       "current": false,
       "latest": false,
-      "rotated": ["core", "genesis", "spin", "core2", "terminal-directive"]
+      "rotated": [
+        "core",
+        "genesis",
+        "spin",
+        "core2",
+        "terminal-directive"
+      ]
     },
     {
       "code": "standard-2019",
-      "date_start": "2019-12-27",
       "format_code": "standard",
       "name": "Standard Third Rotation",
+      "date_start": "2019-12-27",
       "current": false,
       "latest": false,
       "rotated": [
@@ -37,9 +47,9 @@
     },
     {
       "code": "standard-2021",
-      "date_start": "2021-04-09",
       "format_code": "standard",
       "name": "Standard Fourth Rotation",
+      "date_start": "2021-04-09",
       "current": false,
       "latest": false,
       "rotated": [
@@ -58,9 +68,9 @@
     },
     {
       "code": "standard-2022",
-      "date_start": "2022-08-05",
       "format_code": "standard",
       "name": "Standard Fifth Rotation",
+      "date_start": "2022-08-05",
       "current": true,
       "latest": true,
       "rotated": [
@@ -78,27 +88,36 @@
     },
     {
       "code": "startup-2021",
-      "date_start": "2021-02-28",
       "format_code": "startup",
       "name": "Startup First Rotation",
+      "date_start": "2021-02-28",
       "current": true,
       "latest": false,
-      "rotated": ["ashes", "system-gateway", "system-update-2021", "borealis"]
+      "rotated": [
+        "ashes",
+        "system-gateway",
+        "system-update-2021",
+        "borealis"
+      ]
     },
     {
       "code": "startup-2022",
-      "date_start": "2022-12-28",
       "format_code": "startup",
       "name": "Startup Second Rotation",
+      "date_start": "2022-12-28",
       "current": false,
       "latest": true,
-      "rotated": ["system-gateway", "system-update-2021", "borealis"]
+      "rotated": [
+        "system-gateway",
+        "system-update-2021",
+        "borealis"
+      ]
     },
     {
       "code": "snapshot-2018",
-      "date_start": "2018-11-16",
       "format_code": "snapshot",
       "name": "Snapshot First Rotation",
+      "date_start": "2018-11-16",
       "current": true,
       "latest": true,
       "rotated": [
@@ -118,5 +137,8 @@
       ]
     }
   ],
-  "last_updated": "2022-12-15T00:00:00+00:00"
+  "last_updated": "2022-12-20T23:47:15.353226Z",
+  "version_number": "2.0",
+  "success": true,
+  "total": 8
 }

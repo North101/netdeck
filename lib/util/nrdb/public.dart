@@ -19,11 +19,11 @@ class NrdbPublicApi {
   static final fetchCyclesEndpoint = Uri.parse('https://netrunnerdb.com/api/2.0/public/cycles');
   static final fetchFactionsEndpoint = Uri.parse('https://netrunnerdb.com/api/2.0/public/factions');
   static final fetchFormatsEndpoint =
-      Uri.parse('https://raw.githubusercontent.com/North101/netdeck/master/assets/nrdb/formats.json');
+      Uri.parse('https://raw.githubusercontent.com/North101/netdeck_data/master/data/formats.json');
   static final fetchRotationsEndpoint =
-      Uri.parse('https://raw.githubusercontent.com/North101/netdeck/master/assets/nrdb/rotations.json');
+      Uri.parse('https://raw.githubusercontent.com/North101/netdeck_data/master/data/rotations.json');
   static final fetchMwlEndpoint =
-      Uri.parse('https://raw.githubusercontent.com/North101/netdeck/master/assets/nrdb/mwl.json');
+      Uri.parse('https://raw.githubusercontent.com/North101/netdeck_data/master/data/mwl.json');
   static final fetchPacksEndpoint = Uri.parse('https://netrunnerdb.com/api/2.0/public/packs');
   static final fetchSidesEndpoint = Uri.parse('https://netrunnerdb.com/api/2.0/public/sides');
   static final fetchTypesEndpoint = Uri.parse('https://netrunnerdb.com/api/2.0/public/types');
