@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 
+import '/db/database.dart';
 import '/db/migrations/schema_v2.dart' as v2;
 import '/db/migrations/schema_v3.dart' as v3;
 import '/db/migrations/schema_v4.dart' as v4;
@@ -87,6 +88,41 @@ MigrationStrategy migrationStrategy(GeneratedDatabase $db) => MigrationStrategy(
         await m.drop(db.mwl);
         await m.create(db.mwl);
         await m.create(db.mwlView);
+
+        await $db.update(db.settings).write(SettingsCompanion.custom(
+              cardSort: db.settings.cardSort.iif(
+                db.settings.cardSort.isIn(CardSort.values.map((e) => e.name)),
+                db.settings.cardSort.defaultValue!,
+              ),
+              cardGroup: db.settings.cardGroup.iif(
+                db.settings.cardGroup.isIn(CardGroup.values.map((e) => e.name)),
+                db.settings.cardGroup.defaultValue!,
+              ),
+              deckSort: db.settings.deckSort.iif(
+                db.settings.deckSort.isIn(DeckSort.values.map((e) => e.name)),
+                db.settings.deckSort.defaultValue!,
+              ),
+              deckGroup: db.settings.deckGroup.iif(
+                db.settings.deckGroup.isIn(DeckGroup.values.map((e) => e.name)),
+                db.settings.deckGroup.defaultValue!,
+              ),
+              deckCardSort: db.settings.deckCardSort.iif(
+                db.settings.deckCardSort.isIn(CardSort.values.map((e) => e.name)),
+                db.settings.deckCardSort.defaultValue!,
+              ),
+              deckCardGroup: db.settings.deckCardGroup.iif(
+                db.settings.deckCardGroup.isIn(CardGroup.values.map((e) => e.name)),
+                db.settings.deckCardGroup.defaultValue!,
+              ),
+              compareCardSort: db.settings.compareCardSort.iif(
+                db.settings.compareCardSort.isIn(CardSort.values.map((e) => e.name)),
+                db.settings.compareCardSort.defaultValue!,
+              ),
+              cardGalleryView: db.settings.cardGalleryView.iif(
+                db.settings.cardGalleryView.isIn(CardGalleryPageView.values.map((e) => e.name)),
+                db.settings.cardGalleryView.defaultValue!,
+              ),
+            ));
 
         await $db.delete(db.nrdb).go();
       }

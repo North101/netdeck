@@ -918,7 +918,7 @@ packages:
     description:
       path: sqlite3_flutter_libs
       ref: main
-      resolved-ref: faec60b4c6377f6d9de1094728e9e1b106469d0f
+      resolved-ref: fcacf5123229f7c20d8afb77e79c70567705fad0
       url: "https://github.com/simolus3/sqlite3.dart.git"
     source: git
     version: "0.5.12"
