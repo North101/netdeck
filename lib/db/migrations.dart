@@ -8,91 +8,89 @@ import '/db/migrations/schema_v6.dart' as v6;
 import '/db/migrations/schema_v7.dart' as v7;
 import '/db/migrations/schema_v8.dart' as v8;
 
-MigrationStrategy migrationStrategy(GeneratedDatabase $db) => MigrationStrategy(
-      onUpgrade: (m, from, to) async {
-        if (from < 2) {
-          final db = v2.DatabaseAtV2($db.executor);
-          await m.addColumn(db.settings, db.settings.cardGalleryView);
-        }
-        if (from < 3) {
-          final db = v3.DatabaseAtV3($db.executor);
-          await m.addColumn(db.mwl, db.mwl.runnerPoints);
-          await m.addColumn(db.mwl, db.mwl.corpPoints);
-          await m.addColumn(db.mwlCard, db.mwlCard.points);
-        }
-        if (from < 4) {
-          final db = v4.DatabaseAtV4($db.executor);
-          await m.drop(db.card);
-          await m.createTable(db.card);
-          await db.delete(db.nrdb).go();
-        }
-        if (from < 5) {
-          final db = v5.DatabaseAtV5($db.executor);
-          await m.drop(db.rotation);
-          await m.createTable(db.rotation);
-          await m.drop(db.card);
-          await m.createTable(db.mwl);
-          await db.delete(db.nrdb).go();
-        }
-        if (from < 6) {
-          final db = v6.DatabaseAtV6($db.executor);
-          await m.alterTable(TableMigration(db.card));
-          await migrateFromUnixTimestampsToText($db, m);
-        }
-        if (from < 7) {
-          final db = v7.DatabaseAtV7($db.executor);
-          await m.alterTable(TableMigration(db.settings, columnTransformer: {
-            db.settings.cardSort: ifNull(
-              db.settings.cardSort.nullIf(const Constant('')),
-              db.settings.cardSort.defaultValue!,
-            ),
-            db.settings.cardGroup: ifNull(
-              db.settings.cardGroup.nullIf(const Constant('')),
-              db.settings.cardGroup.defaultValue!,
-            ),
-            db.settings.deckSort: ifNull(
-              db.settings.deckSort.nullIf(const Constant('')),
-              db.settings.deckSort.defaultValue!,
-            ),
-            db.settings.deckGroup: ifNull(
-              db.settings.deckGroup.nullIf(const Constant('')),
-              db.settings.deckGroup.defaultValue!,
-            ),
-            db.settings.deckCardSort: ifNull(
-              db.settings.deckCardSort.nullIf(const Constant('')),
-              db.settings.deckCardSort.defaultValue!,
-            ),
-            db.settings.deckCardGroup: ifNull(
-              db.settings.deckCardGroup.nullIf(const Constant('')),
-              db.settings.deckCardGroup.defaultValue!,
-            ),
-            db.settings.compareCardSort: ifNull(
-              db.settings.compareCardSort.nullIf(const Constant('')),
-              db.settings.compareCardSort.defaultValue!,
-            ),
-            db.settings.cardGalleryView: ifNull(
-              db.settings.cardGalleryView.nullIf(const Constant('')),
-              db.settings.cardGalleryView.defaultValue!,
-            ),
-          }));
-        }
-        if (from < 8) {
-          final db = v8.DatabaseAtV8($db.executor);
-          await m.drop(db.mwlCard);
-          await m.create(db.mwlCard);
+MigrationStrategy migrationStrategy(GeneratedDatabase $db) => MigrationStrategy(onUpgrade: (m, from, to) async {
+      if (from < 2) {
+        final db = v2.DatabaseAtV2($db.executor);
+        await m.addColumn(db.settings, db.settings.cardGalleryView);
+      }
+      if (from < 3) {
+        final db = v3.DatabaseAtV3($db.executor);
+        await m.addColumn(db.mwl, db.mwl.runnerPoints);
+        await m.addColumn(db.mwl, db.mwl.corpPoints);
+        await m.addColumn(db.mwlCard, db.mwlCard.points);
+      }
+      if (from < 4) {
+        final db = v4.DatabaseAtV4($db.executor);
+        await m.drop(db.card);
+        await m.createTable(db.card);
+        await $db.delete(db.nrdb).go();
+      }
+      if (from < 5) {
+        final db = v5.DatabaseAtV5($db.executor);
+        await m.drop(db.rotation);
+        await m.createTable(db.rotation);
+        await m.drop(db.card);
+        await m.createTable(db.mwl);
+        await $db.delete(db.nrdb).go();
+      }
+      if (from < 6) {
+        final db = v6.DatabaseAtV6($db.executor);
+        await m.alterTable(TableMigration(db.card));
+        await migrateFromUnixTimestampsToText($db, m);
+      }
+      if (from < 7) {
+        final db = v7.DatabaseAtV7($db.executor);
+        await m.alterTable(TableMigration(db.settings, columnTransformer: {
+          db.settings.cardSort: ifNull(
+            db.settings.cardSort.nullIf(const Constant('')),
+            db.settings.cardSort.defaultValue!,
+          ),
+          db.settings.cardGroup: ifNull(
+            db.settings.cardGroup.nullIf(const Constant('')),
+            db.settings.cardGroup.defaultValue!,
+          ),
+          db.settings.deckSort: ifNull(
+            db.settings.deckSort.nullIf(const Constant('')),
+            db.settings.deckSort.defaultValue!,
+          ),
+          db.settings.deckGroup: ifNull(
+            db.settings.deckGroup.nullIf(const Constant('')),
+            db.settings.deckGroup.defaultValue!,
+          ),
+          db.settings.deckCardSort: ifNull(
+            db.settings.deckCardSort.nullIf(const Constant('')),
+            db.settings.deckCardSort.defaultValue!,
+          ),
+          db.settings.deckCardGroup: ifNull(
+            db.settings.deckCardGroup.nullIf(const Constant('')),
+            db.settings.deckCardGroup.defaultValue!,
+          ),
+          db.settings.compareCardSort: ifNull(
+            db.settings.compareCardSort.nullIf(const Constant('')),
+            db.settings.compareCardSort.defaultValue!,
+          ),
+          db.settings.cardGalleryView: ifNull(
+            db.settings.cardGalleryView.nullIf(const Constant('')),
+            db.settings.cardGalleryView.defaultValue!,
+          ),
+        }));
+      }
+      if (from < 8) {
+        final db = v8.DatabaseAtV8($db.executor);
+        await m.drop(db.mwlCard);
+        await m.create(db.mwlCard);
 
-          await m.drop(db.rotation);
-          await m.create(db.rotation);
-          await m.createView(db.rotationView);
+        await m.drop(db.rotation);
+        await m.create(db.rotation);
+        await m.create(db.rotationView);
 
-          await m.drop(db.mwl);
-          await m.create(db.mwl);
-          await m.createView(db.mwlView);
+        await m.drop(db.mwl);
+        await m.create(db.mwl);
+        await m.create(db.mwlView);
 
-          await db.delete(db.nrdb).go();
-        }
-      },
-    );
+        await $db.delete(db.nrdb).go();
+      }
+    });
 
 Future<void> migrateFromUnixTimestampsToText(GeneratedDatabase $db, Migrator m) async {
   for (final table in $db.allTables) {

@@ -21,7 +21,7 @@ class ValidDatabaseResult implements DatabaseResult {
 class InvalidDatabaseResult implements DatabaseResult {
   const InvalidDatabaseResult(this.error);
 
-  final SchemaMismatch error;
+  final Object error;
 }
 
 final dbStateProvider = FutureProvider((ref) async {
@@ -32,8 +32,8 @@ final dbStateProvider = FutureProvider((ref) async {
   try {
     await db.validateDatabaseSchema();
     return const ValidDatabaseResult();
-  } on SchemaMismatch catch (exception) {
-    return InvalidDatabaseResult(exception);
+  } catch (e) {
+    return InvalidDatabaseResult(e);
   }
 });
 
@@ -98,7 +98,9 @@ class DebugPage extends ConsumerWidget {
                       builder: (context) => AlertDialog(
                         title: const Text('Database Error'),
                         content: SingleChildScrollView(
-                          child: Text(state.error.explanation),
+                          child: state.error is SchemaMismatch
+                              ? Text((state.error as SchemaMismatch).explanation)
+                              : Text(state.error.toString()),
                         ),
                         actions: [
                           ElevatedButton(
