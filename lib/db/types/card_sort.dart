@@ -9,10 +9,8 @@ enum CardSort {
   side,
   faction,
   type,
-  subtype,
-}
+  subtype;
 
-extension CardSortEx on CardSort {
   int _sortByName(CardResult a, CardResult b) {
     return a.card.title.compareTo(b.card.title);
   }

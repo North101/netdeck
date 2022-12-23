@@ -10,9 +10,10 @@ enum DeckSort {
   faction,
   created,
   updated,
-}
+  format,
+  rotation,
+  mwl;
 
-extension DeckSortEx on DeckSort {
   int _sortByName(DeckResult a, DeckResult b) {
     return a.deck.name.compareTo(b.deck.name);
   }
@@ -48,6 +49,36 @@ extension DeckSortEx on DeckSort {
     return -a.deck.updated.compareTo(b.deck.updated);
   }
 
+  int _sortNullLast<T extends Comparable>(T? a, T? b) {
+    if (a == b) {
+      return 0;
+    } else if (a == null) {
+      return 1;
+    } else if (b == null) {
+      return -1;
+    } else {
+      return a.compareTo(b);
+    }
+  }
+
+  int _sortByFormat(DeckResult a, DeckResult b) {
+    return _sortNullLast(a.format?.id, b.format?.id);
+  }
+
+  int _sortByRotation(DeckResult a, DeckResult b) {
+    return compareToChain<DeckResult>(a, b, [
+      _sortByFormat,
+      (a, b) => _sortNullLast(a.rotation?.dateStart, b.rotation?.dateStart),
+    ]);
+  }
+
+  int _sortByMwl(DeckResult a, DeckResult b) {
+    return compareToChain<DeckResult>(a, b, [
+      _sortByFormat,
+      (a, b) => _sortNullLast(a.mwl?.dateStart, b.mwl?.dateStart),
+    ]);
+  }
+
   int Function(DeckResult a, DeckResult b) get sorted {
     switch (this) {
       case DeckSort.name:
@@ -62,6 +93,12 @@ extension DeckSortEx on DeckSort {
         return _sortByCreated;
       case DeckSort.updated:
         return _sortByUpdated;
+      case DeckSort.format:
+        return _sortByFormat;
+      case DeckSort.rotation:
+        return _sortByRotation;
+      case DeckSort.mwl:
+        return _sortByMwl;
     }
   }
 
@@ -79,6 +116,12 @@ extension DeckSortEx on DeckSort {
         return 'Created';
       case DeckSort.updated:
         return 'Updated';
+      case DeckSort.format:
+        return 'Format';
+      case DeckSort.rotation:
+        return 'Rotation';
+      case DeckSort.mwl:
+        return 'Banlist';
     }
   }
 

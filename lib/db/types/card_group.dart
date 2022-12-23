@@ -12,10 +12,8 @@ enum CardGroup {
   side,
   faction,
   type,
-  subtype,
-}
+  subtype;
 
-extension CardGroupEx on CardGroup {
   int _sortByName(CardResult a, CardResult b) {
     return a.card.title.compareTo(b.card.title);
   }

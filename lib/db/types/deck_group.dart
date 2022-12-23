@@ -15,9 +15,10 @@ enum DeckGroup {
   created,
   updated,
   synced,
-}
+  format,
+  rotation,
+  mwl;
 
-extension DeckGroupEx on DeckGroup {
   int _sortByName(DeckResult a, DeckResult b) {
     return a.deck.name.compareTo(b.deck.name);
   }
@@ -63,6 +64,36 @@ extension DeckGroupEx on DeckGroup {
     return (a.deck.remoteUpdated != null ? 1 : 0).compareTo((b.deck.remoteUpdated != null ? 1 : 0));
   }
 
+  int _sortNullLast<T extends Comparable>(T? a, T? b) {
+    if (a == b) {
+      return 0;
+    } else if (a == null) {
+      return 1;
+    } else if (b == null) {
+      return -1;
+    } else {
+      return a.compareTo(b);
+    }
+  }
+
+  int _sortByFormat(DeckResult a, DeckResult b) {
+    return _sortNullLast(a.format?.id, b.format?.id);
+  }
+
+  int _sortByRotation(DeckResult a, DeckResult b) {
+    return compareToChain<DeckResult>(a, b, [
+      _sortByFormat,
+      (a, b) => _sortNullLast(a.rotation?.dateStart, b.rotation?.dateStart),
+    ]);
+  }
+
+  int _sortByMwl(DeckResult a, DeckResult b) {
+    return compareToChain<DeckResult>(a, b, [
+      _sortByFormat,
+      (a, b) => _sortNullLast(a.mwl?.dateStart, b.mwl?.dateStart),
+    ]);
+  }
+
   int Function(DeckResult a, DeckResult b) get sorted {
     switch (this) {
       case DeckGroup.name:
@@ -83,6 +114,12 @@ extension DeckGroupEx on DeckGroup {
         return _sortByUpdated;
       case DeckGroup.synced:
         return _sortBySynced;
+      case DeckGroup.format:
+        return _sortByFormat;
+      case DeckGroup.rotation:
+        return _sortByRotation;
+      case DeckGroup.mwl:
+        return _sortByMwl;
     }
   }
 
@@ -128,6 +165,16 @@ extension DeckGroupEx on DeckGroup {
     return item.deck.remoteUpdated != null ? 'Online' : 'Offline';
   }
 
+  String _groupByFormat(DeckResult item) {
+    return item.format?.name ?? 'None';
+  }
+  String _groupByRotation(DeckResult item) {
+    return item.rotation?.name ?? 'None';
+  }
+  String _groupByMwl(DeckResult item) {
+    return item.mwl?.name ?? 'None';
+  }
+
   String Function(DeckResult item) get grouped {
     switch (this) {
       case DeckGroup.name:
@@ -148,6 +195,12 @@ extension DeckGroupEx on DeckGroup {
         return _groupByUpdated;
       case DeckGroup.synced:
         return _groupBySynced;
+      case DeckGroup.format:
+        return _groupByFormat;
+      case DeckGroup.rotation:
+        return _groupByRotation;
+      case DeckGroup.mwl:
+        return _groupByMwl;
     }
   }
 
@@ -171,6 +224,12 @@ extension DeckGroupEx on DeckGroup {
         return 'Updated';
       case DeckGroup.synced:
         return 'Synced';
+      case DeckGroup.format:
+        return 'Format';
+      case DeckGroup.rotation:
+        return 'Rotation';
+      case DeckGroup.mwl:
+        return 'Banlist';
     }
   }
 
