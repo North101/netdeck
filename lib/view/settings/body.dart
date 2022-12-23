@@ -73,7 +73,7 @@ class SettingsDefaultCardFilters extends ConsumerWidget {
           if (data.settings.filterCollection) 'My Collection',
           if (data.filterFormat != null) 'Format: ${data.filterFormat!.name}',
           if (data.filterRotation != null) 'Rotation: ${data.filterRotation!.name}',
-          if (data.filterMwl != null) 'Most Wanted List: ${data.filterMwl!.name}',
+          if (data.filterMwl != null) 'Banlist: ${data.filterMwl!.name}',
         ].join('\n').let((e) => e.isNotEmpty ? Text(e) : null),
       ),
       onTap: () => Navigator.of(context).restorablePush(DefaultCardFilterPage.route),

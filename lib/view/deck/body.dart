@@ -524,7 +524,7 @@ class DeckMwlPointsStat extends ConsumerWidget {
         ),
         textAlign: TextAlign.center,
       ),
-      const Text('MWL Points'),
+      const Text('Points'),
     ]);
   }
 }

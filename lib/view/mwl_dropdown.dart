@@ -37,7 +37,7 @@ class MwlDropdown extends ConsumerWidget {
       isExpanded: true,
       value: mwl,
       decoration: const InputDecoration(
-        labelText: 'Most Wanted',
+        labelText: 'Banlist',
       ),
       onChanged: mwlList.whenOrNull<void Function(MwlViewData?)?>(
         data: (items) => onChanged,
