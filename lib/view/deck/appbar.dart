@@ -211,8 +211,12 @@ class DeckMoreActions extends ConsumerWidget {
               final result = await showDialog<DeckNotifierResult>(
                 context: context,
                 barrierDismissible: false,
-                builder: (context) => SaveDeckDialog.withOverrides(deck: deckNotifier.value),
+                builder: (context) => SaveDeckDialog.withOverrides(
+                  deck: deckNotifier.value,
+                  state: SaveDialogState.askToUpload,
+                ),
               );
+              print(result);
               if (result == null) return;
 
               deckNotifier.saved = result;
