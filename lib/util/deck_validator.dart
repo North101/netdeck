@@ -149,8 +149,8 @@ class DeckValidator {
       return 'Too many restriced cards.';
     } else if (quantity > (mwlCard?.deckLimit ?? card.card.deckLimit)) {
       return 'Too many copies.';
-    } else if (!(formatCardSet?.contains(card.card.title) ?? true)) {
-      return 'Not valid for format.';
+    } else if (!(formatCardSet?.contains(card.card.code) ?? true)) {
+      return 'Not valid for rotation.';
     }
     return null;
   }
