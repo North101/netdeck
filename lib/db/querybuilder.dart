@@ -647,6 +647,20 @@ class CardQueryBuilder extends CodeNameQueryBuilder<Card> {
   drift.Expression get optionColumn => table.title;
 }
 
+class IdentityQueryBuilder extends CardQueryBuilder {
+  IdentityQueryBuilder._(
+    super.db, {
+    required super.table,
+    super.extraFields,
+    required super.help,
+  }) : super._();
+
+  @override
+  drift.Expression<bool> call(String? op, TextQuery query) {
+    return super.call(op, query) & table.typeCode.equals('identity');
+  }
+}
+
 class DeckQueryBuilder extends ContainsStringQueryBuilder<Deck> {
   DeckQueryBuilder._(
     Database db, {
@@ -684,7 +698,7 @@ class DeckQueryBuilder extends ContainsStringQueryBuilder<Deck> {
     final FieldMap extraFields = {};
     extraFields.addAll({
       'deck': DeckQueryBuilder._(db, table: deck, extraFields: extraFields, help: 'deck name'),
-      'identity': CardQueryBuilder._(db, table: identity, extraFields: extraFields, help: 'identity name'),
+      'identity': IdentityQueryBuilder._(db, table: identity, extraFields: extraFields, help: 'identity name'),
       'cycle': CycleQueryBuilder(db, table: cycle, extraFields: extraFields, help: 'identity cycle code or name'),
       'pack': PackQueryBuilder(db, table: pack, extraFields: extraFields, help: 'identity pack code or name'),
       'side': SideQueryBuilder(db, table: side, extraFields: extraFields, help: 'identity side code or name'),
@@ -920,12 +934,11 @@ class CardMwlQueryBuilder extends MwlQueryBuilder {
   drift.Expression<bool> call(String? op, TextQuery query) {
     final inQuery = db.selectOnly(card).join([
       drift.crossJoin(db.mwlView),
-      drift.leftOuterJoin(db.mwlCard,
-          db.mwlCard.mwlCode.equalsExp(db.mwlView.mwlCode) & db.mwlCard.cardTitle.equalsExp(card.title)),
+      drift.leftOuterJoin(
+          db.mwlCard, db.mwlCard.mwlCode.equalsExp(db.mwlView.mwlCode) & db.mwlCard.cardTitle.equalsExp(card.title)),
     ]).also((q) {
       q.addColumns([card.code]);
-      q.where(super.call(op, query) &
-          (db.mwlCard.deckLimit.isNull() | db.mwlCard.deckLimit.isBiggerThanValue(0)));
+      q.where(super.call(op, query) & (db.mwlCard.deckLimit.isNull() | db.mwlCard.deckLimit.isBiggerThanValue(0)));
     });
 
     return card.code.isInQuery(inQuery);
