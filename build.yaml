@@ -1,5 +1,11 @@
 targets:
+  freezed_only:
+    auto_apply_builders: false
+    builders:
+      freezed:
+        enabled: true
   $default:
+    dependencies: [ ":freezed_only" ]
     builders:
       drift_dev:
         options:
@@ -9,11 +15,12 @@ targets:
           override_hash_and_equals_in_result_sets: true
           generate_connect_constructor: true
           store_date_time_values_as_text: true
+          write_to_columns_mixins: true
       freezed:
+        enabled: false
         options:
           union_key: type
           union_value_key: snake
-          explicit_to_json: true
       json_serializable:
         options:
           any_map: true

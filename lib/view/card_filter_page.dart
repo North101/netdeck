@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod_restorable/flutter_riverpod_restorable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:kotlin_flavor/scope_functions.dart';
 
 import '/db/database.dart';
@@ -13,52 +14,23 @@ import 'pack_page.dart';
 import 'rotation_dropdown.dart';
 import 'types_page.dart';
 
-class CardFilterArguments {
-  const CardFilterArguments({
-    required this.format,
-    required this.rotation,
-    required this.mwl,
-    required this.collection,
-    required this.packs,
-    required this.sides,
-    required this.factions,
-    required this.types,
-  });
+part 'card_filter_page.freezed.dart';
+part 'card_filter_page.g.dart';
 
-  factory CardFilterArguments.fromJson(Map<String, dynamic> data) {
-    return CardFilterArguments(
-      format: (data['format'] as Map?)?.let((e) => FormatData.fromJson(e.cast())),
-      rotation: (data['rotation'] as Map?)?.let((e) => RotationViewData.fromJson(e.cast())),
-      mwl: (data['mwl'] as Map?)?.let((e) => MwlViewData.fromJson(e.cast())),
-      collection: data['collection'] as bool,
-      packs: FilterType<String>.fromJson((data['packs'] as Map).cast()),
-      sides: FilterType<String>.fromJson((data['sides'] as Map).cast()),
-      factions: FilterType<String>.fromJson((data['factions'] as Map).cast()),
-      types: FilterType<String>.fromJson((data['types'] as Map).cast()),
-    );
-  }
+@freezed
+class CardFilterArguments with _$CardFilterArguments {
+  const factory CardFilterArguments({
+    required FormatData? format,
+    required RotationViewData? rotation,
+    required MwlViewData? mwl,
+    required bool collection,
+    required FilterType<String> packs,
+    required FilterType<String> sides,
+    required FilterType<String> factions,
+    required FilterType<String> types,
+  }) = _CardFilterArguments;
 
-  Map<String, dynamic> toJson() {
-    return {
-      'format': format?.toJson(),
-      'rotation': rotation?.toJson(),
-      'mwl': mwl?.toJson(),
-      'collection': collection,
-      'packs': packs.toJson(),
-      'sides': sides.toJson(),
-      'factions': factions.toJson(),
-      'types': types.toJson(),
-    };
-  }
-
-  final FormatData? format;
-  final RotationViewData? rotation;
-  final MwlViewData? mwl;
-  final bool collection;
-  final FilterType<String> packs;
-  final FilterType<String> sides;
-  final FilterType<String> factions;
-  final FilterType<String> types;
+  factory CardFilterArguments.fromJson(Map<String, dynamic> json) => _$CardFilterArgumentsFromJson(json);
 }
 
 class CardFilterPage extends ConsumerWidget {

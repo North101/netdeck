@@ -1,5 +1,5 @@
-import 'package:drift/drift.dart';
 import '/db/types.dart';
+
 import 'card.drift';
 import 'faction.drift';
 import 'side.drift';
@@ -21,9 +21,9 @@ CREATE TABLE deck(
   deleted BOOLEAN NOT NULL,
   remote_updated DATETIME,
   synced DATETIME
-);
+) WITH DeckData;
 
-listDecks($where = TRUE) AS DeckResult:
+listDecks($where = TRUE) WITH DeckResult:
 SELECT
   deck.**,
   identity.**,
@@ -56,7 +56,7 @@ INNER JOIN side
 INNER JOIN type
   ON type.code = identity.type_code
 
-LEFT JOIN type as subtype
+LEFT JOIN type AS subtype
   ON subtype.is_subtype
   AND (
     subtype.name = identity.keywords
@@ -82,50 +82,3 @@ WHERE id = :deckId;
 deleteDecks:
 DELETE FROM deck
 WHERE id IN :deckIds;
-
-getDeckFromData:
-SELECT
-  identity.**,
-  pack.**,
-  cycle.**,
-  faction.**,
-  side.**,
-  type.**,
-  subtype.**,
-  format.**,
-  rotation.**,
-  mwl.**
-FROM card AS identity
-
-INNER JOIN pack
-  ON pack.code = identity.pack_code
-
-INNER JOIN cycle
-  ON cycle.code = pack.cycle_code
-
-INNER JOIN faction
-  ON faction.code = identity.faction_code
-
-INNER JOIN side
-  ON side.code = faction.side_code
-
-INNER JOIN type
-  ON type.code = identity.type_code
-
-LEFT JOIN type as subtype
-  ON subtype.is_subtype
-  AND (
-    subtype.name = identity.keywords
-    OR identity.keywords LIKE (subtype.name || ' - %')
-  )
-
-LEFT JOIN format
-  ON format.code = :formatCode
-
-LEFT JOIN rotation_view AS rotation
-  ON rotation.code = :rotationCode
-
-LEFT JOIN mwl_view AS mwl
-  ON mwl.code = :mwlCode
-
-WHERE identity.code = :identityCode;

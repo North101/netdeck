@@ -17,4 +17,5 @@ CREATE TABLE nrdb(
 
 getNrdb:
 SELECT *
-FROM nrdb;
+FROM nrdb
+LIMIT 1;

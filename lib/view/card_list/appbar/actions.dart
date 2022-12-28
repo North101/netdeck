@@ -19,7 +19,7 @@ class CardListGroupMenu extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cardGroup = ref.watch(settingProvider.select((value) {
-      return value.whenOrNull(data: (data) => data.settings.cardGroup);
+      return value.whenOrNull(data: (data) => data.cardGroup);
     }));
     return PopupMenuButton<CardGroup>(
       child: const ListTile(
@@ -57,7 +57,7 @@ class CardListSortMenu extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cardSort = ref.watch(settingProvider.select((value) {
-      return value.whenOrNull(data: (data) => data.settings.cardSort);
+      return value.whenOrNull(data: (data) => data.cardSort);
     }));
     return PopupMenuButton<CardSort>(
       child: const ListTile(

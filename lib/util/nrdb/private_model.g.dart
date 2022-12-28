@@ -15,7 +15,7 @@ _$SuccessHttpResult<T> _$$SuccessHttpResultFromJson<T>(
       json['success'] as bool,
       fromJsonT(json['data']),
       json['total'] as int,
-      $type: json['type'] as String?,
+      $type: json['runtimeType'] as String?,
     );
 
 _$FailedHttpResult<T> _$$FailedHttpResultFromJson<T>(
@@ -26,7 +26,7 @@ _$FailedHttpResult<T> _$$FailedHttpResultFromJson<T>(
       json['version_number'] as String,
       json['success'] as bool,
       json['msg'] as String,
-      $type: json['type'] as String?,
+      $type: json['runtimeType'] as String?,
     );
 
 _$NotFoundHttpResult<T> _$$NotFoundHttpResultFromJson<T>(
@@ -34,7 +34,7 @@ _$NotFoundHttpResult<T> _$$NotFoundHttpResultFromJson<T>(
   T Function(Object? json) fromJsonT,
 ) =>
     _$NotFoundHttpResult<T>(
-      $type: json['type'] as String?,
+      $type: json['runtimeType'] as String?,
     );
 
 _$UnknownHttpResult<T> _$$UnknownHttpResultFromJson<T>(
@@ -42,7 +42,7 @@ _$UnknownHttpResult<T> _$$UnknownHttpResultFromJson<T>(
   T Function(Object? json) fromJsonT,
 ) =>
     _$UnknownHttpResult<T>(
-      $type: json['type'] as String?,
+      $type: json['runtimeType'] as String?,
     );
 
 _$_NrdbDeck _$$_NrdbDeckFromJson(Map json) => _$_NrdbDeck(

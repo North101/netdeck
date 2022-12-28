@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod_restorable/flutter_riverpod_restorable.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '/db/database.dart';
 import '/providers.dart';
@@ -10,28 +11,17 @@ import '/util/filter_type.dart';
 import 'async_value_builder.dart';
 import 'header_list_tile.dart';
 
-class FilterFactionsArguments {
-  const FilterFactionsArguments({
-    required this.sides,
-    required this.factions,
-  });
+part 'factions_page.freezed.dart';
+part 'factions_page.g.dart';
 
-  factory FilterFactionsArguments.fromJson(Map<String, dynamic> data) {
-    return FilterFactionsArguments(
-      sides: FilterType<String>.fromJson((data['sides'] as Map).cast()),
-      factions: FilterType<String>.fromJson((data['factions'] as Map).cast()),
-    );
-  }
+@freezed
+class FilterFactionsArguments with _$FilterFactionsArguments {
+  const factory FilterFactionsArguments({
+    required FilterType<String> sides,
+    required FilterType<String> factions,
+  }) = _FilterFactionsArguments;
 
-  Map<String, dynamic> toJson() {
-    return {
-      'sides': sides.toJson(),
-      'factions': factions.toJson(),
-    };
-  }
-
-  final FilterType<String> sides;
-  final FilterType<String> factions;
+  factory FilterFactionsArguments.fromJson(Map<String, dynamic> json) => _$FilterFactionsArgumentsFromJson(json);
 }
 
 final filteredFactionListProvider = StreamProvider((ref) {

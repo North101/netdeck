@@ -28,7 +28,7 @@ class DeckGroupMenu extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final deckCardGroup = ref.watch(settingProvider.select((value) {
-      return value.whenOrNull(data: (data) => data.settings.deckCardGroup);
+      return value.whenOrNull(data: (data) => data.deckCardGroup);
     }));
     return PopupMenuButton<CardGroup>(
       child: const ListTile(
@@ -66,7 +66,7 @@ class DeckSortMenu extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final deckCardSort = ref.watch(settingProvider.select((value) {
-      return value.whenOrNull(data: (data) => data.settings.deckCardSort);
+      return value.whenOrNull(data: (data) => data.deckCardSort);
     }));
     return PopupMenuButton<CardSort>(
       child: const ListTile(
@@ -108,7 +108,7 @@ class CompareDeckListFloatingActionButton extends ConsumerWidget {
         Navigator.of(context).restorablePush(
           DeckComparePage.route,
           arguments: DeckCompareArguments({
-            deck.toMicroResult(),
+            deck.toDeckCompare(),
             ...deckList.value,
           }).toJson(),
         );
@@ -208,7 +208,7 @@ class DeckMoreActions extends ConsumerWidget {
             child: ListTile(enabled: isConnected, title: const Text('Upload')),
             onTap: () => Future(() async {
               final deckNotifier = ref.read(deckProvider);
-              final result = await showDialog<DeckNotifierResult>(
+              final result = await showDialog<DeckNotifierData>(
                 context: context,
                 barrierDismissible: false,
                 builder: (context) => SaveDeckDialog.withOverrides(
@@ -216,7 +216,6 @@ class DeckMoreActions extends ConsumerWidget {
                   state: SaveDialogState.askToUpload,
                 ),
               );
-              print(result);
               if (result == null) return;
 
               deckNotifier.saved = result;
@@ -227,7 +226,7 @@ class DeckMoreActions extends ConsumerWidget {
             child: ListTile(enabled: isConnected && isSynced, title: const Text('Download')),
             onTap: () => Future(() async {
               final deckNotifier = ref.read(deckProvider);
-              final result = await showDialog<DeckNotifierResult>(
+              final result = await showDialog<DeckNotifierData>(
                 context: context,
                 barrierDismissible: false,
                 builder: (context) => DownloadDeckDialog.withOverrides(deck: deckNotifier.value),
@@ -287,8 +286,8 @@ class DeckAppBar extends ConsumerWidget {
         IconButton(
           icon: const Icon(Icons.save),
           onPressed: () async {
-            final deckNotifier = ref.watch(deckProvider);
-            final result = await showDialog<DeckNotifierResult>(
+            final deckNotifier = ref.read(deckProvider);
+            final result = await showDialog<DeckNotifierData>(
               context: context,
               barrierDismissible: false,
               builder: (context) => SaveDeckDialog.withOverrides(
@@ -326,7 +325,7 @@ class CompareDeckTile extends ConsumerWidget {
       onTap: () {
         deckList.value = {
           ...deckList.value.where((e) => e.id != deck.deck.id),
-          if (!selected) deck.toMicroResult(),
+          if (!selected) deck.toDeckCompare(),
         };
       },
     );

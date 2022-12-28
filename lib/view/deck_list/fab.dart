@@ -15,12 +15,12 @@ class DeckListFloatingActionBar extends ConsumerWidget {
   const DeckListFloatingActionBar({super.key});
 
   static Route<void> openIdentityRoute(BuildContext context, Object? arguments) {
-    final settings = SettingResultEx.fromJson((arguments as Map).cast());
+    final settings = SettingsResult.fromJson((arguments as Map).cast());
     return MaterialPageRoute(builder: (context) {
       return CardListPage.withOverrides(
         restorationId: 'idetnity_list_page',
         title: 'Identity',
-        filterCollection: settings.settings.filterCollection,
+        filterCollection: settings.filterCollection,
         filterFormat: settings.filterFormat,
         filterRotation: settings.filterRotation,
         filterMwl: settings.filterMwl,
@@ -63,12 +63,12 @@ class IdentityTile extends ConsumerWidget {
   final CardResult card;
 
   static Route<void> openDeckRoute(BuildContext context, Object? argument) {
-    final card = CardResultEx.fromJson((argument as Map).cast());
+    final card = CardResult.fromJson((argument as Map).cast());
     return MaterialPageRoute(builder: (context) {
       return DeckPage.withOverrides(
-        deck: DeckNotifierResult(
+        deck: DeckNotifierData(
           id: const Uuid().v4(),
-          identityCode: card.code,
+          identityCode: card.card.code,
           name: card.card.title,
           description: '',
           formatCode: null,
@@ -111,6 +111,7 @@ class IdentityTile extends ConsumerWidget {
           arguments: CardGalleryArguments(
             items: GroupedCardCodeList.fromCardResult(groupedCardList),
             index: index,
+            deckCards: null,
           ).toJson(),
         );
       },

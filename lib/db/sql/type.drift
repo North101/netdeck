@@ -1,15 +1,16 @@
+import '/db/types.dart';
+
 import 'side.drift';
 
 CREATE TABLE type(
   code TEXT PRIMARY KEY NOT NULL,
   side_code TEXT,
   position INT NOT NULL,
-
   name TEXT NOT NULL,
   is_subtype BOOLEAN NOT NULL
-);
+) WITH TypeData;
 
-listTypes($where = TRUE) AS TypeResult:
+listTypes($where = TRUE) WITH TypeResult:
 SELECT
   type.**,
   side.**
@@ -20,4 +21,5 @@ LEFT JOIN side
 
 WHERE $where
   
-ORDER BY type.position;
+ORDER BY
+  type.position;

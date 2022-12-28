@@ -1,3 +1,5 @@
+import '/db/types.dart';
+
 import 'rotation.drift';
 import 'mwl.drift';
 
@@ -5,32 +7,22 @@ CREATE TABLE format(
   id INT NOT NULL,
   code TEXT PRIMARY KEY NOT NULL,
   name TEXT NOT NULL
-);
+) WITH FormatData;
 
-listFormats($where = TRUE) AS FormatResult:
+listFormats($where = TRUE) WITH FormatResult:
 SELECT
   format.**,
   current_rotation.**,
-  latest_rotation.**,
-  active_mwl.**,
-  latest_mwl.**
+  active_mwl.**
 FROM format
 
-LEFT JOIN rotation_view AS current_rotation
+INNER JOIN rotation_view AS current_rotation
   ON current_rotation.format_code = format.code
   AND current_rotation.type = 'current'
 
-LEFT JOIN rotation_view AS latest_rotation
-  ON latest_rotation.format_code = format.code
-  AND latest_rotation.type = 'latest'
-
-LEFT JOIN mwl_view AS active_mwl
+INNER JOIN mwl_view AS active_mwl
   ON active_mwl.format_code = format.code
   AND active_mwl.type = 'active'
-
-LEFT JOIN mwl_view AS latest_mwl
-  ON latest_mwl.format_code = format.code
-  AND latest_mwl.type = 'latest'
 
 WHERE $where
 

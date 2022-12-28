@@ -36,14 +36,14 @@ class CardListBottomNavigationItem extends BottomNavigationItem {
     super.floatingActionButton,
   });
 
-  factory CardListBottomNavigationItem.fromSettings(SettingResult settings) {
+  factory CardListBottomNavigationItem.fromSettings(SettingsResult settings) {
     return CardListBottomNavigationItem(
       body: CardListPage.withOverrides(
         restorationId: 'card_list_page',
         automaticallyImplyLeading: false,
         title: 'Cards',
         filterSearch: null,
-        filterCollection: settings.settings.filterCollection,
+        filterCollection: settings.filterCollection,
         filterFormat: settings.filterFormat,
         filterRotation: settings.filterRotation,
         filterMwl: settings.filterMwl,
@@ -72,7 +72,7 @@ class DeckListBottomNavigationItem extends BottomNavigationItem {
     super.floatingActionButton,
   });
 
-  factory DeckListBottomNavigationItem.fromSettings(SettingResult settings) {
+  factory DeckListBottomNavigationItem.fromSettings(SettingsResult settings) {
     return DeckListBottomNavigationItem(
       body: DeckListPage.withOverrides(
         restorationId: 'deck_list_page',
@@ -239,6 +239,7 @@ class CardTileWidget extends ConsumerWidget {
           arguments: CardGalleryArguments(
             items: GroupedCardCodeList.fromCardResult(groupedCardList),
             index: index,
+            deckCards: null,
           ).toJson(),
         );
       },

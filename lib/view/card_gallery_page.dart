@@ -1,39 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod_restorable/flutter_riverpod_restorable.dart';
-import 'package:kotlin_flavor/scope_functions.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '/providers.dart';
 import '/util/grouped_card_code_list.dart';
 import 'card_gallery_list_page.dart';
 import 'card_gallery_swipe_page.dart';
 
-class CardGalleryArguments {
-  const CardGalleryArguments({
-    required this.items,
-    required this.index,
-    this.deckCards,
-  });
+part 'card_gallery_page.freezed.dart';
+part 'card_gallery_page.g.dart';
 
-  factory CardGalleryArguments.fromJson(Map<String, dynamic> data) {
-    return CardGalleryArguments(
-      items: GroupedCardCodeList.fromJson((data['items'] as List).cast()),
-      index: data['index'] as int?,
-      deckCards: (data['deckCards'] as Map?)?.let((e) => e.cast()),
-    );
-  }
+GroupedCardCodeList itemsFromJson(List<dynamic> value) => GroupedCardCodeList.fromJson(value.cast());
+List<dynamic> itemsToJson(GroupedCardCodeList value) => value.toJson();
 
-  Map<String, dynamic> toJson() {
-    return {
-      'items': items.toJson(),
-      'index': index,
-      'deckCards': deckCards,
-    };
-  }
+@freezed
+class CardGalleryArguments with _$CardGalleryArguments {
+  const factory CardGalleryArguments({
+    @JsonKey(fromJson: itemsFromJson, toJson: itemsToJson)
+    required GroupedCardCodeList items,
+    required int? index,
+    required Map<String, int>? deckCards,
+  }) = _CardGalleryArguments;
 
-  final GroupedCardCodeList items;
-  final int? index;
-  final Map<String, int>? deckCards;
+  factory CardGalleryArguments.fromJson(Map<String, dynamic> json) => _$CardGalleryArgumentsFromJson(json);
 }
 
 class CardGalleryResult {

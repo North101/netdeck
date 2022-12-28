@@ -16,7 +16,7 @@ final _privateConstructorUsedError = UnsupportedError(
 
 HttpResult<T> _$HttpResultFromJson<T>(
     Map<String, dynamic> json, T Function(Object?) fromJsonT) {
-  switch (json['type']) {
+  switch (json['runtimeType']) {
     case 'success':
       return SuccessHttpResult<T>.fromJson(json, fromJsonT);
     case 'failed':
@@ -27,8 +27,8 @@ HttpResult<T> _$HttpResultFromJson<T>(
       return UnknownHttpResult<T>.fromJson(json, fromJsonT);
 
     default:
-      throw CheckedFromJsonException(
-          json, 'type', 'HttpResult', 'Invalid union type "${json['type']}"!');
+      throw CheckedFromJsonException(json, 'runtimeType', 'HttpResult',
+          'Invalid union type "${json['runtimeType']}"!');
   }
 }
 
@@ -176,7 +176,7 @@ class _$SuccessHttpResult<T> implements SuccessHttpResult<T> {
   @override
   final int total;
 
-  @JsonKey(name: 'type')
+  @JsonKey(name: 'runtimeType')
   final String $type;
 
   @override
@@ -367,7 +367,7 @@ class _$FailedHttpResult<T> implements FailedHttpResult<T> {
   @override
   final String msg;
 
-  @JsonKey(name: 'type')
+  @JsonKey(name: 'runtimeType')
   final String $type;
 
   @override
@@ -520,7 +520,7 @@ class _$NotFoundHttpResult<T> implements NotFoundHttpResult<T> {
           Map<String, dynamic> json, T Function(Object?) fromJsonT) =>
       _$$NotFoundHttpResultFromJson(json, fromJsonT);
 
-  @JsonKey(name: 'type')
+  @JsonKey(name: 'runtimeType')
   final String $type;
 
   @override
@@ -651,7 +651,7 @@ class _$UnknownHttpResult<T> implements UnknownHttpResult<T> {
           Map<String, dynamic> json, T Function(Object?) fromJsonT) =>
       _$$UnknownHttpResultFromJson(json, fromJsonT);
 
-  @JsonKey(name: 'type')
+  @JsonKey(name: 'runtimeType')
   final String $type;
 
   @override

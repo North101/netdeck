@@ -1,5 +1,3 @@
-import 'package:drift/drift.dart';
-
 import '/db/types.dart';
 
 import 'format.drift';
@@ -11,10 +9,19 @@ CREATE TABLE mwl(
   date_start DATETIME,
   runner_points INT,
   corp_points INT
-);
+) WITH MwlData;
 
-CREATE VIEW mwl_view AS
-SELECT *
+CREATE VIEW mwl_view WITH MwlViewData (
+  code,
+  format_code,
+  mwl_code,
+  name,
+  date_start,
+  runner_points,
+  corp_points,
+  type
+) AS
+SELECT mwl.*
 FROM (
   -- active
   SELECT
@@ -66,7 +73,7 @@ FROM (
     mwl.date_start,
     mwl.runner_points,
     mwl.corp_points,
-    NULL as type
+    NULL AS type
   FROM mwl
 ) AS mwl
 

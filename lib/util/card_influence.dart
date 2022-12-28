@@ -67,7 +67,7 @@ class CardCountInfluence extends CardInfluence {
   int call(Map<database.CardResult, int> cardList, database.CardResult card, int quantity, int factionCost) {
     final count = cardList.entries
         .where((e) {
-          return e.key.code == cardCode;
+          return e.key.card.code == cardCode;
         })
         .map((e) => e.value)
         .sum;

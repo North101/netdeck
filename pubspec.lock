@@ -301,19 +301,19 @@ packages:
     description:
       path: drift
       ref: develop
-      resolved-ref: "7be97d139e5f5b3b683883f95a9144c5f74a1f47"
+      resolved-ref: "810ecb169ab50051f34c71ca78b281515d7aa674"
       url: "https://github.com/simolus3/drift.git"
     source: git
-    version: "2.4.0-dev"
+    version: "2.4.1"
   drift_dev:
     dependency: "direct dev"
     description:
       path: drift_dev
       ref: develop
-      resolved-ref: "7be97d139e5f5b3b683883f95a9144c5f74a1f47"
+      resolved-ref: "810ecb169ab50051f34c71ca78b281515d7aa674"
       url: "https://github.com/simolus3/drift.git"
     source: git
-    version: "2.4.0-dev"
+    version: "2.4.0"
   ffi:
     dependency: transitive
     description:
@@ -411,10 +411,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_riverpod
-      sha256: "371f6e8acb69dbe8aa3e0a50c8a65f8a9352b599134d585cc4923261cb5ae4d6"
+      sha256: "0c997763ce06359ee4686553b74def84062e9d6929ac63f61fa02465c1f8e32c"
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.1"
+    version: "2.1.3"
   flutter_riverpod_restorable:
     dependency: "direct main"
     description:
@@ -443,10 +443,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_secure_storage_macos
-      sha256: "096bbd34d08b16f7a4aa24f815efcdd46024eccc7e4f8c07dd9947d24fd67b7b"
+      sha256: ff0768a6700ea1d9620e03518e2e25eac86a8bd07ca3556e9617bfa5ace4bd00
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.0"
+    version: "2.0.1"
   flutter_secure_storage_platform_interface:
     dependency: transitive
     description:
@@ -552,10 +552,10 @@ packages:
     dependency: transitive
     description:
       name: image
-      sha256: f6ffe2895e3c86c6ad5a27e6302cf807403463e397cb2f0c580f619ac2fa588b
+      sha256: "8e9d133755c3e84c73288363e6343157c383a0c6c56fc51afcc5d4d7180306d6"
       url: "https://pub.dev"
     source: hosted
-    version: "3.2.2"
+    version: "3.3.0"
   intl:
     dependency: transitive
     description:
@@ -832,10 +832,10 @@ packages:
     dependency: transitive
     description:
       name: riverpod
-      sha256: "899cd0999b2f3b798349d9b5639cfea81d406c011bd914097145ff92e91b29f9"
+      sha256: "0f43c64f1f79c2112c843305a879a746587fb7c1e388f1d4717737796756e2c4"
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.1"
+    version: "2.1.3"
   rxdart:
     dependency: "direct main"
     description:
@@ -927,10 +927,10 @@ packages:
     description:
       path: sqlparser
       ref: develop
-      resolved-ref: "7be97d139e5f5b3b683883f95a9144c5f74a1f47"
+      resolved-ref: "810ecb169ab50051f34c71ca78b281515d7aa674"
       url: "https://github.com/simolus3/drift.git"
     source: git
-    version: "0.24.0"
+    version: "0.25.0"
   stack_trace:
     dependency: transitive
     description:

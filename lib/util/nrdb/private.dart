@@ -265,19 +265,15 @@ mixin OnlineAuthStateMixin on LogoutMixin, RefreshTokenMixin {
     });
   }
 
-  Future<HttpResult<NrdbDeck>> saveDeck(DeckMiniResult deck) async {
+  Future<HttpResult<NrdbDeck>> saveDeck(NrdbDeck deck) async {
     final response = await http.post(
       saveDeckEndpoint,
       headers: authHeaders,
       body: json.encode({
-        'deck_id': deck.remoteUpdated == null ? null : deck.id,
+        'deck_id': deck.id.isEmpty ? null : deck.id,
         'name': deck.name,
         'description': deck.description,
-        'content': {
-          deck.identityCode: 1,
-          for (final entry in deck.cards.entries)
-            if (entry.value > 0) entry.key: entry.value,
-        },
+        'content': deck.cards,
         'tags': deck.tags.join(' '),
       }),
     );
@@ -296,13 +292,13 @@ mixin OnlineAuthStateMixin on LogoutMixin, RefreshTokenMixin {
     final lastSync = ref.read(lastSyncProvider);
     lastSync.value = DateTime.now();
 
-    final deckList = await db.listMiniDecks(
+    final deckList = await db.listDeckNotifier(
       where: (deck, identity, pack, cycle, faction, side, type, subtype, format, rotation, mwl) {
         return deck.id.isIn(decks.map((e) => e.id));
       },
     ).first;
-    final updateLocalDecks = <NrdbDeck, DeckMiniResult?>{};
-    final updateRemoteDecks = <DeckMiniResult>[];
+    final updateLocalDecks = <NrdbDeck, NrdbDeck?>{};
+    final updateRemoteDecks = <NrdbDeck>[];
     final updateRemoteDecksStatus = <NrdbDeck>[];
     for (final remoteDeck in decks) {
       final localDeck = deckList.firstWhereOrNull((e) => e.id == remoteDeck.id);
@@ -313,9 +309,9 @@ mixin OnlineAuthStateMixin on LogoutMixin, RefreshTokenMixin {
         if (syncIssues == SyncIssues.both) {
           updateRemoteDecksStatus.add(remoteDeck);
         } else if (syncIssues == SyncIssues.local) {
-          updateRemoteDecks.add(localDeck);
+          updateRemoteDecks.add(localDeck.toNrdbDeck());
         } else if (syncIssues == SyncIssues.remote) {
-          updateLocalDecks[remoteDeck] = localDeck;
+          updateLocalDecks[remoteDeck] = localDeck.toNrdbDeck();
         }
       }
     }
@@ -340,8 +336,8 @@ mixin OnlineAuthStateMixin on LogoutMixin, RefreshTokenMixin {
     });
   }
 
-  Future<void> forceUpload(Database db, Iterable<DeckMiniResult> localDecks) async {
-    final decks = <NrdbDeck, DeckMiniResult>{};
+  Future<void> forceUpload(Database db, Iterable<NrdbDeck> localDecks) async {
+    final decks = <NrdbDeck, NrdbDeck>{};
     for (final localDeck in localDecks) {
       final deck = (await saveDeck(localDeck)).mapOrNull(success: (result) => result.data);
       if (deck != null) {
@@ -353,11 +349,11 @@ mixin OnlineAuthStateMixin on LogoutMixin, RefreshTokenMixin {
     });
   }
 
-  Future<void> forceDownload(Database db, Iterable<DeckMiniResult> localDecks) async {
+  Future<void> forceDownload(Database db, Iterable<NrdbDeck> localDecks) async {
     final listDecksResult = (await listDecks()).mapOrNull(success: (result) => result.data);
     if (listDecksResult == null) return;
 
-    final decks = <NrdbDeck, DeckMiniResult>{};
+    final decks = <NrdbDeck, NrdbDeck>{};
     for (final remoteDeck in listDecksResult) {
       final localDeck = localDecks.firstWhereOrNull((e) => e.id == remoteDeck.id);
       if (localDeck != null) {
@@ -369,7 +365,7 @@ mixin OnlineAuthStateMixin on LogoutMixin, RefreshTokenMixin {
     });
   }
 
-  Future<void> syncWithLocalDecks(Database db, Map<NrdbDeck, DeckMiniResult?> decks) async {
+  Future<void> syncWithLocalDecks(Database db, Map<NrdbDeck, NrdbDeck?> decks) async {
     await db.batch((batch) async {
       final deleteDeckIds = <String>[];
       for (final deck in decks.entries) {
@@ -379,8 +375,6 @@ mixin OnlineAuthStateMixin on LogoutMixin, RefreshTokenMixin {
           db,
           batch,
           remoteDeck,
-          formatCode: drift.Value(localDeck?.formatCode),
-          rotationCode: drift.Value(localDeck?.rotationCode),
           mwlCode: drift.Value(localDeck?.mwlCode),
         );
         if (localDeck != null && remoteDeck.id != localDeck.id) {

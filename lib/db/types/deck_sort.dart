@@ -49,7 +49,7 @@ enum DeckSort {
     return -a.deck.updated.compareTo(b.deck.updated);
   }
 
-  int _sortNullLast<T extends Comparable>(T? a, T? b) {
+  int _sortNullLast<T extends Comparable<Object>>(T? a, T? b) {
     if (a == b) {
       return 0;
     } else if (a == null) {

@@ -1,7 +1,9 @@
+import '/db/types.dart';
+
 CREATE TABLE side(
   code TEXT PRIMARY KEY NOT NULL,
   name TEXT NOT NULL
-);
+) WITH SideData;
 
 listSides($where = TRUE):
 SELECT *

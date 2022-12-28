@@ -70,7 +70,7 @@ class SettingsDefaultCardFilters extends ConsumerWidget {
       subtitle: settings.whenOrNull<Widget?>(
         error: (error, strackTrace) => Text(error.toString()),
         data: (data) => [
-          if (data.settings.filterCollection) 'My Collection',
+          if (data.filterCollection) 'My Collection',
           if (data.filterFormat != null) 'Format: ${data.filterFormat!.name}',
           if (data.filterRotation != null) 'Rotation: ${data.filterRotation!.name}',
           if (data.filterMwl != null) 'Banlist: ${data.filterMwl!.name}',

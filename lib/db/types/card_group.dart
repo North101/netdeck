@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 
-import '/db/database.dart';
+import '/db/types.dart';
 import '/util.dart';
 import '/util/header_list.dart';
 

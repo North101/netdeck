@@ -16,35 +16,35 @@ class DeckValidator {
   };
 
   factory DeckValidator(
-    SettingResult settings,
+    SettingsResult settings,
     DeckFullResult deck,
-    Set<String>? formatCardSet,
+    Set<String>? cardCodesInRotation,
     Map<String, MwlCardData> mwlCardMap,
   ) {
     final validator = lookup[deck.identity.code];
     if (validator != null) {
-      return validator(settings, deck, formatCardSet, mwlCardMap);
+      return validator(settings, deck, cardCodesInRotation, mwlCardMap);
     }
 
     if (deck.side.code == RunnerDeckValidator.sideCode) {
-      return RunnerDeckValidator(settings, deck, formatCardSet, mwlCardMap);
+      return RunnerDeckValidator(settings, deck, cardCodesInRotation, mwlCardMap);
     } else if (deck.side.code == CorpDeckValidator.sideCode) {
-      return CorpDeckValidator(settings, deck, formatCardSet, mwlCardMap);
+      return CorpDeckValidator(settings, deck, cardCodesInRotation, mwlCardMap);
     }
-    return DeckValidator._(settings, deck, formatCardSet, mwlCardMap);
+    return DeckValidator._(settings, deck, cardCodesInRotation, mwlCardMap);
   }
 
   DeckValidator._(
     this.settings,
     this.deck,
-    this.formatCardSet,
+    this.cardCodesInRotation,
     this.mwlCardMap,
   );
 
   String? agendaError;
-  final SettingResult settings;
+  final SettingsResult settings;
   final DeckFullResult deck;
-  final Set<String>? formatCardSet;
+  final Set<String>? cardCodesInRotation;
   final Map<String, MwlCardData> mwlCardMap;
 
   int? _agendaPoints;
@@ -107,7 +107,7 @@ class DeckValidator {
         (card.faction.code != deck.faction.code ? card.card.factionCost : 0);
     if (factionCost == 0) return 0;
 
-    final cardInfluence = cardInfluenceLookup[card.code] ?? const CardInfluence();
+    final cardInfluence = cardInfluenceLookup[card.card.code] ?? const CardInfluence();
     return cardInfluence(cardList, card, quantity, factionCost);
   }
 
@@ -149,7 +149,7 @@ class DeckValidator {
       return 'Too many restriced cards.';
     } else if (quantity > (mwlCard?.deckLimit ?? card.card.deckLimit)) {
       return 'Too many copies.';
-    } else if (!(formatCardSet?.contains(card.card.code) ?? true)) {
+    } else if (!(cardCodesInRotation?.contains(card.card.code) ?? true)) {
       return 'Not valid for rotation.';
     }
     return null;
@@ -219,7 +219,7 @@ class ApexDeckValidator extends RunnerDeckValidator {
 
   @override
   drift.Expression<bool> filter(Database db) {
-    if (!settings.settings.apexResources) return super.filter(db);
+    if (!settings.apexResources) return super.filter(db);
 
     return buildAnd([
       super.filter(db),

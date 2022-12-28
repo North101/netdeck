@@ -1,5 +1,5 @@
-import 'package:drift/drift.dart';
 import '/db/types.dart';
+
 import 'cycle.drift';
 import 'rotation.drift';
 
@@ -7,13 +7,12 @@ CREATE TABLE pack(
   code TEXT PRIMARY KEY NOT NULL,
   cycle_code TEXT NOT NULL,
   position INT NOT NULL,
-
   name TEXT NOT NULL,
   date_release DATETIME,
   size INT
-);
+) WITH PackData;
 
-listPacks($where = TRUE) AS PackResult:
+listPacks($where = TRUE) WITH PackResult:
 SELECT
   pack.**,
   cycle.**
@@ -24,4 +23,6 @@ INNER JOIN cycle
 
 WHERE $where
 
-ORDER BY cycle.position DESC, pack.position;
+ORDER BY
+  cycle.position DESC,
+  pack.position DESC;

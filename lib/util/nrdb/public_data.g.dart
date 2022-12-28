@@ -9,14 +9,14 @@ part of 'public_data.dart';
 _$UnmodifiedApiResult _$$UnmodifiedApiResultFromJson(Map json) =>
     _$UnmodifiedApiResult(
       DateTime.parse(json['last_updated'] as String),
-      $type: json['type'] as String?,
+      $type: json['runtimeType'] as String?,
     );
 
 _$ModifiedApiResult _$$ModifiedApiResultFromJson(Map json) =>
     _$ModifiedApiResult(
       DateTime.parse(json['last_updated'] as String),
       Map<String, dynamic>.from(json['data'] as Map),
-      $type: json['type'] as String?,
+      $type: json['runtimeType'] as String?,
     );
 
 _$_CardApi _$$_CardApiFromJson(Map json) => _$_CardApi(

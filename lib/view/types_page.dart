@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod_restorable/flutter_riverpod_restorable.dart';
 import 'package:flutter_sticky_header/flutter_sticky_header.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '/db/database.dart';
 import '/providers.dart';
@@ -10,28 +11,17 @@ import '/util/filter_type.dart';
 import 'async_value_builder.dart';
 import 'header_list_tile.dart';
 
-class FilterTypesArguments {
-  const FilterTypesArguments({
-    required this.sides,
-    required this.types,
-  });
+part 'types_page.freezed.dart';
+part 'types_page.g.dart';
 
-  factory FilterTypesArguments.fromJson(Map<String, dynamic> data) {
-    return FilterTypesArguments(
-      sides: FilterType<String>.fromJson((data['sides'] as Map).cast()),
-      types: FilterType<String>.fromJson((data['types'] as Map).cast()),
-    );
-  }
+@freezed
+class FilterTypesArguments with _$FilterTypesArguments {
+  const factory FilterTypesArguments({
+    required FilterType<String> sides,
+    required FilterType<String> types,
+  }) = _FilterTypesArguments;
 
-  Map<String, dynamic> toJson() {
-    return {
-      'sides': sides.toJson(),
-      'types': types.toJson(),
-    };
-  }
-
-  final FilterType<String> sides;
-  final FilterType<String> types;
+  factory FilterTypesArguments.fromJson(Map<String, dynamic> json) => _$FilterTypesArgumentsFromJson(json);
 }
 
 final filteredTypeListProvider = StreamProvider((ref) {

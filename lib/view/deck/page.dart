@@ -25,7 +25,7 @@ class DeckPage extends ConsumerWidget {
   }
 
   static Widget withOverrides({
-    required DeckNotifierResult deck,
+    required DeckNotifierData deck,
   }) {
     return RestorableProviderScope(
       restorationId: 'deck_page',
@@ -62,8 +62,8 @@ class DeckPage extends ConsumerWidget {
               return value.deck.cards.keys;
             }));
 
-            final groupBy = settings.settings.deckCardGroup;
-            final sortBy = settings.settings.deckCardSort;
+            final groupBy = settings.deckCardGroup;
+            final sortBy = settings.deckCardSort;
             yield HeaderList([
               ...groupBy(sortBy(deckCardList)),
             ]);
@@ -110,7 +110,7 @@ class DeckResultPage extends ConsumerWidget {
         if (result != true) return result != null;
 
         if (!context.mounted) return false;
-        final saveResult = await showDialog<DeckNotifierResult>(
+        final saveResult = await showDialog<DeckNotifierData>(
           context: context,
           barrierDismissible: false,
           builder: (context) => SaveDeckDialog.withOverrides(deck: deck),

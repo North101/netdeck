@@ -1,6 +1,6 @@
 import 'package:collection/collection.dart';
 
-import '/db/database.dart';
+import '/db/types.dart';
 import '/util.dart';
 
 enum CardSort {

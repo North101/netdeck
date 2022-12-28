@@ -1,32 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '/db/database.dart';
 import '/providers.dart';
 import 'appbar.dart';
 import 'body.dart';
 
-class DeckCompareArguments {
-  const DeckCompareArguments(this.deckList);
+part 'page.freezed.dart';
+part 'page.g.dart';
 
-  factory DeckCompareArguments.fromJson(List<dynamic> data) {
-    return DeckCompareArguments(
-      data.map((e) => DeckMicroResult.fromJson((e as Map).cast())).toSet(),
-    );
-  }
+@freezed
+class DeckCompareArguments with _$DeckCompareArguments {
+  const factory DeckCompareArguments(
+    Set<DeckCompareResult> deckList,
+  ) = _DeckCompareArguments;
 
-  List<dynamic> toJson() {
-    return deckList.map((e) => e.toJson()).toList();
-  }
-
-  final Set<DeckMicroResult> deckList;
+  factory DeckCompareArguments.fromJson(Map<String, dynamic> json) => _$DeckCompareArgumentsFromJson(json);
 }
 
 class DeckComparePage extends ConsumerWidget {
   const DeckComparePage({super.key});
 
   static Route<void> route(BuildContext context, Object? arguments) {
-    final args = DeckCompareArguments.fromJson(arguments as List);
+    final args = DeckCompareArguments.fromJson((arguments as Map).cast());
     return MaterialPageRoute(builder: (context) {
       return DeckComparePage.withOverrides(args);
     });

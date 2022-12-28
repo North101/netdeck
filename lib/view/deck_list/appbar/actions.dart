@@ -19,7 +19,7 @@ class DeckListGroupMenu extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final deckGroup = ref.watch(settingProvider.select((value) {
-      return value.whenOrNull(data: (data) => data.settings.deckGroup);
+      return value.whenOrNull(data: (data) => data.deckGroup);
     }));
     return PopupMenuButton<DeckGroup>(
       child: const ListTile(
@@ -57,7 +57,7 @@ class DeckListSortMenu extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final deckSort = ref.watch(settingProvider.select((value) {
-      return value.whenOrNull(data: (data) => data.settings.deckSort);
+      return value.whenOrNull(data: (data) => data.deckSort);
     }));
     return PopupMenuButton<DeckSort>(
       child: const ListTile(

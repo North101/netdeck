@@ -6,7 +6,7 @@ import '/db/database.dart';
 import '/providers.dart';
 import '/util/nrdb/private_model.dart';
 
-final deckResultProvider = Provider<DeckNotifierResult>((ref) => throw UnimplementedError());
+final deckResultProvider = Provider<DeckNotifierData>((ref) => throw UnimplementedError());
 
 enum SaveDialogState {
   askToUpload,
@@ -43,7 +43,7 @@ class SaveDeckDialog extends ConsumerWidget {
   const SaveDeckDialog({Key? key}) : super(key: key);
 
   static Widget withOverrides({
-    required DeckNotifierResult deck,
+    required DeckNotifierData deck,
     SaveDialogState? state,
   }) {
     return ProviderScope(
@@ -209,7 +209,7 @@ class SaveDeckLocalDialogState extends ConsumerState<SaveDeckLocalDialog> {
         ]);
       });
       return await db
-          .listMiniDecks(where: (deck, identity, pack, cycle, faction, side, type, subtype, format, rotation, mwl) {
+          .listDeckNotifier(where: (deck, identity, pack, cycle, faction, side, type, subtype, format, rotation, mwl) {
             return deck.id.equals(saveDeck.id);
           })
           .map((e) => e.first)
@@ -260,7 +260,7 @@ class SaveDeckRemoteDialogState extends ConsumerState<SaveDeckRemoteDialog> {
 
     final deck = ref.read(deckResultProvider);
     final result = await onlineAuthState
-        .saveDeck(deck) //
+        .saveDeck(deck.toNrdbDeck()) //
         .catchError((e) => const UnknownHttpResult<NrdbDeck>());
     
     final uploadedDeck = result.mapOrNull(success: (result) => result.data);
@@ -288,7 +288,7 @@ class SaveDeckRemoteDialogState extends ConsumerState<SaveDeckRemoteDialog> {
         );
       });
       return await db
-          .listMiniDecks(where: (deck, identity, pack, cycle, faction, side, type, subtype, format, rotation, mwl) {
+          .listDeckNotifier(where: (deck, identity, pack, cycle, faction, side, type, subtype, format, rotation, mwl) {
             return deck.id.equals(uploadedDeck.id);
           })
           .map((e) => e.first)
@@ -301,7 +301,6 @@ class SaveDeckRemoteDialogState extends ConsumerState<SaveDeckRemoteDialog> {
 
   @override
   Widget build(BuildContext context) {
-    print(ref.watch(dialogStateProvider));
     return const AlertDialog(
       title: Text('Uploading Deck...'),
       content: SizedBox(
@@ -323,8 +322,8 @@ final downloadDialogStateProvider = StateProvider((ref) => DownloadDialogState.d
 class DownloadDeckDialog extends ConsumerWidget {
   const DownloadDeckDialog({Key? key}) : super(key: key);
 
-  static withOverrides({
-    required DeckNotifierResult deck,
+  static Widget withOverrides({
+    required DeckNotifierData deck,
   }) {
     return ProviderScope(
       overrides: [
@@ -412,7 +411,7 @@ class DownloadDeckProgressDialogState extends ConsumerState<DownloadDeckProgress
         );
       });
       return await db
-          .listMiniDecks(
+          .listDeckNotifier(
             where: (deck, identity, pack, cycle, faction, side, type, subtype, format, rotation, mwl) {
               return deck.id.equals(downloadedDeck.id);
             },

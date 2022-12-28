@@ -8,10 +8,11 @@ import 'package:query/query.dart';
 
 import '/db/database.dart';
 import '/db/querybuilder.dart';
+import '/db/types/data.dart';
 import '/providers/db.dart';
 import '/util/filter_type.dart';
 
-abstract class RestorableData<T extends drift.DataClass?> extends RestorableValue<T> {
+abstract class RestorableData<T extends DataMixin?> extends RestorableValue<T> {
   RestorableData(this._defaultValue);
 
   final T _defaultValue;

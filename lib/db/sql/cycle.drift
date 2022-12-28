@@ -1,3 +1,5 @@
+import '/db/types.dart';
+
 CREATE TABLE cycle(
   code TEXT PRIMARY KEY NOT NULL,
   position INT NOT NULL,
@@ -5,7 +7,7 @@ CREATE TABLE cycle(
   name TEXT NOT NULL,
   size INT NOT NULL,
   rotated BOOLEAN NOT NULL
-);
+) With CycleData;
 
 listCycles:
 SELECT *

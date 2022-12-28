@@ -3,18 +3,12 @@
 part of 'database.dart';
 
 // ignore_for_file: type=lint
-class TypeData extends DataClass implements Insertable<TypeData> {
-  final String code;
-  final String? sideCode;
-  final int position;
-  final String name;
-  final bool isSubtype;
-  const TypeData(
-      {required this.code,
-      this.sideCode,
-      required this.position,
-      required this.name,
-      required this.isSubtype});
+mixin TypeToColumns implements Insertable<TypeData> {
+  String get code;
+  String? get sideCode;
+  int get position;
+  String get name;
+  bool get isSubtype;
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -26,166 +20,6 @@ class TypeData extends DataClass implements Insertable<TypeData> {
     map['name'] = Variable<String>(name);
     map['is_subtype'] = Variable<bool>(isSubtype);
     return map;
-  }
-
-  TypeCompanion toCompanion(bool nullToAbsent) {
-    return TypeCompanion(
-      code: Value(code),
-      sideCode: sideCode == null && nullToAbsent
-          ? const Value.absent()
-          : Value(sideCode),
-      position: Value(position),
-      name: Value(name),
-      isSubtype: Value(isSubtype),
-    );
-  }
-
-  factory TypeData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return TypeData(
-      code: serializer.fromJson<String>(json['code']),
-      sideCode: serializer.fromJson<String?>(json['side_code']),
-      position: serializer.fromJson<int>(json['position']),
-      name: serializer.fromJson<String>(json['name']),
-      isSubtype: serializer.fromJson<bool>(json['is_subtype']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'code': serializer.toJson<String>(code),
-      'side_code': serializer.toJson<String?>(sideCode),
-      'position': serializer.toJson<int>(position),
-      'name': serializer.toJson<String>(name),
-      'is_subtype': serializer.toJson<bool>(isSubtype),
-    };
-  }
-
-  TypeData copyWith(
-          {String? code,
-          Value<String?> sideCode = const Value.absent(),
-          int? position,
-          String? name,
-          bool? isSubtype}) =>
-      TypeData(
-        code: code ?? this.code,
-        sideCode: sideCode.present ? sideCode.value : this.sideCode,
-        position: position ?? this.position,
-        name: name ?? this.name,
-        isSubtype: isSubtype ?? this.isSubtype,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('TypeData(')
-          ..write('code: $code, ')
-          ..write('sideCode: $sideCode, ')
-          ..write('position: $position, ')
-          ..write('name: $name, ')
-          ..write('isSubtype: $isSubtype')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(code, sideCode, position, name, isSubtype);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is TypeData &&
-          other.code == this.code &&
-          other.sideCode == this.sideCode &&
-          other.position == this.position &&
-          other.name == this.name &&
-          other.isSubtype == this.isSubtype);
-}
-
-class TypeCompanion extends UpdateCompanion<TypeData> {
-  final Value<String> code;
-  final Value<String?> sideCode;
-  final Value<int> position;
-  final Value<String> name;
-  final Value<bool> isSubtype;
-  const TypeCompanion({
-    this.code = const Value.absent(),
-    this.sideCode = const Value.absent(),
-    this.position = const Value.absent(),
-    this.name = const Value.absent(),
-    this.isSubtype = const Value.absent(),
-  });
-  TypeCompanion.insert({
-    required String code,
-    this.sideCode = const Value.absent(),
-    required int position,
-    required String name,
-    required bool isSubtype,
-  })  : code = Value(code),
-        position = Value(position),
-        name = Value(name),
-        isSubtype = Value(isSubtype);
-  static Insertable<TypeData> custom({
-    Expression<String>? code,
-    Expression<String>? sideCode,
-    Expression<int>? position,
-    Expression<String>? name,
-    Expression<bool>? isSubtype,
-  }) {
-    return RawValuesInsertable({
-      if (code != null) 'code': code,
-      if (sideCode != null) 'side_code': sideCode,
-      if (position != null) 'position': position,
-      if (name != null) 'name': name,
-      if (isSubtype != null) 'is_subtype': isSubtype,
-    });
-  }
-
-  TypeCompanion copyWith(
-      {Value<String>? code,
-      Value<String?>? sideCode,
-      Value<int>? position,
-      Value<String>? name,
-      Value<bool>? isSubtype}) {
-    return TypeCompanion(
-      code: code ?? this.code,
-      sideCode: sideCode ?? this.sideCode,
-      position: position ?? this.position,
-      name: name ?? this.name,
-      isSubtype: isSubtype ?? this.isSubtype,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (code.present) {
-      map['code'] = Variable<String>(code.value);
-    }
-    if (sideCode.present) {
-      map['side_code'] = Variable<String>(sideCode.value);
-    }
-    if (position.present) {
-      map['position'] = Variable<int>(position.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    if (isSubtype.present) {
-      map['is_subtype'] = Variable<bool>(isSubtype.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('TypeCompanion(')
-          ..write('code: $code, ')
-          ..write('sideCode: $sideCode, ')
-          ..write('position: $position, ')
-          ..write('name: $name, ')
-          ..write('isSubtype: $isSubtype')
-          ..write(')'))
-        .toString();
   }
 }
 
@@ -298,89 +132,57 @@ class Type extends Table with TableInfo<Type, TypeData> {
   bool get dontWriteConstraints => true;
 }
 
-class SideData extends DataClass implements Insertable<SideData> {
-  final String code;
-  final String name;
-  const SideData({required this.code, required this.name});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['code'] = Variable<String>(code);
-    map['name'] = Variable<String>(name);
-    return map;
-  }
-
-  SideCompanion toCompanion(bool nullToAbsent) {
-    return SideCompanion(
-      code: Value(code),
-      name: Value(name),
-    );
-  }
-
-  factory SideData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return SideData(
-      code: serializer.fromJson<String>(json['code']),
-      name: serializer.fromJson<String>(json['name']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'code': serializer.toJson<String>(code),
-      'name': serializer.toJson<String>(name),
-    };
-  }
-
-  SideData copyWith({String? code, String? name}) => SideData(
-        code: code ?? this.code,
-        name: name ?? this.name,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('SideData(')
-          ..write('code: $code, ')
-          ..write('name: $name')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(code, name);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is SideData && other.code == this.code && other.name == this.name);
-}
-
-class SideCompanion extends UpdateCompanion<SideData> {
+class TypeCompanion extends UpdateCompanion<TypeData> {
   final Value<String> code;
+  final Value<String?> sideCode;
+  final Value<int> position;
   final Value<String> name;
-  const SideCompanion({
+  final Value<bool> isSubtype;
+  const TypeCompanion({
     this.code = const Value.absent(),
+    this.sideCode = const Value.absent(),
+    this.position = const Value.absent(),
     this.name = const Value.absent(),
+    this.isSubtype = const Value.absent(),
   });
-  SideCompanion.insert({
+  TypeCompanion.insert({
     required String code,
+    this.sideCode = const Value.absent(),
+    required int position,
     required String name,
+    required bool isSubtype,
   })  : code = Value(code),
-        name = Value(name);
-  static Insertable<SideData> custom({
+        position = Value(position),
+        name = Value(name),
+        isSubtype = Value(isSubtype);
+  static Insertable<TypeData> custom({
     Expression<String>? code,
+    Expression<String>? sideCode,
+    Expression<int>? position,
     Expression<String>? name,
+    Expression<bool>? isSubtype,
   }) {
     return RawValuesInsertable({
       if (code != null) 'code': code,
+      if (sideCode != null) 'side_code': sideCode,
+      if (position != null) 'position': position,
       if (name != null) 'name': name,
+      if (isSubtype != null) 'is_subtype': isSubtype,
     });
   }
 
-  SideCompanion copyWith({Value<String>? code, Value<String>? name}) {
-    return SideCompanion(
+  TypeCompanion copyWith(
+      {Value<String>? code,
+      Value<String?>? sideCode,
+      Value<int>? position,
+      Value<String>? name,
+      Value<bool>? isSubtype}) {
+    return TypeCompanion(
       code: code ?? this.code,
+      sideCode: sideCode ?? this.sideCode,
+      position: position ?? this.position,
       name: name ?? this.name,
+      isSubtype: isSubtype ?? this.isSubtype,
     );
   }
 
@@ -390,19 +192,43 @@ class SideCompanion extends UpdateCompanion<SideData> {
     if (code.present) {
       map['code'] = Variable<String>(code.value);
     }
+    if (sideCode.present) {
+      map['side_code'] = Variable<String>(sideCode.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
+    }
+    if (isSubtype.present) {
+      map['is_subtype'] = Variable<bool>(isSubtype.value);
     }
     return map;
   }
 
   @override
   String toString() {
-    return (StringBuffer('SideCompanion(')
+    return (StringBuffer('TypeCompanion(')
           ..write('code: $code, ')
-          ..write('name: $name')
+          ..write('sideCode: $sideCode, ')
+          ..write('position: $position, ')
+          ..write('name: $name, ')
+          ..write('isSubtype: $isSubtype')
           ..write(')'))
         .toString();
+  }
+}
+
+mixin SideToColumns implements Insertable<SideData> {
+  String get code;
+  String get name;
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['code'] = Variable<String>(code);
+    map['name'] = Variable<String>(name);
+    return map;
   }
 }
 
@@ -471,36 +297,72 @@ class Side extends Table with TableInfo<Side, SideData> {
   bool get dontWriteConstraints => true;
 }
 
-class SettingsData extends DataClass implements Insertable<SettingsData> {
-  final bool id;
-  final String? filterFormatCode;
-  final String? filterRotationCode;
-  final String? filterMwlCode;
-  final bool filterCollection;
-  final CardSort cardSort;
-  final CardGroup cardGroup;
-  final DeckSort deckSort;
-  final DeckGroup deckGroup;
-  final CardSort deckCardSort;
-  final CardGroup deckCardGroup;
-  final CardSort compareCardSort;
-  final bool apexResources;
-  final CardGalleryPageView cardGalleryView;
-  const SettingsData(
-      {required this.id,
-      this.filterFormatCode,
-      this.filterRotationCode,
-      this.filterMwlCode,
-      required this.filterCollection,
-      required this.cardSort,
-      required this.cardGroup,
-      required this.deckSort,
-      required this.deckGroup,
-      required this.deckCardSort,
-      required this.deckCardGroup,
-      required this.compareCardSort,
-      required this.apexResources,
-      required this.cardGalleryView});
+class SideCompanion extends UpdateCompanion<SideData> {
+  final Value<String> code;
+  final Value<String> name;
+  const SideCompanion({
+    this.code = const Value.absent(),
+    this.name = const Value.absent(),
+  });
+  SideCompanion.insert({
+    required String code,
+    required String name,
+  })  : code = Value(code),
+        name = Value(name);
+  static Insertable<SideData> custom({
+    Expression<String>? code,
+    Expression<String>? name,
+  }) {
+    return RawValuesInsertable({
+      if (code != null) 'code': code,
+      if (name != null) 'name': name,
+    });
+  }
+
+  SideCompanion copyWith({Value<String>? code, Value<String>? name}) {
+    return SideCompanion(
+      code: code ?? this.code,
+      name: name ?? this.name,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SideCompanion(')
+          ..write('code: $code, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
+}
+
+mixin SettingsToColumns implements Insertable<SettingsData> {
+  bool get id;
+  String? get filterFormatCode;
+  String? get filterRotationCode;
+  String? get filterMwlCode;
+  bool get filterCollection;
+  CardSort get cardSort;
+  CardGroup get cardGroup;
+  DeckSort get deckSort;
+  DeckGroup get deckGroup;
+  CardSort get deckCardSort;
+  CardGroup get deckCardGroup;
+  CardSort get compareCardSort;
+  bool get apexResources;
+  CardGalleryPageView get cardGalleryView;
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -551,379 +413,6 @@ class SettingsData extends DataClass implements Insertable<SettingsData> {
           Variable<String>(converter.toSql(cardGalleryView));
     }
     return map;
-  }
-
-  SettingsCompanion toCompanion(bool nullToAbsent) {
-    return SettingsCompanion(
-      id: Value(id),
-      filterFormatCode: filterFormatCode == null && nullToAbsent
-          ? const Value.absent()
-          : Value(filterFormatCode),
-      filterRotationCode: filterRotationCode == null && nullToAbsent
-          ? const Value.absent()
-          : Value(filterRotationCode),
-      filterMwlCode: filterMwlCode == null && nullToAbsent
-          ? const Value.absent()
-          : Value(filterMwlCode),
-      filterCollection: Value(filterCollection),
-      cardSort: Value(cardSort),
-      cardGroup: Value(cardGroup),
-      deckSort: Value(deckSort),
-      deckGroup: Value(deckGroup),
-      deckCardSort: Value(deckCardSort),
-      deckCardGroup: Value(deckCardGroup),
-      compareCardSort: Value(compareCardSort),
-      apexResources: Value(apexResources),
-      cardGalleryView: Value(cardGalleryView),
-    );
-  }
-
-  factory SettingsData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return SettingsData(
-      id: serializer.fromJson<bool>(json['id']),
-      filterFormatCode:
-          serializer.fromJson<String?>(json['filter_format_code']),
-      filterRotationCode:
-          serializer.fromJson<String?>(json['filter_rotation_code']),
-      filterMwlCode: serializer.fromJson<String?>(json['filter_mwl_code']),
-      filterCollection: serializer.fromJson<bool>(json['filter_collection']),
-      cardSort: Settings.$convertercardSort
-          .fromJson(serializer.fromJson<String>(json['card_sort'])),
-      cardGroup: Settings.$convertercardGroup
-          .fromJson(serializer.fromJson<String>(json['card_group'])),
-      deckSort: Settings.$converterdeckSort
-          .fromJson(serializer.fromJson<String>(json['deck_sort'])),
-      deckGroup: Settings.$converterdeckGroup
-          .fromJson(serializer.fromJson<String>(json['deck_group'])),
-      deckCardSort: Settings.$converterdeckCardSort
-          .fromJson(serializer.fromJson<String>(json['deck_card_sort'])),
-      deckCardGroup: Settings.$converterdeckCardGroup
-          .fromJson(serializer.fromJson<String>(json['deck_card_group'])),
-      compareCardSort: Settings.$convertercompareCardSort
-          .fromJson(serializer.fromJson<String>(json['compare_card_sort'])),
-      apexResources: serializer.fromJson<bool>(json['apex_resources']),
-      cardGalleryView: Settings.$convertercardGalleryView
-          .fromJson(serializer.fromJson<String>(json['card_gallery_view'])),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<bool>(id),
-      'filter_format_code': serializer.toJson<String?>(filterFormatCode),
-      'filter_rotation_code': serializer.toJson<String?>(filterRotationCode),
-      'filter_mwl_code': serializer.toJson<String?>(filterMwlCode),
-      'filter_collection': serializer.toJson<bool>(filterCollection),
-      'card_sort': serializer
-          .toJson<String>(Settings.$convertercardSort.toJson(cardSort)),
-      'card_group': serializer
-          .toJson<String>(Settings.$convertercardGroup.toJson(cardGroup)),
-      'deck_sort': serializer
-          .toJson<String>(Settings.$converterdeckSort.toJson(deckSort)),
-      'deck_group': serializer
-          .toJson<String>(Settings.$converterdeckGroup.toJson(deckGroup)),
-      'deck_card_sort': serializer
-          .toJson<String>(Settings.$converterdeckCardSort.toJson(deckCardSort)),
-      'deck_card_group': serializer.toJson<String>(
-          Settings.$converterdeckCardGroup.toJson(deckCardGroup)),
-      'compare_card_sort': serializer.toJson<String>(
-          Settings.$convertercompareCardSort.toJson(compareCardSort)),
-      'apex_resources': serializer.toJson<bool>(apexResources),
-      'card_gallery_view': serializer.toJson<String>(
-          Settings.$convertercardGalleryView.toJson(cardGalleryView)),
-    };
-  }
-
-  SettingsData copyWith(
-          {bool? id,
-          Value<String?> filterFormatCode = const Value.absent(),
-          Value<String?> filterRotationCode = const Value.absent(),
-          Value<String?> filterMwlCode = const Value.absent(),
-          bool? filterCollection,
-          CardSort? cardSort,
-          CardGroup? cardGroup,
-          DeckSort? deckSort,
-          DeckGroup? deckGroup,
-          CardSort? deckCardSort,
-          CardGroup? deckCardGroup,
-          CardSort? compareCardSort,
-          bool? apexResources,
-          CardGalleryPageView? cardGalleryView}) =>
-      SettingsData(
-        id: id ?? this.id,
-        filterFormatCode: filterFormatCode.present
-            ? filterFormatCode.value
-            : this.filterFormatCode,
-        filterRotationCode: filterRotationCode.present
-            ? filterRotationCode.value
-            : this.filterRotationCode,
-        filterMwlCode:
-            filterMwlCode.present ? filterMwlCode.value : this.filterMwlCode,
-        filterCollection: filterCollection ?? this.filterCollection,
-        cardSort: cardSort ?? this.cardSort,
-        cardGroup: cardGroup ?? this.cardGroup,
-        deckSort: deckSort ?? this.deckSort,
-        deckGroup: deckGroup ?? this.deckGroup,
-        deckCardSort: deckCardSort ?? this.deckCardSort,
-        deckCardGroup: deckCardGroup ?? this.deckCardGroup,
-        compareCardSort: compareCardSort ?? this.compareCardSort,
-        apexResources: apexResources ?? this.apexResources,
-        cardGalleryView: cardGalleryView ?? this.cardGalleryView,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('SettingsData(')
-          ..write('id: $id, ')
-          ..write('filterFormatCode: $filterFormatCode, ')
-          ..write('filterRotationCode: $filterRotationCode, ')
-          ..write('filterMwlCode: $filterMwlCode, ')
-          ..write('filterCollection: $filterCollection, ')
-          ..write('cardSort: $cardSort, ')
-          ..write('cardGroup: $cardGroup, ')
-          ..write('deckSort: $deckSort, ')
-          ..write('deckGroup: $deckGroup, ')
-          ..write('deckCardSort: $deckCardSort, ')
-          ..write('deckCardGroup: $deckCardGroup, ')
-          ..write('compareCardSort: $compareCardSort, ')
-          ..write('apexResources: $apexResources, ')
-          ..write('cardGalleryView: $cardGalleryView')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(
-      id,
-      filterFormatCode,
-      filterRotationCode,
-      filterMwlCode,
-      filterCollection,
-      cardSort,
-      cardGroup,
-      deckSort,
-      deckGroup,
-      deckCardSort,
-      deckCardGroup,
-      compareCardSort,
-      apexResources,
-      cardGalleryView);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is SettingsData &&
-          other.id == this.id &&
-          other.filterFormatCode == this.filterFormatCode &&
-          other.filterRotationCode == this.filterRotationCode &&
-          other.filterMwlCode == this.filterMwlCode &&
-          other.filterCollection == this.filterCollection &&
-          other.cardSort == this.cardSort &&
-          other.cardGroup == this.cardGroup &&
-          other.deckSort == this.deckSort &&
-          other.deckGroup == this.deckGroup &&
-          other.deckCardSort == this.deckCardSort &&
-          other.deckCardGroup == this.deckCardGroup &&
-          other.compareCardSort == this.compareCardSort &&
-          other.apexResources == this.apexResources &&
-          other.cardGalleryView == this.cardGalleryView);
-}
-
-class SettingsCompanion extends UpdateCompanion<SettingsData> {
-  final Value<bool> id;
-  final Value<String?> filterFormatCode;
-  final Value<String?> filterRotationCode;
-  final Value<String?> filterMwlCode;
-  final Value<bool> filterCollection;
-  final Value<CardSort> cardSort;
-  final Value<CardGroup> cardGroup;
-  final Value<DeckSort> deckSort;
-  final Value<DeckGroup> deckGroup;
-  final Value<CardSort> deckCardSort;
-  final Value<CardGroup> deckCardGroup;
-  final Value<CardSort> compareCardSort;
-  final Value<bool> apexResources;
-  final Value<CardGalleryPageView> cardGalleryView;
-  const SettingsCompanion({
-    this.id = const Value.absent(),
-    this.filterFormatCode = const Value.absent(),
-    this.filterRotationCode = const Value.absent(),
-    this.filterMwlCode = const Value.absent(),
-    this.filterCollection = const Value.absent(),
-    this.cardSort = const Value.absent(),
-    this.cardGroup = const Value.absent(),
-    this.deckSort = const Value.absent(),
-    this.deckGroup = const Value.absent(),
-    this.deckCardSort = const Value.absent(),
-    this.deckCardGroup = const Value.absent(),
-    this.compareCardSort = const Value.absent(),
-    this.apexResources = const Value.absent(),
-    this.cardGalleryView = const Value.absent(),
-  });
-  SettingsCompanion.insert({
-    this.id = const Value.absent(),
-    this.filterFormatCode = const Value.absent(),
-    this.filterRotationCode = const Value.absent(),
-    this.filterMwlCode = const Value.absent(),
-    this.filterCollection = const Value.absent(),
-    this.cardSort = const Value.absent(),
-    this.cardGroup = const Value.absent(),
-    this.deckSort = const Value.absent(),
-    this.deckGroup = const Value.absent(),
-    this.deckCardSort = const Value.absent(),
-    this.deckCardGroup = const Value.absent(),
-    this.compareCardSort = const Value.absent(),
-    this.apexResources = const Value.absent(),
-    this.cardGalleryView = const Value.absent(),
-  });
-  static Insertable<SettingsData> custom({
-    Expression<bool>? id,
-    Expression<String>? filterFormatCode,
-    Expression<String>? filterRotationCode,
-    Expression<String>? filterMwlCode,
-    Expression<bool>? filterCollection,
-    Expression<String>? cardSort,
-    Expression<String>? cardGroup,
-    Expression<String>? deckSort,
-    Expression<String>? deckGroup,
-    Expression<String>? deckCardSort,
-    Expression<String>? deckCardGroup,
-    Expression<String>? compareCardSort,
-    Expression<bool>? apexResources,
-    Expression<String>? cardGalleryView,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (filterFormatCode != null) 'filter_format_code': filterFormatCode,
-      if (filterRotationCode != null)
-        'filter_rotation_code': filterRotationCode,
-      if (filterMwlCode != null) 'filter_mwl_code': filterMwlCode,
-      if (filterCollection != null) 'filter_collection': filterCollection,
-      if (cardSort != null) 'card_sort': cardSort,
-      if (cardGroup != null) 'card_group': cardGroup,
-      if (deckSort != null) 'deck_sort': deckSort,
-      if (deckGroup != null) 'deck_group': deckGroup,
-      if (deckCardSort != null) 'deck_card_sort': deckCardSort,
-      if (deckCardGroup != null) 'deck_card_group': deckCardGroup,
-      if (compareCardSort != null) 'compare_card_sort': compareCardSort,
-      if (apexResources != null) 'apex_resources': apexResources,
-      if (cardGalleryView != null) 'card_gallery_view': cardGalleryView,
-    });
-  }
-
-  SettingsCompanion copyWith(
-      {Value<bool>? id,
-      Value<String?>? filterFormatCode,
-      Value<String?>? filterRotationCode,
-      Value<String?>? filterMwlCode,
-      Value<bool>? filterCollection,
-      Value<CardSort>? cardSort,
-      Value<CardGroup>? cardGroup,
-      Value<DeckSort>? deckSort,
-      Value<DeckGroup>? deckGroup,
-      Value<CardSort>? deckCardSort,
-      Value<CardGroup>? deckCardGroup,
-      Value<CardSort>? compareCardSort,
-      Value<bool>? apexResources,
-      Value<CardGalleryPageView>? cardGalleryView}) {
-    return SettingsCompanion(
-      id: id ?? this.id,
-      filterFormatCode: filterFormatCode ?? this.filterFormatCode,
-      filterRotationCode: filterRotationCode ?? this.filterRotationCode,
-      filterMwlCode: filterMwlCode ?? this.filterMwlCode,
-      filterCollection: filterCollection ?? this.filterCollection,
-      cardSort: cardSort ?? this.cardSort,
-      cardGroup: cardGroup ?? this.cardGroup,
-      deckSort: deckSort ?? this.deckSort,
-      deckGroup: deckGroup ?? this.deckGroup,
-      deckCardSort: deckCardSort ?? this.deckCardSort,
-      deckCardGroup: deckCardGroup ?? this.deckCardGroup,
-      compareCardSort: compareCardSort ?? this.compareCardSort,
-      apexResources: apexResources ?? this.apexResources,
-      cardGalleryView: cardGalleryView ?? this.cardGalleryView,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<bool>(id.value);
-    }
-    if (filterFormatCode.present) {
-      map['filter_format_code'] = Variable<String>(filterFormatCode.value);
-    }
-    if (filterRotationCode.present) {
-      map['filter_rotation_code'] = Variable<String>(filterRotationCode.value);
-    }
-    if (filterMwlCode.present) {
-      map['filter_mwl_code'] = Variable<String>(filterMwlCode.value);
-    }
-    if (filterCollection.present) {
-      map['filter_collection'] = Variable<bool>(filterCollection.value);
-    }
-    if (cardSort.present) {
-      final converter = Settings.$convertercardSort;
-      map['card_sort'] = Variable<String>(converter.toSql(cardSort.value));
-    }
-    if (cardGroup.present) {
-      final converter = Settings.$convertercardGroup;
-      map['card_group'] = Variable<String>(converter.toSql(cardGroup.value));
-    }
-    if (deckSort.present) {
-      final converter = Settings.$converterdeckSort;
-      map['deck_sort'] = Variable<String>(converter.toSql(deckSort.value));
-    }
-    if (deckGroup.present) {
-      final converter = Settings.$converterdeckGroup;
-      map['deck_group'] = Variable<String>(converter.toSql(deckGroup.value));
-    }
-    if (deckCardSort.present) {
-      final converter = Settings.$converterdeckCardSort;
-      map['deck_card_sort'] =
-          Variable<String>(converter.toSql(deckCardSort.value));
-    }
-    if (deckCardGroup.present) {
-      final converter = Settings.$converterdeckCardGroup;
-      map['deck_card_group'] =
-          Variable<String>(converter.toSql(deckCardGroup.value));
-    }
-    if (compareCardSort.present) {
-      final converter = Settings.$convertercompareCardSort;
-      map['compare_card_sort'] =
-          Variable<String>(converter.toSql(compareCardSort.value));
-    }
-    if (apexResources.present) {
-      map['apex_resources'] = Variable<bool>(apexResources.value);
-    }
-    if (cardGalleryView.present) {
-      final converter = Settings.$convertercardGalleryView;
-      map['card_gallery_view'] =
-          Variable<String>(converter.toSql(cardGalleryView.value));
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('SettingsCompanion(')
-          ..write('id: $id, ')
-          ..write('filterFormatCode: $filterFormatCode, ')
-          ..write('filterRotationCode: $filterRotationCode, ')
-          ..write('filterMwlCode: $filterMwlCode, ')
-          ..write('filterCollection: $filterCollection, ')
-          ..write('cardSort: $cardSort, ')
-          ..write('cardGroup: $cardGroup, ')
-          ..write('deckSort: $deckSort, ')
-          ..write('deckGroup: $deckGroup, ')
-          ..write('deckCardSort: $deckCardSort, ')
-          ..write('deckCardGroup: $deckCardGroup, ')
-          ..write('compareCardSort: $compareCardSort, ')
-          ..write('apexResources: $apexResources, ')
-          ..write('cardGalleryView: $cardGalleryView')
-          ..write(')'))
-        .toString();
   }
 }
 
@@ -1197,107 +686,118 @@ class Settings extends Table with TableInfo<Settings, SettingsData> {
   bool get dontWriteConstraints => true;
 }
 
-class FormatData extends DataClass implements Insertable<FormatData> {
-  final int id;
-  final String code;
-  final String name;
-  const FormatData({required this.id, required this.code, required this.name});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['code'] = Variable<String>(code);
-    map['name'] = Variable<String>(name);
-    return map;
-  }
-
-  FormatCompanion toCompanion(bool nullToAbsent) {
-    return FormatCompanion(
-      id: Value(id),
-      code: Value(code),
-      name: Value(name),
-    );
-  }
-
-  factory FormatData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return FormatData(
-      id: serializer.fromJson<int>(json['id']),
-      code: serializer.fromJson<String>(json['code']),
-      name: serializer.fromJson<String>(json['name']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'code': serializer.toJson<String>(code),
-      'name': serializer.toJson<String>(name),
-    };
-  }
-
-  FormatData copyWith({int? id, String? code, String? name}) => FormatData(
-        id: id ?? this.id,
-        code: code ?? this.code,
-        name: name ?? this.name,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('FormatData(')
-          ..write('id: $id, ')
-          ..write('code: $code, ')
-          ..write('name: $name')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(id, code, name);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is FormatData &&
-          other.id == this.id &&
-          other.code == this.code &&
-          other.name == this.name);
-}
-
-class FormatCompanion extends UpdateCompanion<FormatData> {
-  final Value<int> id;
-  final Value<String> code;
-  final Value<String> name;
-  const FormatCompanion({
+class SettingsCompanion extends UpdateCompanion<SettingsData> {
+  final Value<bool> id;
+  final Value<String?> filterFormatCode;
+  final Value<String?> filterRotationCode;
+  final Value<String?> filterMwlCode;
+  final Value<bool> filterCollection;
+  final Value<CardSort> cardSort;
+  final Value<CardGroup> cardGroup;
+  final Value<DeckSort> deckSort;
+  final Value<DeckGroup> deckGroup;
+  final Value<CardSort> deckCardSort;
+  final Value<CardGroup> deckCardGroup;
+  final Value<CardSort> compareCardSort;
+  final Value<bool> apexResources;
+  final Value<CardGalleryPageView> cardGalleryView;
+  const SettingsCompanion({
     this.id = const Value.absent(),
-    this.code = const Value.absent(),
-    this.name = const Value.absent(),
+    this.filterFormatCode = const Value.absent(),
+    this.filterRotationCode = const Value.absent(),
+    this.filterMwlCode = const Value.absent(),
+    this.filterCollection = const Value.absent(),
+    this.cardSort = const Value.absent(),
+    this.cardGroup = const Value.absent(),
+    this.deckSort = const Value.absent(),
+    this.deckGroup = const Value.absent(),
+    this.deckCardSort = const Value.absent(),
+    this.deckCardGroup = const Value.absent(),
+    this.compareCardSort = const Value.absent(),
+    this.apexResources = const Value.absent(),
+    this.cardGalleryView = const Value.absent(),
   });
-  FormatCompanion.insert({
-    required int id,
-    required String code,
-    required String name,
-  })  : id = Value(id),
-        code = Value(code),
-        name = Value(name);
-  static Insertable<FormatData> custom({
-    Expression<int>? id,
-    Expression<String>? code,
-    Expression<String>? name,
+  SettingsCompanion.insert({
+    this.id = const Value.absent(),
+    this.filterFormatCode = const Value.absent(),
+    this.filterRotationCode = const Value.absent(),
+    this.filterMwlCode = const Value.absent(),
+    this.filterCollection = const Value.absent(),
+    this.cardSort = const Value.absent(),
+    this.cardGroup = const Value.absent(),
+    this.deckSort = const Value.absent(),
+    this.deckGroup = const Value.absent(),
+    this.deckCardSort = const Value.absent(),
+    this.deckCardGroup = const Value.absent(),
+    this.compareCardSort = const Value.absent(),
+    this.apexResources = const Value.absent(),
+    this.cardGalleryView = const Value.absent(),
+  });
+  static Insertable<SettingsData> custom({
+    Expression<bool>? id,
+    Expression<String>? filterFormatCode,
+    Expression<String>? filterRotationCode,
+    Expression<String>? filterMwlCode,
+    Expression<bool>? filterCollection,
+    Expression<String>? cardSort,
+    Expression<String>? cardGroup,
+    Expression<String>? deckSort,
+    Expression<String>? deckGroup,
+    Expression<String>? deckCardSort,
+    Expression<String>? deckCardGroup,
+    Expression<String>? compareCardSort,
+    Expression<bool>? apexResources,
+    Expression<String>? cardGalleryView,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (code != null) 'code': code,
-      if (name != null) 'name': name,
+      if (filterFormatCode != null) 'filter_format_code': filterFormatCode,
+      if (filterRotationCode != null)
+        'filter_rotation_code': filterRotationCode,
+      if (filterMwlCode != null) 'filter_mwl_code': filterMwlCode,
+      if (filterCollection != null) 'filter_collection': filterCollection,
+      if (cardSort != null) 'card_sort': cardSort,
+      if (cardGroup != null) 'card_group': cardGroup,
+      if (deckSort != null) 'deck_sort': deckSort,
+      if (deckGroup != null) 'deck_group': deckGroup,
+      if (deckCardSort != null) 'deck_card_sort': deckCardSort,
+      if (deckCardGroup != null) 'deck_card_group': deckCardGroup,
+      if (compareCardSort != null) 'compare_card_sort': compareCardSort,
+      if (apexResources != null) 'apex_resources': apexResources,
+      if (cardGalleryView != null) 'card_gallery_view': cardGalleryView,
     });
   }
 
-  FormatCompanion copyWith(
-      {Value<int>? id, Value<String>? code, Value<String>? name}) {
-    return FormatCompanion(
+  SettingsCompanion copyWith(
+      {Value<bool>? id,
+      Value<String?>? filterFormatCode,
+      Value<String?>? filterRotationCode,
+      Value<String?>? filterMwlCode,
+      Value<bool>? filterCollection,
+      Value<CardSort>? cardSort,
+      Value<CardGroup>? cardGroup,
+      Value<DeckSort>? deckSort,
+      Value<DeckGroup>? deckGroup,
+      Value<CardSort>? deckCardSort,
+      Value<CardGroup>? deckCardGroup,
+      Value<CardSort>? compareCardSort,
+      Value<bool>? apexResources,
+      Value<CardGalleryPageView>? cardGalleryView}) {
+    return SettingsCompanion(
       id: id ?? this.id,
-      code: code ?? this.code,
-      name: name ?? this.name,
+      filterFormatCode: filterFormatCode ?? this.filterFormatCode,
+      filterRotationCode: filterRotationCode ?? this.filterRotationCode,
+      filterMwlCode: filterMwlCode ?? this.filterMwlCode,
+      filterCollection: filterCollection ?? this.filterCollection,
+      cardSort: cardSort ?? this.cardSort,
+      cardGroup: cardGroup ?? this.cardGroup,
+      deckSort: deckSort ?? this.deckSort,
+      deckGroup: deckGroup ?? this.deckGroup,
+      deckCardSort: deckCardSort ?? this.deckCardSort,
+      deckCardGroup: deckCardGroup ?? this.deckCardGroup,
+      compareCardSort: compareCardSort ?? this.compareCardSort,
+      apexResources: apexResources ?? this.apexResources,
+      cardGalleryView: cardGalleryView ?? this.cardGalleryView,
     );
   }
 
@@ -1305,25 +805,95 @@ class FormatCompanion extends UpdateCompanion<FormatData> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     if (id.present) {
-      map['id'] = Variable<int>(id.value);
+      map['id'] = Variable<bool>(id.value);
     }
-    if (code.present) {
-      map['code'] = Variable<String>(code.value);
+    if (filterFormatCode.present) {
+      map['filter_format_code'] = Variable<String>(filterFormatCode.value);
     }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
+    if (filterRotationCode.present) {
+      map['filter_rotation_code'] = Variable<String>(filterRotationCode.value);
+    }
+    if (filterMwlCode.present) {
+      map['filter_mwl_code'] = Variable<String>(filterMwlCode.value);
+    }
+    if (filterCollection.present) {
+      map['filter_collection'] = Variable<bool>(filterCollection.value);
+    }
+    if (cardSort.present) {
+      final converter = Settings.$convertercardSort;
+      map['card_sort'] = Variable<String>(converter.toSql(cardSort.value));
+    }
+    if (cardGroup.present) {
+      final converter = Settings.$convertercardGroup;
+      map['card_group'] = Variable<String>(converter.toSql(cardGroup.value));
+    }
+    if (deckSort.present) {
+      final converter = Settings.$converterdeckSort;
+      map['deck_sort'] = Variable<String>(converter.toSql(deckSort.value));
+    }
+    if (deckGroup.present) {
+      final converter = Settings.$converterdeckGroup;
+      map['deck_group'] = Variable<String>(converter.toSql(deckGroup.value));
+    }
+    if (deckCardSort.present) {
+      final converter = Settings.$converterdeckCardSort;
+      map['deck_card_sort'] =
+          Variable<String>(converter.toSql(deckCardSort.value));
+    }
+    if (deckCardGroup.present) {
+      final converter = Settings.$converterdeckCardGroup;
+      map['deck_card_group'] =
+          Variable<String>(converter.toSql(deckCardGroup.value));
+    }
+    if (compareCardSort.present) {
+      final converter = Settings.$convertercompareCardSort;
+      map['compare_card_sort'] =
+          Variable<String>(converter.toSql(compareCardSort.value));
+    }
+    if (apexResources.present) {
+      map['apex_resources'] = Variable<bool>(apexResources.value);
+    }
+    if (cardGalleryView.present) {
+      final converter = Settings.$convertercardGalleryView;
+      map['card_gallery_view'] =
+          Variable<String>(converter.toSql(cardGalleryView.value));
     }
     return map;
   }
 
   @override
   String toString() {
-    return (StringBuffer('FormatCompanion(')
+    return (StringBuffer('SettingsCompanion(')
           ..write('id: $id, ')
-          ..write('code: $code, ')
-          ..write('name: $name')
+          ..write('filterFormatCode: $filterFormatCode, ')
+          ..write('filterRotationCode: $filterRotationCode, ')
+          ..write('filterMwlCode: $filterMwlCode, ')
+          ..write('filterCollection: $filterCollection, ')
+          ..write('cardSort: $cardSort, ')
+          ..write('cardGroup: $cardGroup, ')
+          ..write('deckSort: $deckSort, ')
+          ..write('deckGroup: $deckGroup, ')
+          ..write('deckCardSort: $deckCardSort, ')
+          ..write('deckCardGroup: $deckCardGroup, ')
+          ..write('compareCardSort: $compareCardSort, ')
+          ..write('apexResources: $apexResources, ')
+          ..write('cardGalleryView: $cardGalleryView')
           ..write(')'))
         .toString();
+  }
+}
+
+mixin FormatToColumns implements Insertable<FormatData> {
+  int get id;
+  String get code;
+  String get name;
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['code'] = Variable<String>(code);
+    map['name'] = Variable<String>(name);
+    return map;
   }
 }
 
@@ -1405,16 +975,74 @@ class Format extends Table with TableInfo<Format, FormatData> {
   bool get dontWriteConstraints => true;
 }
 
-class RotationData extends DataClass implements Insertable<RotationData> {
-  final String code;
-  final String formatCode;
-  final String name;
-  final DateTime? dateStart;
-  const RotationData(
-      {required this.code,
-      required this.formatCode,
-      required this.name,
-      this.dateStart});
+class FormatCompanion extends UpdateCompanion<FormatData> {
+  final Value<int> id;
+  final Value<String> code;
+  final Value<String> name;
+  const FormatCompanion({
+    this.id = const Value.absent(),
+    this.code = const Value.absent(),
+    this.name = const Value.absent(),
+  });
+  FormatCompanion.insert({
+    required int id,
+    required String code,
+    required String name,
+  })  : id = Value(id),
+        code = Value(code),
+        name = Value(name);
+  static Insertable<FormatData> custom({
+    Expression<int>? id,
+    Expression<String>? code,
+    Expression<String>? name,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (code != null) 'code': code,
+      if (name != null) 'name': name,
+    });
+  }
+
+  FormatCompanion copyWith(
+      {Value<int>? id, Value<String>? code, Value<String>? name}) {
+    return FormatCompanion(
+      id: id ?? this.id,
+      code: code ?? this.code,
+      name: name ?? this.name,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FormatCompanion(')
+          ..write('id: $id, ')
+          ..write('code: $code, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
+}
+
+mixin RotationToColumns implements Insertable<RotationData> {
+  String get code;
+  String get formatCode;
+  String get name;
+  DateTime? get dateStart;
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -1425,147 +1053,6 @@ class RotationData extends DataClass implements Insertable<RotationData> {
       map['date_start'] = Variable<DateTime>(dateStart);
     }
     return map;
-  }
-
-  RotationCompanion toCompanion(bool nullToAbsent) {
-    return RotationCompanion(
-      code: Value(code),
-      formatCode: Value(formatCode),
-      name: Value(name),
-      dateStart: dateStart == null && nullToAbsent
-          ? const Value.absent()
-          : Value(dateStart),
-    );
-  }
-
-  factory RotationData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return RotationData(
-      code: serializer.fromJson<String>(json['code']),
-      formatCode: serializer.fromJson<String>(json['format_code']),
-      name: serializer.fromJson<String>(json['name']),
-      dateStart: serializer.fromJson<DateTime?>(json['date_start']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'code': serializer.toJson<String>(code),
-      'format_code': serializer.toJson<String>(formatCode),
-      'name': serializer.toJson<String>(name),
-      'date_start': serializer.toJson<DateTime?>(dateStart),
-    };
-  }
-
-  RotationData copyWith(
-          {String? code,
-          String? formatCode,
-          String? name,
-          Value<DateTime?> dateStart = const Value.absent()}) =>
-      RotationData(
-        code: code ?? this.code,
-        formatCode: formatCode ?? this.formatCode,
-        name: name ?? this.name,
-        dateStart: dateStart.present ? dateStart.value : this.dateStart,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('RotationData(')
-          ..write('code: $code, ')
-          ..write('formatCode: $formatCode, ')
-          ..write('name: $name, ')
-          ..write('dateStart: $dateStart')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(code, formatCode, name, dateStart);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is RotationData &&
-          other.code == this.code &&
-          other.formatCode == this.formatCode &&
-          other.name == this.name &&
-          other.dateStart == this.dateStart);
-}
-
-class RotationCompanion extends UpdateCompanion<RotationData> {
-  final Value<String> code;
-  final Value<String> formatCode;
-  final Value<String> name;
-  final Value<DateTime?> dateStart;
-  const RotationCompanion({
-    this.code = const Value.absent(),
-    this.formatCode = const Value.absent(),
-    this.name = const Value.absent(),
-    this.dateStart = const Value.absent(),
-  });
-  RotationCompanion.insert({
-    required String code,
-    required String formatCode,
-    required String name,
-    this.dateStart = const Value.absent(),
-  })  : code = Value(code),
-        formatCode = Value(formatCode),
-        name = Value(name);
-  static Insertable<RotationData> custom({
-    Expression<String>? code,
-    Expression<String>? formatCode,
-    Expression<String>? name,
-    Expression<DateTime>? dateStart,
-  }) {
-    return RawValuesInsertable({
-      if (code != null) 'code': code,
-      if (formatCode != null) 'format_code': formatCode,
-      if (name != null) 'name': name,
-      if (dateStart != null) 'date_start': dateStart,
-    });
-  }
-
-  RotationCompanion copyWith(
-      {Value<String>? code,
-      Value<String>? formatCode,
-      Value<String>? name,
-      Value<DateTime?>? dateStart}) {
-    return RotationCompanion(
-      code: code ?? this.code,
-      formatCode: formatCode ?? this.formatCode,
-      name: name ?? this.name,
-      dateStart: dateStart ?? this.dateStart,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (code.present) {
-      map['code'] = Variable<String>(code.value);
-    }
-    if (formatCode.present) {
-      map['format_code'] = Variable<String>(formatCode.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    if (dateStart.present) {
-      map['date_start'] = Variable<DateTime>(dateStart.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('RotationCompanion(')
-          ..write('code: $code, ')
-          ..write('formatCode: $formatCode, ')
-          ..write('name: $name, ')
-          ..write('dateStart: $dateStart')
-          ..write(')'))
-        .toString();
   }
 }
 
@@ -1664,368 +1151,49 @@ class Rotation extends Table with TableInfo<Rotation, RotationData> {
   bool get dontWriteConstraints => true;
 }
 
-class RotationViewData extends DataClass {
-  final String code;
-  final String formatCode;
-  final String? rotationCode;
-  final String name;
-  final DateTime? dateStart;
-  final String? type;
-  final int id;
-  final String code1;
-  final String name1;
-  const RotationViewData(
-      {required this.code,
-      required this.formatCode,
-      this.rotationCode,
-      required this.name,
-      this.dateStart,
-      this.type,
-      required this.id,
-      required this.code1,
-      required this.name1});
-  factory RotationViewData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return RotationViewData(
-      code: serializer.fromJson<String>(json['code']),
-      formatCode: serializer.fromJson<String>(json['format_code']),
-      rotationCode: serializer.fromJson<String?>(json['rotation_code']),
-      name: serializer.fromJson<String>(json['name']),
-      dateStart: serializer.fromJson<DateTime?>(json['date_start']),
-      type: serializer.fromJson<String?>(json['type']),
-      id: serializer.fromJson<int>(json['id']),
-      code1: serializer.fromJson<String>(json['code']),
-      name1: serializer.fromJson<String>(json['name']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'code': serializer.toJson<String>(code),
-      'format_code': serializer.toJson<String>(formatCode),
-      'rotation_code': serializer.toJson<String?>(rotationCode),
-      'name': serializer.toJson<String>(name),
-      'date_start': serializer.toJson<DateTime?>(dateStart),
-      'type': serializer.toJson<String?>(type),
-      'id': serializer.toJson<int>(id),
-      'code': serializer.toJson<String>(code1),
-      'name': serializer.toJson<String>(name1),
-    };
-  }
-
-  RotationViewData copyWith(
-          {String? code,
-          String? formatCode,
-          Value<String?> rotationCode = const Value.absent(),
-          String? name,
-          Value<DateTime?> dateStart = const Value.absent(),
-          Value<String?> type = const Value.absent(),
-          int? id,
-          String? code1,
-          String? name1}) =>
-      RotationViewData(
-        code: code ?? this.code,
-        formatCode: formatCode ?? this.formatCode,
-        rotationCode:
-            rotationCode.present ? rotationCode.value : this.rotationCode,
-        name: name ?? this.name,
-        dateStart: dateStart.present ? dateStart.value : this.dateStart,
-        type: type.present ? type.value : this.type,
-        id: id ?? this.id,
-        code1: code1 ?? this.code1,
-        name1: name1 ?? this.name1,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('RotationViewData(')
-          ..write('code: $code, ')
-          ..write('formatCode: $formatCode, ')
-          ..write('rotationCode: $rotationCode, ')
-          ..write('name: $name, ')
-          ..write('dateStart: $dateStart, ')
-          ..write('type: $type, ')
-          ..write('id: $id, ')
-          ..write('code1: $code1, ')
-          ..write('name1: $name1')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(
-      code, formatCode, rotationCode, name, dateStart, type, id, code1, name1);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is RotationViewData &&
-          other.code == this.code &&
-          other.formatCode == this.formatCode &&
-          other.rotationCode == this.rotationCode &&
-          other.name == this.name &&
-          other.dateStart == this.dateStart &&
-          other.type == this.type &&
-          other.id == this.id &&
-          other.code1 == this.code1 &&
-          other.name1 == this.name1);
-}
-
-class RotationView extends ViewInfo<RotationView, RotationViewData>
-    implements HasResultSet {
-  final String? _alias;
-  @override
-  final _$Database attachedDatabase;
-  RotationView(this.attachedDatabase, [this._alias]);
-  @override
-  List<GeneratedColumn> get $columns =>
-      [code, formatCode, rotationCode, name, dateStart, type, id, code1, name1];
-  @override
-  String get aliasedName => _alias ?? entityName;
-  @override
-  String get entityName => 'rotation_view';
-  @override
-  String get createViewStmt =>
-      'CREATE VIEW rotation_view AS SELECT * FROM (SELECT format.code || \'@current\' AS code, format.code AS format_code, rotation.code AS rotation_code, format.name || \' Current (\' || COALESCE(rotation.name, \'None\') || \')\' AS name, rotation.date_start, \'current\' AS type FROM format LEFT JOIN (SELECT *, MAX(date_start) FROM rotation WHERE DATE(date_start) <= DATE(\'NOW\') GROUP BY rotation.format_code) AS rotation ON rotation.format_code = format.code UNION ALL SELECT format.code || \'@latest\' AS code, format.code AS format_code, rotation.code AS rotation_code, format.name || \' Latest (\' || COALESCE(rotation.name, \'None\') || \')\' AS name, rotation.date_start, \'latest\' AS type FROM format LEFT JOIN (SELECT *, MAX(date_start) FROM rotation GROUP BY rotation.format_code) AS rotation ON rotation.format_code = format.code UNION ALL SELECT rotation.code, rotation.format_code, rotation.code, rotation.name, rotation.date_start, NULL AS type FROM rotation) AS rotation INNER JOIN format ON format.code = rotation.format_code ORDER BY format.id, rotation.type DESC NULLS LAST, rotation.date_start DESC';
-  @override
-  RotationView get asDslTable => this;
-  @override
-  RotationViewData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return RotationViewData(
-      code: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
-      formatCode: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}format_code'])!,
-      rotationCode: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}rotation_code']),
-      name: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      dateStart: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}date_start']),
-      type: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}type']),
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      code1: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
-      name1: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-    );
-  }
-
-  late final GeneratedColumn<String> code = GeneratedColumn<String>(
-      'code', aliasedName, false,
-      type: DriftSqlType.string);
-  late final GeneratedColumn<String> formatCode = GeneratedColumn<String>(
-      'format_code', aliasedName, false,
-      type: DriftSqlType.string);
-  late final GeneratedColumn<String> rotationCode = GeneratedColumn<String>(
-      'rotation_code', aliasedName, true,
-      type: DriftSqlType.string);
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-      'name', aliasedName, false,
-      type: DriftSqlType.string);
-  late final GeneratedColumn<DateTime> dateStart = GeneratedColumn<DateTime>(
-      'date_start', aliasedName, true,
-      type: DriftSqlType.dateTime);
-  late final GeneratedColumn<String> type = GeneratedColumn<String>(
-      'type', aliasedName, true,
-      type: DriftSqlType.string);
-  late final GeneratedColumn<int> id =
-      GeneratedColumn<int>('id', aliasedName, false, type: DriftSqlType.int);
-  late final GeneratedColumn<String> code1 = GeneratedColumn<String>(
-      'code', aliasedName, false,
-      type: DriftSqlType.string);
-  late final GeneratedColumn<String> name1 = GeneratedColumn<String>(
-      'name', aliasedName, false,
-      type: DriftSqlType.string);
-  @override
-  RotationView createAlias(String alias) {
-    return RotationView(attachedDatabase, alias);
-  }
-
-  @override
-  Query? get query => null;
-  @override
-  Set<String> get readTables => const {'format', 'rotation'};
-}
-
-class MwlData extends DataClass implements Insertable<MwlData> {
-  final String code;
-  final String formatCode;
-  final String name;
-  final DateTime? dateStart;
-  final int? runnerPoints;
-  final int? corpPoints;
-  const MwlData(
-      {required this.code,
-      required this.formatCode,
-      required this.name,
-      this.dateStart,
-      this.runnerPoints,
-      this.corpPoints});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['code'] = Variable<String>(code);
-    map['format_code'] = Variable<String>(formatCode);
-    map['name'] = Variable<String>(name);
-    if (!nullToAbsent || dateStart != null) {
-      map['date_start'] = Variable<DateTime>(dateStart);
-    }
-    if (!nullToAbsent || runnerPoints != null) {
-      map['runner_points'] = Variable<int>(runnerPoints);
-    }
-    if (!nullToAbsent || corpPoints != null) {
-      map['corp_points'] = Variable<int>(corpPoints);
-    }
-    return map;
-  }
-
-  MwlCompanion toCompanion(bool nullToAbsent) {
-    return MwlCompanion(
-      code: Value(code),
-      formatCode: Value(formatCode),
-      name: Value(name),
-      dateStart: dateStart == null && nullToAbsent
-          ? const Value.absent()
-          : Value(dateStart),
-      runnerPoints: runnerPoints == null && nullToAbsent
-          ? const Value.absent()
-          : Value(runnerPoints),
-      corpPoints: corpPoints == null && nullToAbsent
-          ? const Value.absent()
-          : Value(corpPoints),
-    );
-  }
-
-  factory MwlData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return MwlData(
-      code: serializer.fromJson<String>(json['code']),
-      formatCode: serializer.fromJson<String>(json['format_code']),
-      name: serializer.fromJson<String>(json['name']),
-      dateStart: serializer.fromJson<DateTime?>(json['date_start']),
-      runnerPoints: serializer.fromJson<int?>(json['runner_points']),
-      corpPoints: serializer.fromJson<int?>(json['corp_points']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'code': serializer.toJson<String>(code),
-      'format_code': serializer.toJson<String>(formatCode),
-      'name': serializer.toJson<String>(name),
-      'date_start': serializer.toJson<DateTime?>(dateStart),
-      'runner_points': serializer.toJson<int?>(runnerPoints),
-      'corp_points': serializer.toJson<int?>(corpPoints),
-    };
-  }
-
-  MwlData copyWith(
-          {String? code,
-          String? formatCode,
-          String? name,
-          Value<DateTime?> dateStart = const Value.absent(),
-          Value<int?> runnerPoints = const Value.absent(),
-          Value<int?> corpPoints = const Value.absent()}) =>
-      MwlData(
-        code: code ?? this.code,
-        formatCode: formatCode ?? this.formatCode,
-        name: name ?? this.name,
-        dateStart: dateStart.present ? dateStart.value : this.dateStart,
-        runnerPoints:
-            runnerPoints.present ? runnerPoints.value : this.runnerPoints,
-        corpPoints: corpPoints.present ? corpPoints.value : this.corpPoints,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('MwlData(')
-          ..write('code: $code, ')
-          ..write('formatCode: $formatCode, ')
-          ..write('name: $name, ')
-          ..write('dateStart: $dateStart, ')
-          ..write('runnerPoints: $runnerPoints, ')
-          ..write('corpPoints: $corpPoints')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode =>
-      Object.hash(code, formatCode, name, dateStart, runnerPoints, corpPoints);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is MwlData &&
-          other.code == this.code &&
-          other.formatCode == this.formatCode &&
-          other.name == this.name &&
-          other.dateStart == this.dateStart &&
-          other.runnerPoints == this.runnerPoints &&
-          other.corpPoints == this.corpPoints);
-}
-
-class MwlCompanion extends UpdateCompanion<MwlData> {
+class RotationCompanion extends UpdateCompanion<RotationData> {
   final Value<String> code;
   final Value<String> formatCode;
   final Value<String> name;
   final Value<DateTime?> dateStart;
-  final Value<int?> runnerPoints;
-  final Value<int?> corpPoints;
-  const MwlCompanion({
+  const RotationCompanion({
     this.code = const Value.absent(),
     this.formatCode = const Value.absent(),
     this.name = const Value.absent(),
     this.dateStart = const Value.absent(),
-    this.runnerPoints = const Value.absent(),
-    this.corpPoints = const Value.absent(),
   });
-  MwlCompanion.insert({
+  RotationCompanion.insert({
     required String code,
     required String formatCode,
     required String name,
     this.dateStart = const Value.absent(),
-    this.runnerPoints = const Value.absent(),
-    this.corpPoints = const Value.absent(),
   })  : code = Value(code),
         formatCode = Value(formatCode),
         name = Value(name);
-  static Insertable<MwlData> custom({
+  static Insertable<RotationData> custom({
     Expression<String>? code,
     Expression<String>? formatCode,
     Expression<String>? name,
     Expression<DateTime>? dateStart,
-    Expression<int>? runnerPoints,
-    Expression<int>? corpPoints,
   }) {
     return RawValuesInsertable({
       if (code != null) 'code': code,
       if (formatCode != null) 'format_code': formatCode,
       if (name != null) 'name': name,
       if (dateStart != null) 'date_start': dateStart,
-      if (runnerPoints != null) 'runner_points': runnerPoints,
-      if (corpPoints != null) 'corp_points': corpPoints,
     });
   }
 
-  MwlCompanion copyWith(
+  RotationCompanion copyWith(
       {Value<String>? code,
       Value<String>? formatCode,
       Value<String>? name,
-      Value<DateTime?>? dateStart,
-      Value<int?>? runnerPoints,
-      Value<int?>? corpPoints}) {
-    return MwlCompanion(
+      Value<DateTime?>? dateStart}) {
+    return RotationCompanion(
       code: code ?? this.code,
       formatCode: formatCode ?? this.formatCode,
       name: name ?? this.name,
       dateStart: dateStart ?? this.dateStart,
-      runnerPoints: runnerPoints ?? this.runnerPoints,
-      corpPoints: corpPoints ?? this.corpPoints,
     );
   }
 
@@ -2044,26 +1212,110 @@ class MwlCompanion extends UpdateCompanion<MwlData> {
     if (dateStart.present) {
       map['date_start'] = Variable<DateTime>(dateStart.value);
     }
-    if (runnerPoints.present) {
-      map['runner_points'] = Variable<int>(runnerPoints.value);
-    }
-    if (corpPoints.present) {
-      map['corp_points'] = Variable<int>(corpPoints.value);
-    }
     return map;
   }
 
   @override
   String toString() {
-    return (StringBuffer('MwlCompanion(')
+    return (StringBuffer('RotationCompanion(')
           ..write('code: $code, ')
           ..write('formatCode: $formatCode, ')
           ..write('name: $name, ')
-          ..write('dateStart: $dateStart, ')
-          ..write('runnerPoints: $runnerPoints, ')
-          ..write('corpPoints: $corpPoints')
+          ..write('dateStart: $dateStart')
           ..write(')'))
         .toString();
+  }
+}
+
+class RotationView extends ViewInfo<RotationView, RotationViewData>
+    implements HasResultSet {
+  final String? _alias;
+  @override
+  final _$Database attachedDatabase;
+  RotationView(this.attachedDatabase, [this._alias]);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [code, rotationCode, formatCode, name, dateStart, type];
+  @override
+  String get aliasedName => _alias ?? entityName;
+  @override
+  String get entityName => 'rotation_view';
+  @override
+  String get createViewStmt =>
+      'CREATE VIEW rotation_view (code,rotation_code,format_code,name,date_start,type) AS SELECT rotation.* FROM (SELECT format.code || \'@current\' AS code, rotation.code AS rotation_code, format.code AS format_code, format.name || \' Current (\' || COALESCE(rotation.name, \'None\') || \')\' AS name, rotation.date_start, \'current\' AS type FROM format LEFT JOIN (SELECT *, MAX(date_start) FROM rotation WHERE DATE(date_start) <= DATE(\'NOW\') GROUP BY rotation.format_code) AS rotation ON rotation.format_code = format.code UNION ALL SELECT format.code || \'@latest\' AS code, rotation.code AS rotation_code, format.code AS format_code, format.name || \' Latest (\' || COALESCE(rotation.name, \'None\') || \')\' AS name, rotation.date_start, \'latest\' AS type FROM format LEFT JOIN (SELECT *, MAX(date_start) FROM rotation GROUP BY rotation.format_code) AS rotation ON rotation.format_code = format.code UNION ALL SELECT rotation.code, rotation.code AS rotation_code, rotation.format_code, rotation.name, rotation.date_start, NULL AS type FROM rotation) AS rotation INNER JOIN format ON format.code = rotation.format_code ORDER BY format.id, rotation.type DESC NULLS LAST, rotation.date_start DESC';
+  @override
+  RotationView get asDslTable => this;
+  @override
+  RotationViewData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RotationViewData(
+      code: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
+      rotationCode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}rotation_code']),
+      formatCode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}format_code'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      dateStart: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}date_start']),
+      type: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}type']),
+    );
+  }
+
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+      'code', aliasedName, false,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<String> rotationCode = GeneratedColumn<String>(
+      'rotation_code', aliasedName, true,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<String> formatCode = GeneratedColumn<String>(
+      'format_code', aliasedName, false,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<DateTime> dateStart = GeneratedColumn<DateTime>(
+      'date_start', aliasedName, true,
+      type: DriftSqlType.dateTime);
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+      'type', aliasedName, true,
+      type: DriftSqlType.string);
+  @override
+  RotationView createAlias(String alias) {
+    return RotationView(attachedDatabase, alias);
+  }
+
+  @override
+  Query? get query => null;
+  @override
+  Set<String> get readTables => const {'format', 'rotation'};
+}
+
+mixin MwlToColumns implements Insertable<MwlData> {
+  String get code;
+  String get formatCode;
+  String get name;
+  DateTime? get dateStart;
+  int? get runnerPoints;
+  int? get corpPoints;
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['code'] = Variable<String>(code);
+    map['format_code'] = Variable<String>(formatCode);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || dateStart != null) {
+      map['date_start'] = Variable<DateTime>(dateStart);
+    }
+    if (!nullToAbsent || runnerPoints != null) {
+      map['runner_points'] = Variable<int>(runnerPoints);
+    }
+    if (!nullToAbsent || corpPoints != null) {
+      map['corp_points'] = Variable<int>(corpPoints);
+    }
+    return map;
   }
 }
 
@@ -2193,127 +1445,102 @@ class Mwl extends Table with TableInfo<Mwl, MwlData> {
   bool get dontWriteConstraints => true;
 }
 
-class MwlViewData extends DataClass {
-  final String code;
-  final String formatCode;
-  final String? mwlCode;
-  final String name;
-  final DateTime? dateStart;
-  final int? runnerPoints;
-  final int? corpPoints;
-  final String? type;
-  final int id;
-  final String code1;
-  final String name1;
-  const MwlViewData(
-      {required this.code,
-      required this.formatCode,
-      this.mwlCode,
-      required this.name,
-      this.dateStart,
-      this.runnerPoints,
-      this.corpPoints,
-      this.type,
-      required this.id,
-      required this.code1,
-      required this.name1});
-  factory MwlViewData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return MwlViewData(
-      code: serializer.fromJson<String>(json['code']),
-      formatCode: serializer.fromJson<String>(json['format_code']),
-      mwlCode: serializer.fromJson<String?>(json['mwl_code']),
-      name: serializer.fromJson<String>(json['name']),
-      dateStart: serializer.fromJson<DateTime?>(json['date_start']),
-      runnerPoints: serializer.fromJson<int?>(json['runner_points']),
-      corpPoints: serializer.fromJson<int?>(json['corp_points']),
-      type: serializer.fromJson<String?>(json['type']),
-      id: serializer.fromJson<int>(json['id']),
-      code1: serializer.fromJson<String>(json['code']),
-      name1: serializer.fromJson<String>(json['name']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'code': serializer.toJson<String>(code),
-      'format_code': serializer.toJson<String>(formatCode),
-      'mwl_code': serializer.toJson<String?>(mwlCode),
-      'name': serializer.toJson<String>(name),
-      'date_start': serializer.toJson<DateTime?>(dateStart),
-      'runner_points': serializer.toJson<int?>(runnerPoints),
-      'corp_points': serializer.toJson<int?>(corpPoints),
-      'type': serializer.toJson<String?>(type),
-      'id': serializer.toJson<int>(id),
-      'code': serializer.toJson<String>(code1),
-      'name': serializer.toJson<String>(name1),
-    };
+class MwlCompanion extends UpdateCompanion<MwlData> {
+  final Value<String> code;
+  final Value<String> formatCode;
+  final Value<String> name;
+  final Value<DateTime?> dateStart;
+  final Value<int?> runnerPoints;
+  final Value<int?> corpPoints;
+  const MwlCompanion({
+    this.code = const Value.absent(),
+    this.formatCode = const Value.absent(),
+    this.name = const Value.absent(),
+    this.dateStart = const Value.absent(),
+    this.runnerPoints = const Value.absent(),
+    this.corpPoints = const Value.absent(),
+  });
+  MwlCompanion.insert({
+    required String code,
+    required String formatCode,
+    required String name,
+    this.dateStart = const Value.absent(),
+    this.runnerPoints = const Value.absent(),
+    this.corpPoints = const Value.absent(),
+  })  : code = Value(code),
+        formatCode = Value(formatCode),
+        name = Value(name);
+  static Insertable<MwlData> custom({
+    Expression<String>? code,
+    Expression<String>? formatCode,
+    Expression<String>? name,
+    Expression<DateTime>? dateStart,
+    Expression<int>? runnerPoints,
+    Expression<int>? corpPoints,
+  }) {
+    return RawValuesInsertable({
+      if (code != null) 'code': code,
+      if (formatCode != null) 'format_code': formatCode,
+      if (name != null) 'name': name,
+      if (dateStart != null) 'date_start': dateStart,
+      if (runnerPoints != null) 'runner_points': runnerPoints,
+      if (corpPoints != null) 'corp_points': corpPoints,
+    });
   }
 
-  MwlViewData copyWith(
-          {String? code,
-          String? formatCode,
-          Value<String?> mwlCode = const Value.absent(),
-          String? name,
-          Value<DateTime?> dateStart = const Value.absent(),
-          Value<int?> runnerPoints = const Value.absent(),
-          Value<int?> corpPoints = const Value.absent(),
-          Value<String?> type = const Value.absent(),
-          int? id,
-          String? code1,
-          String? name1}) =>
-      MwlViewData(
-        code: code ?? this.code,
-        formatCode: formatCode ?? this.formatCode,
-        mwlCode: mwlCode.present ? mwlCode.value : this.mwlCode,
-        name: name ?? this.name,
-        dateStart: dateStart.present ? dateStart.value : this.dateStart,
-        runnerPoints:
-            runnerPoints.present ? runnerPoints.value : this.runnerPoints,
-        corpPoints: corpPoints.present ? corpPoints.value : this.corpPoints,
-        type: type.present ? type.value : this.type,
-        id: id ?? this.id,
-        code1: code1 ?? this.code1,
-        name1: name1 ?? this.name1,
-      );
+  MwlCompanion copyWith(
+      {Value<String>? code,
+      Value<String>? formatCode,
+      Value<String>? name,
+      Value<DateTime?>? dateStart,
+      Value<int?>? runnerPoints,
+      Value<int?>? corpPoints}) {
+    return MwlCompanion(
+      code: code ?? this.code,
+      formatCode: formatCode ?? this.formatCode,
+      name: name ?? this.name,
+      dateStart: dateStart ?? this.dateStart,
+      runnerPoints: runnerPoints ?? this.runnerPoints,
+      corpPoints: corpPoints ?? this.corpPoints,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (formatCode.present) {
+      map['format_code'] = Variable<String>(formatCode.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (dateStart.present) {
+      map['date_start'] = Variable<DateTime>(dateStart.value);
+    }
+    if (runnerPoints.present) {
+      map['runner_points'] = Variable<int>(runnerPoints.value);
+    }
+    if (corpPoints.present) {
+      map['corp_points'] = Variable<int>(corpPoints.value);
+    }
+    return map;
+  }
+
   @override
   String toString() {
-    return (StringBuffer('MwlViewData(')
+    return (StringBuffer('MwlCompanion(')
           ..write('code: $code, ')
           ..write('formatCode: $formatCode, ')
-          ..write('mwlCode: $mwlCode, ')
           ..write('name: $name, ')
           ..write('dateStart: $dateStart, ')
           ..write('runnerPoints: $runnerPoints, ')
-          ..write('corpPoints: $corpPoints, ')
-          ..write('type: $type, ')
-          ..write('id: $id, ')
-          ..write('code1: $code1, ')
-          ..write('name1: $name1')
+          ..write('corpPoints: $corpPoints')
           ..write(')'))
         .toString();
   }
-
-  @override
-  int get hashCode => Object.hash(code, formatCode, mwlCode, name, dateStart,
-      runnerPoints, corpPoints, type, id, code1, name1);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is MwlViewData &&
-          other.code == this.code &&
-          other.formatCode == this.formatCode &&
-          other.mwlCode == this.mwlCode &&
-          other.name == this.name &&
-          other.dateStart == this.dateStart &&
-          other.runnerPoints == this.runnerPoints &&
-          other.corpPoints == this.corpPoints &&
-          other.type == this.type &&
-          other.id == this.id &&
-          other.code1 == this.code1 &&
-          other.name1 == this.name1);
 }
 
 class MwlView extends ViewInfo<MwlView, MwlViewData> implements HasResultSet {
@@ -2330,10 +1557,7 @@ class MwlView extends ViewInfo<MwlView, MwlViewData> implements HasResultSet {
         dateStart,
         runnerPoints,
         corpPoints,
-        type,
-        id,
-        code1,
-        name1
+        type
       ];
   @override
   String get aliasedName => _alias ?? entityName;
@@ -2341,7 +1565,7 @@ class MwlView extends ViewInfo<MwlView, MwlViewData> implements HasResultSet {
   String get entityName => 'mwl_view';
   @override
   String get createViewStmt =>
-      'CREATE VIEW mwl_view AS SELECT * FROM (SELECT format.code || \'@active\' AS code, format.code AS format_code, mwl.code AS mwl_code, format.name || \' Active (\' || COALESCE(mwl.name, \'None\') || \')\' AS name, mwl.date_start, mwl.runner_points, mwl.corp_points, \'active\' AS type FROM format LEFT JOIN (SELECT *, MAX(date_start) FROM mwl WHERE DATE(date_start) <= DATE(\'NOW\') GROUP BY mwl.format_code) AS mwl ON mwl.format_code = format.code UNION ALL SELECT format.code || \'@latest\' AS code, format.code AS format_code, mwl.code AS mwl_code, format.name || \' Latest (\' || COALESCE(mwl.name, \'None\') || \')\' AS name, mwl.date_start, mwl.runner_points, mwl.corp_points, \'latest\' AS type FROM format LEFT JOIN (SELECT *, MAX(date_start) FROM mwl GROUP BY mwl.format_code) AS mwl ON mwl.format_code = format.code UNION ALL SELECT mwl.code, mwl.format_code, mwl.code, mwl.name, mwl.date_start, mwl.runner_points, mwl.corp_points, NULL AS type FROM mwl) AS mwl INNER JOIN format ON format.code = mwl.format_code ORDER BY format.id, mwl.type DESC NULLS LAST, mwl.date_start DESC';
+      'CREATE VIEW mwl_view (code,format_code,mwl_code,name,date_start,runner_points,corp_points,type) AS SELECT mwl.* FROM (SELECT format.code || \'@active\' AS code, format.code AS format_code, mwl.code AS mwl_code, format.name || \' Active (\' || COALESCE(mwl.name, \'None\') || \')\' AS name, mwl.date_start, mwl.runner_points, mwl.corp_points, \'active\' AS type FROM format LEFT JOIN (SELECT *, MAX(date_start) FROM mwl WHERE DATE(date_start) <= DATE(\'NOW\') GROUP BY mwl.format_code) AS mwl ON mwl.format_code = format.code UNION ALL SELECT format.code || \'@latest\' AS code, format.code AS format_code, mwl.code AS mwl_code, format.name || \' Latest (\' || COALESCE(mwl.name, \'None\') || \')\' AS name, mwl.date_start, mwl.runner_points, mwl.corp_points, \'latest\' AS type FROM format LEFT JOIN (SELECT *, MAX(date_start) FROM mwl GROUP BY mwl.format_code) AS mwl ON mwl.format_code = format.code UNION ALL SELECT mwl.code, mwl.format_code, mwl.code, mwl.name, mwl.date_start, mwl.runner_points, mwl.corp_points, NULL AS type FROM mwl) AS mwl INNER JOIN format ON format.code = mwl.format_code ORDER BY format.id, mwl.type DESC NULLS LAST, mwl.date_start DESC';
   @override
   MwlView get asDslTable => this;
   @override
@@ -2350,10 +1574,10 @@ class MwlView extends ViewInfo<MwlView, MwlViewData> implements HasResultSet {
     return MwlViewData(
       code: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
-      formatCode: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}format_code'])!,
       mwlCode: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}mwl_code']),
+      formatCode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}format_code'])!,
       name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       dateStart: attachedDatabase.typeMapping
@@ -2364,12 +1588,6 @@ class MwlView extends ViewInfo<MwlView, MwlViewData> implements HasResultSet {
           .read(DriftSqlType.int, data['${effectivePrefix}corp_points']),
       type: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}type']),
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      code1: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}code'])!,
-      name1: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
     );
   }
 
@@ -2397,14 +1615,6 @@ class MwlView extends ViewInfo<MwlView, MwlViewData> implements HasResultSet {
   late final GeneratedColumn<String> type = GeneratedColumn<String>(
       'type', aliasedName, true,
       type: DriftSqlType.string);
-  late final GeneratedColumn<int> id =
-      GeneratedColumn<int>('id', aliasedName, false, type: DriftSqlType.int);
-  late final GeneratedColumn<String> code1 = GeneratedColumn<String>(
-      'code', aliasedName, false,
-      type: DriftSqlType.string);
-  late final GeneratedColumn<String> name1 = GeneratedColumn<String>(
-      'name', aliasedName, false,
-      type: DriftSqlType.string);
   @override
   MwlView createAlias(String alias) {
     return MwlView(attachedDatabase, alias);
@@ -2416,117 +1626,15 @@ class MwlView extends ViewInfo<MwlView, MwlViewData> implements HasResultSet {
   Set<String> get readTables => const {'format', 'mwl'};
 }
 
-class RotationCycleData extends DataClass
-    implements Insertable<RotationCycleData> {
-  final String rotationCode;
-  final String cycleCode;
-  const RotationCycleData(
-      {required this.rotationCode, required this.cycleCode});
+mixin RotationCycleToColumns implements Insertable<RotationCycleData> {
+  String get rotationCode;
+  String get cycleCode;
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['rotation_code'] = Variable<String>(rotationCode);
     map['cycle_code'] = Variable<String>(cycleCode);
     return map;
-  }
-
-  RotationCycleCompanion toCompanion(bool nullToAbsent) {
-    return RotationCycleCompanion(
-      rotationCode: Value(rotationCode),
-      cycleCode: Value(cycleCode),
-    );
-  }
-
-  factory RotationCycleData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return RotationCycleData(
-      rotationCode: serializer.fromJson<String>(json['rotation_code']),
-      cycleCode: serializer.fromJson<String>(json['cycle_code']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'rotation_code': serializer.toJson<String>(rotationCode),
-      'cycle_code': serializer.toJson<String>(cycleCode),
-    };
-  }
-
-  RotationCycleData copyWith({String? rotationCode, String? cycleCode}) =>
-      RotationCycleData(
-        rotationCode: rotationCode ?? this.rotationCode,
-        cycleCode: cycleCode ?? this.cycleCode,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('RotationCycleData(')
-          ..write('rotationCode: $rotationCode, ')
-          ..write('cycleCode: $cycleCode')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(rotationCode, cycleCode);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is RotationCycleData &&
-          other.rotationCode == this.rotationCode &&
-          other.cycleCode == this.cycleCode);
-}
-
-class RotationCycleCompanion extends UpdateCompanion<RotationCycleData> {
-  final Value<String> rotationCode;
-  final Value<String> cycleCode;
-  const RotationCycleCompanion({
-    this.rotationCode = const Value.absent(),
-    this.cycleCode = const Value.absent(),
-  });
-  RotationCycleCompanion.insert({
-    required String rotationCode,
-    required String cycleCode,
-  })  : rotationCode = Value(rotationCode),
-        cycleCode = Value(cycleCode);
-  static Insertable<RotationCycleData> custom({
-    Expression<String>? rotationCode,
-    Expression<String>? cycleCode,
-  }) {
-    return RawValuesInsertable({
-      if (rotationCode != null) 'rotation_code': rotationCode,
-      if (cycleCode != null) 'cycle_code': cycleCode,
-    });
-  }
-
-  RotationCycleCompanion copyWith(
-      {Value<String>? rotationCode, Value<String>? cycleCode}) {
-    return RotationCycleCompanion(
-      rotationCode: rotationCode ?? this.rotationCode,
-      cycleCode: cycleCode ?? this.cycleCode,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (rotationCode.present) {
-      map['rotation_code'] = Variable<String>(rotationCode.value);
-    }
-    if (cycleCode.present) {
-      map['cycle_code'] = Variable<String>(cycleCode.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('RotationCycleCompanion(')
-          ..write('rotationCode: $rotationCode, ')
-          ..write('cycleCode: $cycleCode')
-          ..write(')'))
-        .toString();
   }
 }
 
@@ -2603,18 +1711,64 @@ class RotationCycle extends Table
   bool get dontWriteConstraints => true;
 }
 
-class CycleData extends DataClass implements Insertable<CycleData> {
-  final String code;
-  final int position;
-  final String name;
-  final int size;
-  final bool rotated;
-  const CycleData(
-      {required this.code,
-      required this.position,
-      required this.name,
-      required this.size,
-      required this.rotated});
+class RotationCycleCompanion extends UpdateCompanion<RotationCycleData> {
+  final Value<String> rotationCode;
+  final Value<String> cycleCode;
+  const RotationCycleCompanion({
+    this.rotationCode = const Value.absent(),
+    this.cycleCode = const Value.absent(),
+  });
+  RotationCycleCompanion.insert({
+    required String rotationCode,
+    required String cycleCode,
+  })  : rotationCode = Value(rotationCode),
+        cycleCode = Value(cycleCode);
+  static Insertable<RotationCycleData> custom({
+    Expression<String>? rotationCode,
+    Expression<String>? cycleCode,
+  }) {
+    return RawValuesInsertable({
+      if (rotationCode != null) 'rotation_code': rotationCode,
+      if (cycleCode != null) 'cycle_code': cycleCode,
+    });
+  }
+
+  RotationCycleCompanion copyWith(
+      {Value<String>? rotationCode, Value<String>? cycleCode}) {
+    return RotationCycleCompanion(
+      rotationCode: rotationCode ?? this.rotationCode,
+      cycleCode: cycleCode ?? this.cycleCode,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (rotationCode.present) {
+      map['rotation_code'] = Variable<String>(rotationCode.value);
+    }
+    if (cycleCode.present) {
+      map['cycle_code'] = Variable<String>(cycleCode.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RotationCycleCompanion(')
+          ..write('rotationCode: $rotationCode, ')
+          ..write('cycleCode: $cycleCode')
+          ..write(')'))
+        .toString();
+  }
+}
+
+mixin CycleToColumns implements Insertable<CycleData> {
+  String get code;
+  int get position;
+  String get name;
+  int get size;
+  bool get rotated;
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -2624,165 +1778,6 @@ class CycleData extends DataClass implements Insertable<CycleData> {
     map['size'] = Variable<int>(size);
     map['rotated'] = Variable<bool>(rotated);
     return map;
-  }
-
-  CycleCompanion toCompanion(bool nullToAbsent) {
-    return CycleCompanion(
-      code: Value(code),
-      position: Value(position),
-      name: Value(name),
-      size: Value(size),
-      rotated: Value(rotated),
-    );
-  }
-
-  factory CycleData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return CycleData(
-      code: serializer.fromJson<String>(json['code']),
-      position: serializer.fromJson<int>(json['position']),
-      name: serializer.fromJson<String>(json['name']),
-      size: serializer.fromJson<int>(json['size']),
-      rotated: serializer.fromJson<bool>(json['rotated']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'code': serializer.toJson<String>(code),
-      'position': serializer.toJson<int>(position),
-      'name': serializer.toJson<String>(name),
-      'size': serializer.toJson<int>(size),
-      'rotated': serializer.toJson<bool>(rotated),
-    };
-  }
-
-  CycleData copyWith(
-          {String? code,
-          int? position,
-          String? name,
-          int? size,
-          bool? rotated}) =>
-      CycleData(
-        code: code ?? this.code,
-        position: position ?? this.position,
-        name: name ?? this.name,
-        size: size ?? this.size,
-        rotated: rotated ?? this.rotated,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('CycleData(')
-          ..write('code: $code, ')
-          ..write('position: $position, ')
-          ..write('name: $name, ')
-          ..write('size: $size, ')
-          ..write('rotated: $rotated')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(code, position, name, size, rotated);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is CycleData &&
-          other.code == this.code &&
-          other.position == this.position &&
-          other.name == this.name &&
-          other.size == this.size &&
-          other.rotated == this.rotated);
-}
-
-class CycleCompanion extends UpdateCompanion<CycleData> {
-  final Value<String> code;
-  final Value<int> position;
-  final Value<String> name;
-  final Value<int> size;
-  final Value<bool> rotated;
-  const CycleCompanion({
-    this.code = const Value.absent(),
-    this.position = const Value.absent(),
-    this.name = const Value.absent(),
-    this.size = const Value.absent(),
-    this.rotated = const Value.absent(),
-  });
-  CycleCompanion.insert({
-    required String code,
-    required int position,
-    required String name,
-    required int size,
-    required bool rotated,
-  })  : code = Value(code),
-        position = Value(position),
-        name = Value(name),
-        size = Value(size),
-        rotated = Value(rotated);
-  static Insertable<CycleData> custom({
-    Expression<String>? code,
-    Expression<int>? position,
-    Expression<String>? name,
-    Expression<int>? size,
-    Expression<bool>? rotated,
-  }) {
-    return RawValuesInsertable({
-      if (code != null) 'code': code,
-      if (position != null) 'position': position,
-      if (name != null) 'name': name,
-      if (size != null) 'size': size,
-      if (rotated != null) 'rotated': rotated,
-    });
-  }
-
-  CycleCompanion copyWith(
-      {Value<String>? code,
-      Value<int>? position,
-      Value<String>? name,
-      Value<int>? size,
-      Value<bool>? rotated}) {
-    return CycleCompanion(
-      code: code ?? this.code,
-      position: position ?? this.position,
-      name: name ?? this.name,
-      size: size ?? this.size,
-      rotated: rotated ?? this.rotated,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (code.present) {
-      map['code'] = Variable<String>(code.value);
-    }
-    if (position.present) {
-      map['position'] = Variable<int>(position.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    if (size.present) {
-      map['size'] = Variable<int>(size.value);
-    }
-    if (rotated.present) {
-      map['rotated'] = Variable<bool>(rotated.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('CycleCompanion(')
-          ..write('code: $code, ')
-          ..write('position: $position, ')
-          ..write('name: $name, ')
-          ..write('size: $size, ')
-          ..write('rotated: $rotated')
-          ..write(')'))
-        .toString();
   }
 }
 
@@ -2895,20 +1890,148 @@ class Cycle extends Table with TableInfo<Cycle, CycleData> {
   bool get dontWriteConstraints => true;
 }
 
-class PackData extends DataClass implements Insertable<PackData> {
-  final String code;
-  final String cycleCode;
-  final int position;
-  final String name;
-  final DateTime? dateRelease;
-  final int? size;
-  const PackData(
-      {required this.code,
-      required this.cycleCode,
-      required this.position,
-      required this.name,
-      this.dateRelease,
-      this.size});
+class CycleCompanion extends UpdateCompanion<CycleData> {
+  final Value<String> code;
+  final Value<int> position;
+  final Value<String> name;
+  final Value<int> size;
+  final Value<bool> rotated;
+  const CycleCompanion({
+    this.code = const Value.absent(),
+    this.position = const Value.absent(),
+    this.name = const Value.absent(),
+    this.size = const Value.absent(),
+    this.rotated = const Value.absent(),
+  });
+  CycleCompanion.insert({
+    required String code,
+    required int position,
+    required String name,
+    required int size,
+    required bool rotated,
+  })  : code = Value(code),
+        position = Value(position),
+        name = Value(name),
+        size = Value(size),
+        rotated = Value(rotated);
+  static Insertable<CycleData> custom({
+    Expression<String>? code,
+    Expression<int>? position,
+    Expression<String>? name,
+    Expression<int>? size,
+    Expression<bool>? rotated,
+  }) {
+    return RawValuesInsertable({
+      if (code != null) 'code': code,
+      if (position != null) 'position': position,
+      if (name != null) 'name': name,
+      if (size != null) 'size': size,
+      if (rotated != null) 'rotated': rotated,
+    });
+  }
+
+  CycleCompanion copyWith(
+      {Value<String>? code,
+      Value<int>? position,
+      Value<String>? name,
+      Value<int>? size,
+      Value<bool>? rotated}) {
+    return CycleCompanion(
+      code: code ?? this.code,
+      position: position ?? this.position,
+      name: name ?? this.name,
+      size: size ?? this.size,
+      rotated: rotated ?? this.rotated,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (size.present) {
+      map['size'] = Variable<int>(size.value);
+    }
+    if (rotated.present) {
+      map['rotated'] = Variable<bool>(rotated.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CycleCompanion(')
+          ..write('code: $code, ')
+          ..write('position: $position, ')
+          ..write('name: $name, ')
+          ..write('size: $size, ')
+          ..write('rotated: $rotated')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class RotationCycleView extends ViewInfo<RotationCycleView, RotationCycleData>
+    implements HasResultSet {
+  final String? _alias;
+  @override
+  final _$Database attachedDatabase;
+  RotationCycleView(this.attachedDatabase, [this._alias]);
+  @override
+  List<GeneratedColumn> get $columns => [rotationCode, cycleCode];
+  @override
+  String get aliasedName => _alias ?? entityName;
+  @override
+  String get entityName => 'rotation_cycle_view';
+  @override
+  String get createViewStmt =>
+      'CREATE VIEW rotation_cycle_view (rotation_code,cycle_code) AS SELECT rotation.code, rotation_cycle.cycle_code FROM rotation_view AS rotation INNER JOIN rotation_cycle ON rotation_cycle.rotation_code = rotation.rotation_code UNION ALL SELECT rotation.code, cycle.code FROM rotation_view AS rotation CROSS JOIN cycle WHERE rotation.rotation_code IS NULL';
+  @override
+  RotationCycleView get asDslTable => this;
+  @override
+  RotationCycleData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RotationCycleData(
+      rotationCode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}rotation_code'])!,
+      cycleCode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}cycle_code'])!,
+    );
+  }
+
+  late final GeneratedColumn<String> rotationCode = GeneratedColumn<String>(
+      'rotation_code', aliasedName, false,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<String> cycleCode = GeneratedColumn<String>(
+      'cycle_code', aliasedName, false,
+      type: DriftSqlType.string);
+  @override
+  RotationCycleView createAlias(String alias) {
+    return RotationCycleView(attachedDatabase, alias);
+  }
+
+  @override
+  Query? get query => null;
+  @override
+  Set<String> get readTables =>
+      const {'format', 'rotation', 'rotation_cycle', 'cycle'};
+}
+
+mixin PackToColumns implements Insertable<PackData> {
+  String get code;
+  String get cycleCode;
+  int get position;
+  String get name;
+  DateTime? get dateRelease;
+  int? get size;
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -2923,185 +2046,6 @@ class PackData extends DataClass implements Insertable<PackData> {
       map['size'] = Variable<int>(size);
     }
     return map;
-  }
-
-  PackCompanion toCompanion(bool nullToAbsent) {
-    return PackCompanion(
-      code: Value(code),
-      cycleCode: Value(cycleCode),
-      position: Value(position),
-      name: Value(name),
-      dateRelease: dateRelease == null && nullToAbsent
-          ? const Value.absent()
-          : Value(dateRelease),
-      size: size == null && nullToAbsent ? const Value.absent() : Value(size),
-    );
-  }
-
-  factory PackData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return PackData(
-      code: serializer.fromJson<String>(json['code']),
-      cycleCode: serializer.fromJson<String>(json['cycle_code']),
-      position: serializer.fromJson<int>(json['position']),
-      name: serializer.fromJson<String>(json['name']),
-      dateRelease: serializer.fromJson<DateTime?>(json['date_release']),
-      size: serializer.fromJson<int?>(json['size']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'code': serializer.toJson<String>(code),
-      'cycle_code': serializer.toJson<String>(cycleCode),
-      'position': serializer.toJson<int>(position),
-      'name': serializer.toJson<String>(name),
-      'date_release': serializer.toJson<DateTime?>(dateRelease),
-      'size': serializer.toJson<int?>(size),
-    };
-  }
-
-  PackData copyWith(
-          {String? code,
-          String? cycleCode,
-          int? position,
-          String? name,
-          Value<DateTime?> dateRelease = const Value.absent(),
-          Value<int?> size = const Value.absent()}) =>
-      PackData(
-        code: code ?? this.code,
-        cycleCode: cycleCode ?? this.cycleCode,
-        position: position ?? this.position,
-        name: name ?? this.name,
-        dateRelease: dateRelease.present ? dateRelease.value : this.dateRelease,
-        size: size.present ? size.value : this.size,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('PackData(')
-          ..write('code: $code, ')
-          ..write('cycleCode: $cycleCode, ')
-          ..write('position: $position, ')
-          ..write('name: $name, ')
-          ..write('dateRelease: $dateRelease, ')
-          ..write('size: $size')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode =>
-      Object.hash(code, cycleCode, position, name, dateRelease, size);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is PackData &&
-          other.code == this.code &&
-          other.cycleCode == this.cycleCode &&
-          other.position == this.position &&
-          other.name == this.name &&
-          other.dateRelease == this.dateRelease &&
-          other.size == this.size);
-}
-
-class PackCompanion extends UpdateCompanion<PackData> {
-  final Value<String> code;
-  final Value<String> cycleCode;
-  final Value<int> position;
-  final Value<String> name;
-  final Value<DateTime?> dateRelease;
-  final Value<int?> size;
-  const PackCompanion({
-    this.code = const Value.absent(),
-    this.cycleCode = const Value.absent(),
-    this.position = const Value.absent(),
-    this.name = const Value.absent(),
-    this.dateRelease = const Value.absent(),
-    this.size = const Value.absent(),
-  });
-  PackCompanion.insert({
-    required String code,
-    required String cycleCode,
-    required int position,
-    required String name,
-    this.dateRelease = const Value.absent(),
-    this.size = const Value.absent(),
-  })  : code = Value(code),
-        cycleCode = Value(cycleCode),
-        position = Value(position),
-        name = Value(name);
-  static Insertable<PackData> custom({
-    Expression<String>? code,
-    Expression<String>? cycleCode,
-    Expression<int>? position,
-    Expression<String>? name,
-    Expression<DateTime>? dateRelease,
-    Expression<int>? size,
-  }) {
-    return RawValuesInsertable({
-      if (code != null) 'code': code,
-      if (cycleCode != null) 'cycle_code': cycleCode,
-      if (position != null) 'position': position,
-      if (name != null) 'name': name,
-      if (dateRelease != null) 'date_release': dateRelease,
-      if (size != null) 'size': size,
-    });
-  }
-
-  PackCompanion copyWith(
-      {Value<String>? code,
-      Value<String>? cycleCode,
-      Value<int>? position,
-      Value<String>? name,
-      Value<DateTime?>? dateRelease,
-      Value<int?>? size}) {
-    return PackCompanion(
-      code: code ?? this.code,
-      cycleCode: cycleCode ?? this.cycleCode,
-      position: position ?? this.position,
-      name: name ?? this.name,
-      dateRelease: dateRelease ?? this.dateRelease,
-      size: size ?? this.size,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (code.present) {
-      map['code'] = Variable<String>(code.value);
-    }
-    if (cycleCode.present) {
-      map['cycle_code'] = Variable<String>(cycleCode.value);
-    }
-    if (position.present) {
-      map['position'] = Variable<int>(position.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    if (dateRelease.present) {
-      map['date_release'] = Variable<DateTime>(dateRelease.value);
-    }
-    if (size.present) {
-      map['size'] = Variable<int>(size.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('PackCompanion(')
-          ..write('code: $code, ')
-          ..write('cycleCode: $cycleCode, ')
-          ..write('position: $position, ')
-          ..write('name: $name, ')
-          ..write('dateRelease: $dateRelease, ')
-          ..write('size: $size')
-          ..write(')'))
-        .toString();
   }
 }
 
@@ -3228,56 +2172,130 @@ class Pack extends Table with TableInfo<Pack, PackData> {
   bool get dontWriteConstraints => true;
 }
 
-class CardData extends DataClass implements Insertable<CardData> {
-  final String code;
-  final String packCode;
-  final String factionCode;
-  final String typeCode;
-  final int position;
-  final String title;
-  final String? body;
-  final String? keywords;
-  final int quantity;
-  final int? cost;
-  final int deckLimit;
-  final int factionCost;
-  final bool uniqueness;
-  final int? strength;
-  final int? agendaPoints;
-  final int? memoryCost;
-  final int? advancementCost;
-  final int? trashCost;
-  final int? baseLink;
-  final int? influenceLimit;
-  final int? minimumDeckSize;
-  final String? flavor;
-  final String? illustrator;
-  final String imageUrl;
-  const CardData(
-      {required this.code,
-      required this.packCode,
-      required this.factionCode,
-      required this.typeCode,
-      required this.position,
-      required this.title,
-      this.body,
-      this.keywords,
-      required this.quantity,
-      this.cost,
-      required this.deckLimit,
-      required this.factionCost,
-      required this.uniqueness,
-      this.strength,
-      this.agendaPoints,
-      this.memoryCost,
-      this.advancementCost,
-      this.trashCost,
-      this.baseLink,
-      this.influenceLimit,
-      this.minimumDeckSize,
-      this.flavor,
-      this.illustrator,
-      required this.imageUrl});
+class PackCompanion extends UpdateCompanion<PackData> {
+  final Value<String> code;
+  final Value<String> cycleCode;
+  final Value<int> position;
+  final Value<String> name;
+  final Value<DateTime?> dateRelease;
+  final Value<int?> size;
+  const PackCompanion({
+    this.code = const Value.absent(),
+    this.cycleCode = const Value.absent(),
+    this.position = const Value.absent(),
+    this.name = const Value.absent(),
+    this.dateRelease = const Value.absent(),
+    this.size = const Value.absent(),
+  });
+  PackCompanion.insert({
+    required String code,
+    required String cycleCode,
+    required int position,
+    required String name,
+    this.dateRelease = const Value.absent(),
+    this.size = const Value.absent(),
+  })  : code = Value(code),
+        cycleCode = Value(cycleCode),
+        position = Value(position),
+        name = Value(name);
+  static Insertable<PackData> custom({
+    Expression<String>? code,
+    Expression<String>? cycleCode,
+    Expression<int>? position,
+    Expression<String>? name,
+    Expression<DateTime>? dateRelease,
+    Expression<int>? size,
+  }) {
+    return RawValuesInsertable({
+      if (code != null) 'code': code,
+      if (cycleCode != null) 'cycle_code': cycleCode,
+      if (position != null) 'position': position,
+      if (name != null) 'name': name,
+      if (dateRelease != null) 'date_release': dateRelease,
+      if (size != null) 'size': size,
+    });
+  }
+
+  PackCompanion copyWith(
+      {Value<String>? code,
+      Value<String>? cycleCode,
+      Value<int>? position,
+      Value<String>? name,
+      Value<DateTime?>? dateRelease,
+      Value<int?>? size}) {
+    return PackCompanion(
+      code: code ?? this.code,
+      cycleCode: cycleCode ?? this.cycleCode,
+      position: position ?? this.position,
+      name: name ?? this.name,
+      dateRelease: dateRelease ?? this.dateRelease,
+      size: size ?? this.size,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (cycleCode.present) {
+      map['cycle_code'] = Variable<String>(cycleCode.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (dateRelease.present) {
+      map['date_release'] = Variable<DateTime>(dateRelease.value);
+    }
+    if (size.present) {
+      map['size'] = Variable<int>(size.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PackCompanion(')
+          ..write('code: $code, ')
+          ..write('cycleCode: $cycleCode, ')
+          ..write('position: $position, ')
+          ..write('name: $name, ')
+          ..write('dateRelease: $dateRelease, ')
+          ..write('size: $size')
+          ..write(')'))
+        .toString();
+  }
+}
+
+mixin CardToColumns implements Insertable<CardData> {
+  String get code;
+  String get packCode;
+  String get factionCode;
+  String get typeCode;
+  int get position;
+  String get title;
+  String? get body;
+  String? get keywords;
+  int get quantity;
+  int? get cost;
+  int get deckLimit;
+  int get factionCost;
+  bool get uniqueness;
+  int? get strength;
+  int? get agendaPoints;
+  int? get memoryCost;
+  int? get advancementCost;
+  int? get trashCost;
+  int? get baseLink;
+  int? get influenceLimit;
+  int? get minimumDeckSize;
+  String? get flavor;
+  String? get illustrator;
+  String get imageUrl;
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -3332,565 +2350,6 @@ class CardData extends DataClass implements Insertable<CardData> {
     }
     map['image_url'] = Variable<String>(imageUrl);
     return map;
-  }
-
-  CardCompanion toCompanion(bool nullToAbsent) {
-    return CardCompanion(
-      code: Value(code),
-      packCode: Value(packCode),
-      factionCode: Value(factionCode),
-      typeCode: Value(typeCode),
-      position: Value(position),
-      title: Value(title),
-      body: body == null && nullToAbsent ? const Value.absent() : Value(body),
-      keywords: keywords == null && nullToAbsent
-          ? const Value.absent()
-          : Value(keywords),
-      quantity: Value(quantity),
-      cost: cost == null && nullToAbsent ? const Value.absent() : Value(cost),
-      deckLimit: Value(deckLimit),
-      factionCost: Value(factionCost),
-      uniqueness: Value(uniqueness),
-      strength: strength == null && nullToAbsent
-          ? const Value.absent()
-          : Value(strength),
-      agendaPoints: agendaPoints == null && nullToAbsent
-          ? const Value.absent()
-          : Value(agendaPoints),
-      memoryCost: memoryCost == null && nullToAbsent
-          ? const Value.absent()
-          : Value(memoryCost),
-      advancementCost: advancementCost == null && nullToAbsent
-          ? const Value.absent()
-          : Value(advancementCost),
-      trashCost: trashCost == null && nullToAbsent
-          ? const Value.absent()
-          : Value(trashCost),
-      baseLink: baseLink == null && nullToAbsent
-          ? const Value.absent()
-          : Value(baseLink),
-      influenceLimit: influenceLimit == null && nullToAbsent
-          ? const Value.absent()
-          : Value(influenceLimit),
-      minimumDeckSize: minimumDeckSize == null && nullToAbsent
-          ? const Value.absent()
-          : Value(minimumDeckSize),
-      flavor:
-          flavor == null && nullToAbsent ? const Value.absent() : Value(flavor),
-      illustrator: illustrator == null && nullToAbsent
-          ? const Value.absent()
-          : Value(illustrator),
-      imageUrl: Value(imageUrl),
-    );
-  }
-
-  factory CardData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return CardData(
-      code: serializer.fromJson<String>(json['code']),
-      packCode: serializer.fromJson<String>(json['pack_code']),
-      factionCode: serializer.fromJson<String>(json['faction_code']),
-      typeCode: serializer.fromJson<String>(json['type_code']),
-      position: serializer.fromJson<int>(json['position']),
-      title: serializer.fromJson<String>(json['title']),
-      body: serializer.fromJson<String?>(json['body']),
-      keywords: serializer.fromJson<String?>(json['keywords']),
-      quantity: serializer.fromJson<int>(json['quantity']),
-      cost: serializer.fromJson<int?>(json['cost']),
-      deckLimit: serializer.fromJson<int>(json['deck_limit']),
-      factionCost: serializer.fromJson<int>(json['faction_cost']),
-      uniqueness: serializer.fromJson<bool>(json['uniqueness']),
-      strength: serializer.fromJson<int?>(json['strength']),
-      agendaPoints: serializer.fromJson<int?>(json['agenda_points']),
-      memoryCost: serializer.fromJson<int?>(json['memory_cost']),
-      advancementCost: serializer.fromJson<int?>(json['advancement_cost']),
-      trashCost: serializer.fromJson<int?>(json['trash_cost']),
-      baseLink: serializer.fromJson<int?>(json['base_link']),
-      influenceLimit: serializer.fromJson<int?>(json['influence_limit']),
-      minimumDeckSize: serializer.fromJson<int?>(json['minimum_deck_size']),
-      flavor: serializer.fromJson<String?>(json['flavor']),
-      illustrator: serializer.fromJson<String?>(json['illustrator']),
-      imageUrl: serializer.fromJson<String>(json['image_url']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'code': serializer.toJson<String>(code),
-      'pack_code': serializer.toJson<String>(packCode),
-      'faction_code': serializer.toJson<String>(factionCode),
-      'type_code': serializer.toJson<String>(typeCode),
-      'position': serializer.toJson<int>(position),
-      'title': serializer.toJson<String>(title),
-      'body': serializer.toJson<String?>(body),
-      'keywords': serializer.toJson<String?>(keywords),
-      'quantity': serializer.toJson<int>(quantity),
-      'cost': serializer.toJson<int?>(cost),
-      'deck_limit': serializer.toJson<int>(deckLimit),
-      'faction_cost': serializer.toJson<int>(factionCost),
-      'uniqueness': serializer.toJson<bool>(uniqueness),
-      'strength': serializer.toJson<int?>(strength),
-      'agenda_points': serializer.toJson<int?>(agendaPoints),
-      'memory_cost': serializer.toJson<int?>(memoryCost),
-      'advancement_cost': serializer.toJson<int?>(advancementCost),
-      'trash_cost': serializer.toJson<int?>(trashCost),
-      'base_link': serializer.toJson<int?>(baseLink),
-      'influence_limit': serializer.toJson<int?>(influenceLimit),
-      'minimum_deck_size': serializer.toJson<int?>(minimumDeckSize),
-      'flavor': serializer.toJson<String?>(flavor),
-      'illustrator': serializer.toJson<String?>(illustrator),
-      'image_url': serializer.toJson<String>(imageUrl),
-    };
-  }
-
-  CardData copyWith(
-          {String? code,
-          String? packCode,
-          String? factionCode,
-          String? typeCode,
-          int? position,
-          String? title,
-          Value<String?> body = const Value.absent(),
-          Value<String?> keywords = const Value.absent(),
-          int? quantity,
-          Value<int?> cost = const Value.absent(),
-          int? deckLimit,
-          int? factionCost,
-          bool? uniqueness,
-          Value<int?> strength = const Value.absent(),
-          Value<int?> agendaPoints = const Value.absent(),
-          Value<int?> memoryCost = const Value.absent(),
-          Value<int?> advancementCost = const Value.absent(),
-          Value<int?> trashCost = const Value.absent(),
-          Value<int?> baseLink = const Value.absent(),
-          Value<int?> influenceLimit = const Value.absent(),
-          Value<int?> minimumDeckSize = const Value.absent(),
-          Value<String?> flavor = const Value.absent(),
-          Value<String?> illustrator = const Value.absent(),
-          String? imageUrl}) =>
-      CardData(
-        code: code ?? this.code,
-        packCode: packCode ?? this.packCode,
-        factionCode: factionCode ?? this.factionCode,
-        typeCode: typeCode ?? this.typeCode,
-        position: position ?? this.position,
-        title: title ?? this.title,
-        body: body.present ? body.value : this.body,
-        keywords: keywords.present ? keywords.value : this.keywords,
-        quantity: quantity ?? this.quantity,
-        cost: cost.present ? cost.value : this.cost,
-        deckLimit: deckLimit ?? this.deckLimit,
-        factionCost: factionCost ?? this.factionCost,
-        uniqueness: uniqueness ?? this.uniqueness,
-        strength: strength.present ? strength.value : this.strength,
-        agendaPoints:
-            agendaPoints.present ? agendaPoints.value : this.agendaPoints,
-        memoryCost: memoryCost.present ? memoryCost.value : this.memoryCost,
-        advancementCost: advancementCost.present
-            ? advancementCost.value
-            : this.advancementCost,
-        trashCost: trashCost.present ? trashCost.value : this.trashCost,
-        baseLink: baseLink.present ? baseLink.value : this.baseLink,
-        influenceLimit:
-            influenceLimit.present ? influenceLimit.value : this.influenceLimit,
-        minimumDeckSize: minimumDeckSize.present
-            ? minimumDeckSize.value
-            : this.minimumDeckSize,
-        flavor: flavor.present ? flavor.value : this.flavor,
-        illustrator: illustrator.present ? illustrator.value : this.illustrator,
-        imageUrl: imageUrl ?? this.imageUrl,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('CardData(')
-          ..write('code: $code, ')
-          ..write('packCode: $packCode, ')
-          ..write('factionCode: $factionCode, ')
-          ..write('typeCode: $typeCode, ')
-          ..write('position: $position, ')
-          ..write('title: $title, ')
-          ..write('body: $body, ')
-          ..write('keywords: $keywords, ')
-          ..write('quantity: $quantity, ')
-          ..write('cost: $cost, ')
-          ..write('deckLimit: $deckLimit, ')
-          ..write('factionCost: $factionCost, ')
-          ..write('uniqueness: $uniqueness, ')
-          ..write('strength: $strength, ')
-          ..write('agendaPoints: $agendaPoints, ')
-          ..write('memoryCost: $memoryCost, ')
-          ..write('advancementCost: $advancementCost, ')
-          ..write('trashCost: $trashCost, ')
-          ..write('baseLink: $baseLink, ')
-          ..write('influenceLimit: $influenceLimit, ')
-          ..write('minimumDeckSize: $minimumDeckSize, ')
-          ..write('flavor: $flavor, ')
-          ..write('illustrator: $illustrator, ')
-          ..write('imageUrl: $imageUrl')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hashAll([
-        code,
-        packCode,
-        factionCode,
-        typeCode,
-        position,
-        title,
-        body,
-        keywords,
-        quantity,
-        cost,
-        deckLimit,
-        factionCost,
-        uniqueness,
-        strength,
-        agendaPoints,
-        memoryCost,
-        advancementCost,
-        trashCost,
-        baseLink,
-        influenceLimit,
-        minimumDeckSize,
-        flavor,
-        illustrator,
-        imageUrl
-      ]);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is CardData &&
-          other.code == this.code &&
-          other.packCode == this.packCode &&
-          other.factionCode == this.factionCode &&
-          other.typeCode == this.typeCode &&
-          other.position == this.position &&
-          other.title == this.title &&
-          other.body == this.body &&
-          other.keywords == this.keywords &&
-          other.quantity == this.quantity &&
-          other.cost == this.cost &&
-          other.deckLimit == this.deckLimit &&
-          other.factionCost == this.factionCost &&
-          other.uniqueness == this.uniqueness &&
-          other.strength == this.strength &&
-          other.agendaPoints == this.agendaPoints &&
-          other.memoryCost == this.memoryCost &&
-          other.advancementCost == this.advancementCost &&
-          other.trashCost == this.trashCost &&
-          other.baseLink == this.baseLink &&
-          other.influenceLimit == this.influenceLimit &&
-          other.minimumDeckSize == this.minimumDeckSize &&
-          other.flavor == this.flavor &&
-          other.illustrator == this.illustrator &&
-          other.imageUrl == this.imageUrl);
-}
-
-class CardCompanion extends UpdateCompanion<CardData> {
-  final Value<String> code;
-  final Value<String> packCode;
-  final Value<String> factionCode;
-  final Value<String> typeCode;
-  final Value<int> position;
-  final Value<String> title;
-  final Value<String?> body;
-  final Value<String?> keywords;
-  final Value<int> quantity;
-  final Value<int?> cost;
-  final Value<int> deckLimit;
-  final Value<int> factionCost;
-  final Value<bool> uniqueness;
-  final Value<int?> strength;
-  final Value<int?> agendaPoints;
-  final Value<int?> memoryCost;
-  final Value<int?> advancementCost;
-  final Value<int?> trashCost;
-  final Value<int?> baseLink;
-  final Value<int?> influenceLimit;
-  final Value<int?> minimumDeckSize;
-  final Value<String?> flavor;
-  final Value<String?> illustrator;
-  final Value<String> imageUrl;
-  const CardCompanion({
-    this.code = const Value.absent(),
-    this.packCode = const Value.absent(),
-    this.factionCode = const Value.absent(),
-    this.typeCode = const Value.absent(),
-    this.position = const Value.absent(),
-    this.title = const Value.absent(),
-    this.body = const Value.absent(),
-    this.keywords = const Value.absent(),
-    this.quantity = const Value.absent(),
-    this.cost = const Value.absent(),
-    this.deckLimit = const Value.absent(),
-    this.factionCost = const Value.absent(),
-    this.uniqueness = const Value.absent(),
-    this.strength = const Value.absent(),
-    this.agendaPoints = const Value.absent(),
-    this.memoryCost = const Value.absent(),
-    this.advancementCost = const Value.absent(),
-    this.trashCost = const Value.absent(),
-    this.baseLink = const Value.absent(),
-    this.influenceLimit = const Value.absent(),
-    this.minimumDeckSize = const Value.absent(),
-    this.flavor = const Value.absent(),
-    this.illustrator = const Value.absent(),
-    this.imageUrl = const Value.absent(),
-  });
-  CardCompanion.insert({
-    required String code,
-    required String packCode,
-    required String factionCode,
-    required String typeCode,
-    required int position,
-    required String title,
-    this.body = const Value.absent(),
-    this.keywords = const Value.absent(),
-    required int quantity,
-    this.cost = const Value.absent(),
-    required int deckLimit,
-    required int factionCost,
-    required bool uniqueness,
-    this.strength = const Value.absent(),
-    this.agendaPoints = const Value.absent(),
-    this.memoryCost = const Value.absent(),
-    this.advancementCost = const Value.absent(),
-    this.trashCost = const Value.absent(),
-    this.baseLink = const Value.absent(),
-    this.influenceLimit = const Value.absent(),
-    this.minimumDeckSize = const Value.absent(),
-    this.flavor = const Value.absent(),
-    this.illustrator = const Value.absent(),
-    required String imageUrl,
-  })  : code = Value(code),
-        packCode = Value(packCode),
-        factionCode = Value(factionCode),
-        typeCode = Value(typeCode),
-        position = Value(position),
-        title = Value(title),
-        quantity = Value(quantity),
-        deckLimit = Value(deckLimit),
-        factionCost = Value(factionCost),
-        uniqueness = Value(uniqueness),
-        imageUrl = Value(imageUrl);
-  static Insertable<CardData> custom({
-    Expression<String>? code,
-    Expression<String>? packCode,
-    Expression<String>? factionCode,
-    Expression<String>? typeCode,
-    Expression<int>? position,
-    Expression<String>? title,
-    Expression<String>? body,
-    Expression<String>? keywords,
-    Expression<int>? quantity,
-    Expression<int>? cost,
-    Expression<int>? deckLimit,
-    Expression<int>? factionCost,
-    Expression<bool>? uniqueness,
-    Expression<int>? strength,
-    Expression<int>? agendaPoints,
-    Expression<int>? memoryCost,
-    Expression<int>? advancementCost,
-    Expression<int>? trashCost,
-    Expression<int>? baseLink,
-    Expression<int>? influenceLimit,
-    Expression<int>? minimumDeckSize,
-    Expression<String>? flavor,
-    Expression<String>? illustrator,
-    Expression<String>? imageUrl,
-  }) {
-    return RawValuesInsertable({
-      if (code != null) 'code': code,
-      if (packCode != null) 'pack_code': packCode,
-      if (factionCode != null) 'faction_code': factionCode,
-      if (typeCode != null) 'type_code': typeCode,
-      if (position != null) 'position': position,
-      if (title != null) 'title': title,
-      if (body != null) 'body': body,
-      if (keywords != null) 'keywords': keywords,
-      if (quantity != null) 'quantity': quantity,
-      if (cost != null) 'cost': cost,
-      if (deckLimit != null) 'deck_limit': deckLimit,
-      if (factionCost != null) 'faction_cost': factionCost,
-      if (uniqueness != null) 'uniqueness': uniqueness,
-      if (strength != null) 'strength': strength,
-      if (agendaPoints != null) 'agenda_points': agendaPoints,
-      if (memoryCost != null) 'memory_cost': memoryCost,
-      if (advancementCost != null) 'advancement_cost': advancementCost,
-      if (trashCost != null) 'trash_cost': trashCost,
-      if (baseLink != null) 'base_link': baseLink,
-      if (influenceLimit != null) 'influence_limit': influenceLimit,
-      if (minimumDeckSize != null) 'minimum_deck_size': minimumDeckSize,
-      if (flavor != null) 'flavor': flavor,
-      if (illustrator != null) 'illustrator': illustrator,
-      if (imageUrl != null) 'image_url': imageUrl,
-    });
-  }
-
-  CardCompanion copyWith(
-      {Value<String>? code,
-      Value<String>? packCode,
-      Value<String>? factionCode,
-      Value<String>? typeCode,
-      Value<int>? position,
-      Value<String>? title,
-      Value<String?>? body,
-      Value<String?>? keywords,
-      Value<int>? quantity,
-      Value<int?>? cost,
-      Value<int>? deckLimit,
-      Value<int>? factionCost,
-      Value<bool>? uniqueness,
-      Value<int?>? strength,
-      Value<int?>? agendaPoints,
-      Value<int?>? memoryCost,
-      Value<int?>? advancementCost,
-      Value<int?>? trashCost,
-      Value<int?>? baseLink,
-      Value<int?>? influenceLimit,
-      Value<int?>? minimumDeckSize,
-      Value<String?>? flavor,
-      Value<String?>? illustrator,
-      Value<String>? imageUrl}) {
-    return CardCompanion(
-      code: code ?? this.code,
-      packCode: packCode ?? this.packCode,
-      factionCode: factionCode ?? this.factionCode,
-      typeCode: typeCode ?? this.typeCode,
-      position: position ?? this.position,
-      title: title ?? this.title,
-      body: body ?? this.body,
-      keywords: keywords ?? this.keywords,
-      quantity: quantity ?? this.quantity,
-      cost: cost ?? this.cost,
-      deckLimit: deckLimit ?? this.deckLimit,
-      factionCost: factionCost ?? this.factionCost,
-      uniqueness: uniqueness ?? this.uniqueness,
-      strength: strength ?? this.strength,
-      agendaPoints: agendaPoints ?? this.agendaPoints,
-      memoryCost: memoryCost ?? this.memoryCost,
-      advancementCost: advancementCost ?? this.advancementCost,
-      trashCost: trashCost ?? this.trashCost,
-      baseLink: baseLink ?? this.baseLink,
-      influenceLimit: influenceLimit ?? this.influenceLimit,
-      minimumDeckSize: minimumDeckSize ?? this.minimumDeckSize,
-      flavor: flavor ?? this.flavor,
-      illustrator: illustrator ?? this.illustrator,
-      imageUrl: imageUrl ?? this.imageUrl,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (code.present) {
-      map['code'] = Variable<String>(code.value);
-    }
-    if (packCode.present) {
-      map['pack_code'] = Variable<String>(packCode.value);
-    }
-    if (factionCode.present) {
-      map['faction_code'] = Variable<String>(factionCode.value);
-    }
-    if (typeCode.present) {
-      map['type_code'] = Variable<String>(typeCode.value);
-    }
-    if (position.present) {
-      map['position'] = Variable<int>(position.value);
-    }
-    if (title.present) {
-      map['title'] = Variable<String>(title.value);
-    }
-    if (body.present) {
-      map['body'] = Variable<String>(body.value);
-    }
-    if (keywords.present) {
-      map['keywords'] = Variable<String>(keywords.value);
-    }
-    if (quantity.present) {
-      map['quantity'] = Variable<int>(quantity.value);
-    }
-    if (cost.present) {
-      map['cost'] = Variable<int>(cost.value);
-    }
-    if (deckLimit.present) {
-      map['deck_limit'] = Variable<int>(deckLimit.value);
-    }
-    if (factionCost.present) {
-      map['faction_cost'] = Variable<int>(factionCost.value);
-    }
-    if (uniqueness.present) {
-      map['uniqueness'] = Variable<bool>(uniqueness.value);
-    }
-    if (strength.present) {
-      map['strength'] = Variable<int>(strength.value);
-    }
-    if (agendaPoints.present) {
-      map['agenda_points'] = Variable<int>(agendaPoints.value);
-    }
-    if (memoryCost.present) {
-      map['memory_cost'] = Variable<int>(memoryCost.value);
-    }
-    if (advancementCost.present) {
-      map['advancement_cost'] = Variable<int>(advancementCost.value);
-    }
-    if (trashCost.present) {
-      map['trash_cost'] = Variable<int>(trashCost.value);
-    }
-    if (baseLink.present) {
-      map['base_link'] = Variable<int>(baseLink.value);
-    }
-    if (influenceLimit.present) {
-      map['influence_limit'] = Variable<int>(influenceLimit.value);
-    }
-    if (minimumDeckSize.present) {
-      map['minimum_deck_size'] = Variable<int>(minimumDeckSize.value);
-    }
-    if (flavor.present) {
-      map['flavor'] = Variable<String>(flavor.value);
-    }
-    if (illustrator.present) {
-      map['illustrator'] = Variable<String>(illustrator.value);
-    }
-    if (imageUrl.present) {
-      map['image_url'] = Variable<String>(imageUrl.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('CardCompanion(')
-          ..write('code: $code, ')
-          ..write('packCode: $packCode, ')
-          ..write('factionCode: $factionCode, ')
-          ..write('typeCode: $typeCode, ')
-          ..write('position: $position, ')
-          ..write('title: $title, ')
-          ..write('body: $body, ')
-          ..write('keywords: $keywords, ')
-          ..write('quantity: $quantity, ')
-          ..write('cost: $cost, ')
-          ..write('deckLimit: $deckLimit, ')
-          ..write('factionCost: $factionCost, ')
-          ..write('uniqueness: $uniqueness, ')
-          ..write('strength: $strength, ')
-          ..write('agendaPoints: $agendaPoints, ')
-          ..write('memoryCost: $memoryCost, ')
-          ..write('advancementCost: $advancementCost, ')
-          ..write('trashCost: $trashCost, ')
-          ..write('baseLink: $baseLink, ')
-          ..write('influenceLimit: $influenceLimit, ')
-          ..write('minimumDeckSize: $minimumDeckSize, ')
-          ..write('flavor: $flavor, ')
-          ..write('illustrator: $illustrator, ')
-          ..write('imageUrl: $imageUrl')
-          ..write(')'))
-        .toString();
   }
 }
 
@@ -4303,18 +2762,316 @@ class Card extends Table with TableInfo<Card, CardData> {
   bool get dontWriteConstraints => true;
 }
 
-class FactionData extends DataClass implements Insertable<FactionData> {
-  final String code;
-  final String sideCode;
-  final String name;
-  final Color color;
-  final bool isMini;
-  const FactionData(
-      {required this.code,
-      required this.sideCode,
-      required this.name,
-      required this.color,
-      required this.isMini});
+class CardCompanion extends UpdateCompanion<CardData> {
+  final Value<String> code;
+  final Value<String> packCode;
+  final Value<String> factionCode;
+  final Value<String> typeCode;
+  final Value<int> position;
+  final Value<String> title;
+  final Value<String?> body;
+  final Value<String?> keywords;
+  final Value<int> quantity;
+  final Value<int?> cost;
+  final Value<int> deckLimit;
+  final Value<int> factionCost;
+  final Value<bool> uniqueness;
+  final Value<int?> strength;
+  final Value<int?> agendaPoints;
+  final Value<int?> memoryCost;
+  final Value<int?> advancementCost;
+  final Value<int?> trashCost;
+  final Value<int?> baseLink;
+  final Value<int?> influenceLimit;
+  final Value<int?> minimumDeckSize;
+  final Value<String?> flavor;
+  final Value<String?> illustrator;
+  final Value<String> imageUrl;
+  const CardCompanion({
+    this.code = const Value.absent(),
+    this.packCode = const Value.absent(),
+    this.factionCode = const Value.absent(),
+    this.typeCode = const Value.absent(),
+    this.position = const Value.absent(),
+    this.title = const Value.absent(),
+    this.body = const Value.absent(),
+    this.keywords = const Value.absent(),
+    this.quantity = const Value.absent(),
+    this.cost = const Value.absent(),
+    this.deckLimit = const Value.absent(),
+    this.factionCost = const Value.absent(),
+    this.uniqueness = const Value.absent(),
+    this.strength = const Value.absent(),
+    this.agendaPoints = const Value.absent(),
+    this.memoryCost = const Value.absent(),
+    this.advancementCost = const Value.absent(),
+    this.trashCost = const Value.absent(),
+    this.baseLink = const Value.absent(),
+    this.influenceLimit = const Value.absent(),
+    this.minimumDeckSize = const Value.absent(),
+    this.flavor = const Value.absent(),
+    this.illustrator = const Value.absent(),
+    this.imageUrl = const Value.absent(),
+  });
+  CardCompanion.insert({
+    required String code,
+    required String packCode,
+    required String factionCode,
+    required String typeCode,
+    required int position,
+    required String title,
+    this.body = const Value.absent(),
+    this.keywords = const Value.absent(),
+    required int quantity,
+    this.cost = const Value.absent(),
+    required int deckLimit,
+    required int factionCost,
+    required bool uniqueness,
+    this.strength = const Value.absent(),
+    this.agendaPoints = const Value.absent(),
+    this.memoryCost = const Value.absent(),
+    this.advancementCost = const Value.absent(),
+    this.trashCost = const Value.absent(),
+    this.baseLink = const Value.absent(),
+    this.influenceLimit = const Value.absent(),
+    this.minimumDeckSize = const Value.absent(),
+    this.flavor = const Value.absent(),
+    this.illustrator = const Value.absent(),
+    required String imageUrl,
+  })  : code = Value(code),
+        packCode = Value(packCode),
+        factionCode = Value(factionCode),
+        typeCode = Value(typeCode),
+        position = Value(position),
+        title = Value(title),
+        quantity = Value(quantity),
+        deckLimit = Value(deckLimit),
+        factionCost = Value(factionCost),
+        uniqueness = Value(uniqueness),
+        imageUrl = Value(imageUrl);
+  static Insertable<CardData> custom({
+    Expression<String>? code,
+    Expression<String>? packCode,
+    Expression<String>? factionCode,
+    Expression<String>? typeCode,
+    Expression<int>? position,
+    Expression<String>? title,
+    Expression<String>? body,
+    Expression<String>? keywords,
+    Expression<int>? quantity,
+    Expression<int>? cost,
+    Expression<int>? deckLimit,
+    Expression<int>? factionCost,
+    Expression<bool>? uniqueness,
+    Expression<int>? strength,
+    Expression<int>? agendaPoints,
+    Expression<int>? memoryCost,
+    Expression<int>? advancementCost,
+    Expression<int>? trashCost,
+    Expression<int>? baseLink,
+    Expression<int>? influenceLimit,
+    Expression<int>? minimumDeckSize,
+    Expression<String>? flavor,
+    Expression<String>? illustrator,
+    Expression<String>? imageUrl,
+  }) {
+    return RawValuesInsertable({
+      if (code != null) 'code': code,
+      if (packCode != null) 'pack_code': packCode,
+      if (factionCode != null) 'faction_code': factionCode,
+      if (typeCode != null) 'type_code': typeCode,
+      if (position != null) 'position': position,
+      if (title != null) 'title': title,
+      if (body != null) 'body': body,
+      if (keywords != null) 'keywords': keywords,
+      if (quantity != null) 'quantity': quantity,
+      if (cost != null) 'cost': cost,
+      if (deckLimit != null) 'deck_limit': deckLimit,
+      if (factionCost != null) 'faction_cost': factionCost,
+      if (uniqueness != null) 'uniqueness': uniqueness,
+      if (strength != null) 'strength': strength,
+      if (agendaPoints != null) 'agenda_points': agendaPoints,
+      if (memoryCost != null) 'memory_cost': memoryCost,
+      if (advancementCost != null) 'advancement_cost': advancementCost,
+      if (trashCost != null) 'trash_cost': trashCost,
+      if (baseLink != null) 'base_link': baseLink,
+      if (influenceLimit != null) 'influence_limit': influenceLimit,
+      if (minimumDeckSize != null) 'minimum_deck_size': minimumDeckSize,
+      if (flavor != null) 'flavor': flavor,
+      if (illustrator != null) 'illustrator': illustrator,
+      if (imageUrl != null) 'image_url': imageUrl,
+    });
+  }
+
+  CardCompanion copyWith(
+      {Value<String>? code,
+      Value<String>? packCode,
+      Value<String>? factionCode,
+      Value<String>? typeCode,
+      Value<int>? position,
+      Value<String>? title,
+      Value<String?>? body,
+      Value<String?>? keywords,
+      Value<int>? quantity,
+      Value<int?>? cost,
+      Value<int>? deckLimit,
+      Value<int>? factionCost,
+      Value<bool>? uniqueness,
+      Value<int?>? strength,
+      Value<int?>? agendaPoints,
+      Value<int?>? memoryCost,
+      Value<int?>? advancementCost,
+      Value<int?>? trashCost,
+      Value<int?>? baseLink,
+      Value<int?>? influenceLimit,
+      Value<int?>? minimumDeckSize,
+      Value<String?>? flavor,
+      Value<String?>? illustrator,
+      Value<String>? imageUrl}) {
+    return CardCompanion(
+      code: code ?? this.code,
+      packCode: packCode ?? this.packCode,
+      factionCode: factionCode ?? this.factionCode,
+      typeCode: typeCode ?? this.typeCode,
+      position: position ?? this.position,
+      title: title ?? this.title,
+      body: body ?? this.body,
+      keywords: keywords ?? this.keywords,
+      quantity: quantity ?? this.quantity,
+      cost: cost ?? this.cost,
+      deckLimit: deckLimit ?? this.deckLimit,
+      factionCost: factionCost ?? this.factionCost,
+      uniqueness: uniqueness ?? this.uniqueness,
+      strength: strength ?? this.strength,
+      agendaPoints: agendaPoints ?? this.agendaPoints,
+      memoryCost: memoryCost ?? this.memoryCost,
+      advancementCost: advancementCost ?? this.advancementCost,
+      trashCost: trashCost ?? this.trashCost,
+      baseLink: baseLink ?? this.baseLink,
+      influenceLimit: influenceLimit ?? this.influenceLimit,
+      minimumDeckSize: minimumDeckSize ?? this.minimumDeckSize,
+      flavor: flavor ?? this.flavor,
+      illustrator: illustrator ?? this.illustrator,
+      imageUrl: imageUrl ?? this.imageUrl,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (packCode.present) {
+      map['pack_code'] = Variable<String>(packCode.value);
+    }
+    if (factionCode.present) {
+      map['faction_code'] = Variable<String>(factionCode.value);
+    }
+    if (typeCode.present) {
+      map['type_code'] = Variable<String>(typeCode.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (body.present) {
+      map['body'] = Variable<String>(body.value);
+    }
+    if (keywords.present) {
+      map['keywords'] = Variable<String>(keywords.value);
+    }
+    if (quantity.present) {
+      map['quantity'] = Variable<int>(quantity.value);
+    }
+    if (cost.present) {
+      map['cost'] = Variable<int>(cost.value);
+    }
+    if (deckLimit.present) {
+      map['deck_limit'] = Variable<int>(deckLimit.value);
+    }
+    if (factionCost.present) {
+      map['faction_cost'] = Variable<int>(factionCost.value);
+    }
+    if (uniqueness.present) {
+      map['uniqueness'] = Variable<bool>(uniqueness.value);
+    }
+    if (strength.present) {
+      map['strength'] = Variable<int>(strength.value);
+    }
+    if (agendaPoints.present) {
+      map['agenda_points'] = Variable<int>(agendaPoints.value);
+    }
+    if (memoryCost.present) {
+      map['memory_cost'] = Variable<int>(memoryCost.value);
+    }
+    if (advancementCost.present) {
+      map['advancement_cost'] = Variable<int>(advancementCost.value);
+    }
+    if (trashCost.present) {
+      map['trash_cost'] = Variable<int>(trashCost.value);
+    }
+    if (baseLink.present) {
+      map['base_link'] = Variable<int>(baseLink.value);
+    }
+    if (influenceLimit.present) {
+      map['influence_limit'] = Variable<int>(influenceLimit.value);
+    }
+    if (minimumDeckSize.present) {
+      map['minimum_deck_size'] = Variable<int>(minimumDeckSize.value);
+    }
+    if (flavor.present) {
+      map['flavor'] = Variable<String>(flavor.value);
+    }
+    if (illustrator.present) {
+      map['illustrator'] = Variable<String>(illustrator.value);
+    }
+    if (imageUrl.present) {
+      map['image_url'] = Variable<String>(imageUrl.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CardCompanion(')
+          ..write('code: $code, ')
+          ..write('packCode: $packCode, ')
+          ..write('factionCode: $factionCode, ')
+          ..write('typeCode: $typeCode, ')
+          ..write('position: $position, ')
+          ..write('title: $title, ')
+          ..write('body: $body, ')
+          ..write('keywords: $keywords, ')
+          ..write('quantity: $quantity, ')
+          ..write('cost: $cost, ')
+          ..write('deckLimit: $deckLimit, ')
+          ..write('factionCost: $factionCost, ')
+          ..write('uniqueness: $uniqueness, ')
+          ..write('strength: $strength, ')
+          ..write('agendaPoints: $agendaPoints, ')
+          ..write('memoryCost: $memoryCost, ')
+          ..write('advancementCost: $advancementCost, ')
+          ..write('trashCost: $trashCost, ')
+          ..write('baseLink: $baseLink, ')
+          ..write('influenceLimit: $influenceLimit, ')
+          ..write('minimumDeckSize: $minimumDeckSize, ')
+          ..write('flavor: $flavor, ')
+          ..write('illustrator: $illustrator, ')
+          ..write('imageUrl: $imageUrl')
+          ..write(')'))
+        .toString();
+  }
+}
+
+mixin FactionToColumns implements Insertable<FactionData> {
+  String get code;
+  String get sideCode;
+  String get name;
+  Color get color;
+  bool get isMini;
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -4327,167 +3084,6 @@ class FactionData extends DataClass implements Insertable<FactionData> {
     }
     map['is_mini'] = Variable<bool>(isMini);
     return map;
-  }
-
-  FactionCompanion toCompanion(bool nullToAbsent) {
-    return FactionCompanion(
-      code: Value(code),
-      sideCode: Value(sideCode),
-      name: Value(name),
-      color: Value(color),
-      isMini: Value(isMini),
-    );
-  }
-
-  factory FactionData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return FactionData(
-      code: serializer.fromJson<String>(json['code']),
-      sideCode: serializer.fromJson<String>(json['side_code']),
-      name: serializer.fromJson<String>(json['name']),
-      color: Faction.$convertercolor
-          .fromJson(serializer.fromJson<int>(json['color'])),
-      isMini: serializer.fromJson<bool>(json['is_mini']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'code': serializer.toJson<String>(code),
-      'side_code': serializer.toJson<String>(sideCode),
-      'name': serializer.toJson<String>(name),
-      'color': serializer.toJson<int>(Faction.$convertercolor.toJson(color)),
-      'is_mini': serializer.toJson<bool>(isMini),
-    };
-  }
-
-  FactionData copyWith(
-          {String? code,
-          String? sideCode,
-          String? name,
-          Color? color,
-          bool? isMini}) =>
-      FactionData(
-        code: code ?? this.code,
-        sideCode: sideCode ?? this.sideCode,
-        name: name ?? this.name,
-        color: color ?? this.color,
-        isMini: isMini ?? this.isMini,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('FactionData(')
-          ..write('code: $code, ')
-          ..write('sideCode: $sideCode, ')
-          ..write('name: $name, ')
-          ..write('color: $color, ')
-          ..write('isMini: $isMini')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(code, sideCode, name, color, isMini);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is FactionData &&
-          other.code == this.code &&
-          other.sideCode == this.sideCode &&
-          other.name == this.name &&
-          other.color == this.color &&
-          other.isMini == this.isMini);
-}
-
-class FactionCompanion extends UpdateCompanion<FactionData> {
-  final Value<String> code;
-  final Value<String> sideCode;
-  final Value<String> name;
-  final Value<Color> color;
-  final Value<bool> isMini;
-  const FactionCompanion({
-    this.code = const Value.absent(),
-    this.sideCode = const Value.absent(),
-    this.name = const Value.absent(),
-    this.color = const Value.absent(),
-    this.isMini = const Value.absent(),
-  });
-  FactionCompanion.insert({
-    required String code,
-    required String sideCode,
-    required String name,
-    required Color color,
-    required bool isMini,
-  })  : code = Value(code),
-        sideCode = Value(sideCode),
-        name = Value(name),
-        color = Value(color),
-        isMini = Value(isMini);
-  static Insertable<FactionData> custom({
-    Expression<String>? code,
-    Expression<String>? sideCode,
-    Expression<String>? name,
-    Expression<int>? color,
-    Expression<bool>? isMini,
-  }) {
-    return RawValuesInsertable({
-      if (code != null) 'code': code,
-      if (sideCode != null) 'side_code': sideCode,
-      if (name != null) 'name': name,
-      if (color != null) 'color': color,
-      if (isMini != null) 'is_mini': isMini,
-    });
-  }
-
-  FactionCompanion copyWith(
-      {Value<String>? code,
-      Value<String>? sideCode,
-      Value<String>? name,
-      Value<Color>? color,
-      Value<bool>? isMini}) {
-    return FactionCompanion(
-      code: code ?? this.code,
-      sideCode: sideCode ?? this.sideCode,
-      name: name ?? this.name,
-      color: color ?? this.color,
-      isMini: isMini ?? this.isMini,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (code.present) {
-      map['code'] = Variable<String>(code.value);
-    }
-    if (sideCode.present) {
-      map['side_code'] = Variable<String>(sideCode.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    if (color.present) {
-      final converter = Faction.$convertercolor;
-      map['color'] = Variable<int>(converter.toSql(color.value));
-    }
-    if (isMini.present) {
-      map['is_mini'] = Variable<bool>(isMini.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('FactionCompanion(')
-          ..write('code: $code, ')
-          ..write('sideCode: $sideCode, ')
-          ..write('name: $name, ')
-          ..write('color: $color, ')
-          ..write('isMini: $isMini')
-          ..write(')'))
-        .toString();
   }
 }
 
@@ -4597,7 +3193,362 @@ class Faction extends Table with TableInfo<Faction, FactionData> {
   bool get dontWriteConstraints => true;
 }
 
-class NrdbData extends DataClass implements Insertable<NrdbData> {
+class FactionCompanion extends UpdateCompanion<FactionData> {
+  final Value<String> code;
+  final Value<String> sideCode;
+  final Value<String> name;
+  final Value<Color> color;
+  final Value<bool> isMini;
+  const FactionCompanion({
+    this.code = const Value.absent(),
+    this.sideCode = const Value.absent(),
+    this.name = const Value.absent(),
+    this.color = const Value.absent(),
+    this.isMini = const Value.absent(),
+  });
+  FactionCompanion.insert({
+    required String code,
+    required String sideCode,
+    required String name,
+    required Color color,
+    required bool isMini,
+  })  : code = Value(code),
+        sideCode = Value(sideCode),
+        name = Value(name),
+        color = Value(color),
+        isMini = Value(isMini);
+  static Insertable<FactionData> custom({
+    Expression<String>? code,
+    Expression<String>? sideCode,
+    Expression<String>? name,
+    Expression<int>? color,
+    Expression<bool>? isMini,
+  }) {
+    return RawValuesInsertable({
+      if (code != null) 'code': code,
+      if (sideCode != null) 'side_code': sideCode,
+      if (name != null) 'name': name,
+      if (color != null) 'color': color,
+      if (isMini != null) 'is_mini': isMini,
+    });
+  }
+
+  FactionCompanion copyWith(
+      {Value<String>? code,
+      Value<String>? sideCode,
+      Value<String>? name,
+      Value<Color>? color,
+      Value<bool>? isMini}) {
+    return FactionCompanion(
+      code: code ?? this.code,
+      sideCode: sideCode ?? this.sideCode,
+      name: name ?? this.name,
+      color: color ?? this.color,
+      isMini: isMini ?? this.isMini,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (sideCode.present) {
+      map['side_code'] = Variable<String>(sideCode.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (color.present) {
+      final converter = Faction.$convertercolor;
+      map['color'] = Variable<int>(converter.toSql(color.value));
+    }
+    if (isMini.present) {
+      map['is_mini'] = Variable<bool>(isMini.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FactionCompanion(')
+          ..write('code: $code, ')
+          ..write('sideCode: $sideCode, ')
+          ..write('name: $name, ')
+          ..write('color: $color, ')
+          ..write('isMini: $isMini')
+          ..write(')'))
+        .toString();
+  }
+}
+
+mixin NrdbToColumns implements Insertable<NrdbData> {
+  bool get id;
+  DateTime get expires;
+  DateTime get cycleLastUpdated;
+  DateTime get packLastUpdated;
+  DateTime get sideLastUpdated;
+  DateTime get factionLastUpdated;
+  DateTime get typeLastUpdated;
+  DateTime get cardLastUpdated;
+  DateTime get formatLastUpdated;
+  DateTime get rotationLastUpdated;
+  DateTime get mwlLastUpdated;
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<bool>(id);
+    map['expires'] = Variable<DateTime>(expires);
+    map['cycle_last_updated'] = Variable<DateTime>(cycleLastUpdated);
+    map['pack_last_updated'] = Variable<DateTime>(packLastUpdated);
+    map['side_last_updated'] = Variable<DateTime>(sideLastUpdated);
+    map['faction_last_updated'] = Variable<DateTime>(factionLastUpdated);
+    map['type_last_updated'] = Variable<DateTime>(typeLastUpdated);
+    map['card_last_updated'] = Variable<DateTime>(cardLastUpdated);
+    map['format_last_updated'] = Variable<DateTime>(formatLastUpdated);
+    map['rotation_last_updated'] = Variable<DateTime>(rotationLastUpdated);
+    map['mwl_last_updated'] = Variable<DateTime>(mwlLastUpdated);
+    return map;
+  }
+}
+
+class Nrdb extends Table with TableInfo<Nrdb, NrdbData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  Nrdb(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  late final GeneratedColumn<bool> id = GeneratedColumn<bool>(
+      'id', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: false,
+      $customConstraints: 'PRIMARY KEY NOT NULL DEFAULT TRUE',
+      defaultValue: const CustomExpression('TRUE'));
+  static const VerificationMeta _expiresMeta =
+      const VerificationMeta('expires');
+  late final GeneratedColumn<DateTime> expires = GeneratedColumn<DateTime>(
+      'expires', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _cycleLastUpdatedMeta =
+      const VerificationMeta('cycleLastUpdated');
+  late final GeneratedColumn<DateTime> cycleLastUpdated =
+      GeneratedColumn<DateTime>('cycle_last_updated', aliasedName, false,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
+  static const VerificationMeta _packLastUpdatedMeta =
+      const VerificationMeta('packLastUpdated');
+  late final GeneratedColumn<DateTime> packLastUpdated =
+      GeneratedColumn<DateTime>('pack_last_updated', aliasedName, false,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
+  static const VerificationMeta _sideLastUpdatedMeta =
+      const VerificationMeta('sideLastUpdated');
+  late final GeneratedColumn<DateTime> sideLastUpdated =
+      GeneratedColumn<DateTime>('side_last_updated', aliasedName, false,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
+  static const VerificationMeta _factionLastUpdatedMeta =
+      const VerificationMeta('factionLastUpdated');
+  late final GeneratedColumn<DateTime> factionLastUpdated =
+      GeneratedColumn<DateTime>('faction_last_updated', aliasedName, false,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
+  static const VerificationMeta _typeLastUpdatedMeta =
+      const VerificationMeta('typeLastUpdated');
+  late final GeneratedColumn<DateTime> typeLastUpdated =
+      GeneratedColumn<DateTime>('type_last_updated', aliasedName, false,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
+  static const VerificationMeta _cardLastUpdatedMeta =
+      const VerificationMeta('cardLastUpdated');
+  late final GeneratedColumn<DateTime> cardLastUpdated =
+      GeneratedColumn<DateTime>('card_last_updated', aliasedName, false,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
+  static const VerificationMeta _formatLastUpdatedMeta =
+      const VerificationMeta('formatLastUpdated');
+  late final GeneratedColumn<DateTime> formatLastUpdated =
+      GeneratedColumn<DateTime>('format_last_updated', aliasedName, false,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
+  static const VerificationMeta _rotationLastUpdatedMeta =
+      const VerificationMeta('rotationLastUpdated');
+  late final GeneratedColumn<DateTime> rotationLastUpdated =
+      GeneratedColumn<DateTime>('rotation_last_updated', aliasedName, false,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
+  static const VerificationMeta _mwlLastUpdatedMeta =
+      const VerificationMeta('mwlLastUpdated');
+  late final GeneratedColumn<DateTime> mwlLastUpdated =
+      GeneratedColumn<DateTime>('mwl_last_updated', aliasedName, false,
+          type: DriftSqlType.dateTime,
+          requiredDuringInsert: true,
+          $customConstraints: 'NOT NULL');
+  @override
+  List<GeneratedColumn> get $columns => [
+        id,
+        expires,
+        cycleLastUpdated,
+        packLastUpdated,
+        sideLastUpdated,
+        factionLastUpdated,
+        typeLastUpdated,
+        cardLastUpdated,
+        formatLastUpdated,
+        rotationLastUpdated,
+        mwlLastUpdated
+      ];
+  @override
+  String get aliasedName => _alias ?? 'nrdb';
+  @override
+  String get actualTableName => 'nrdb';
+  @override
+  VerificationContext validateIntegrity(Insertable<NrdbData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('expires')) {
+      context.handle(_expiresMeta,
+          expires.isAcceptableOrUnknown(data['expires']!, _expiresMeta));
+    } else if (isInserting) {
+      context.missing(_expiresMeta);
+    }
+    if (data.containsKey('cycle_last_updated')) {
+      context.handle(
+          _cycleLastUpdatedMeta,
+          cycleLastUpdated.isAcceptableOrUnknown(
+              data['cycle_last_updated']!, _cycleLastUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_cycleLastUpdatedMeta);
+    }
+    if (data.containsKey('pack_last_updated')) {
+      context.handle(
+          _packLastUpdatedMeta,
+          packLastUpdated.isAcceptableOrUnknown(
+              data['pack_last_updated']!, _packLastUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_packLastUpdatedMeta);
+    }
+    if (data.containsKey('side_last_updated')) {
+      context.handle(
+          _sideLastUpdatedMeta,
+          sideLastUpdated.isAcceptableOrUnknown(
+              data['side_last_updated']!, _sideLastUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_sideLastUpdatedMeta);
+    }
+    if (data.containsKey('faction_last_updated')) {
+      context.handle(
+          _factionLastUpdatedMeta,
+          factionLastUpdated.isAcceptableOrUnknown(
+              data['faction_last_updated']!, _factionLastUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_factionLastUpdatedMeta);
+    }
+    if (data.containsKey('type_last_updated')) {
+      context.handle(
+          _typeLastUpdatedMeta,
+          typeLastUpdated.isAcceptableOrUnknown(
+              data['type_last_updated']!, _typeLastUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_typeLastUpdatedMeta);
+    }
+    if (data.containsKey('card_last_updated')) {
+      context.handle(
+          _cardLastUpdatedMeta,
+          cardLastUpdated.isAcceptableOrUnknown(
+              data['card_last_updated']!, _cardLastUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_cardLastUpdatedMeta);
+    }
+    if (data.containsKey('format_last_updated')) {
+      context.handle(
+          _formatLastUpdatedMeta,
+          formatLastUpdated.isAcceptableOrUnknown(
+              data['format_last_updated']!, _formatLastUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_formatLastUpdatedMeta);
+    }
+    if (data.containsKey('rotation_last_updated')) {
+      context.handle(
+          _rotationLastUpdatedMeta,
+          rotationLastUpdated.isAcceptableOrUnknown(
+              data['rotation_last_updated']!, _rotationLastUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_rotationLastUpdatedMeta);
+    }
+    if (data.containsKey('mwl_last_updated')) {
+      context.handle(
+          _mwlLastUpdatedMeta,
+          mwlLastUpdated.isAcceptableOrUnknown(
+              data['mwl_last_updated']!, _mwlLastUpdatedMeta));
+    } else if (isInserting) {
+      context.missing(_mwlLastUpdatedMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  NrdbData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return NrdbData(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}id'])!,
+      expires: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}expires'])!,
+      cycleLastUpdated: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}cycle_last_updated'])!,
+      packLastUpdated: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}pack_last_updated'])!,
+      sideLastUpdated: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}side_last_updated'])!,
+      factionLastUpdated: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime,
+          data['${effectivePrefix}faction_last_updated'])!,
+      typeLastUpdated: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}type_last_updated'])!,
+      cardLastUpdated: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}card_last_updated'])!,
+      formatLastUpdated: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime,
+          data['${effectivePrefix}format_last_updated'])!,
+      rotationLastUpdated: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime,
+          data['${effectivePrefix}rotation_last_updated'])!,
+      mwlLastUpdated: attachedDatabase.typeMapping.read(
+          DriftSqlType.dateTime, data['${effectivePrefix}mwl_last_updated'])!,
+    );
+  }
+
+  @override
+  Nrdb createAlias(String alias) {
+    return Nrdb(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints =>
+      const ['CONSTRAINT settings_id CHECK(id = TRUE)'];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class NrdbData extends DataClass with NrdbToColumns {
   final bool id;
   final DateTime expires;
   final DateTime cycleLastUpdated;
@@ -4621,23 +3572,6 @@ class NrdbData extends DataClass implements Insertable<NrdbData> {
       required this.formatLastUpdated,
       required this.rotationLastUpdated,
       required this.mwlLastUpdated});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<bool>(id);
-    map['expires'] = Variable<DateTime>(expires);
-    map['cycle_last_updated'] = Variable<DateTime>(cycleLastUpdated);
-    map['pack_last_updated'] = Variable<DateTime>(packLastUpdated);
-    map['side_last_updated'] = Variable<DateTime>(sideLastUpdated);
-    map['faction_last_updated'] = Variable<DateTime>(factionLastUpdated);
-    map['type_last_updated'] = Variable<DateTime>(typeLastUpdated);
-    map['card_last_updated'] = Variable<DateTime>(cardLastUpdated);
-    map['format_last_updated'] = Variable<DateTime>(formatLastUpdated);
-    map['rotation_last_updated'] = Variable<DateTime>(rotationLastUpdated);
-    map['mwl_last_updated'] = Variable<DateTime>(mwlLastUpdated);
-    return map;
-  }
-
   NrdbCompanion toCompanion(bool nullToAbsent) {
     return NrdbCompanion(
       id: Value(id),
@@ -4930,257 +3864,14 @@ class NrdbCompanion extends UpdateCompanion<NrdbData> {
   }
 }
 
-class Nrdb extends Table with TableInfo<Nrdb, NrdbData> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  Nrdb(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  late final GeneratedColumn<bool> id = GeneratedColumn<bool>(
-      'id', aliasedName, false,
-      type: DriftSqlType.bool,
-      requiredDuringInsert: false,
-      $customConstraints: 'PRIMARY KEY NOT NULL DEFAULT TRUE',
-      defaultValue: const CustomExpression('TRUE'));
-  static const VerificationMeta _expiresMeta =
-      const VerificationMeta('expires');
-  late final GeneratedColumn<DateTime> expires = GeneratedColumn<DateTime>(
-      'expires', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  static const VerificationMeta _cycleLastUpdatedMeta =
-      const VerificationMeta('cycleLastUpdated');
-  late final GeneratedColumn<DateTime> cycleLastUpdated =
-      GeneratedColumn<DateTime>('cycle_last_updated', aliasedName, false,
-          type: DriftSqlType.dateTime,
-          requiredDuringInsert: true,
-          $customConstraints: 'NOT NULL');
-  static const VerificationMeta _packLastUpdatedMeta =
-      const VerificationMeta('packLastUpdated');
-  late final GeneratedColumn<DateTime> packLastUpdated =
-      GeneratedColumn<DateTime>('pack_last_updated', aliasedName, false,
-          type: DriftSqlType.dateTime,
-          requiredDuringInsert: true,
-          $customConstraints: 'NOT NULL');
-  static const VerificationMeta _sideLastUpdatedMeta =
-      const VerificationMeta('sideLastUpdated');
-  late final GeneratedColumn<DateTime> sideLastUpdated =
-      GeneratedColumn<DateTime>('side_last_updated', aliasedName, false,
-          type: DriftSqlType.dateTime,
-          requiredDuringInsert: true,
-          $customConstraints: 'NOT NULL');
-  static const VerificationMeta _factionLastUpdatedMeta =
-      const VerificationMeta('factionLastUpdated');
-  late final GeneratedColumn<DateTime> factionLastUpdated =
-      GeneratedColumn<DateTime>('faction_last_updated', aliasedName, false,
-          type: DriftSqlType.dateTime,
-          requiredDuringInsert: true,
-          $customConstraints: 'NOT NULL');
-  static const VerificationMeta _typeLastUpdatedMeta =
-      const VerificationMeta('typeLastUpdated');
-  late final GeneratedColumn<DateTime> typeLastUpdated =
-      GeneratedColumn<DateTime>('type_last_updated', aliasedName, false,
-          type: DriftSqlType.dateTime,
-          requiredDuringInsert: true,
-          $customConstraints: 'NOT NULL');
-  static const VerificationMeta _cardLastUpdatedMeta =
-      const VerificationMeta('cardLastUpdated');
-  late final GeneratedColumn<DateTime> cardLastUpdated =
-      GeneratedColumn<DateTime>('card_last_updated', aliasedName, false,
-          type: DriftSqlType.dateTime,
-          requiredDuringInsert: true,
-          $customConstraints: 'NOT NULL');
-  static const VerificationMeta _formatLastUpdatedMeta =
-      const VerificationMeta('formatLastUpdated');
-  late final GeneratedColumn<DateTime> formatLastUpdated =
-      GeneratedColumn<DateTime>('format_last_updated', aliasedName, false,
-          type: DriftSqlType.dateTime,
-          requiredDuringInsert: true,
-          $customConstraints: 'NOT NULL');
-  static const VerificationMeta _rotationLastUpdatedMeta =
-      const VerificationMeta('rotationLastUpdated');
-  late final GeneratedColumn<DateTime> rotationLastUpdated =
-      GeneratedColumn<DateTime>('rotation_last_updated', aliasedName, false,
-          type: DriftSqlType.dateTime,
-          requiredDuringInsert: true,
-          $customConstraints: 'NOT NULL');
-  static const VerificationMeta _mwlLastUpdatedMeta =
-      const VerificationMeta('mwlLastUpdated');
-  late final GeneratedColumn<DateTime> mwlLastUpdated =
-      GeneratedColumn<DateTime>('mwl_last_updated', aliasedName, false,
-          type: DriftSqlType.dateTime,
-          requiredDuringInsert: true,
-          $customConstraints: 'NOT NULL');
-  @override
-  List<GeneratedColumn> get $columns => [
-        id,
-        expires,
-        cycleLastUpdated,
-        packLastUpdated,
-        sideLastUpdated,
-        factionLastUpdated,
-        typeLastUpdated,
-        cardLastUpdated,
-        formatLastUpdated,
-        rotationLastUpdated,
-        mwlLastUpdated
-      ];
-  @override
-  String get aliasedName => _alias ?? 'nrdb';
-  @override
-  String get actualTableName => 'nrdb';
-  @override
-  VerificationContext validateIntegrity(Insertable<NrdbData> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('expires')) {
-      context.handle(_expiresMeta,
-          expires.isAcceptableOrUnknown(data['expires']!, _expiresMeta));
-    } else if (isInserting) {
-      context.missing(_expiresMeta);
-    }
-    if (data.containsKey('cycle_last_updated')) {
-      context.handle(
-          _cycleLastUpdatedMeta,
-          cycleLastUpdated.isAcceptableOrUnknown(
-              data['cycle_last_updated']!, _cycleLastUpdatedMeta));
-    } else if (isInserting) {
-      context.missing(_cycleLastUpdatedMeta);
-    }
-    if (data.containsKey('pack_last_updated')) {
-      context.handle(
-          _packLastUpdatedMeta,
-          packLastUpdated.isAcceptableOrUnknown(
-              data['pack_last_updated']!, _packLastUpdatedMeta));
-    } else if (isInserting) {
-      context.missing(_packLastUpdatedMeta);
-    }
-    if (data.containsKey('side_last_updated')) {
-      context.handle(
-          _sideLastUpdatedMeta,
-          sideLastUpdated.isAcceptableOrUnknown(
-              data['side_last_updated']!, _sideLastUpdatedMeta));
-    } else if (isInserting) {
-      context.missing(_sideLastUpdatedMeta);
-    }
-    if (data.containsKey('faction_last_updated')) {
-      context.handle(
-          _factionLastUpdatedMeta,
-          factionLastUpdated.isAcceptableOrUnknown(
-              data['faction_last_updated']!, _factionLastUpdatedMeta));
-    } else if (isInserting) {
-      context.missing(_factionLastUpdatedMeta);
-    }
-    if (data.containsKey('type_last_updated')) {
-      context.handle(
-          _typeLastUpdatedMeta,
-          typeLastUpdated.isAcceptableOrUnknown(
-              data['type_last_updated']!, _typeLastUpdatedMeta));
-    } else if (isInserting) {
-      context.missing(_typeLastUpdatedMeta);
-    }
-    if (data.containsKey('card_last_updated')) {
-      context.handle(
-          _cardLastUpdatedMeta,
-          cardLastUpdated.isAcceptableOrUnknown(
-              data['card_last_updated']!, _cardLastUpdatedMeta));
-    } else if (isInserting) {
-      context.missing(_cardLastUpdatedMeta);
-    }
-    if (data.containsKey('format_last_updated')) {
-      context.handle(
-          _formatLastUpdatedMeta,
-          formatLastUpdated.isAcceptableOrUnknown(
-              data['format_last_updated']!, _formatLastUpdatedMeta));
-    } else if (isInserting) {
-      context.missing(_formatLastUpdatedMeta);
-    }
-    if (data.containsKey('rotation_last_updated')) {
-      context.handle(
-          _rotationLastUpdatedMeta,
-          rotationLastUpdated.isAcceptableOrUnknown(
-              data['rotation_last_updated']!, _rotationLastUpdatedMeta));
-    } else if (isInserting) {
-      context.missing(_rotationLastUpdatedMeta);
-    }
-    if (data.containsKey('mwl_last_updated')) {
-      context.handle(
-          _mwlLastUpdatedMeta,
-          mwlLastUpdated.isAcceptableOrUnknown(
-              data['mwl_last_updated']!, _mwlLastUpdatedMeta));
-    } else if (isInserting) {
-      context.missing(_mwlLastUpdatedMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  NrdbData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return NrdbData(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}id'])!,
-      expires: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}expires'])!,
-      cycleLastUpdated: attachedDatabase.typeMapping.read(
-          DriftSqlType.dateTime, data['${effectivePrefix}cycle_last_updated'])!,
-      packLastUpdated: attachedDatabase.typeMapping.read(
-          DriftSqlType.dateTime, data['${effectivePrefix}pack_last_updated'])!,
-      sideLastUpdated: attachedDatabase.typeMapping.read(
-          DriftSqlType.dateTime, data['${effectivePrefix}side_last_updated'])!,
-      factionLastUpdated: attachedDatabase.typeMapping.read(
-          DriftSqlType.dateTime,
-          data['${effectivePrefix}faction_last_updated'])!,
-      typeLastUpdated: attachedDatabase.typeMapping.read(
-          DriftSqlType.dateTime, data['${effectivePrefix}type_last_updated'])!,
-      cardLastUpdated: attachedDatabase.typeMapping.read(
-          DriftSqlType.dateTime, data['${effectivePrefix}card_last_updated'])!,
-      formatLastUpdated: attachedDatabase.typeMapping.read(
-          DriftSqlType.dateTime,
-          data['${effectivePrefix}format_last_updated'])!,
-      rotationLastUpdated: attachedDatabase.typeMapping.read(
-          DriftSqlType.dateTime,
-          data['${effectivePrefix}rotation_last_updated'])!,
-      mwlLastUpdated: attachedDatabase.typeMapping.read(
-          DriftSqlType.dateTime, data['${effectivePrefix}mwl_last_updated'])!,
-    );
-  }
-
-  @override
-  Nrdb createAlias(String alias) {
-    return Nrdb(attachedDatabase, alias);
-  }
-
-  @override
-  List<String> get customConstraints =>
-      const ['CONSTRAINT settings_id CHECK(id = TRUE)'];
-  @override
-  bool get dontWriteConstraints => true;
-}
-
-class MwlCardData extends DataClass implements Insertable<MwlCardData> {
-  final String mwlCode;
-  final String cardTitle;
-  final bool isRestricted;
-  final int? globalPenalty;
-  final int? universalFactionCost;
-  final int? deckLimit;
-  final int? points;
-  const MwlCardData(
-      {required this.mwlCode,
-      required this.cardTitle,
-      required this.isRestricted,
-      this.globalPenalty,
-      this.universalFactionCost,
-      this.deckLimit,
-      this.points});
+mixin MwlCardToColumns implements Insertable<MwlCardData> {
+  String get mwlCode;
+  String get cardTitle;
+  bool get isRestricted;
+  int? get globalPenalty;
+  int? get universalFactionCost;
+  int? get deckLimit;
+  int? get points;
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -5201,7 +3892,174 @@ class MwlCardData extends DataClass implements Insertable<MwlCardData> {
     }
     return map;
   }
+}
 
+class MwlCard extends Table with TableInfo<MwlCard, MwlCardData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  MwlCard(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _mwlCodeMeta =
+      const VerificationMeta('mwlCode');
+  late final GeneratedColumn<String> mwlCode = GeneratedColumn<String>(
+      'mwl_code', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _cardTitleMeta =
+      const VerificationMeta('cardTitle');
+  late final GeneratedColumn<String> cardTitle = GeneratedColumn<String>(
+      'card_title', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _isRestrictedMeta =
+      const VerificationMeta('isRestricted');
+  late final GeneratedColumn<bool> isRestricted = GeneratedColumn<bool>(
+      'is_restricted', aliasedName, false,
+      type: DriftSqlType.bool,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _globalPenaltyMeta =
+      const VerificationMeta('globalPenalty');
+  late final GeneratedColumn<int> globalPenalty = GeneratedColumn<int>(
+      'global_penalty', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  static const VerificationMeta _universalFactionCostMeta =
+      const VerificationMeta('universalFactionCost');
+  late final GeneratedColumn<int> universalFactionCost = GeneratedColumn<int>(
+      'universal_faction_cost', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  static const VerificationMeta _deckLimitMeta =
+      const VerificationMeta('deckLimit');
+  late final GeneratedColumn<int> deckLimit = GeneratedColumn<int>(
+      'deck_limit', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  static const VerificationMeta _pointsMeta = const VerificationMeta('points');
+  late final GeneratedColumn<int> points = GeneratedColumn<int>(
+      'points', aliasedName, true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      $customConstraints: '');
+  @override
+  List<GeneratedColumn> get $columns => [
+        mwlCode,
+        cardTitle,
+        isRestricted,
+        globalPenalty,
+        universalFactionCost,
+        deckLimit,
+        points
+      ];
+  @override
+  String get aliasedName => _alias ?? 'mwl_card';
+  @override
+  String get actualTableName => 'mwl_card';
+  @override
+  VerificationContext validateIntegrity(Insertable<MwlCardData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('mwl_code')) {
+      context.handle(_mwlCodeMeta,
+          mwlCode.isAcceptableOrUnknown(data['mwl_code']!, _mwlCodeMeta));
+    } else if (isInserting) {
+      context.missing(_mwlCodeMeta);
+    }
+    if (data.containsKey('card_title')) {
+      context.handle(_cardTitleMeta,
+          cardTitle.isAcceptableOrUnknown(data['card_title']!, _cardTitleMeta));
+    } else if (isInserting) {
+      context.missing(_cardTitleMeta);
+    }
+    if (data.containsKey('is_restricted')) {
+      context.handle(
+          _isRestrictedMeta,
+          isRestricted.isAcceptableOrUnknown(
+              data['is_restricted']!, _isRestrictedMeta));
+    } else if (isInserting) {
+      context.missing(_isRestrictedMeta);
+    }
+    if (data.containsKey('global_penalty')) {
+      context.handle(
+          _globalPenaltyMeta,
+          globalPenalty.isAcceptableOrUnknown(
+              data['global_penalty']!, _globalPenaltyMeta));
+    }
+    if (data.containsKey('universal_faction_cost')) {
+      context.handle(
+          _universalFactionCostMeta,
+          universalFactionCost.isAcceptableOrUnknown(
+              data['universal_faction_cost']!, _universalFactionCostMeta));
+    }
+    if (data.containsKey('deck_limit')) {
+      context.handle(_deckLimitMeta,
+          deckLimit.isAcceptableOrUnknown(data['deck_limit']!, _deckLimitMeta));
+    }
+    if (data.containsKey('points')) {
+      context.handle(_pointsMeta,
+          points.isAcceptableOrUnknown(data['points']!, _pointsMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {mwlCode, cardTitle};
+  @override
+  MwlCardData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MwlCardData(
+      mwlCode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}mwl_code'])!,
+      cardTitle: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}card_title'])!,
+      isRestricted: attachedDatabase.typeMapping
+          .read(DriftSqlType.bool, data['${effectivePrefix}is_restricted'])!,
+      globalPenalty: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}global_penalty']),
+      universalFactionCost: attachedDatabase.typeMapping.read(
+          DriftSqlType.int, data['${effectivePrefix}universal_faction_cost']),
+      deckLimit: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}deck_limit']),
+      points: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}points']),
+    );
+  }
+
+  @override
+  MwlCard createAlias(String alias) {
+    return MwlCard(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints =>
+      const ['PRIMARY KEY(mwl_code, card_title)'];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class MwlCardData extends DataClass with MwlCardToColumns {
+  final String mwlCode;
+  final String cardTitle;
+  final bool isRestricted;
+  final int? globalPenalty;
+  final int? universalFactionCost;
+  final int? deckLimit;
+  final int? points;
+  const MwlCardData(
+      {required this.mwlCode,
+      required this.cardTitle,
+      required this.isRestricted,
+      this.globalPenalty,
+      this.universalFactionCost,
+      this.deckLimit,
+      this.points});
   MwlCardCompanion toCompanion(bool nullToAbsent) {
     return MwlCardCompanion(
       mwlCode: Value(mwlCode),
@@ -5409,182 +4267,19 @@ class MwlCardCompanion extends UpdateCompanion<MwlCardData> {
   }
 }
 
-class MwlCard extends Table with TableInfo<MwlCard, MwlCardData> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  MwlCard(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _mwlCodeMeta =
-      const VerificationMeta('mwlCode');
-  late final GeneratedColumn<String> mwlCode = GeneratedColumn<String>(
-      'mwl_code', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  static const VerificationMeta _cardTitleMeta =
-      const VerificationMeta('cardTitle');
-  late final GeneratedColumn<String> cardTitle = GeneratedColumn<String>(
-      'card_title', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  static const VerificationMeta _isRestrictedMeta =
-      const VerificationMeta('isRestricted');
-  late final GeneratedColumn<bool> isRestricted = GeneratedColumn<bool>(
-      'is_restricted', aliasedName, false,
-      type: DriftSqlType.bool,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  static const VerificationMeta _globalPenaltyMeta =
-      const VerificationMeta('globalPenalty');
-  late final GeneratedColumn<int> globalPenalty = GeneratedColumn<int>(
-      'global_penalty', aliasedName, true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  static const VerificationMeta _universalFactionCostMeta =
-      const VerificationMeta('universalFactionCost');
-  late final GeneratedColumn<int> universalFactionCost = GeneratedColumn<int>(
-      'universal_faction_cost', aliasedName, true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  static const VerificationMeta _deckLimitMeta =
-      const VerificationMeta('deckLimit');
-  late final GeneratedColumn<int> deckLimit = GeneratedColumn<int>(
-      'deck_limit', aliasedName, true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  static const VerificationMeta _pointsMeta = const VerificationMeta('points');
-  late final GeneratedColumn<int> points = GeneratedColumn<int>(
-      'points', aliasedName, true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      $customConstraints: '');
-  @override
-  List<GeneratedColumn> get $columns => [
-        mwlCode,
-        cardTitle,
-        isRestricted,
-        globalPenalty,
-        universalFactionCost,
-        deckLimit,
-        points
-      ];
-  @override
-  String get aliasedName => _alias ?? 'mwl_card';
-  @override
-  String get actualTableName => 'mwl_card';
-  @override
-  VerificationContext validateIntegrity(Insertable<MwlCardData> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('mwl_code')) {
-      context.handle(_mwlCodeMeta,
-          mwlCode.isAcceptableOrUnknown(data['mwl_code']!, _mwlCodeMeta));
-    } else if (isInserting) {
-      context.missing(_mwlCodeMeta);
-    }
-    if (data.containsKey('card_title')) {
-      context.handle(_cardTitleMeta,
-          cardTitle.isAcceptableOrUnknown(data['card_title']!, _cardTitleMeta));
-    } else if (isInserting) {
-      context.missing(_cardTitleMeta);
-    }
-    if (data.containsKey('is_restricted')) {
-      context.handle(
-          _isRestrictedMeta,
-          isRestricted.isAcceptableOrUnknown(
-              data['is_restricted']!, _isRestrictedMeta));
-    } else if (isInserting) {
-      context.missing(_isRestrictedMeta);
-    }
-    if (data.containsKey('global_penalty')) {
-      context.handle(
-          _globalPenaltyMeta,
-          globalPenalty.isAcceptableOrUnknown(
-              data['global_penalty']!, _globalPenaltyMeta));
-    }
-    if (data.containsKey('universal_faction_cost')) {
-      context.handle(
-          _universalFactionCostMeta,
-          universalFactionCost.isAcceptableOrUnknown(
-              data['universal_faction_cost']!, _universalFactionCostMeta));
-    }
-    if (data.containsKey('deck_limit')) {
-      context.handle(_deckLimitMeta,
-          deckLimit.isAcceptableOrUnknown(data['deck_limit']!, _deckLimitMeta));
-    }
-    if (data.containsKey('points')) {
-      context.handle(_pointsMeta,
-          points.isAcceptableOrUnknown(data['points']!, _pointsMeta));
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {mwlCode, cardTitle};
-  @override
-  MwlCardData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return MwlCardData(
-      mwlCode: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}mwl_code'])!,
-      cardTitle: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}card_title'])!,
-      isRestricted: attachedDatabase.typeMapping
-          .read(DriftSqlType.bool, data['${effectivePrefix}is_restricted'])!,
-      globalPenalty: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}global_penalty']),
-      universalFactionCost: attachedDatabase.typeMapping.read(
-          DriftSqlType.int, data['${effectivePrefix}universal_faction_cost']),
-      deckLimit: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}deck_limit']),
-      points: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}points']),
-    );
-  }
-
-  @override
-  MwlCard createAlias(String alias) {
-    return MwlCard(attachedDatabase, alias);
-  }
-
-  @override
-  List<String> get customConstraints =>
-      const ['PRIMARY KEY(mwl_code, card_title)'];
-  @override
-  bool get dontWriteConstraints => true;
-}
-
-class DeckData extends DataClass implements Insertable<DeckData> {
-  final String id;
-  final String identityCode;
-  final String? formatCode;
-  final String? rotationCode;
-  final String? mwlCode;
-  final String name;
-  final String description;
-  final DateTime created;
-  final DateTime updated;
-  final bool deleted;
-  final DateTime? remoteUpdated;
-  final DateTime? synced;
-  const DeckData(
-      {required this.id,
-      required this.identityCode,
-      this.formatCode,
-      this.rotationCode,
-      this.mwlCode,
-      required this.name,
-      required this.description,
-      required this.created,
-      required this.updated,
-      required this.deleted,
-      this.remoteUpdated,
-      this.synced});
+mixin DeckToColumns implements Insertable<DeckData> {
+  String get id;
+  String get identityCode;
+  String? get formatCode;
+  String? get rotationCode;
+  String? get mwlCode;
+  String get name;
+  String get description;
+  DateTime get created;
+  DateTime get updated;
+  bool get deleted;
+  DateTime? get remoteUpdated;
+  DateTime? get synced;
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -5611,316 +4306,6 @@ class DeckData extends DataClass implements Insertable<DeckData> {
       map['synced'] = Variable<DateTime>(synced);
     }
     return map;
-  }
-
-  DeckCompanion toCompanion(bool nullToAbsent) {
-    return DeckCompanion(
-      id: Value(id),
-      identityCode: Value(identityCode),
-      formatCode: formatCode == null && nullToAbsent
-          ? const Value.absent()
-          : Value(formatCode),
-      rotationCode: rotationCode == null && nullToAbsent
-          ? const Value.absent()
-          : Value(rotationCode),
-      mwlCode: mwlCode == null && nullToAbsent
-          ? const Value.absent()
-          : Value(mwlCode),
-      name: Value(name),
-      description: Value(description),
-      created: Value(created),
-      updated: Value(updated),
-      deleted: Value(deleted),
-      remoteUpdated: remoteUpdated == null && nullToAbsent
-          ? const Value.absent()
-          : Value(remoteUpdated),
-      synced:
-          synced == null && nullToAbsent ? const Value.absent() : Value(synced),
-    );
-  }
-
-  factory DeckData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return DeckData(
-      id: serializer.fromJson<String>(json['id']),
-      identityCode: serializer.fromJson<String>(json['identity_code']),
-      formatCode: serializer.fromJson<String?>(json['format_code']),
-      rotationCode: serializer.fromJson<String?>(json['rotation_code']),
-      mwlCode: serializer.fromJson<String?>(json['mwl_code']),
-      name: serializer.fromJson<String>(json['name']),
-      description: serializer.fromJson<String>(json['description']),
-      created: serializer.fromJson<DateTime>(json['created']),
-      updated: serializer.fromJson<DateTime>(json['updated']),
-      deleted: serializer.fromJson<bool>(json['deleted']),
-      remoteUpdated: serializer.fromJson<DateTime?>(json['remote_updated']),
-      synced: serializer.fromJson<DateTime?>(json['synced']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<String>(id),
-      'identity_code': serializer.toJson<String>(identityCode),
-      'format_code': serializer.toJson<String?>(formatCode),
-      'rotation_code': serializer.toJson<String?>(rotationCode),
-      'mwl_code': serializer.toJson<String?>(mwlCode),
-      'name': serializer.toJson<String>(name),
-      'description': serializer.toJson<String>(description),
-      'created': serializer.toJson<DateTime>(created),
-      'updated': serializer.toJson<DateTime>(updated),
-      'deleted': serializer.toJson<bool>(deleted),
-      'remote_updated': serializer.toJson<DateTime?>(remoteUpdated),
-      'synced': serializer.toJson<DateTime?>(synced),
-    };
-  }
-
-  DeckData copyWith(
-          {String? id,
-          String? identityCode,
-          Value<String?> formatCode = const Value.absent(),
-          Value<String?> rotationCode = const Value.absent(),
-          Value<String?> mwlCode = const Value.absent(),
-          String? name,
-          String? description,
-          DateTime? created,
-          DateTime? updated,
-          bool? deleted,
-          Value<DateTime?> remoteUpdated = const Value.absent(),
-          Value<DateTime?> synced = const Value.absent()}) =>
-      DeckData(
-        id: id ?? this.id,
-        identityCode: identityCode ?? this.identityCode,
-        formatCode: formatCode.present ? formatCode.value : this.formatCode,
-        rotationCode:
-            rotationCode.present ? rotationCode.value : this.rotationCode,
-        mwlCode: mwlCode.present ? mwlCode.value : this.mwlCode,
-        name: name ?? this.name,
-        description: description ?? this.description,
-        created: created ?? this.created,
-        updated: updated ?? this.updated,
-        deleted: deleted ?? this.deleted,
-        remoteUpdated:
-            remoteUpdated.present ? remoteUpdated.value : this.remoteUpdated,
-        synced: synced.present ? synced.value : this.synced,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('DeckData(')
-          ..write('id: $id, ')
-          ..write('identityCode: $identityCode, ')
-          ..write('formatCode: $formatCode, ')
-          ..write('rotationCode: $rotationCode, ')
-          ..write('mwlCode: $mwlCode, ')
-          ..write('name: $name, ')
-          ..write('description: $description, ')
-          ..write('created: $created, ')
-          ..write('updated: $updated, ')
-          ..write('deleted: $deleted, ')
-          ..write('remoteUpdated: $remoteUpdated, ')
-          ..write('synced: $synced')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(
-      id,
-      identityCode,
-      formatCode,
-      rotationCode,
-      mwlCode,
-      name,
-      description,
-      created,
-      updated,
-      deleted,
-      remoteUpdated,
-      synced);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is DeckData &&
-          other.id == this.id &&
-          other.identityCode == this.identityCode &&
-          other.formatCode == this.formatCode &&
-          other.rotationCode == this.rotationCode &&
-          other.mwlCode == this.mwlCode &&
-          other.name == this.name &&
-          other.description == this.description &&
-          other.created == this.created &&
-          other.updated == this.updated &&
-          other.deleted == this.deleted &&
-          other.remoteUpdated == this.remoteUpdated &&
-          other.synced == this.synced);
-}
-
-class DeckCompanion extends UpdateCompanion<DeckData> {
-  final Value<String> id;
-  final Value<String> identityCode;
-  final Value<String?> formatCode;
-  final Value<String?> rotationCode;
-  final Value<String?> mwlCode;
-  final Value<String> name;
-  final Value<String> description;
-  final Value<DateTime> created;
-  final Value<DateTime> updated;
-  final Value<bool> deleted;
-  final Value<DateTime?> remoteUpdated;
-  final Value<DateTime?> synced;
-  const DeckCompanion({
-    this.id = const Value.absent(),
-    this.identityCode = const Value.absent(),
-    this.formatCode = const Value.absent(),
-    this.rotationCode = const Value.absent(),
-    this.mwlCode = const Value.absent(),
-    this.name = const Value.absent(),
-    this.description = const Value.absent(),
-    this.created = const Value.absent(),
-    this.updated = const Value.absent(),
-    this.deleted = const Value.absent(),
-    this.remoteUpdated = const Value.absent(),
-    this.synced = const Value.absent(),
-  });
-  DeckCompanion.insert({
-    required String id,
-    required String identityCode,
-    this.formatCode = const Value.absent(),
-    this.rotationCode = const Value.absent(),
-    this.mwlCode = const Value.absent(),
-    required String name,
-    required String description,
-    required DateTime created,
-    required DateTime updated,
-    required bool deleted,
-    this.remoteUpdated = const Value.absent(),
-    this.synced = const Value.absent(),
-  })  : id = Value(id),
-        identityCode = Value(identityCode),
-        name = Value(name),
-        description = Value(description),
-        created = Value(created),
-        updated = Value(updated),
-        deleted = Value(deleted);
-  static Insertable<DeckData> custom({
-    Expression<String>? id,
-    Expression<String>? identityCode,
-    Expression<String>? formatCode,
-    Expression<String>? rotationCode,
-    Expression<String>? mwlCode,
-    Expression<String>? name,
-    Expression<String>? description,
-    Expression<DateTime>? created,
-    Expression<DateTime>? updated,
-    Expression<bool>? deleted,
-    Expression<DateTime>? remoteUpdated,
-    Expression<DateTime>? synced,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (identityCode != null) 'identity_code': identityCode,
-      if (formatCode != null) 'format_code': formatCode,
-      if (rotationCode != null) 'rotation_code': rotationCode,
-      if (mwlCode != null) 'mwl_code': mwlCode,
-      if (name != null) 'name': name,
-      if (description != null) 'description': description,
-      if (created != null) 'created': created,
-      if (updated != null) 'updated': updated,
-      if (deleted != null) 'deleted': deleted,
-      if (remoteUpdated != null) 'remote_updated': remoteUpdated,
-      if (synced != null) 'synced': synced,
-    });
-  }
-
-  DeckCompanion copyWith(
-      {Value<String>? id,
-      Value<String>? identityCode,
-      Value<String?>? formatCode,
-      Value<String?>? rotationCode,
-      Value<String?>? mwlCode,
-      Value<String>? name,
-      Value<String>? description,
-      Value<DateTime>? created,
-      Value<DateTime>? updated,
-      Value<bool>? deleted,
-      Value<DateTime?>? remoteUpdated,
-      Value<DateTime?>? synced}) {
-    return DeckCompanion(
-      id: id ?? this.id,
-      identityCode: identityCode ?? this.identityCode,
-      formatCode: formatCode ?? this.formatCode,
-      rotationCode: rotationCode ?? this.rotationCode,
-      mwlCode: mwlCode ?? this.mwlCode,
-      name: name ?? this.name,
-      description: description ?? this.description,
-      created: created ?? this.created,
-      updated: updated ?? this.updated,
-      deleted: deleted ?? this.deleted,
-      remoteUpdated: remoteUpdated ?? this.remoteUpdated,
-      synced: synced ?? this.synced,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<String>(id.value);
-    }
-    if (identityCode.present) {
-      map['identity_code'] = Variable<String>(identityCode.value);
-    }
-    if (formatCode.present) {
-      map['format_code'] = Variable<String>(formatCode.value);
-    }
-    if (rotationCode.present) {
-      map['rotation_code'] = Variable<String>(rotationCode.value);
-    }
-    if (mwlCode.present) {
-      map['mwl_code'] = Variable<String>(mwlCode.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    if (description.present) {
-      map['description'] = Variable<String>(description.value);
-    }
-    if (created.present) {
-      map['created'] = Variable<DateTime>(created.value);
-    }
-    if (updated.present) {
-      map['updated'] = Variable<DateTime>(updated.value);
-    }
-    if (deleted.present) {
-      map['deleted'] = Variable<bool>(deleted.value);
-    }
-    if (remoteUpdated.present) {
-      map['remote_updated'] = Variable<DateTime>(remoteUpdated.value);
-    }
-    if (synced.present) {
-      map['synced'] = Variable<DateTime>(synced.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('DeckCompanion(')
-          ..write('id: $id, ')
-          ..write('identityCode: $identityCode, ')
-          ..write('formatCode: $formatCode, ')
-          ..write('rotationCode: $rotationCode, ')
-          ..write('mwlCode: $mwlCode, ')
-          ..write('name: $name, ')
-          ..write('description: $description, ')
-          ..write('created: $created, ')
-          ..write('updated: $updated, ')
-          ..write('deleted: $deleted, ')
-          ..write('remoteUpdated: $remoteUpdated, ')
-          ..write('synced: $synced')
-          ..write(')'))
-        .toString();
   }
 }
 
@@ -6150,10 +4535,177 @@ class Deck extends Table with TableInfo<Deck, DeckData> {
   bool get dontWriteConstraints => true;
 }
 
-class DeckTagData extends DataClass implements Insertable<DeckTagData> {
-  final String deckId;
-  final String tag;
-  const DeckTagData({required this.deckId, required this.tag});
+class DeckCompanion extends UpdateCompanion<DeckData> {
+  final Value<String> id;
+  final Value<String> identityCode;
+  final Value<String?> formatCode;
+  final Value<String?> rotationCode;
+  final Value<String?> mwlCode;
+  final Value<String> name;
+  final Value<String> description;
+  final Value<DateTime> created;
+  final Value<DateTime> updated;
+  final Value<bool> deleted;
+  final Value<DateTime?> remoteUpdated;
+  final Value<DateTime?> synced;
+  const DeckCompanion({
+    this.id = const Value.absent(),
+    this.identityCode = const Value.absent(),
+    this.formatCode = const Value.absent(),
+    this.rotationCode = const Value.absent(),
+    this.mwlCode = const Value.absent(),
+    this.name = const Value.absent(),
+    this.description = const Value.absent(),
+    this.created = const Value.absent(),
+    this.updated = const Value.absent(),
+    this.deleted = const Value.absent(),
+    this.remoteUpdated = const Value.absent(),
+    this.synced = const Value.absent(),
+  });
+  DeckCompanion.insert({
+    required String id,
+    required String identityCode,
+    this.formatCode = const Value.absent(),
+    this.rotationCode = const Value.absent(),
+    this.mwlCode = const Value.absent(),
+    required String name,
+    required String description,
+    required DateTime created,
+    required DateTime updated,
+    required bool deleted,
+    this.remoteUpdated = const Value.absent(),
+    this.synced = const Value.absent(),
+  })  : id = Value(id),
+        identityCode = Value(identityCode),
+        name = Value(name),
+        description = Value(description),
+        created = Value(created),
+        updated = Value(updated),
+        deleted = Value(deleted);
+  static Insertable<DeckData> custom({
+    Expression<String>? id,
+    Expression<String>? identityCode,
+    Expression<String>? formatCode,
+    Expression<String>? rotationCode,
+    Expression<String>? mwlCode,
+    Expression<String>? name,
+    Expression<String>? description,
+    Expression<DateTime>? created,
+    Expression<DateTime>? updated,
+    Expression<bool>? deleted,
+    Expression<DateTime>? remoteUpdated,
+    Expression<DateTime>? synced,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (identityCode != null) 'identity_code': identityCode,
+      if (formatCode != null) 'format_code': formatCode,
+      if (rotationCode != null) 'rotation_code': rotationCode,
+      if (mwlCode != null) 'mwl_code': mwlCode,
+      if (name != null) 'name': name,
+      if (description != null) 'description': description,
+      if (created != null) 'created': created,
+      if (updated != null) 'updated': updated,
+      if (deleted != null) 'deleted': deleted,
+      if (remoteUpdated != null) 'remote_updated': remoteUpdated,
+      if (synced != null) 'synced': synced,
+    });
+  }
+
+  DeckCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? identityCode,
+      Value<String?>? formatCode,
+      Value<String?>? rotationCode,
+      Value<String?>? mwlCode,
+      Value<String>? name,
+      Value<String>? description,
+      Value<DateTime>? created,
+      Value<DateTime>? updated,
+      Value<bool>? deleted,
+      Value<DateTime?>? remoteUpdated,
+      Value<DateTime?>? synced}) {
+    return DeckCompanion(
+      id: id ?? this.id,
+      identityCode: identityCode ?? this.identityCode,
+      formatCode: formatCode ?? this.formatCode,
+      rotationCode: rotationCode ?? this.rotationCode,
+      mwlCode: mwlCode ?? this.mwlCode,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      created: created ?? this.created,
+      updated: updated ?? this.updated,
+      deleted: deleted ?? this.deleted,
+      remoteUpdated: remoteUpdated ?? this.remoteUpdated,
+      synced: synced ?? this.synced,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (identityCode.present) {
+      map['identity_code'] = Variable<String>(identityCode.value);
+    }
+    if (formatCode.present) {
+      map['format_code'] = Variable<String>(formatCode.value);
+    }
+    if (rotationCode.present) {
+      map['rotation_code'] = Variable<String>(rotationCode.value);
+    }
+    if (mwlCode.present) {
+      map['mwl_code'] = Variable<String>(mwlCode.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (created.present) {
+      map['created'] = Variable<DateTime>(created.value);
+    }
+    if (updated.present) {
+      map['updated'] = Variable<DateTime>(updated.value);
+    }
+    if (deleted.present) {
+      map['deleted'] = Variable<bool>(deleted.value);
+    }
+    if (remoteUpdated.present) {
+      map['remote_updated'] = Variable<DateTime>(remoteUpdated.value);
+    }
+    if (synced.present) {
+      map['synced'] = Variable<DateTime>(synced.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DeckCompanion(')
+          ..write('id: $id, ')
+          ..write('identityCode: $identityCode, ')
+          ..write('formatCode: $formatCode, ')
+          ..write('rotationCode: $rotationCode, ')
+          ..write('mwlCode: $mwlCode, ')
+          ..write('name: $name, ')
+          ..write('description: $description, ')
+          ..write('created: $created, ')
+          ..write('updated: $updated, ')
+          ..write('deleted: $deleted, ')
+          ..write('remoteUpdated: $remoteUpdated, ')
+          ..write('synced: $synced')
+          ..write(')'))
+        .toString();
+  }
+}
+
+mixin DeckTagToColumns implements Insertable<DeckTagData> {
+  String get deckId;
+  String get tag;
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -6161,7 +4713,79 @@ class DeckTagData extends DataClass implements Insertable<DeckTagData> {
     map['tag'] = Variable<String>(tag);
     return map;
   }
+}
 
+class DeckTag extends Table with TableInfo<DeckTag, DeckTagData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  DeckTag(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _deckIdMeta = const VerificationMeta('deckId');
+  late final GeneratedColumn<String> deckId = GeneratedColumn<String>(
+      'deck_id', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  static const VerificationMeta _tagMeta = const VerificationMeta('tag');
+  late final GeneratedColumn<String> tag = GeneratedColumn<String>(
+      'tag', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL');
+  @override
+  List<GeneratedColumn> get $columns => [deckId, tag];
+  @override
+  String get aliasedName => _alias ?? 'deck_tag';
+  @override
+  String get actualTableName => 'deck_tag';
+  @override
+  VerificationContext validateIntegrity(Insertable<DeckTagData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('deck_id')) {
+      context.handle(_deckIdMeta,
+          deckId.isAcceptableOrUnknown(data['deck_id']!, _deckIdMeta));
+    } else if (isInserting) {
+      context.missing(_deckIdMeta);
+    }
+    if (data.containsKey('tag')) {
+      context.handle(
+          _tagMeta, tag.isAcceptableOrUnknown(data['tag']!, _tagMeta));
+    } else if (isInserting) {
+      context.missing(_tagMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {deckId, tag};
+  @override
+  DeckTagData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return DeckTagData(
+      deckId: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}deck_id'])!,
+      tag: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}tag'])!,
+    );
+  }
+
+  @override
+  DeckTag createAlias(String alias) {
+    return DeckTag(attachedDatabase, alias);
+  }
+
+  @override
+  List<String> get customConstraints => const ['PRIMARY KEY(deck_id, tag)'];
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class DeckTagData extends DataClass with DeckTagToColumns {
+  final String deckId;
+  final String tag;
+  const DeckTagData({required this.deckId, required this.tag});
   DeckTagCompanion toCompanion(bool nullToAbsent) {
     return DeckTagCompanion(
       deckId: Value(deckId),
@@ -6260,79 +4884,10 @@ class DeckTagCompanion extends UpdateCompanion<DeckTagData> {
   }
 }
 
-class DeckTag extends Table with TableInfo<DeckTag, DeckTagData> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  DeckTag(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _deckIdMeta = const VerificationMeta('deckId');
-  late final GeneratedColumn<String> deckId = GeneratedColumn<String>(
-      'deck_id', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  static const VerificationMeta _tagMeta = const VerificationMeta('tag');
-  late final GeneratedColumn<String> tag = GeneratedColumn<String>(
-      'tag', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL');
-  @override
-  List<GeneratedColumn> get $columns => [deckId, tag];
-  @override
-  String get aliasedName => _alias ?? 'deck_tag';
-  @override
-  String get actualTableName => 'deck_tag';
-  @override
-  VerificationContext validateIntegrity(Insertable<DeckTagData> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('deck_id')) {
-      context.handle(_deckIdMeta,
-          deckId.isAcceptableOrUnknown(data['deck_id']!, _deckIdMeta));
-    } else if (isInserting) {
-      context.missing(_deckIdMeta);
-    }
-    if (data.containsKey('tag')) {
-      context.handle(
-          _tagMeta, tag.isAcceptableOrUnknown(data['tag']!, _tagMeta));
-    } else if (isInserting) {
-      context.missing(_tagMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {deckId, tag};
-  @override
-  DeckTagData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return DeckTagData(
-      deckId: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}deck_id'])!,
-      tag: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}tag'])!,
-    );
-  }
-
-  @override
-  DeckTag createAlias(String alias) {
-    return DeckTag(attachedDatabase, alias);
-  }
-
-  @override
-  List<String> get customConstraints => const ['PRIMARY KEY(deck_id, tag)'];
-  @override
-  bool get dontWriteConstraints => true;
-}
-
-class DeckCardData extends DataClass implements Insertable<DeckCardData> {
-  final String deckId;
-  final String cardCode;
-  final int quantity;
-  const DeckCardData(
-      {required this.deckId, required this.cardCode, required this.quantity});
+mixin DeckCardToColumns implements Insertable<DeckCardData> {
+  String get deckId;
+  String get cardCode;
+  int get quantity;
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -6340,122 +4895,6 @@ class DeckCardData extends DataClass implements Insertable<DeckCardData> {
     map['card_code'] = Variable<String>(cardCode);
     map['quantity'] = Variable<int>(quantity);
     return map;
-  }
-
-  DeckCardCompanion toCompanion(bool nullToAbsent) {
-    return DeckCardCompanion(
-      deckId: Value(deckId),
-      cardCode: Value(cardCode),
-      quantity: Value(quantity),
-    );
-  }
-
-  factory DeckCardData.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return DeckCardData(
-      deckId: serializer.fromJson<String>(json['deck_id']),
-      cardCode: serializer.fromJson<String>(json['card_code']),
-      quantity: serializer.fromJson<int>(json['quantity']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'deck_id': serializer.toJson<String>(deckId),
-      'card_code': serializer.toJson<String>(cardCode),
-      'quantity': serializer.toJson<int>(quantity),
-    };
-  }
-
-  DeckCardData copyWith({String? deckId, String? cardCode, int? quantity}) =>
-      DeckCardData(
-        deckId: deckId ?? this.deckId,
-        cardCode: cardCode ?? this.cardCode,
-        quantity: quantity ?? this.quantity,
-      );
-  @override
-  String toString() {
-    return (StringBuffer('DeckCardData(')
-          ..write('deckId: $deckId, ')
-          ..write('cardCode: $cardCode, ')
-          ..write('quantity: $quantity')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(deckId, cardCode, quantity);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is DeckCardData &&
-          other.deckId == this.deckId &&
-          other.cardCode == this.cardCode &&
-          other.quantity == this.quantity);
-}
-
-class DeckCardCompanion extends UpdateCompanion<DeckCardData> {
-  final Value<String> deckId;
-  final Value<String> cardCode;
-  final Value<int> quantity;
-  const DeckCardCompanion({
-    this.deckId = const Value.absent(),
-    this.cardCode = const Value.absent(),
-    this.quantity = const Value.absent(),
-  });
-  DeckCardCompanion.insert({
-    required String deckId,
-    required String cardCode,
-    required int quantity,
-  })  : deckId = Value(deckId),
-        cardCode = Value(cardCode),
-        quantity = Value(quantity);
-  static Insertable<DeckCardData> custom({
-    Expression<String>? deckId,
-    Expression<String>? cardCode,
-    Expression<int>? quantity,
-  }) {
-    return RawValuesInsertable({
-      if (deckId != null) 'deck_id': deckId,
-      if (cardCode != null) 'card_code': cardCode,
-      if (quantity != null) 'quantity': quantity,
-    });
-  }
-
-  DeckCardCompanion copyWith(
-      {Value<String>? deckId, Value<String>? cardCode, Value<int>? quantity}) {
-    return DeckCardCompanion(
-      deckId: deckId ?? this.deckId,
-      cardCode: cardCode ?? this.cardCode,
-      quantity: quantity ?? this.quantity,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (deckId.present) {
-      map['deck_id'] = Variable<String>(deckId.value);
-    }
-    if (cardCode.present) {
-      map['card_code'] = Variable<String>(cardCode.value);
-    }
-    if (quantity.present) {
-      map['quantity'] = Variable<int>(quantity.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('DeckCardCompanion(')
-          ..write('deckId: $deckId, ')
-          ..write('cardCode: $cardCode, ')
-          ..write('quantity: $quantity')
-          ..write(')'))
-        .toString();
   }
 }
 
@@ -6543,16 +4982,134 @@ class DeckCard extends Table with TableInfo<DeckCard, DeckCardData> {
   bool get dontWriteConstraints => true;
 }
 
-class CollectionData extends DataClass implements Insertable<CollectionData> {
-  final String packCode;
-  const CollectionData({required this.packCode});
+class DeckCardCompanion extends UpdateCompanion<DeckCardData> {
+  final Value<String> deckId;
+  final Value<String> cardCode;
+  final Value<int> quantity;
+  const DeckCardCompanion({
+    this.deckId = const Value.absent(),
+    this.cardCode = const Value.absent(),
+    this.quantity = const Value.absent(),
+  });
+  DeckCardCompanion.insert({
+    required String deckId,
+    required String cardCode,
+    required int quantity,
+  })  : deckId = Value(deckId),
+        cardCode = Value(cardCode),
+        quantity = Value(quantity);
+  static Insertable<DeckCardData> custom({
+    Expression<String>? deckId,
+    Expression<String>? cardCode,
+    Expression<int>? quantity,
+  }) {
+    return RawValuesInsertable({
+      if (deckId != null) 'deck_id': deckId,
+      if (cardCode != null) 'card_code': cardCode,
+      if (quantity != null) 'quantity': quantity,
+    });
+  }
+
+  DeckCardCompanion copyWith(
+      {Value<String>? deckId, Value<String>? cardCode, Value<int>? quantity}) {
+    return DeckCardCompanion(
+      deckId: deckId ?? this.deckId,
+      cardCode: cardCode ?? this.cardCode,
+      quantity: quantity ?? this.quantity,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (deckId.present) {
+      map['deck_id'] = Variable<String>(deckId.value);
+    }
+    if (cardCode.present) {
+      map['card_code'] = Variable<String>(cardCode.value);
+    }
+    if (quantity.present) {
+      map['quantity'] = Variable<int>(quantity.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DeckCardCompanion(')
+          ..write('deckId: $deckId, ')
+          ..write('cardCode: $cardCode, ')
+          ..write('quantity: $quantity')
+          ..write(')'))
+        .toString();
+  }
+}
+
+mixin CollectionToColumns implements Insertable<CollectionData> {
+  String get packCode;
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['pack_code'] = Variable<String>(packCode);
     return map;
   }
+}
 
+class Collection extends Table with TableInfo<Collection, CollectionData> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  Collection(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _packCodeMeta =
+      const VerificationMeta('packCode');
+  late final GeneratedColumn<String> packCode = GeneratedColumn<String>(
+      'pack_code', aliasedName, false,
+      type: DriftSqlType.string,
+      requiredDuringInsert: true,
+      $customConstraints: 'NOT NULL PRIMARY KEY');
+  @override
+  List<GeneratedColumn> get $columns => [packCode];
+  @override
+  String get aliasedName => _alias ?? 'collection';
+  @override
+  String get actualTableName => 'collection';
+  @override
+  VerificationContext validateIntegrity(Insertable<CollectionData> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('pack_code')) {
+      context.handle(_packCodeMeta,
+          packCode.isAcceptableOrUnknown(data['pack_code']!, _packCodeMeta));
+    } else if (isInserting) {
+      context.missing(_packCodeMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {packCode};
+  @override
+  CollectionData map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return CollectionData(
+      packCode: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}pack_code'])!,
+    );
+  }
+
+  @override
+  Collection createAlias(String alias) {
+    return Collection(attachedDatabase, alias);
+  }
+
+  @override
+  bool get dontWriteConstraints => true;
+}
+
+class CollectionData extends DataClass with CollectionToColumns {
+  final String packCode;
+  const CollectionData({required this.packCode});
   CollectionCompanion toCompanion(bool nullToAbsent) {
     return CollectionCompanion(
       packCode: Value(packCode),
@@ -6633,58 +5190,6 @@ class CollectionCompanion extends UpdateCompanion<CollectionData> {
   }
 }
 
-class Collection extends Table with TableInfo<Collection, CollectionData> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  Collection(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _packCodeMeta =
-      const VerificationMeta('packCode');
-  late final GeneratedColumn<String> packCode = GeneratedColumn<String>(
-      'pack_code', aliasedName, false,
-      type: DriftSqlType.string,
-      requiredDuringInsert: true,
-      $customConstraints: 'NOT NULL PRIMARY KEY');
-  @override
-  List<GeneratedColumn> get $columns => [packCode];
-  @override
-  String get aliasedName => _alias ?? 'collection';
-  @override
-  String get actualTableName => 'collection';
-  @override
-  VerificationContext validateIntegrity(Insertable<CollectionData> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('pack_code')) {
-      context.handle(_packCodeMeta,
-          packCode.isAcceptableOrUnknown(data['pack_code']!, _packCodeMeta));
-    } else if (isInserting) {
-      context.missing(_packCodeMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {packCode};
-  @override
-  CollectionData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return CollectionData(
-      packCode: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}pack_code'])!,
-    );
-  }
-
-  @override
-  Collection createAlias(String alias) {
-    return Collection(attachedDatabase, alias);
-  }
-
-  @override
-  bool get dontWriteConstraints => true;
-}
-
 abstract class _$Database extends GeneratedDatabase {
   _$Database(QueryExecutor e) : super(e);
   _$Database.connect(DatabaseConnection c) : super.connect(c);
@@ -6698,6 +5203,7 @@ abstract class _$Database extends GeneratedDatabase {
   late final MwlView mwlView = MwlView(this);
   late final RotationCycle rotationCycle = RotationCycle(this);
   late final Cycle cycle = Cycle(this);
+  late final RotationCycleView rotationCycleView = RotationCycleView(this);
   late final Pack pack = Pack(this);
   late final Card card = Card(this);
   late final Faction faction = Faction(this);
@@ -6723,12 +5229,10 @@ abstract class _$Database extends GeneratedDatabase {
           type,
           side,
           ...generatedwhere.watchedTables,
-        }).asyncMap((QueryRow row) async {
-      return TypeResult(
-        type: await type.mapFromRow(row, tablePrefix: 'nested_0'),
-        side: await side.mapFromRowOrNull(row, tablePrefix: 'nested_1'),
-      );
-    });
+        }).asyncMap((QueryRow row) async => TypeResult(
+          type: await type.mapFromRow(row, tablePrefix: 'nested_0'),
+          side: await side.mapFromRowOrNull(row, tablePrefix: 'nested_1'),
+        ));
   }
 
   Selectable<SideData> listSides({ListSides$where? where}) {
@@ -6747,25 +5251,45 @@ abstract class _$Database extends GeneratedDatabase {
         }).asyncMap(side.mapFromRow);
   }
 
-  Selectable<SettingResult> getSettings() {
+  Selectable<SettingsResult> getSettings() {
     return customSelect(
-        'SELECT"settings"."id" AS "nested_0.id", "settings"."filter_format_code" AS "nested_0.filter_format_code", "settings"."filter_rotation_code" AS "nested_0.filter_rotation_code", "settings"."filter_mwl_code" AS "nested_0.filter_mwl_code", "settings"."filter_collection" AS "nested_0.filter_collection", "settings"."card_sort" AS "nested_0.card_sort", "settings"."card_group" AS "nested_0.card_group", "settings"."deck_sort" AS "nested_0.deck_sort", "settings"."deck_group" AS "nested_0.deck_group", "settings"."deck_card_sort" AS "nested_0.deck_card_sort", "settings"."deck_card_group" AS "nested_0.deck_card_group", "settings"."compare_card_sort" AS "nested_0.compare_card_sort", "settings"."apex_resources" AS "nested_0.apex_resources", "settings"."card_gallery_view" AS "nested_0.card_gallery_view","filter_format"."id" AS "nested_1.id", "filter_format"."code" AS "nested_1.code", "filter_format"."name" AS "nested_1.name","filter_rotation"."code" AS "nested_2.code", "filter_rotation"."format_code" AS "nested_2.format_code", "filter_rotation"."rotation_code" AS "nested_2.rotation_code", "filter_rotation"."name" AS "nested_2.name", "filter_rotation"."date_start" AS "nested_2.date_start", "filter_rotation"."type" AS "nested_2.type", "filter_rotation"."id" AS "nested_2.id", "filter_rotation"."code" AS "nested_2.code", "filter_rotation"."name" AS "nested_2.name","filter_mwl"."code" AS "nested_3.code", "filter_mwl"."format_code" AS "nested_3.format_code", "filter_mwl"."mwl_code" AS "nested_3.mwl_code", "filter_mwl"."name" AS "nested_3.name", "filter_mwl"."date_start" AS "nested_3.date_start", "filter_mwl"."runner_points" AS "nested_3.runner_points", "filter_mwl"."corp_points" AS "nested_3.corp_points", "filter_mwl"."type" AS "nested_3.type", "filter_mwl"."id" AS "nested_3.id", "filter_mwl"."code" AS "nested_3.code", "filter_mwl"."name" AS "nested_3.name" FROM settings LEFT JOIN format AS filter_format ON filter_format.code = settings.filter_format_code LEFT JOIN rotation_view AS filter_rotation ON filter_rotation.code = settings.filter_rotation_code LEFT JOIN mwl_view AS filter_mwl ON filter_mwl.code = settings.filter_mwl_code LIMIT 1',
+        'SELECT settings.*,"filter_format"."id" AS "nested_0.id", "filter_format"."code" AS "nested_0.code", "filter_format"."name" AS "nested_0.name","filter_rotation"."code" AS "nested_1.code", "filter_rotation"."rotation_code" AS "nested_1.rotation_code", "filter_rotation"."format_code" AS "nested_1.format_code", "filter_rotation"."name" AS "nested_1.name", "filter_rotation"."date_start" AS "nested_1.date_start", "filter_rotation"."type" AS "nested_1.type","filter_mwl"."code" AS "nested_2.code", "filter_mwl"."format_code" AS "nested_2.format_code", "filter_mwl"."mwl_code" AS "nested_2.mwl_code", "filter_mwl"."name" AS "nested_2.name", "filter_mwl"."date_start" AS "nested_2.date_start", "filter_mwl"."runner_points" AS "nested_2.runner_points", "filter_mwl"."corp_points" AS "nested_2.corp_points", "filter_mwl"."type" AS "nested_2.type" FROM settings LEFT JOIN format AS filter_format ON filter_format.code = settings.filter_format_code LEFT JOIN rotation_view AS filter_rotation ON filter_rotation.code = settings.filter_rotation_code LEFT JOIN mwl_view AS filter_mwl ON filter_mwl.code = settings.filter_mwl_code LIMIT 1',
         variables: [],
         readsFrom: {
           settings,
           format,
           rotation,
           mwl,
-        }).asyncMap((QueryRow row) async {
-      return SettingResult(
-        settings: await settings.mapFromRow(row, tablePrefix: 'nested_0'),
-        filterFormat:
-            await format.mapFromRowOrNull(row, tablePrefix: 'nested_1'),
-        filterRotation:
-            await rotationView.mapFromRowOrNull(row, tablePrefix: 'nested_2'),
-        filterMwl: await mwlView.mapFromRowOrNull(row, tablePrefix: 'nested_3'),
-      );
-    });
+        }).asyncMap((QueryRow row) async => SettingsResult(
+          id: row.read<bool>('id'),
+          filterFormatCode: row.readNullable<String>('filter_format_code'),
+          filterRotationCode: row.readNullable<String>('filter_rotation_code'),
+          filterMwlCode: row.readNullable<String>('filter_mwl_code'),
+          filterCollection: row.read<bool>('filter_collection'),
+          cardSort: Settings.$convertercardSort
+              .fromSql(row.read<String>('card_sort')),
+          cardGroup: Settings.$convertercardGroup
+              .fromSql(row.read<String>('card_group')),
+          deckSort: Settings.$converterdeckSort
+              .fromSql(row.read<String>('deck_sort')),
+          deckGroup: Settings.$converterdeckGroup
+              .fromSql(row.read<String>('deck_group')),
+          deckCardSort: Settings.$converterdeckCardSort
+              .fromSql(row.read<String>('deck_card_sort')),
+          deckCardGroup: Settings.$converterdeckCardGroup
+              .fromSql(row.read<String>('deck_card_group')),
+          compareCardSort: Settings.$convertercompareCardSort
+              .fromSql(row.read<String>('compare_card_sort')),
+          apexResources: row.read<bool>('apex_resources'),
+          cardGalleryView: Settings.$convertercardGalleryView
+              .fromSql(row.read<String>('card_gallery_view')),
+          filterFormat:
+              await format.mapFromRowOrNull(row, tablePrefix: 'nested_0'),
+          filterRotation:
+              await rotationView.mapFromRowOrNull(row, tablePrefix: 'nested_1'),
+          filterMwl:
+              await mwlView.mapFromRowOrNull(row, tablePrefix: 'nested_2'),
+        ));
   }
 
   Selectable<RotationViewData> listRotations({ListRotations$where? where}) {
@@ -6791,87 +5315,90 @@ abstract class _$Database extends GeneratedDatabase {
       {ListRotationPacks$where? where}) {
     var $arrayStartIndex = 1;
     final generatedwhere = $write(
-        where?.call(alias(this.rotationView, 'rotation'), this.format,
-                this.rotationCycle, this.cycle, this.pack) ??
+        where?.call(
+                alias(this.rotationView, 'rotation'),
+                this.format,
+                alias(this.rotationCycleView, 'rotation_cycle'),
+                this.cycle,
+                this.pack) ??
             const CustomExpression('(TRUE)'),
         hasMultipleTables: true,
         startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT"format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name","rotation"."code" AS "nested_1.code", "rotation"."format_code" AS "nested_1.format_code", "rotation"."rotation_code" AS "nested_1.rotation_code", "rotation"."name" AS "nested_1.name", "rotation"."date_start" AS "nested_1.date_start", "rotation"."type" AS "nested_1.type", "rotation"."id" AS "nested_1.id", "rotation"."code" AS "nested_1.code", "rotation"."name" AS "nested_1.name","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated" FROM rotation_view AS rotation INNER JOIN format ON format.code = rotation.format_code LEFT JOIN rotation_cycle ON rotation_cycle.rotation_code = rotation.code INNER JOIN cycle ON cycle.code = rotation_cycle.cycle_code INNER JOIN pack ON pack.cycle_code = cycle.code WHERE ${generatedwhere.sql} ORDER BY format.id, rotation.type DESC NULLS LAST, rotation.date_start DESC, cycle.position DESC, pack.position',
+        'SELECT"format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name","rotation"."code" AS "nested_1.code", "rotation"."rotation_code" AS "nested_1.rotation_code", "rotation"."format_code" AS "nested_1.format_code", "rotation"."name" AS "nested_1.name", "rotation"."date_start" AS "nested_1.date_start", "rotation"."type" AS "nested_1.type","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated" FROM rotation_view AS rotation INNER JOIN format ON format.code = rotation.format_code INNER JOIN rotation_cycle_view AS rotation_cycle ON rotation_cycle.rotation_code = rotation.code INNER JOIN cycle ON cycle.code = rotation_cycle.cycle_code INNER JOIN pack ON pack.cycle_code = cycle.code WHERE ${generatedwhere.sql} ORDER BY format.id, rotation.type DESC NULLS LAST, rotation.date_start DESC, cycle.position DESC, pack.position DESC',
         variables: [
           ...generatedwhere.introducedVariables
         ],
         readsFrom: {
           format,
-          rotationCycle,
           cycle,
           pack,
           rotation,
+          rotationCycle,
           ...generatedwhere.watchedTables,
-        }).asyncMap((QueryRow row) async {
-      return RotationPackResult(
-        format: await format.mapFromRow(row, tablePrefix: 'nested_0'),
-        rotation: await rotationView.mapFromRow(row, tablePrefix: 'nested_1'),
-        pack: await pack.mapFromRow(row, tablePrefix: 'nested_2'),
-        cycle: await cycle.mapFromRow(row, tablePrefix: 'nested_3'),
-      );
-    });
+        }).asyncMap((QueryRow row) async => RotationPackResult(
+          format: await format.mapFromRow(row, tablePrefix: 'nested_0'),
+          rotation: await rotationView.mapFromRow(row, tablePrefix: 'nested_1'),
+          pack: await pack.mapFromRow(row, tablePrefix: 'nested_2'),
+          cycle: await cycle.mapFromRow(row, tablePrefix: 'nested_3'),
+        ));
   }
 
-  Selectable<FormatPackResult> listDefaultFormatPacks() {
+  Selectable<RotationPackResult> listDefaultFormatPacks() {
     return customSelect(
-        'SELECT"format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name","rotation"."code" AS "nested_1.code", "rotation"."format_code" AS "nested_1.format_code", "rotation"."rotation_code" AS "nested_1.rotation_code", "rotation"."name" AS "nested_1.name", "rotation"."date_start" AS "nested_1.date_start", "rotation"."type" AS "nested_1.type", "rotation"."id" AS "nested_1.id", "rotation"."code" AS "nested_1.code", "rotation"."name" AS "nested_1.name","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated" FROM settings INNER JOIN format ON format.code = settings.filter_format_code INNER JOIN rotation_view AS rotation ON rotation.format_code = format.code AND rotation.type = \'current\' LEFT JOIN rotation_cycle ON rotation_cycle.rotation_code = rotation.code INNER JOIN cycle ON cycle.code = rotation_cycle.cycle_code INNER JOIN pack ON pack.cycle_code = cycle.code ORDER BY cycle.position DESC, pack.position',
+        'SELECT"format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name","rotation"."code" AS "nested_1.code", "rotation"."rotation_code" AS "nested_1.rotation_code", "rotation"."format_code" AS "nested_1.format_code", "rotation"."name" AS "nested_1.name", "rotation"."date_start" AS "nested_1.date_start", "rotation"."type" AS "nested_1.type","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated" FROM settings INNER JOIN format ON format.code = settings.filter_format_code INNER JOIN rotation_view AS rotation ON rotation.format_code = format.code AND rotation.type = \'current\' INNER JOIN rotation_cycle_view AS rotation_cycle ON rotation_cycle.rotation_code = rotation.code INNER JOIN cycle ON cycle.code = rotation_cycle.cycle_code INNER JOIN pack ON pack.cycle_code = cycle.code ORDER BY cycle.position DESC, pack.position DESC',
         variables: [],
         readsFrom: {
           settings,
           format,
-          rotationCycle,
           cycle,
           pack,
           rotation,
-        }).asyncMap((QueryRow row) async {
-      return FormatPackResult(
-        format: await format.mapFromRow(row, tablePrefix: 'nested_0'),
-        rotation: await rotationView.mapFromRow(row, tablePrefix: 'nested_1'),
-        pack: await pack.mapFromRow(row, tablePrefix: 'nested_2'),
-        cycle: await cycle.mapFromRow(row, tablePrefix: 'nested_3'),
-      );
-    });
+          rotationCycle,
+        }).asyncMap((QueryRow row) async => RotationPackResult(
+          format: await format.mapFromRow(row, tablePrefix: 'nested_0'),
+          rotation: await rotationView.mapFromRow(row, tablePrefix: 'nested_1'),
+          pack: await pack.mapFromRow(row, tablePrefix: 'nested_2'),
+          cycle: await cycle.mapFromRow(row, tablePrefix: 'nested_3'),
+        ));
   }
 
   Selectable<RotationCardResult> listRotationCards(
       {ListRotationCards$where? where}) {
     var $arrayStartIndex = 1;
     final generatedwhere = $write(
-        where?.call(alias(this.rotationView, 'rotation'), this.format,
-                this.rotationCycle, this.cycle, this.pack, this.card) ??
+        where?.call(
+                alias(this.rotationView, 'rotation'),
+                this.format,
+                alias(this.rotationCycleView, 'rotation_cycle'),
+                this.cycle,
+                this.pack,
+                this.card) ??
             const CustomExpression('(TRUE)'),
         hasMultipleTables: true,
         startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT"format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name","rotation"."code" AS "nested_1.code", "rotation"."format_code" AS "nested_1.format_code", "rotation"."rotation_code" AS "nested_1.rotation_code", "rotation"."name" AS "nested_1.name", "rotation"."date_start" AS "nested_1.date_start", "rotation"."type" AS "nested_1.type", "rotation"."id" AS "nested_1.id", "rotation"."code" AS "nested_1.code", "rotation"."name" AS "nested_1.name","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated","card"."code" AS "nested_4.code", "card"."pack_code" AS "nested_4.pack_code", "card"."faction_code" AS "nested_4.faction_code", "card"."type_code" AS "nested_4.type_code", "card"."position" AS "nested_4.position", "card"."title" AS "nested_4.title", "card"."body" AS "nested_4.body", "card"."keywords" AS "nested_4.keywords", "card"."quantity" AS "nested_4.quantity", "card"."cost" AS "nested_4.cost", "card"."deck_limit" AS "nested_4.deck_limit", "card"."faction_cost" AS "nested_4.faction_cost", "card"."uniqueness" AS "nested_4.uniqueness", "card"."strength" AS "nested_4.strength", "card"."agenda_points" AS "nested_4.agenda_points", "card"."memory_cost" AS "nested_4.memory_cost", "card"."advancement_cost" AS "nested_4.advancement_cost", "card"."trash_cost" AS "nested_4.trash_cost", "card"."base_link" AS "nested_4.base_link", "card"."influence_limit" AS "nested_4.influence_limit", "card"."minimum_deck_size" AS "nested_4.minimum_deck_size", "card"."flavor" AS "nested_4.flavor", "card"."illustrator" AS "nested_4.illustrator", "card"."image_url" AS "nested_4.image_url" FROM rotation_view AS rotation INNER JOIN format ON format.code = rotation.format_code LEFT JOIN rotation_cycle ON rotation_cycle.rotation_code = rotation.code INNER JOIN cycle ON cycle.code = rotation_cycle.cycle_code INNER JOIN pack ON pack.cycle_code = cycle.code INNER JOIN card ON card.pack_code = pack.code WHERE ${generatedwhere.sql} ORDER BY rotation.date_start DESC, cycle.position DESC, pack.position, card.position',
+        'SELECT"format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name","rotation"."code" AS "nested_1.code", "rotation"."rotation_code" AS "nested_1.rotation_code", "rotation"."format_code" AS "nested_1.format_code", "rotation"."name" AS "nested_1.name", "rotation"."date_start" AS "nested_1.date_start", "rotation"."type" AS "nested_1.type","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated","card"."code" AS "nested_4.code", "card"."pack_code" AS "nested_4.pack_code", "card"."faction_code" AS "nested_4.faction_code", "card"."type_code" AS "nested_4.type_code", "card"."position" AS "nested_4.position", "card"."title" AS "nested_4.title", "card"."body" AS "nested_4.body", "card"."keywords" AS "nested_4.keywords", "card"."quantity" AS "nested_4.quantity", "card"."cost" AS "nested_4.cost", "card"."deck_limit" AS "nested_4.deck_limit", "card"."faction_cost" AS "nested_4.faction_cost", "card"."uniqueness" AS "nested_4.uniqueness", "card"."strength" AS "nested_4.strength", "card"."agenda_points" AS "nested_4.agenda_points", "card"."memory_cost" AS "nested_4.memory_cost", "card"."advancement_cost" AS "nested_4.advancement_cost", "card"."trash_cost" AS "nested_4.trash_cost", "card"."base_link" AS "nested_4.base_link", "card"."influence_limit" AS "nested_4.influence_limit", "card"."minimum_deck_size" AS "nested_4.minimum_deck_size", "card"."flavor" AS "nested_4.flavor", "card"."illustrator" AS "nested_4.illustrator", "card"."image_url" AS "nested_4.image_url" FROM rotation_view AS rotation INNER JOIN format ON format.code = rotation.format_code INNER JOIN rotation_cycle_view AS rotation_cycle ON rotation_cycle.rotation_code = rotation.code INNER JOIN cycle ON cycle.code = rotation_cycle.cycle_code INNER JOIN pack ON pack.cycle_code = cycle.code INNER JOIN card ON card.pack_code = pack.code WHERE ${generatedwhere.sql} ORDER BY rotation.date_start DESC, cycle.position DESC, pack.position DESC, card.position',
         variables: [
           ...generatedwhere.introducedVariables
         ],
         readsFrom: {
           format,
-          rotationCycle,
           cycle,
           pack,
           card,
           rotation,
+          rotationCycle,
           ...generatedwhere.watchedTables,
-        }).asyncMap((QueryRow row) async {
-      return RotationCardResult(
-        format: await format.mapFromRow(row, tablePrefix: 'nested_0'),
-        rotation: await rotationView.mapFromRow(row, tablePrefix: 'nested_1'),
-        pack: await pack.mapFromRow(row, tablePrefix: 'nested_2'),
-        cycle: await cycle.mapFromRow(row, tablePrefix: 'nested_3'),
-        card: await card.mapFromRow(row, tablePrefix: 'nested_4'),
-      );
-    });
+        }).asyncMap((QueryRow row) async => RotationCardResult(
+          format: await format.mapFromRow(row, tablePrefix: 'nested_0'),
+          rotation: await rotationView.mapFromRow(row, tablePrefix: 'nested_1'),
+          pack: await pack.mapFromRow(row, tablePrefix: 'nested_2'),
+          cycle: await cycle.mapFromRow(row, tablePrefix: 'nested_3'),
+          card: await card.mapFromRow(row, tablePrefix: 'nested_4'),
+        ));
   }
 
   Selectable<CountStuffResult> countStuff(
@@ -6956,7 +5483,7 @@ abstract class _$Database extends GeneratedDatabase {
         startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT"pack"."code" AS "nested_0.code", "pack"."cycle_code" AS "nested_0.cycle_code", "pack"."position" AS "nested_0.position", "pack"."name" AS "nested_0.name", "pack"."date_release" AS "nested_0.date_release", "pack"."size" AS "nested_0.size","cycle"."code" AS "nested_1.code", "cycle"."position" AS "nested_1.position", "cycle"."name" AS "nested_1.name", "cycle"."size" AS "nested_1.size", "cycle"."rotated" AS "nested_1.rotated" FROM pack INNER JOIN cycle ON cycle.code = pack.cycle_code WHERE ${generatedwhere.sql} ORDER BY cycle.position DESC, pack.position',
+        'SELECT"pack"."code" AS "nested_0.code", "pack"."cycle_code" AS "nested_0.cycle_code", "pack"."position" AS "nested_0.position", "pack"."name" AS "nested_0.name", "pack"."date_release" AS "nested_0.date_release", "pack"."size" AS "nested_0.size","cycle"."code" AS "nested_1.code", "cycle"."position" AS "nested_1.position", "cycle"."name" AS "nested_1.name", "cycle"."size" AS "nested_1.size", "cycle"."rotated" AS "nested_1.rotated" FROM pack INNER JOIN cycle ON cycle.code = pack.cycle_code WHERE ${generatedwhere.sql} ORDER BY cycle.position DESC, pack.position DESC',
         variables: [
           ...generatedwhere.introducedVariables
         ],
@@ -6964,18 +5491,18 @@ abstract class _$Database extends GeneratedDatabase {
           pack,
           cycle,
           ...generatedwhere.watchedTables,
-        }).asyncMap((QueryRow row) async {
-      return PackResult(
-        pack: await pack.mapFromRow(row, tablePrefix: 'nested_0'),
-        cycle: await cycle.mapFromRow(row, tablePrefix: 'nested_1'),
-      );
-    });
+        }).asyncMap((QueryRow row) async => PackResult(
+          pack: await pack.mapFromRow(row, tablePrefix: 'nested_0'),
+          cycle: await cycle.mapFromRow(row, tablePrefix: 'nested_1'),
+        ));
   }
 
   Selectable<NrdbData> getNrdb() {
-    return customSelect('SELECT * FROM nrdb', variables: [], readsFrom: {
-      nrdb,
-    }).asyncMap(nrdb.mapFromRow);
+    return customSelect('SELECT * FROM nrdb LIMIT 1',
+        variables: [],
+        readsFrom: {
+          nrdb,
+        }).asyncMap(nrdb.mapFromRow);
   }
 
   Selectable<MwlViewData> listMwl({ListMwl$where? where}) {
@@ -7016,18 +5543,14 @@ abstract class _$Database extends GeneratedDatabase {
   Selectable<FormatResult> listFormats({ListFormats$where? where}) {
     var $arrayStartIndex = 1;
     final generatedwhere = $write(
-        where?.call(
-                this.format,
-                alias(this.rotationView, 'current_rotation'),
-                alias(this.rotationView, 'latest_rotation'),
-                alias(this.mwlView, 'active_mwl'),
-                alias(this.mwlView, 'latest_mwl')) ??
+        where?.call(this.format, alias(this.rotationView, 'current_rotation'),
+                alias(this.mwlView, 'active_mwl')) ??
             const CustomExpression('(TRUE)'),
         hasMultipleTables: true,
         startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT"format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name","current_rotation"."code" AS "nested_1.code", "current_rotation"."format_code" AS "nested_1.format_code", "current_rotation"."rotation_code" AS "nested_1.rotation_code", "current_rotation"."name" AS "nested_1.name", "current_rotation"."date_start" AS "nested_1.date_start", "current_rotation"."type" AS "nested_1.type", "current_rotation"."id" AS "nested_1.id", "current_rotation"."code" AS "nested_1.code", "current_rotation"."name" AS "nested_1.name","latest_rotation"."code" AS "nested_2.code", "latest_rotation"."format_code" AS "nested_2.format_code", "latest_rotation"."rotation_code" AS "nested_2.rotation_code", "latest_rotation"."name" AS "nested_2.name", "latest_rotation"."date_start" AS "nested_2.date_start", "latest_rotation"."type" AS "nested_2.type", "latest_rotation"."id" AS "nested_2.id", "latest_rotation"."code" AS "nested_2.code", "latest_rotation"."name" AS "nested_2.name","active_mwl"."code" AS "nested_3.code", "active_mwl"."format_code" AS "nested_3.format_code", "active_mwl"."mwl_code" AS "nested_3.mwl_code", "active_mwl"."name" AS "nested_3.name", "active_mwl"."date_start" AS "nested_3.date_start", "active_mwl"."runner_points" AS "nested_3.runner_points", "active_mwl"."corp_points" AS "nested_3.corp_points", "active_mwl"."type" AS "nested_3.type", "active_mwl"."id" AS "nested_3.id", "active_mwl"."code" AS "nested_3.code", "active_mwl"."name" AS "nested_3.name","latest_mwl"."code" AS "nested_4.code", "latest_mwl"."format_code" AS "nested_4.format_code", "latest_mwl"."mwl_code" AS "nested_4.mwl_code", "latest_mwl"."name" AS "nested_4.name", "latest_mwl"."date_start" AS "nested_4.date_start", "latest_mwl"."runner_points" AS "nested_4.runner_points", "latest_mwl"."corp_points" AS "nested_4.corp_points", "latest_mwl"."type" AS "nested_4.type", "latest_mwl"."id" AS "nested_4.id", "latest_mwl"."code" AS "nested_4.code", "latest_mwl"."name" AS "nested_4.name" FROM format LEFT JOIN rotation_view AS current_rotation ON current_rotation.format_code = format.code AND current_rotation.type = \'current\' LEFT JOIN rotation_view AS latest_rotation ON latest_rotation.format_code = format.code AND latest_rotation.type = \'latest\' LEFT JOIN mwl_view AS active_mwl ON active_mwl.format_code = format.code AND active_mwl.type = \'active\' LEFT JOIN mwl_view AS latest_mwl ON latest_mwl.format_code = format.code AND latest_mwl.type = \'latest\' WHERE ${generatedwhere.sql} ORDER BY format.id',
+        'SELECT"format"."id" AS "nested_0.id", "format"."code" AS "nested_0.code", "format"."name" AS "nested_0.name","current_rotation"."code" AS "nested_1.code", "current_rotation"."rotation_code" AS "nested_1.rotation_code", "current_rotation"."format_code" AS "nested_1.format_code", "current_rotation"."name" AS "nested_1.name", "current_rotation"."date_start" AS "nested_1.date_start", "current_rotation"."type" AS "nested_1.type","active_mwl"."code" AS "nested_2.code", "active_mwl"."format_code" AS "nested_2.format_code", "active_mwl"."mwl_code" AS "nested_2.mwl_code", "active_mwl"."name" AS "nested_2.name", "active_mwl"."date_start" AS "nested_2.date_start", "active_mwl"."runner_points" AS "nested_2.runner_points", "active_mwl"."corp_points" AS "nested_2.corp_points", "active_mwl"."type" AS "nested_2.type" FROM format INNER JOIN rotation_view AS current_rotation ON current_rotation.format_code = format.code AND current_rotation.type = \'current\' INNER JOIN mwl_view AS active_mwl ON active_mwl.format_code = format.code AND active_mwl.type = \'active\' WHERE ${generatedwhere.sql} ORDER BY format.id',
         variables: [
           ...generatedwhere.introducedVariables
         ],
@@ -7036,17 +5559,12 @@ abstract class _$Database extends GeneratedDatabase {
           rotation,
           mwl,
           ...generatedwhere.watchedTables,
-        }).asyncMap((QueryRow row) async {
-      return FormatResult(
-        format: await format.mapFromRow(row, tablePrefix: 'nested_0'),
-        currentRotation:
-            await rotationView.mapFromRowOrNull(row, tablePrefix: 'nested_1'),
-        latestRotation:
-            await rotationView.mapFromRowOrNull(row, tablePrefix: 'nested_2'),
-        activeMwl: await mwlView.mapFromRowOrNull(row, tablePrefix: 'nested_3'),
-        latestMwl: await mwlView.mapFromRowOrNull(row, tablePrefix: 'nested_4'),
-      );
-    });
+        }).asyncMap((QueryRow row) async => FormatResult(
+          format: await format.mapFromRow(row, tablePrefix: 'nested_0'),
+          currentRotation:
+              await rotationView.mapFromRow(row, tablePrefix: 'nested_1'),
+          activeMwl: await mwlView.mapFromRow(row, tablePrefix: 'nested_2'),
+        ));
   }
 
   Selectable<FactionResult> listFactions({ListFactions$where? where}) {
@@ -7066,12 +5584,10 @@ abstract class _$Database extends GeneratedDatabase {
           faction,
           side,
           ...generatedwhere.watchedTables,
-        }).asyncMap((QueryRow row) async {
-      return FactionResult(
-        faction: await faction.mapFromRow(row, tablePrefix: 'nested_0'),
-        side: await side.mapFromRow(row, tablePrefix: 'nested_1'),
-      );
-    });
+        }).asyncMap((QueryRow row) async => FactionResult(
+          faction: await faction.mapFromRow(row, tablePrefix: 'nested_0'),
+          side: await side.mapFromRow(row, tablePrefix: 'nested_1'),
+        ));
   }
 
   Selectable<DeckResult> listDecks({ListDecks$where? where}) {
@@ -7094,7 +5610,7 @@ abstract class _$Database extends GeneratedDatabase {
         startIndex: $arrayStartIndex);
     $arrayStartIndex += generatedwhere.amountOfVariables;
     return customSelect(
-        'SELECT"deck"."id" AS "nested_0.id", "deck"."identity_code" AS "nested_0.identity_code", "deck"."format_code" AS "nested_0.format_code", "deck"."rotation_code" AS "nested_0.rotation_code", "deck"."mwl_code" AS "nested_0.mwl_code", "deck"."name" AS "nested_0.name", "deck"."description" AS "nested_0.description", "deck"."created" AS "nested_0.created", "deck"."updated" AS "nested_0.updated", "deck"."deleted" AS "nested_0.deleted", "deck"."remote_updated" AS "nested_0.remote_updated", "deck"."synced" AS "nested_0.synced","identity"."code" AS "nested_1.code", "identity"."pack_code" AS "nested_1.pack_code", "identity"."faction_code" AS "nested_1.faction_code", "identity"."type_code" AS "nested_1.type_code", "identity"."position" AS "nested_1.position", "identity"."title" AS "nested_1.title", "identity"."body" AS "nested_1.body", "identity"."keywords" AS "nested_1.keywords", "identity"."quantity" AS "nested_1.quantity", "identity"."cost" AS "nested_1.cost", "identity"."deck_limit" AS "nested_1.deck_limit", "identity"."faction_cost" AS "nested_1.faction_cost", "identity"."uniqueness" AS "nested_1.uniqueness", "identity"."strength" AS "nested_1.strength", "identity"."agenda_points" AS "nested_1.agenda_points", "identity"."memory_cost" AS "nested_1.memory_cost", "identity"."advancement_cost" AS "nested_1.advancement_cost", "identity"."trash_cost" AS "nested_1.trash_cost", "identity"."base_link" AS "nested_1.base_link", "identity"."influence_limit" AS "nested_1.influence_limit", "identity"."minimum_deck_size" AS "nested_1.minimum_deck_size", "identity"."flavor" AS "nested_1.flavor", "identity"."illustrator" AS "nested_1.illustrator", "identity"."image_url" AS "nested_1.image_url","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated","faction"."code" AS "nested_4.code", "faction"."side_code" AS "nested_4.side_code", "faction"."name" AS "nested_4.name", "faction"."color" AS "nested_4.color", "faction"."is_mini" AS "nested_4.is_mini","side"."code" AS "nested_5.code", "side"."name" AS "nested_5.name","type"."code" AS "nested_6.code", "type"."side_code" AS "nested_6.side_code", "type"."position" AS "nested_6.position", "type"."name" AS "nested_6.name", "type"."is_subtype" AS "nested_6.is_subtype","subtype"."code" AS "nested_7.code", "subtype"."side_code" AS "nested_7.side_code", "subtype"."position" AS "nested_7.position", "subtype"."name" AS "nested_7.name", "subtype"."is_subtype" AS "nested_7.is_subtype","format"."id" AS "nested_8.id", "format"."code" AS "nested_8.code", "format"."name" AS "nested_8.name","rotation"."code" AS "nested_9.code", "rotation"."format_code" AS "nested_9.format_code", "rotation"."rotation_code" AS "nested_9.rotation_code", "rotation"."name" AS "nested_9.name", "rotation"."date_start" AS "nested_9.date_start", "rotation"."type" AS "nested_9.type", "rotation"."id" AS "nested_9.id", "rotation"."code" AS "nested_9.code", "rotation"."name" AS "nested_9.name","mwl"."code" AS "nested_10.code", "mwl"."format_code" AS "nested_10.format_code", "mwl"."mwl_code" AS "nested_10.mwl_code", "mwl"."name" AS "nested_10.name", "mwl"."date_start" AS "nested_10.date_start", "mwl"."runner_points" AS "nested_10.runner_points", "mwl"."corp_points" AS "nested_10.corp_points", "mwl"."type" AS "nested_10.type", "mwl"."id" AS "nested_10.id", "mwl"."code" AS "nested_10.code", "mwl"."name" AS "nested_10.name" FROM deck INNER JOIN card AS identity ON identity.code = deck.identity_code INNER JOIN pack ON pack.code = identity.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = identity.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = identity.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = identity.keywords OR identity.keywords LIKE(subtype.name || \' - %\'))LEFT JOIN format ON format.code = deck.format_code LEFT JOIN rotation_view AS rotation ON rotation.code = deck.rotation_code LEFT JOIN mwl_view AS mwl ON mwl.code = deck.mwl_code WHERE ${generatedwhere.sql}',
+        'SELECT"deck"."id" AS "nested_0.id", "deck"."identity_code" AS "nested_0.identity_code", "deck"."format_code" AS "nested_0.format_code", "deck"."rotation_code" AS "nested_0.rotation_code", "deck"."mwl_code" AS "nested_0.mwl_code", "deck"."name" AS "nested_0.name", "deck"."description" AS "nested_0.description", "deck"."created" AS "nested_0.created", "deck"."updated" AS "nested_0.updated", "deck"."deleted" AS "nested_0.deleted", "deck"."remote_updated" AS "nested_0.remote_updated", "deck"."synced" AS "nested_0.synced","identity"."code" AS "nested_1.code", "identity"."pack_code" AS "nested_1.pack_code", "identity"."faction_code" AS "nested_1.faction_code", "identity"."type_code" AS "nested_1.type_code", "identity"."position" AS "nested_1.position", "identity"."title" AS "nested_1.title", "identity"."body" AS "nested_1.body", "identity"."keywords" AS "nested_1.keywords", "identity"."quantity" AS "nested_1.quantity", "identity"."cost" AS "nested_1.cost", "identity"."deck_limit" AS "nested_1.deck_limit", "identity"."faction_cost" AS "nested_1.faction_cost", "identity"."uniqueness" AS "nested_1.uniqueness", "identity"."strength" AS "nested_1.strength", "identity"."agenda_points" AS "nested_1.agenda_points", "identity"."memory_cost" AS "nested_1.memory_cost", "identity"."advancement_cost" AS "nested_1.advancement_cost", "identity"."trash_cost" AS "nested_1.trash_cost", "identity"."base_link" AS "nested_1.base_link", "identity"."influence_limit" AS "nested_1.influence_limit", "identity"."minimum_deck_size" AS "nested_1.minimum_deck_size", "identity"."flavor" AS "nested_1.flavor", "identity"."illustrator" AS "nested_1.illustrator", "identity"."image_url" AS "nested_1.image_url","pack"."code" AS "nested_2.code", "pack"."cycle_code" AS "nested_2.cycle_code", "pack"."position" AS "nested_2.position", "pack"."name" AS "nested_2.name", "pack"."date_release" AS "nested_2.date_release", "pack"."size" AS "nested_2.size","cycle"."code" AS "nested_3.code", "cycle"."position" AS "nested_3.position", "cycle"."name" AS "nested_3.name", "cycle"."size" AS "nested_3.size", "cycle"."rotated" AS "nested_3.rotated","faction"."code" AS "nested_4.code", "faction"."side_code" AS "nested_4.side_code", "faction"."name" AS "nested_4.name", "faction"."color" AS "nested_4.color", "faction"."is_mini" AS "nested_4.is_mini","side"."code" AS "nested_5.code", "side"."name" AS "nested_5.name","type"."code" AS "nested_6.code", "type"."side_code" AS "nested_6.side_code", "type"."position" AS "nested_6.position", "type"."name" AS "nested_6.name", "type"."is_subtype" AS "nested_6.is_subtype","subtype"."code" AS "nested_7.code", "subtype"."side_code" AS "nested_7.side_code", "subtype"."position" AS "nested_7.position", "subtype"."name" AS "nested_7.name", "subtype"."is_subtype" AS "nested_7.is_subtype","format"."id" AS "nested_8.id", "format"."code" AS "nested_8.code", "format"."name" AS "nested_8.name","rotation"."code" AS "nested_9.code", "rotation"."rotation_code" AS "nested_9.rotation_code", "rotation"."format_code" AS "nested_9.format_code", "rotation"."name" AS "nested_9.name", "rotation"."date_start" AS "nested_9.date_start", "rotation"."type" AS "nested_9.type","mwl"."code" AS "nested_10.code", "mwl"."format_code" AS "nested_10.format_code", "mwl"."mwl_code" AS "nested_10.mwl_code", "mwl"."name" AS "nested_10.name", "mwl"."date_start" AS "nested_10.date_start", "mwl"."runner_points" AS "nested_10.runner_points", "mwl"."corp_points" AS "nested_10.corp_points", "mwl"."type" AS "nested_10.type" FROM deck INNER JOIN card AS identity ON identity.code = deck.identity_code INNER JOIN pack ON pack.code = identity.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = identity.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = identity.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = identity.keywords OR identity.keywords LIKE(subtype.name || \' - %\'))LEFT JOIN format ON format.code = deck.format_code LEFT JOIN rotation_view AS rotation ON rotation.code = deck.rotation_code LEFT JOIN mwl_view AS mwl ON mwl.code = deck.mwl_code WHERE ${generatedwhere.sql}',
         variables: [
           ...generatedwhere.introducedVariables
         ],
@@ -7110,22 +5626,20 @@ abstract class _$Database extends GeneratedDatabase {
           rotation,
           mwl,
           ...generatedwhere.watchedTables,
-        }).asyncMap((QueryRow row) async {
-      return DeckResult(
-        deck: await deck.mapFromRow(row, tablePrefix: 'nested_0'),
-        identity: await card.mapFromRow(row, tablePrefix: 'nested_1'),
-        pack: await pack.mapFromRow(row, tablePrefix: 'nested_2'),
-        cycle: await cycle.mapFromRow(row, tablePrefix: 'nested_3'),
-        faction: await faction.mapFromRow(row, tablePrefix: 'nested_4'),
-        side: await side.mapFromRow(row, tablePrefix: 'nested_5'),
-        type: await type.mapFromRow(row, tablePrefix: 'nested_6'),
-        subtype: await type.mapFromRowOrNull(row, tablePrefix: 'nested_7'),
-        format: await format.mapFromRowOrNull(row, tablePrefix: 'nested_8'),
-        rotation:
-            await rotationView.mapFromRowOrNull(row, tablePrefix: 'nested_9'),
-        mwl: await mwlView.mapFromRowOrNull(row, tablePrefix: 'nested_10'),
-      );
-    });
+        }).asyncMap((QueryRow row) async => DeckResult(
+          deck: await deck.mapFromRow(row, tablePrefix: 'nested_0'),
+          identity: await card.mapFromRow(row, tablePrefix: 'nested_1'),
+          pack: await pack.mapFromRow(row, tablePrefix: 'nested_2'),
+          cycle: await cycle.mapFromRow(row, tablePrefix: 'nested_3'),
+          faction: await faction.mapFromRow(row, tablePrefix: 'nested_4'),
+          side: await side.mapFromRow(row, tablePrefix: 'nested_5'),
+          type: await type.mapFromRow(row, tablePrefix: 'nested_6'),
+          subtype: await type.mapFromRowOrNull(row, tablePrefix: 'nested_7'),
+          format: await format.mapFromRowOrNull(row, tablePrefix: 'nested_8'),
+          rotation:
+              await rotationView.mapFromRowOrNull(row, tablePrefix: 'nested_9'),
+          mwl: await mwlView.mapFromRowOrNull(row, tablePrefix: 'nested_10'),
+        ));
   }
 
   Selectable<DeckData> getDeckById({required String deckId}) {
@@ -7146,46 +5660,6 @@ abstract class _$Database extends GeneratedDatabase {
       updates: {deck},
       updateKind: UpdateKind.delete,
     );
-  }
-
-  Selectable<GetDeckFromDataResult> getDeckFromData(
-      {String? formatCode,
-      String? rotationCode,
-      String? mwlCode,
-      required String identityCode}) {
-    return customSelect(
-        'SELECT"identity"."code" AS "nested_0.code", "identity"."pack_code" AS "nested_0.pack_code", "identity"."faction_code" AS "nested_0.faction_code", "identity"."type_code" AS "nested_0.type_code", "identity"."position" AS "nested_0.position", "identity"."title" AS "nested_0.title", "identity"."body" AS "nested_0.body", "identity"."keywords" AS "nested_0.keywords", "identity"."quantity" AS "nested_0.quantity", "identity"."cost" AS "nested_0.cost", "identity"."deck_limit" AS "nested_0.deck_limit", "identity"."faction_cost" AS "nested_0.faction_cost", "identity"."uniqueness" AS "nested_0.uniqueness", "identity"."strength" AS "nested_0.strength", "identity"."agenda_points" AS "nested_0.agenda_points", "identity"."memory_cost" AS "nested_0.memory_cost", "identity"."advancement_cost" AS "nested_0.advancement_cost", "identity"."trash_cost" AS "nested_0.trash_cost", "identity"."base_link" AS "nested_0.base_link", "identity"."influence_limit" AS "nested_0.influence_limit", "identity"."minimum_deck_size" AS "nested_0.minimum_deck_size", "identity"."flavor" AS "nested_0.flavor", "identity"."illustrator" AS "nested_0.illustrator", "identity"."image_url" AS "nested_0.image_url","pack"."code" AS "nested_1.code", "pack"."cycle_code" AS "nested_1.cycle_code", "pack"."position" AS "nested_1.position", "pack"."name" AS "nested_1.name", "pack"."date_release" AS "nested_1.date_release", "pack"."size" AS "nested_1.size","cycle"."code" AS "nested_2.code", "cycle"."position" AS "nested_2.position", "cycle"."name" AS "nested_2.name", "cycle"."size" AS "nested_2.size", "cycle"."rotated" AS "nested_2.rotated","faction"."code" AS "nested_3.code", "faction"."side_code" AS "nested_3.side_code", "faction"."name" AS "nested_3.name", "faction"."color" AS "nested_3.color", "faction"."is_mini" AS "nested_3.is_mini","side"."code" AS "nested_4.code", "side"."name" AS "nested_4.name","type"."code" AS "nested_5.code", "type"."side_code" AS "nested_5.side_code", "type"."position" AS "nested_5.position", "type"."name" AS "nested_5.name", "type"."is_subtype" AS "nested_5.is_subtype","subtype"."code" AS "nested_6.code", "subtype"."side_code" AS "nested_6.side_code", "subtype"."position" AS "nested_6.position", "subtype"."name" AS "nested_6.name", "subtype"."is_subtype" AS "nested_6.is_subtype","format"."id" AS "nested_7.id", "format"."code" AS "nested_7.code", "format"."name" AS "nested_7.name","rotation"."code" AS "nested_8.code", "rotation"."format_code" AS "nested_8.format_code", "rotation"."rotation_code" AS "nested_8.rotation_code", "rotation"."name" AS "nested_8.name", "rotation"."date_start" AS "nested_8.date_start", "rotation"."type" AS "nested_8.type", "rotation"."id" AS "nested_8.id", "rotation"."code" AS "nested_8.code", "rotation"."name" AS "nested_8.name","mwl"."code" AS "nested_9.code", "mwl"."format_code" AS "nested_9.format_code", "mwl"."mwl_code" AS "nested_9.mwl_code", "mwl"."name" AS "nested_9.name", "mwl"."date_start" AS "nested_9.date_start", "mwl"."runner_points" AS "nested_9.runner_points", "mwl"."corp_points" AS "nested_9.corp_points", "mwl"."type" AS "nested_9.type", "mwl"."id" AS "nested_9.id", "mwl"."code" AS "nested_9.code", "mwl"."name" AS "nested_9.name" FROM card AS identity INNER JOIN pack ON pack.code = identity.pack_code INNER JOIN cycle ON cycle.code = pack.cycle_code INNER JOIN faction ON faction.code = identity.faction_code INNER JOIN side ON side.code = faction.side_code INNER JOIN type ON type.code = identity.type_code LEFT JOIN type AS subtype ON subtype.is_subtype AND(subtype.name = identity.keywords OR identity.keywords LIKE(subtype.name || \' - %\'))LEFT JOIN format ON format.code = ?1 LEFT JOIN rotation_view AS rotation ON rotation.code = ?2 LEFT JOIN mwl_view AS mwl ON mwl.code = ?3 WHERE identity.code = ?4',
-        variables: [
-          Variable<String>(formatCode),
-          Variable<String>(rotationCode),
-          Variable<String>(mwlCode),
-          Variable<String>(identityCode)
-        ],
-        readsFrom: {
-          card,
-          pack,
-          cycle,
-          faction,
-          side,
-          type,
-          format,
-          rotation,
-          mwl,
-        }).asyncMap((QueryRow row) async {
-      return GetDeckFromDataResult(
-        identity: await card.mapFromRow(row, tablePrefix: 'nested_0'),
-        pack: await pack.mapFromRow(row, tablePrefix: 'nested_1'),
-        cycle: await cycle.mapFromRow(row, tablePrefix: 'nested_2'),
-        faction: await faction.mapFromRow(row, tablePrefix: 'nested_3'),
-        side: await side.mapFromRow(row, tablePrefix: 'nested_4'),
-        type: await type.mapFromRow(row, tablePrefix: 'nested_5'),
-        subtype: await type.mapFromRowOrNull(row, tablePrefix: 'nested_6'),
-        format: await format.mapFromRowOrNull(row, tablePrefix: 'nested_7'),
-        rotation:
-            await rotationView.mapFromRowOrNull(row, tablePrefix: 'nested_8'),
-        mwl: await mwlView.mapFromRowOrNull(row, tablePrefix: 'nested_9'),
-      );
-    });
   }
 
   Selectable<DeckTagData> listDeckTags({ListDeckTags$where? where}) {
@@ -7279,18 +5753,16 @@ abstract class _$Database extends GeneratedDatabase {
           side,
           type,
           ...generatedwhere.watchedTables,
-        }).asyncMap((QueryRow row) async {
-      return DeckCardResult(
-        deckCard: await deckCard.mapFromRow(row, tablePrefix: 'nested_0'),
-        card: await card.mapFromRow(row, tablePrefix: 'nested_1'),
-        pack: await pack.mapFromRow(row, tablePrefix: 'nested_2'),
-        cycle: await cycle.mapFromRow(row, tablePrefix: 'nested_3'),
-        faction: await faction.mapFromRow(row, tablePrefix: 'nested_4'),
-        side: await side.mapFromRow(row, tablePrefix: 'nested_5'),
-        type: await type.mapFromRow(row, tablePrefix: 'nested_6'),
-        subtype: await type.mapFromRowOrNull(row, tablePrefix: 'nested_7'),
-      );
-    });
+        }).asyncMap((QueryRow row) async => DeckCardResult(
+          deckCard: await deckCard.mapFromRow(row, tablePrefix: 'nested_0'),
+          card: await card.mapFromRow(row, tablePrefix: 'nested_1'),
+          pack: await pack.mapFromRow(row, tablePrefix: 'nested_2'),
+          cycle: await cycle.mapFromRow(row, tablePrefix: 'nested_3'),
+          faction: await faction.mapFromRow(row, tablePrefix: 'nested_4'),
+          side: await side.mapFromRow(row, tablePrefix: 'nested_5'),
+          type: await type.mapFromRow(row, tablePrefix: 'nested_6'),
+          subtype: await type.mapFromRowOrNull(row, tablePrefix: 'nested_7'),
+        ));
   }
 
   Future<int> deleteDeckCards({required List<String> deckIds}) {
@@ -7324,7 +5796,7 @@ abstract class _$Database extends GeneratedDatabase {
 
   Selectable<CollectionResult> listCollection({required bool inCollection}) {
     return customSelect(
-        'SELECT"pack"."code" AS "nested_0.code", "pack"."cycle_code" AS "nested_0.cycle_code", "pack"."position" AS "nested_0.position", "pack"."name" AS "nested_0.name", "pack"."date_release" AS "nested_0.date_release", "pack"."size" AS "nested_0.size","cycle"."code" AS "nested_1.code", "cycle"."position" AS "nested_1.position", "cycle"."name" AS "nested_1.name", "cycle"."size" AS "nested_1.size", "cycle"."rotated" AS "nested_1.rotated",(collection.pack_code IS NOT NULL)AS in_collection FROM pack INNER JOIN cycle ON cycle.code = pack.cycle_code LEFT JOIN collection ON collection.pack_code = pack.code WHERE(NOT ?1 OR(collection.pack_code IS NOT NULL))ORDER BY cycle.position DESC, pack.position',
+        'SELECT"pack"."code" AS "nested_0.code", "pack"."cycle_code" AS "nested_0.cycle_code", "pack"."position" AS "nested_0.position", "pack"."name" AS "nested_0.name", "pack"."date_release" AS "nested_0.date_release", "pack"."size" AS "nested_0.size","cycle"."code" AS "nested_1.code", "cycle"."position" AS "nested_1.position", "cycle"."name" AS "nested_1.name", "cycle"."size" AS "nested_1.size", "cycle"."rotated" AS "nested_1.rotated",(collection.pack_code IS NOT NULL)AS in_collection FROM pack INNER JOIN cycle ON cycle.code = pack.cycle_code LEFT JOIN collection ON collection.pack_code = pack.code WHERE(NOT ?1 OR(collection.pack_code IS NOT NULL))ORDER BY cycle.position DESC, pack.position DESC',
         variables: [
           Variable<bool>(inCollection)
         ],
@@ -7332,13 +5804,11 @@ abstract class _$Database extends GeneratedDatabase {
           collection,
           pack,
           cycle,
-        }).asyncMap((QueryRow row) async {
-      return CollectionResult(
-        inCollection: row.read<bool>('in_collection'),
-        pack: await pack.mapFromRow(row, tablePrefix: 'nested_0'),
-        cycle: await cycle.mapFromRow(row, tablePrefix: 'nested_1'),
-      );
-    });
+        }).asyncMap((QueryRow row) async => CollectionResult(
+          pack: await pack.mapFromRow(row, tablePrefix: 'nested_0'),
+          cycle: await cycle.mapFromRow(row, tablePrefix: 'nested_1'),
+          inCollection: row.read<bool>('in_collection'),
+        ));
   }
 
   Future<int> deleteCollection() {
@@ -7374,17 +5844,15 @@ abstract class _$Database extends GeneratedDatabase {
           type,
           mwlCard,
           ...generatedwhere.watchedTables,
-        }).asyncMap((QueryRow row) async {
-      return CardResult(
-        card: await card.mapFromRow(row, tablePrefix: 'nested_0'),
-        pack: await pack.mapFromRow(row, tablePrefix: 'nested_1'),
-        cycle: await cycle.mapFromRow(row, tablePrefix: 'nested_2'),
-        faction: await faction.mapFromRow(row, tablePrefix: 'nested_3'),
-        side: await side.mapFromRow(row, tablePrefix: 'nested_4'),
-        type: await type.mapFromRow(row, tablePrefix: 'nested_5'),
-        subtype: await type.mapFromRowOrNull(row, tablePrefix: 'nested_6'),
-      );
-    });
+        }).asyncMap((QueryRow row) async => CardResult(
+          card: await card.mapFromRow(row, tablePrefix: 'nested_0'),
+          pack: await pack.mapFromRow(row, tablePrefix: 'nested_1'),
+          cycle: await cycle.mapFromRow(row, tablePrefix: 'nested_2'),
+          faction: await faction.mapFromRow(row, tablePrefix: 'nested_3'),
+          side: await side.mapFromRow(row, tablePrefix: 'nested_4'),
+          type: await type.mapFromRow(row, tablePrefix: 'nested_5'),
+          subtype: await type.mapFromRowOrNull(row, tablePrefix: 'nested_6'),
+        ));
   }
 
   Selectable<String> listIdentityCards({required List<String> codeList}) {
@@ -7431,6 +5899,7 @@ abstract class _$Database extends GeneratedDatabase {
         OnCreateQuery('INSERT INTO settings DEFAULT VALUES'),
         rotationCycle,
         cycle,
+        rotationCycleView,
         pack,
         card,
         faction,
@@ -7446,184 +5915,19 @@ abstract class _$Database extends GeneratedDatabase {
       const DriftDatabaseOptions(storeDateTimeAsText: true);
 }
 
-class TypeResult {
-  final TypeData type;
-  final SideData? side;
-  TypeResult({
-    required this.type,
-    this.side,
-  });
-  @override
-  int get hashCode => Object.hash(type, side);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is TypeResult &&
-          other.type == this.type &&
-          other.side == this.side);
-  @override
-  String toString() {
-    return (StringBuffer('TypeResult(')
-          ..write('type: $type, ')
-          ..write('side: $side')
-          ..write(')'))
-        .toString();
-  }
-}
-
 typedef ListTypes$where = Expression<bool> Function(Type type, Side side);
 typedef ListSides$where = Expression<bool> Function(Side side);
-
-class SettingResult {
-  final SettingsData settings;
-  final FormatData? filterFormat;
-  final RotationViewData? filterRotation;
-  final MwlViewData? filterMwl;
-  SettingResult({
-    required this.settings,
-    this.filterFormat,
-    this.filterRotation,
-    this.filterMwl,
-  });
-  @override
-  int get hashCode =>
-      Object.hash(settings, filterFormat, filterRotation, filterMwl);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is SettingResult &&
-          other.settings == this.settings &&
-          other.filterFormat == this.filterFormat &&
-          other.filterRotation == this.filterRotation &&
-          other.filterMwl == this.filterMwl);
-  @override
-  String toString() {
-    return (StringBuffer('SettingResult(')
-          ..write('settings: $settings, ')
-          ..write('filterFormat: $filterFormat, ')
-          ..write('filterRotation: $filterRotation, ')
-          ..write('filterMwl: $filterMwl')
-          ..write(')'))
-        .toString();
-  }
-}
-
 typedef ListRotations$where = Expression<bool> Function(RotationView rotation);
-
-class RotationPackResult {
-  final FormatData format;
-  final RotationViewData rotation;
-  final PackData pack;
-  final CycleData cycle;
-  RotationPackResult({
-    required this.format,
-    required this.rotation,
-    required this.pack,
-    required this.cycle,
-  });
-  @override
-  int get hashCode => Object.hash(format, rotation, pack, cycle);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is RotationPackResult &&
-          other.format == this.format &&
-          other.rotation == this.rotation &&
-          other.pack == this.pack &&
-          other.cycle == this.cycle);
-  @override
-  String toString() {
-    return (StringBuffer('RotationPackResult(')
-          ..write('format: $format, ')
-          ..write('rotation: $rotation, ')
-          ..write('pack: $pack, ')
-          ..write('cycle: $cycle')
-          ..write(')'))
-        .toString();
-  }
-}
-
 typedef ListRotationPacks$where = Expression<bool> Function(
     RotationView rotation,
     Format format,
-    RotationCycle rotation_cycle,
+    RotationCycleView rotation_cycle,
     Cycle cycle,
     Pack pack);
-
-class FormatPackResult {
-  final FormatData format;
-  final RotationViewData rotation;
-  final PackData pack;
-  final CycleData cycle;
-  FormatPackResult({
-    required this.format,
-    required this.rotation,
-    required this.pack,
-    required this.cycle,
-  });
-  @override
-  int get hashCode => Object.hash(format, rotation, pack, cycle);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is FormatPackResult &&
-          other.format == this.format &&
-          other.rotation == this.rotation &&
-          other.pack == this.pack &&
-          other.cycle == this.cycle);
-  @override
-  String toString() {
-    return (StringBuffer('FormatPackResult(')
-          ..write('format: $format, ')
-          ..write('rotation: $rotation, ')
-          ..write('pack: $pack, ')
-          ..write('cycle: $cycle')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class RotationCardResult {
-  final FormatData format;
-  final RotationViewData rotation;
-  final PackData pack;
-  final CycleData cycle;
-  final CardData card;
-  RotationCardResult({
-    required this.format,
-    required this.rotation,
-    required this.pack,
-    required this.cycle,
-    required this.card,
-  });
-  @override
-  int get hashCode => Object.hash(format, rotation, pack, cycle, card);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is RotationCardResult &&
-          other.format == this.format &&
-          other.rotation == this.rotation &&
-          other.pack == this.pack &&
-          other.cycle == this.cycle &&
-          other.card == this.card);
-  @override
-  String toString() {
-    return (StringBuffer('RotationCardResult(')
-          ..write('format: $format, ')
-          ..write('rotation: $rotation, ')
-          ..write('pack: $pack, ')
-          ..write('cycle: $cycle, ')
-          ..write('card: $card')
-          ..write(')'))
-        .toString();
-  }
-}
-
 typedef ListRotationCards$where = Expression<bool> Function(
     RotationView rotation,
     Format format,
-    RotationCycle rotation_cycle,
+    RotationCycleView rotation_cycle,
     Cycle cycle,
     Pack pack,
     Card card);
@@ -7677,171 +5981,13 @@ typedef CountStuff$sides = Expression<bool> Function(Side side);
 typedef CountStuff$factions = Expression<bool> Function(
     Faction faction, Side side);
 typedef CountStuff$types = Expression<bool> Function(Type type, Side side);
-
-class PackResult {
-  final PackData pack;
-  final CycleData cycle;
-  PackResult({
-    required this.pack,
-    required this.cycle,
-  });
-  @override
-  int get hashCode => Object.hash(pack, cycle);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is PackResult &&
-          other.pack == this.pack &&
-          other.cycle == this.cycle);
-  @override
-  String toString() {
-    return (StringBuffer('PackResult(')
-          ..write('pack: $pack, ')
-          ..write('cycle: $cycle')
-          ..write(')'))
-        .toString();
-  }
-}
-
 typedef ListPacks$where = Expression<bool> Function(Pack pack, Cycle cycle);
 typedef ListMwl$where = Expression<bool> Function(MwlView mwl);
 typedef ListMwlCard$where = Expression<bool> Function(MwlCard mwl_card);
-
-class FormatResult {
-  final FormatData format;
-  final RotationViewData? currentRotation;
-  final RotationViewData? latestRotation;
-  final MwlViewData? activeMwl;
-  final MwlViewData? latestMwl;
-  FormatResult({
-    required this.format,
-    this.currentRotation,
-    this.latestRotation,
-    this.activeMwl,
-    this.latestMwl,
-  });
-  @override
-  int get hashCode => Object.hash(
-      format, currentRotation, latestRotation, activeMwl, latestMwl);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is FormatResult &&
-          other.format == this.format &&
-          other.currentRotation == this.currentRotation &&
-          other.latestRotation == this.latestRotation &&
-          other.activeMwl == this.activeMwl &&
-          other.latestMwl == this.latestMwl);
-  @override
-  String toString() {
-    return (StringBuffer('FormatResult(')
-          ..write('format: $format, ')
-          ..write('currentRotation: $currentRotation, ')
-          ..write('latestRotation: $latestRotation, ')
-          ..write('activeMwl: $activeMwl, ')
-          ..write('latestMwl: $latestMwl')
-          ..write(')'))
-        .toString();
-  }
-}
-
 typedef ListFormats$where = Expression<bool> Function(
-    Format format,
-    RotationView current_rotation,
-    RotationView latest_rotation,
-    MwlView active_mwl,
-    MwlView latest_mwl);
-
-class FactionResult {
-  final FactionData faction;
-  final SideData side;
-  FactionResult({
-    required this.faction,
-    required this.side,
-  });
-  @override
-  int get hashCode => Object.hash(faction, side);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is FactionResult &&
-          other.faction == this.faction &&
-          other.side == this.side);
-  @override
-  String toString() {
-    return (StringBuffer('FactionResult(')
-          ..write('faction: $faction, ')
-          ..write('side: $side')
-          ..write(')'))
-        .toString();
-  }
-}
-
+    Format format, RotationView current_rotation, MwlView active_mwl);
 typedef ListFactions$where = Expression<bool> Function(
     Faction faction, Side side);
-
-class DeckResult {
-  final DeckData deck;
-  final CardData identity;
-  final PackData pack;
-  final CycleData cycle;
-  final FactionData faction;
-  final SideData side;
-  final TypeData type;
-  final TypeData? subtype;
-  final FormatData? format;
-  final RotationViewData? rotation;
-  final MwlViewData? mwl;
-  DeckResult({
-    required this.deck,
-    required this.identity,
-    required this.pack,
-    required this.cycle,
-    required this.faction,
-    required this.side,
-    required this.type,
-    this.subtype,
-    this.format,
-    this.rotation,
-    this.mwl,
-  });
-  @override
-  int get hashCode => Object.hash(deck, identity, pack, cycle, faction, side,
-      type, subtype, format, rotation, mwl);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is DeckResult &&
-          other.deck == this.deck &&
-          other.identity == this.identity &&
-          other.pack == this.pack &&
-          other.cycle == this.cycle &&
-          other.faction == this.faction &&
-          other.side == this.side &&
-          other.type == this.type &&
-          other.subtype == this.subtype &&
-          other.format == this.format &&
-          other.rotation == this.rotation &&
-          other.mwl == this.mwl);
-  @override
-  String toString() {
-    return (StringBuffer('DeckResult(')
-          ..write('deck: $deck, ')
-          ..write('identity: $identity, ')
-          ..write('pack: $pack, ')
-          ..write('cycle: $cycle, ')
-          ..write('faction: $faction, ')
-          ..write('side: $side, ')
-          ..write('type: $type, ')
-          ..write('subtype: $subtype, ')
-          ..write('format: $format, ')
-          ..write('rotation: $rotation, ')
-          ..write('mwl: $mwl')
-          ..write(')'))
-        .toString();
-  }
-}
-
 typedef ListDecks$where = Expression<bool> Function(
     Deck deck,
     Card identity,
@@ -7854,120 +6000,10 @@ typedef ListDecks$where = Expression<bool> Function(
     Format format,
     RotationView rotation,
     MwlView mwl);
-
-class GetDeckFromDataResult {
-  final CardData identity;
-  final PackData pack;
-  final CycleData cycle;
-  final FactionData faction;
-  final SideData side;
-  final TypeData type;
-  final TypeData? subtype;
-  final FormatData? format;
-  final RotationViewData? rotation;
-  final MwlViewData? mwl;
-  GetDeckFromDataResult({
-    required this.identity,
-    required this.pack,
-    required this.cycle,
-    required this.faction,
-    required this.side,
-    required this.type,
-    this.subtype,
-    this.format,
-    this.rotation,
-    this.mwl,
-  });
-  @override
-  int get hashCode => Object.hash(identity, pack, cycle, faction, side, type,
-      subtype, format, rotation, mwl);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is GetDeckFromDataResult &&
-          other.identity == this.identity &&
-          other.pack == this.pack &&
-          other.cycle == this.cycle &&
-          other.faction == this.faction &&
-          other.side == this.side &&
-          other.type == this.type &&
-          other.subtype == this.subtype &&
-          other.format == this.format &&
-          other.rotation == this.rotation &&
-          other.mwl == this.mwl);
-  @override
-  String toString() {
-    return (StringBuffer('GetDeckFromDataResult(')
-          ..write('identity: $identity, ')
-          ..write('pack: $pack, ')
-          ..write('cycle: $cycle, ')
-          ..write('faction: $faction, ')
-          ..write('side: $side, ')
-          ..write('type: $type, ')
-          ..write('subtype: $subtype, ')
-          ..write('format: $format, ')
-          ..write('rotation: $rotation, ')
-          ..write('mwl: $mwl')
-          ..write(')'))
-        .toString();
-  }
-}
-
 typedef ListDeckTags$where = Expression<bool> Function(
     DeckTag deck_tag, Deck deck);
 typedef ListDistinctDeckTags$where = Expression<bool> Function(
     DeckTag deck_tag, Deck deck);
-
-class DeckCardResult {
-  final DeckCardData deckCard;
-  final CardData card;
-  final PackData pack;
-  final CycleData cycle;
-  final FactionData faction;
-  final SideData side;
-  final TypeData type;
-  final TypeData? subtype;
-  DeckCardResult({
-    required this.deckCard,
-    required this.card,
-    required this.pack,
-    required this.cycle,
-    required this.faction,
-    required this.side,
-    required this.type,
-    this.subtype,
-  });
-  @override
-  int get hashCode =>
-      Object.hash(deckCard, card, pack, cycle, faction, side, type, subtype);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is DeckCardResult &&
-          other.deckCard == this.deckCard &&
-          other.card == this.card &&
-          other.pack == this.pack &&
-          other.cycle == this.cycle &&
-          other.faction == this.faction &&
-          other.side == this.side &&
-          other.type == this.type &&
-          other.subtype == this.subtype);
-  @override
-  String toString() {
-    return (StringBuffer('DeckCardResult(')
-          ..write('deckCard: $deckCard, ')
-          ..write('card: $card, ')
-          ..write('pack: $pack, ')
-          ..write('cycle: $cycle, ')
-          ..write('faction: $faction, ')
-          ..write('side: $side, ')
-          ..write('type: $type, ')
-          ..write('subtype: $subtype')
-          ..write(')'))
-        .toString();
-  }
-}
-
 typedef ListDeckCards$where = Expression<bool> Function(
     DeckCard deck_card,
     Card card,
@@ -7977,82 +6013,6 @@ typedef ListDeckCards$where = Expression<bool> Function(
     Side side,
     Type type,
     Type subtype);
-
-class CollectionResult {
-  final bool inCollection;
-  final PackData pack;
-  final CycleData cycle;
-  CollectionResult({
-    required this.inCollection,
-    required this.pack,
-    required this.cycle,
-  });
-  @override
-  int get hashCode => Object.hash(inCollection, pack, cycle);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is CollectionResult &&
-          other.inCollection == this.inCollection &&
-          other.pack == this.pack &&
-          other.cycle == this.cycle);
-  @override
-  String toString() {
-    return (StringBuffer('CollectionResult(')
-          ..write('inCollection: $inCollection, ')
-          ..write('pack: $pack, ')
-          ..write('cycle: $cycle')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class CardResult {
-  final CardData card;
-  final PackData pack;
-  final CycleData cycle;
-  final FactionData faction;
-  final SideData side;
-  final TypeData type;
-  final TypeData? subtype;
-  CardResult({
-    required this.card,
-    required this.pack,
-    required this.cycle,
-    required this.faction,
-    required this.side,
-    required this.type,
-    this.subtype,
-  });
-  @override
-  int get hashCode =>
-      Object.hash(card, pack, cycle, faction, side, type, subtype);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is CardResult &&
-          other.card == this.card &&
-          other.pack == this.pack &&
-          other.cycle == this.cycle &&
-          other.faction == this.faction &&
-          other.side == this.side &&
-          other.type == this.type &&
-          other.subtype == this.subtype);
-  @override
-  String toString() {
-    return (StringBuffer('CardResult(')
-          ..write('card: $card, ')
-          ..write('pack: $pack, ')
-          ..write('cycle: $cycle, ')
-          ..write('faction: $faction, ')
-          ..write('side: $side, ')
-          ..write('type: $type, ')
-          ..write('subtype: $subtype')
-          ..write(')'))
-        .toString();
-  }
-}
-
 typedef ListCards$where = Expression<bool> Function(
     Card card,
     Pack pack,

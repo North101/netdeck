@@ -9,9 +9,9 @@ CREATE TABLE faction(
   name TEXT NOT NULL,
   color INT NOT NULL MAPPED BY `const ColorConverter()`,
   is_mini BOOLEAN NOT NULL
-);
+) WITH FactionData;
 
-listFactions($where = TRUE) AS FactionResult:
+listFactions($where = TRUE) WITH FactionResult:
 SELECT
   faction.**,
   side.**

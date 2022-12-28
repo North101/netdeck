@@ -7,13 +7,10 @@ import 'package:path_provider/path_provider.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
 
-import '/db/extensions.dart';
 import '/db/migrations.dart';
-import '/providers/deck.dart';
 import '/util/extensions.dart';
 import 'types.dart';
 
-export 'extensions.dart';
 export 'types.dart';
 export 'util.dart';
 
@@ -37,6 +34,7 @@ extension RemoveDiacriticsExpression on Expression<String> {
   'sql/nrdb.drift',
   'sql/pack.drift',
   'sql/queries.drift',
+  'sql/rotation_cycle.drift',
   'sql/rotation.drift',
   'sql/settings.drift',
   'sql/side.drift',
@@ -69,14 +67,14 @@ class Database extends _$Database {
       name: '${deck.name} Copy',
       created: now,
       updated: now,
-      synced: const Value(null),
-      remoteUpdated: const Value(null),
+      synced: null,
+      remoteUpdated: null,
     );
     await into(this.deck).insert(newDeck);
     return newDeck;
   }
 
-  Stream<List<DeckFullResult>> listDecks2({ListDecks$where? where}) {
+  Stream<List<DeckFullResult>> listDeckFull({ListDecks$where? where}) {
     final deckListStream = listDecks(where: where).watch();
     final cardListStream = deckListStream.flatMap((deckList) {
       return listDeckCards(
@@ -113,7 +111,7 @@ class Database extends _$Database {
     );
   }
 
-  Stream<List<DeckNotifierResult>> listMiniDecks({ListDecks$where? where}) {
+  Stream<List<DeckNotifierData>> listDeckNotifier({ListDecks$where? where}) {
     final deckListStream = listDecks(where: where).watch();
     final cardListStream = deckListStream.flatMap((deckList) {
       return listDeckCards(
@@ -128,7 +126,7 @@ class Database extends _$Database {
       ).watch();
     });
     return CombineLatestStream.combine3<List<DeckResult>, List<DeckCardResult>, List<DeckTagData>,
-        List<DeckNotifierResult>>(
+        List<DeckNotifierData>>(
       deckListStream,
       cardListStream,
       tagListStream,
@@ -138,7 +136,7 @@ class Database extends _$Database {
         tagList,
       ) {
         return deckList.map((deck) {
-          return DeckNotifierResult(
+          return DeckNotifierData(
             id: deck.deck.id,
             identityCode: deck.deck.identityCode,
             formatCode: deck.deck.formatCode,
@@ -163,7 +161,7 @@ class Database extends _$Database {
     );
   }
 
-  Stream<List<DeckMicroResult>> listMicroDecks({ListDecks$where? where}) {
+  Stream<List<DeckCompareResult>> listDeckCompare({ListDecks$where? where}) {
     final deckListStream = listDecks(where: where).watch();
     final cardListStream = deckListStream.flatMap((deckList) {
       return listDeckCards(
@@ -172,12 +170,12 @@ class Database extends _$Database {
         },
       ).watch();
     });
-    return CombineLatestStream.combine2<List<DeckResult>, List<DeckCardResult>, List<DeckMicroResult>>(
+    return CombineLatestStream.combine2<List<DeckResult>, List<DeckCardResult>, List<DeckCompareResult>>(
       deckListStream,
       cardListStream,
       (deckList, cardList) {
         return deckList.map((deck) {
-          return DeckMicroResult(
+          return DeckCompareResult(
             id: deck.deck.id,
             name: deck.deck.name,
             cards: cardList
@@ -188,5 +186,42 @@ class Database extends _$Database {
         }).toList();
       },
     );
+  }
+
+  Selectable<DeckResult> getDeckFromData(DeckData deck) {
+    final identity = card.createAlias('identity');
+    final subtype = type.createAlias('subtype');
+    final rotation = rotationView.createAlias('rotation');
+    final mwl = mwlView.createAlias('mwl');
+    final query = select(identity).join([
+      innerJoin(pack, pack.code.equalsExp(identity.packCode)),
+      innerJoin(cycle, cycle.code.equalsExp(pack.cycleCode)),
+      innerJoin(faction, faction.code.equalsExp(identity.factionCode)),
+      innerJoin(side, side.code.equalsExp(faction.sideCode)),
+      innerJoin(type, type.code.equalsExp(identity.typeCode)),
+      leftOuterJoin(
+        subtype,
+        subtype.isSubtype &
+            (subtype.name.equalsExp(identity.keywords) |
+                identity.keywords.likeExp(subtype.name + const Constant(' - %'))),
+      ),
+      leftOuterJoin(format, format.code.equalsNullable(deck.formatCode)),
+      leftOuterJoin(rotation, rotation.code.equalsNullable(deck.rotationCode)),
+      leftOuterJoin(mwl, mwl.code.equalsNullable(deck.mwlCode)),
+    ])
+      ..where(identity.code.equals(deck.identityCode));
+    return query.map((result) => DeckResult(
+          deck: deck,
+          identity: result.readTable(identity),
+          pack: result.readTable(pack),
+          cycle: result.readTable(cycle),
+          faction: result.readTable(faction),
+          side: result.readTable(side),
+          type: result.readTable(type),
+          subtype: result.readTableOrNull(subtype),
+          format: result.readTableOrNull(format),
+          rotation: result.readTableOrNull(rotation),
+          mwl: result.readTableOrNull(mwl),
+        ));
   }
 }

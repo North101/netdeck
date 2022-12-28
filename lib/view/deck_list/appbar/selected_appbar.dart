@@ -12,7 +12,7 @@ class DeckSelectedActions extends ConsumerWidget {
     final navigator = Navigator.of(context);
     final db = ref.read(dbProvider);
     final selectedDeckIds = ref.read(selectedDeckIdsProvider).value;
-    final selectedDecks = await db.listMicroDecks(
+    final selectedDecks = await db.listDeckCompare(
       where: (deck, identity, pack, cycle, faction, side, type, subtype, format, rotation, mwl) {
         return deck.id.isIn(selectedDeckIds);
       },
@@ -59,12 +59,12 @@ class DeckSelectedActions extends ConsumerWidget {
 
     final db = ref.read(dbProvider);
     final selectedDeckIds = ref.read(selectedDeckIdsProvider);
-    final selectedDecks = await db.listMiniDecks(
+    final selectedDecks = await db.listDeckNotifier(
       where: (deck, identity, pack, cycle, faction, side, type, subtype, format, rotation, mwl) {
         return deck.id.isIn(selectedDeckIds.value);
       },
     ).first;
-    await authState.forceUpload(db, selectedDecks);
+    await authState.forceUpload(db, selectedDecks.map((e) => e.toNrdbDeck()));
     selectedDeckIds.value = {};
   }
 
@@ -109,19 +109,19 @@ class DeckSelectedActions extends ConsumerWidget {
 
     final db = ref.read(dbProvider);
     final selectedDeckIds = ref.read(selectedDeckIdsProvider);
-    final selectedDecks = await db.listMiniDecks(
+    final selectedDecks = await db.listDeckNotifier(
       where: (deck, identity, pack, cycle, faction, side, type, subtype, format, rotation, mwl) {
         return deck.id.isIn(selectedDeckIds.value);
       },
     ).first;
-    await authState.forceDownload(db, selectedDecks);
+    await authState.forceDownload(db, selectedDecks.map((e) => e.toNrdbDeck()));
     selectedDeckIds.value = {};
   }
 
   Future<void> copy(BuildContext context, WidgetRef ref) async {
     final db = ref.read(dbProvider);
     final selectedDeckIds = ref.read(selectedDeckIdsProvider);
-    final selectedDecks = await db.listMiniDecks(
+    final selectedDecks = await db.listDeckNotifier(
       where: (deck, identity, pack, cycle, faction, side, type, subtype, format, rotation, mwl) {
         return deck.id.isIn(selectedDeckIds.value);
       },

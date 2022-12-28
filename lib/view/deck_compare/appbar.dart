@@ -8,7 +8,7 @@ import '/providers.dart';
 class DeckCompareSortMenu extends ConsumerWidget {
   const DeckCompareSortMenu(this.settings, {super.key});
 
-  final SettingResult settings;
+  final SettingsResult settings;
 
   Future<void> onSelected(BuildContext context, WidgetRef ref, CardSort value) async {
     final db = ref.read(dbProvider);
@@ -19,7 +19,7 @@ class DeckCompareSortMenu extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final compareCardSort = settings.settings.compareCardSort;
+    final compareCardSort = settings.compareCardSort;
     return PopupMenuButton<CardSort>(
       child: const ListTile(
         title: Text('Sort By'),

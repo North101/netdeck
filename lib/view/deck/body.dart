@@ -63,7 +63,10 @@ class DeckBodyState extends ConsumerState<DeckBody> with RestorationMixin {
       ),
       onComplete: (result) {
         final deck = ref.read(deckProvider);
-        deck.value = deck.value.copyWith(cards: result.deckCards);
+        final deckCards = result.deckCards;
+        if (deckCards != null) {
+          deck.value = deck.value.copyWith(cards: deckCards);
+        }
       },
     );
   }
@@ -181,7 +184,7 @@ class DeckNameFieldState extends ConsumerState<DeckNameField> {
         controller: controller,
         decoration: const InputDecoration(labelText: 'Name'),
         onChanged: (value) {
-          final deck = ref.read(deckProvider);
+          final deck = ref.read(deckProvider.notifier);
           deck.unsaved = deck.value.copyWith(
             name: value,
           );
@@ -262,11 +265,11 @@ class DeckFormatDropdown extends ConsumerWidget {
       child: FormatDropdown.withOverrides(
         format: format,
         onChanged: (value) {
-          final deck = ref.read(deckProvider);
+          final deck = ref.read(deckProvider.notifier);
           deck.unsaved = deck.value.copyWith(
-            formatCode: drift.Value(value?.format.code),
-            rotationCode: drift.Value(value?.let((e) => e.currentRotation?.code) ?? deck.value.rotationCode),
-            mwlCode: drift.Value(value?.let((e) => e.activeMwl?.code) ?? deck.value.mwlCode),
+            formatCode: value?.format.code,
+            rotationCode: value?.let((e) => e.currentRotation.code) ?? deck.value.rotationCode,
+            mwlCode: value?.let((e) => e.activeMwl.code) ?? deck.value.mwlCode,
           );
         },
       ),
@@ -287,9 +290,9 @@ class DeckRotationDropdown extends ConsumerWidget {
         format: format,
         rotation: rotation,
         onChanged: (value) {
-          final deck = ref.read(deckProvider);
+          final deck = ref.read(deckProvider.notifier);
           deck.unsaved = deck.value.copyWith(
-            rotationCode: drift.Value(value?.code),
+            rotationCode: value?.code,
           );
         },
       ),
@@ -310,9 +313,9 @@ class DeckMwlDropdown extends ConsumerWidget {
         format: format,
         mwl: mwl,
         onChanged: (value) {
-          final deck = ref.read(deckProvider);
+          final deck = ref.read(deckProvider.notifier);
           deck.unsaved = deck.value.copyWith(
-            mwlCode: drift.Value(value?.code),
+            mwlCode: value?.code,
           );
         },
       ),
@@ -328,7 +331,7 @@ class DeckIdentity extends ConsumerWidget {
     final identity = ref.watch(deckValidatorResultProvider.select((value) => value.deck.toCard()));
     return CardTile(
       identity,
-      key: ValueKey(identity.code),
+      key: ValueKey(identity.card.code),
       logo: false,
       body: true,
       onTap: () async {
@@ -370,7 +373,7 @@ class DeckCardHeader extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final deckCardList = ref.watch(deckProvider.select((value) => value.value.cards));
-    final count = headerList.map<int>((e) => deckCardList[e.code] ?? 0).sum;
+    final count = headerList.map<int>((e) => deckCardList[e.card.code] ?? 0).sum;
     return SliverStickyHeader(
       header: HeaderListTile.titleCount(title: headerList.header, count: count),
       sliver: SliverList(
@@ -603,7 +606,7 @@ class DeckTags extends ConsumerWidget {
           ];
         },
         onChanged: (data) {
-          final deck = ref.read(deckProvider);
+          final deck = ref.read(deckProvider.notifier);
           deck.unsaved = deck.value.copyWith(
             tags: data,
           );
@@ -649,7 +652,7 @@ class DeckSyncStatus extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final syncIssues = ref.watch(deckValidatorResultProvider.select((value) => value.deck.syncIssues()));
+    final syncIssues = ref.watch(deckValidatorResultProvider.select((value) => value.deck.deck.syncIssues()));
     if (syncIssues == SyncIssues.both) {
       return MaterialBanner(
         content: const Text('Deck has changes to upload and download'),
@@ -658,7 +661,7 @@ class DeckSyncStatus extends ConsumerWidget {
           TextButton(
             onPressed: () async {
               final deckNotifier = ref.read(deckProvider);
-              final result = await showDialog<DeckNotifierResult>(
+              final result = await showDialog<DeckNotifierData>(
                 context: context,
                 barrierDismissible: false,
                 builder: (context) => SaveDeckDialog.withOverrides(
@@ -675,7 +678,7 @@ class DeckSyncStatus extends ConsumerWidget {
           TextButton(
             onPressed: () async {
               final deckNotifier = ref.read(deckProvider);
-              final result = await showDialog<DeckNotifierResult>(
+              final result = await showDialog<DeckNotifierData>(
                 context: context,
                 barrierDismissible: false,
                 builder: (context) => DownloadDeckDialog.withOverrides(deck: deckNotifier.value),
@@ -696,7 +699,7 @@ class DeckSyncStatus extends ConsumerWidget {
           TextButton(
             onPressed: () async {
               final deckNotifier = ref.read(deckProvider);
-              final result = await showDialog<DeckNotifierResult>(
+              final result = await showDialog<DeckNotifierData>(
                 context: context,
                 barrierDismissible: false,
                 builder: (context) => DownloadDeckDialog.withOverrides(deck: deckNotifier.value),
@@ -717,7 +720,7 @@ class DeckSyncStatus extends ConsumerWidget {
           TextButton(
             onPressed: () async {
               final deckNotifier = ref.read(deckProvider);
-              final result = await showDialog<DeckNotifierResult>(
+              final result = await showDialog<DeckNotifierData>(
                 context: context,
                 barrierDismissible: false,
                 builder: (context) => SaveDeckDialog.withOverrides(
@@ -767,7 +770,7 @@ class DeckCardTile extends ConsumerWidget {
     }));
     return CardTile(
       card,
-      key: ValueKey(card.code),
+      key: ValueKey(card.card.code),
       faction: faction,
       error: cardError,
       mwlCard: mwlCard,

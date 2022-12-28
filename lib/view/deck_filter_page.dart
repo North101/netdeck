@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod_restorable/flutter_riverpod_restorable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:kotlin_flavor/scope_functions.dart';
 
 import '/db/database.dart';
@@ -14,52 +15,23 @@ import 'rotation_dropdown.dart';
 import 'tags_page.dart';
 import 'types_page.dart';
 
-class DeckFilterArguments {
-  const DeckFilterArguments({
-    required this.format,
-    required this.rotation,
-    required this.mwl,
-    required this.packs,
-    required this.sides,
-    required this.factions,
-    required this.types,
-    required this.tags,
-  });
+part 'deck_filter_page.freezed.dart';
+part 'deck_filter_page.g.dart';
 
-  factory DeckFilterArguments.fromJson(Map<String, dynamic> data) {
-    return DeckFilterArguments(
-      format: (data['format'] as Map?)?.let((e) => FormatData.fromJson(e.cast())),
-      rotation: (data['rotation'] as Map?)?.let((e) => RotationViewData.fromJson(e.cast())),
-      mwl: (data['mwl'] as Map?)?.let((e) => MwlViewData.fromJson(e.cast())),
-      packs: FilterType<String>.fromJson((data['packs'] as Map).cast()),
-      sides: FilterType<String>.fromJson((data['sides'] as Map).cast()),
-      factions: FilterType<String>.fromJson((data['factions'] as Map).cast()),
-      types: FilterType<String>.fromJson((data['types'] as Map).cast()),
-      tags: Set<String>.from(data['tags'] as List),
-    );
-  }
+@freezed
+class DeckFilterArguments with _$DeckFilterArguments {
+  const factory DeckFilterArguments({
+    required FormatData? format,
+    required RotationViewData? rotation,
+    required MwlViewData? mwl,
+    required FilterType<String> packs,
+    required FilterType<String> sides,
+    required FilterType<String> factions,
+    required FilterType<String> types,
+    required Set<String> tags,
+  }) = _DeckFilterArguments;
 
-  Map<String, dynamic> toJson() {
-    return {
-      'format': format?.toJson(),
-      'rotation': rotation?.toJson(),
-      'mwl': mwl?.toJson(),
-      'packs': packs.toJson(),
-      'sides': sides.toJson(),
-      'factions': factions.toJson(),
-      'types': types.toJson(),
-      'tags': tags.toList(),
-    };
-  }
-
-  final FormatData? format;
-  final RotationViewData? rotation;
-  final MwlViewData? mwl;
-  final FilterType<String> packs;
-  final FilterType<String> sides;
-  final FilterType<String> factions;
-  final FilterType<String> types;
-  final Set<String> tags;
+  factory DeckFilterArguments.fromJson(Map<String, dynamic> json) => _$DeckFilterArgumentsFromJson(json);
 }
 
 class DeckFilterPage extends ConsumerWidget {

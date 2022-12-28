@@ -87,7 +87,7 @@ final deckFilterProvider = Provider.family<drift.Expression<bool>, DeckFilterSta
 
 final deckListProvider = StreamProvider<List<DeckFullResult>>((ref) {
   final db = ref.watch(dbProvider);
-  return db.listDecks2(where: (deck, identity, pack, cycle, faction, side, type, subtype, format, rotation, mwl) {
+  return db.listDeckFull(where: (deck, identity, pack, cycle, faction, side, type, subtype, format, rotation, mwl) {
     return ref.watch(deckFilterProvider(DeckFilterState(
       deck: deck,
       identity: identity,
@@ -111,10 +111,10 @@ final groupedDeckListProvider = StreamProvider<HeaderList<DeckFullResult>>((ref)
   final settings = await ref.watch(settingProvider.future);
   final deckList = await ref.watch(deckListProvider.future);
 
-  final groupBy = settings.settings.deckGroup;
-  final sortBy = settings.settings.deckSort;
+  final groupBy = settings.deckGroup;
+  final sortBy = settings.deckSort;
   yield HeaderList([
-    ...groupBy(sortBy(deckList)),
+    ...groupBy(sortBy.call(deckList)),
   ]);
 }, dependencies: [
   settingProvider,

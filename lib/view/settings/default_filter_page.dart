@@ -48,7 +48,7 @@ class CardFilterCollection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final filterCollection = ref.watch(settingProvider.select((value) {
       return value.whenData((value) {
-        return value.settings.filterCollection;
+        return value.filterCollection;
       }).whenOrNull(data: (data) => data);
     }));
     final collection = ref.watch(collectionProvider(false));
@@ -69,7 +69,7 @@ class CardFilterCollection extends ConsumerWidget {
 class CardFilterFormat extends ConsumerWidget {
   const CardFilterFormat({super.key});
 
-  void setFormat(WidgetRef ref, SettingResult settings, FormatResult? value) {
+  void setFormat(WidgetRef ref, SettingsResult settings, FormatResult? value) {
     final rotation = settings.filterRotation;
     final mwl = settings.filterMwl;
 

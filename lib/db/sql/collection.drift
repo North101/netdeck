@@ -1,3 +1,5 @@
+import '/db/types.dart';
+
 import 'pack.drift';
 import 'cycle.drift';
 import 'card.drift';
@@ -6,7 +8,7 @@ CREATE TABLE collection(
   pack_code TEXT NOT NULL PRIMARY KEY
 );
 
-listCollection(:onlyInCollection AS BOOLEAN) AS CollectionResult:
+listCollection(:inCollection AS BOOLEAN) WITH CollectionResult:
 SELECT
   pack.**,
   cycle.**,
@@ -24,7 +26,9 @@ WHERE (
   OR (collection.pack_code IS NOT NULL)
 )
 
-ORDER BY cycle.position DESC, pack.position;
+ORDER BY
+  cycle.position DESC,
+  pack.position DESC;
 
 deleteCollection:
 DELETE FROM collection;

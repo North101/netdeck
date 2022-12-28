@@ -24,7 +24,7 @@ class CardGallerySwipePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cardGalleryView = ref.watch(settingProvider.select((value) {
-      return value.whenOrNull(data: (data) => data.settings.cardGalleryView);
+      return value.whenOrNull(data: (data) => data.cardGalleryView);
     }));
 
     final groupedCardListStream = ref.watch(cardGalleryGroupedCardListProvider);
@@ -103,7 +103,7 @@ class CardPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cardGalleryView = ref.watch(settingProvider.select((value) {
-      return value.whenOrNull(data: (data) => data.settings.cardGalleryView);
+      return value.whenOrNull(data: (data) => data.cardGalleryView);
     }));
     switch (cardGalleryView) {
       case CardGalleryPageView.image:

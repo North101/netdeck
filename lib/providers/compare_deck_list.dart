@@ -44,7 +44,7 @@ class DeckCompareDeckResult {
           const MapEquality().equals(other.cards, cards));
 }
 
-final compareDeckListProvider = Provider<Set<DeckMicroResult>>((ref) => throw UnimplementedError());
+final compareDeckListProvider = Provider<Set<DeckCompareResult>>((ref) => throw UnimplementedError());
 
 final compareAllCardListProvider = StreamProvider((ref) async* {
   final db = ref.watch(dbProvider);
@@ -67,7 +67,7 @@ final compareDeckCardListProvider = StreamProvider((ref) async* {
         name: deck.name,
         cards: {
           for (final card in allCardList)
-            if (deck.cards.containsKey(card.code)) card: deck.cards[card.code]!,
+            if (deck.cards.containsKey(card.card.code)) card: deck.cards[card.card.code]!,
         },
       )
   ];
@@ -101,7 +101,7 @@ final compareMinCardListProvider = StreamProvider((ref) async* {
 
 final compareGroupedCardListProvider = StreamProvider<HeaderList<MapEntry<CardResult, int>>>((ref) async* {
   final sort = await ref.watch(settingProvider.future.select((value) {
-    return value.then((value) => value.settings.compareCardSort);
+    return value.then((value) => value.compareCardSort);
   }));
   final deckList = await ref.watch(compareDeckCardListProvider.future);
   final maxCardList = await ref.watch(compareMaxCardListProvider.future);

@@ -84,13 +84,14 @@ class DeckCardTile extends ConsumerWidget {
         final navigator = Navigator.of(context);
         final compareCardList = await ref.read(compareGroupedCardListProvider.future);
         final groupedCardList = GroupedCardCodeList(compareCardList.map((e) {
-          return HeaderItems(e.header, e.items.map((e) => e.key.code).toList());
+          return HeaderItems(e.header, e.items.map((e) => e.key.card.code).toList());
         }).toList());
         navigator.restorablePush(
           CardGalleryPage.route,
           arguments: CardGalleryArguments(
             items: groupedCardList,
             index: index,
+            deckCards: null,
           ).toJson(),
         );
       },

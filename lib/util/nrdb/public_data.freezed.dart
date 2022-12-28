@@ -15,15 +15,15 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
 ApiResult _$ApiResultFromJson(Map<String, dynamic> json) {
-  switch (json['type']) {
+  switch (json['runtimeType']) {
     case 'unmodified':
       return UnmodifiedApiResult.fromJson(json);
     case 'modified':
       return ModifiedApiResult.fromJson(json);
 
     default:
-      throw CheckedFromJsonException(
-          json, 'type', 'ApiResult', 'Invalid union type "${json['type']}"!');
+      throw CheckedFromJsonException(json, 'runtimeType', 'ApiResult',
+          'Invalid union type "${json['runtimeType']}"!');
   }
 }
 
@@ -153,7 +153,7 @@ class _$UnmodifiedApiResult implements UnmodifiedApiResult {
   @override
   final DateTime lastUpdated;
 
-  @JsonKey(name: 'type')
+  @JsonKey(name: 'runtimeType')
   final String $type;
 
   @override
@@ -320,7 +320,7 @@ class _$ModifiedApiResult implements ModifiedApiResult {
     return EqualUnmodifiableMapView(_data);
   }
 
-  @JsonKey(name: 'type')
+  @JsonKey(name: 'runtimeType')
   final String $type;
 
   @override

@@ -1,5 +1,5 @@
-import 'package:drift/drift.dart';
 import '/db/types.dart';
+
 import 'format.drift';
 
 CREATE TABLE settings(
@@ -18,11 +18,11 @@ CREATE TABLE settings(
   apex_resources BOOLEAN NOT NULL DEFAULT FALSE,
   card_gallery_view ENUMNAME(CardGalleryPageView) NOT NULL DEFAULT 'image',
   CONSTRAINT settings_id CHECK (id = TRUE)
-) AS SettingsData;
+) WITH SettingsData;
 
-getSettings AS SettingResult:
+getSettings WITH SettingsResult:
 SELECT
-  settings.**,
+  settings.*,
   filter_format.**,
   filter_rotation.**,
   filter_mwl.**

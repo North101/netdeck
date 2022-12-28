@@ -75,12 +75,12 @@ class DeckCardsNotifier extends RestorableValue<Map<String, int>> {
 
   void setCard(CardResult key, int value) {
     unsaved = {
-      for (final entry in this.value.entries.where((e) => e.key != key.code)) entry.key: entry.value,
-      if (value > 0) key.code: value,
+      for (final entry in this.value.entries.where((e) => e.key != key.card.code)) entry.key: entry.value,
+      if (value > 0) key.card.code: value,
     };
   }
 
-  int getCard(CardResult key) => value[key.code] ?? 0;
+  int getCard(CardResult key) => value[key.card.code] ?? 0;
 }
 
 final deckCardListNotifierProvider = RestorableProvider<DeckCardsNotifier?>(
@@ -194,8 +194,8 @@ final groupedCardListProvider = StreamProvider<HeaderList<CardResult>>((ref) asy
   final cardList = await ref.watch(cardListProvider.future);
   final deckCardList = await ref.watch(deckCardListProvider.future);
 
-  final groupBy = settings.settings.cardGroup;
-  final sortBy = settings.settings.cardSort;
+  final groupBy = settings.cardGroup;
+  final sortBy = settings.cardSort;
   yield HeaderList([
     if (deckCardList.isNotEmpty) HeaderItems('Deck', sortBy(deckCardList)),
     ...groupBy(sortBy(cardList)),

@@ -38,15 +38,15 @@ class DeckTile extends StatelessWidget {
           Text(deck.identity.title),
           Text.rich(TextSpan(children: [
             if (deck.deck.synced != null)
-              if (deck.syncIssues() == SyncIssues.both)
+              if (deck.deck.syncIssues() == SyncIssues.both)
                 WidgetSpan(child: TextScaledBuilder(builder: (context, height) {
                   return Icon(Icons.error, size: height, color: Colors.red);
                 }))
-              else if (deck.syncIssues() == SyncIssues.remote)
+              else if (deck.deck.syncIssues() == SyncIssues.remote)
                 WidgetSpan(child: TextScaledBuilder(builder: (context, height) {
                   return Icon(Icons.warning, size: height, color: Colors.red);
                 }))
-              else if (deck.syncIssues() == SyncIssues.local)
+              else if (deck.deck.syncIssues() == SyncIssues.local)
                 WidgetSpan(child: TextScaledBuilder(builder: (context, height) {
                   return Icon(Icons.sync, size: height, color: Colors.amber);
                 }))

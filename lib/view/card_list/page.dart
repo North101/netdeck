@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod_restorable/flutter_riverpod_restorable.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 import '/db/database.dart';
 import '/providers.dart';
@@ -8,72 +9,36 @@ import '/util/filter_type.dart';
 import 'appbar.dart';
 import 'body.dart';
 
-class CardListArguments {
-  const CardListArguments({
-    required this.deck,
-    required this.deckCards,
-    required this.filterSearch,
-    required this.filterCollection,
-    required this.filterPacks,
-    required this.filterSides,
-    required this.filterFactions,
-    required this.filterTypes,
-  });
+part 'page.freezed.dart';
+part 'page.g.dart';
 
-  final DeckResult deck;
-  final Map<String, int> deckCards;
-  final String? filterSearch;
-  final bool filterCollection;
-  final FilterType<String> filterPacks;
-  final FilterType<String> filterSides;
-  final FilterType<String> filterFactions;
-  final FilterType<String> filterTypes;
+@freezed
+class CardListArguments with _$CardListArguments {
+  const factory CardListArguments({
+    required DeckResult deck,
+    required Map<String, int> deckCards,
+    required String? filterSearch,
+    required bool filterCollection,
+    required FilterType<String> filterPacks,
+    required FilterType<String> filterSides,
+    required FilterType<String> filterFactions,
+    required FilterType<String> filterTypes,
+  }) = _CardListArguments;
 
-  factory CardListArguments.fromJson(Map<String, dynamic> json) {
-    return CardListArguments(
-      deck: DeckResultEx.fromJson((json['deck'] as Map).cast()),
-      deckCards: (json['deckCards'] as Map).cast(),
-      filterSearch: json['query'],
-      filterCollection: json['collection'] as bool,
-      filterPacks: FilterType<String>.fromJson((json['packs'] as Map).cast()),
-      filterSides: FilterType<String>.fromJson((json['sides'] as Map).cast()),
-      filterFactions: FilterType<String>.fromJson((json['factions'] as Map).cast()),
-      filterTypes: FilterType<String>.fromJson((json['types'] as Map).cast()),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'deck': deck.toJson(),
-      'deckCards': deckCards,
-      'search': filterSearch,
-      'collection': filterCollection,
-      'packs': filterPacks.toJson(),
-      'sides': filterSides.toJson(),
-      'factions': filterFactions.toJson(),
-      'types': filterTypes.toJson(),
-    };
-  }
+  factory CardListArguments.fromJson(Map<String, dynamic> json) => _$CardListArgumentsFromJson(json);
 }
 
-class CardListResults {
-  const CardListResults({
-    required this.deckCards,
-    required this.filterSearch,
-    required this.filterCollection,
-    required this.filterPacks,
-    required this.filterSides,
-    required this.filterFactions,
-    required this.filterTypes,
-  });
-
-  final Map<String, int> deckCards;
-  final String? filterSearch;
-  final bool filterCollection;
-  final FilterType<String> filterPacks;
-  final FilterType<String> filterSides;
-  final FilterType<String> filterFactions;
-  final FilterType<String> filterTypes;
+@freezed
+class CardListResults with _$CardListResults {
+  const factory CardListResults({
+    required Map<String, int> deckCards,
+    required String? filterSearch,
+    required bool filterCollection,
+    required FilterType<String> filterPacks,
+    required FilterType<String> filterSides,
+    required FilterType<String> filterFactions,
+    required FilterType<String> filterTypes,
+  }) = _CardListResults;
 }
 
 class CardListPage extends ConsumerWidget {

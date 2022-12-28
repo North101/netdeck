@@ -64,7 +64,7 @@ enum DeckGroup {
     return (a.deck.remoteUpdated != null ? 1 : 0).compareTo((b.deck.remoteUpdated != null ? 1 : 0));
   }
 
-  int _sortNullLast<T extends Comparable>(T? a, T? b) {
+  int _sortNullLast<T extends Comparable<Object>>(T? a, T? b) {
     if (a == b) {
       return 0;
     } else if (a == null) {

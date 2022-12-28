@@ -1,3 +1,5 @@
+import '/db/types.dart';
+
 import 'cycle.drift';
 import 'pack.drift';
 import 'faction.drift';
@@ -34,9 +36,9 @@ CREATE TABLE card(
   flavor TEXT,
   illustrator TEXT,
   image_url TEXT NOT NULL
-);
+) WITH CardData;
 
-listCards($where = TRUE, :mwlCode AS TEXT OR NULL) AS CardResult:
+listCards($where = TRUE, :mwlCode AS TEXT OR NULL) WITH CardResult:
 SELECT
   card.**,
   pack.**,
@@ -62,7 +64,7 @@ INNER JOIN side
 INNER JOIN type
   ON type.code = card.type_code
 
-LEFT JOIN type as subtype
+LEFT JOIN type AS subtype
   ON subtype.is_subtype
   AND (
     subtype.name = card.keywords
