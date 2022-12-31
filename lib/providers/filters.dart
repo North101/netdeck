@@ -152,9 +152,9 @@ final filterRotationFilterProvider = Provider.family<drift.Expression<bool>?, Cy
   final rotationFilter = ref.watch(filterRotationProvider).value;
   if (rotationFilter == null) return null;
 
-  return state.cycle.code.isInQuery(db.selectOnly(db.rotationCycle).also((e) {
-    e.addColumns([db.rotationCycle.cycleCode]);
-    e.where(db.rotationCycle.rotationCode.equals(rotationFilter.rotationCode!));
+  return state.cycle.code.isInQuery(db.selectOnly(db.rotationCycleView).also((e) {
+    e.addColumns([db.rotationCycleView.cycleCode]);
+    e.where(db.rotationCycleView.rotationCode.equals(rotationFilter.code));
   }));
 }, dependencies: [dbProvider, filterRotationProvider]);
 
