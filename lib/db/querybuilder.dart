@@ -636,7 +636,8 @@ class CardQueryBuilder extends CodeNameQueryBuilder<Card> {
       'side': SideQueryBuilder(db, table: side, extraFields: extraFields, help: 'side code or name'),
       'faction': FactionQueryBuilder(db, table: faction, extraFields: extraFields, help: 'faction code or name'),
       'type': TypeQueryBuilder(db, table: type, extraFields: extraFields, help: 'type code or name'),
-      'rotation': CardRotationQueryBuilder(db, table: db.rotationView, extraFields: extraFields, help: 'card rotation'),
+      'rotation': CardRotationQueryBuilder(db,
+          table: db.rotationView, format: db.format, pack: pack, extraFields: extraFields, help: 'card rotation'),
       'mwl': CardMwlQueryBuilder(db,
           card: card, format: db.format, table: db.mwlView, extraFields: extraFields, help: 'card mwl'),
     });
@@ -860,21 +861,41 @@ class CardRotationQueryBuilder extends RotationQueryBuilder {
   CardRotationQueryBuilder(
     super.db, {
     required super.table,
+    required this.format,
+    required this.pack,
     super.extraFields,
     required super.help,
   });
 
+  final Format format;
+  final Pack pack;
+
   @override
   drift.Expression<bool> call(String? op, TextQuery query) {
     final inQuery = db.selectOnly(table).join([
-      drift.innerJoin(db.rotationCycle, db.rotationCycle.rotationCode.equalsExp(table.rotationCode)),
-      drift.innerJoin(db.pack, db.pack.cycleCode.equalsExp(db.rotationCycle.cycleCode)),
+      drift.innerJoin(db.rotationCycleView, db.rotationCycleView.rotationCode.equalsExp(table.code)),
+      drift.innerJoin(db.pack, db.pack.cycleCode.equalsExp(db.rotationCycleView.cycleCode)),
     ]).also((q) {
       q.addColumns([db.pack.code]);
       q.where(super.call(op, query));
     });
 
-    return db.pack.code.isInQuery(inQuery);
+    return pack.code.isInQuery(inQuery);
+  }
+
+  @override
+  drift.Selectable<drift.TypedResult> buildOptionsQuery(Database db, TextQuery query, String op) {
+    return db.selectOnly(table, distinct: true).join([
+      drift.innerJoin(format, format.code.equalsExp(table.formatCode)),
+    ]).also((q) {
+      q.addColumns([optionColumn]);
+      q.where((query.text.isEmpty ? trueExpression : super.call(op, query)) & optionColumn.isNotNull());
+      q.orderBy([
+        drift.OrderingTerm.asc(format.id),
+        drift.OrderingTerm.asc(table.type, nulls: drift.NullsOrder.last),
+        drift.OrderingTerm.asc(table.dateStart),
+      ]);
+    });
   }
 }
 
@@ -942,5 +963,20 @@ class CardMwlQueryBuilder extends MwlQueryBuilder {
     });
 
     return card.code.isInQuery(inQuery);
+  }
+
+  @override
+  drift.Selectable<drift.TypedResult> buildOptionsQuery(Database db, TextQuery query, String op) {
+    return db.selectOnly(table, distinct: true).join([
+      drift.innerJoin(format, format.code.equalsExp(table.formatCode)),
+    ]).also((q) {
+      q.addColumns([optionColumn]);
+      q.where((query.text.isEmpty ? trueExpression : super.call(op, query)) & optionColumn.isNotNull());
+      q.orderBy([
+        drift.OrderingTerm.asc(format.id),
+        drift.OrderingTerm.asc(table.type, nulls: drift.NullsOrder.last),
+        drift.OrderingTerm.asc(table.dateStart),
+      ]);
+    });
   }
 }
