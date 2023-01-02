@@ -8,6 +8,7 @@ import '/db/migrations/schema_v5.dart' as v5;
 import '/db/migrations/schema_v6.dart' as v6;
 import '/db/migrations/schema_v7.dart' as v7;
 import '/db/migrations/schema_v8.dart' as v8;
+import '/db/migrations/schema_v9.dart' as v9;
 
 MigrationStrategy migrationStrategy(GeneratedDatabase $db) => MigrationStrategy(onUpgrade: (m, from, to) async {
       if (from < 2) {
@@ -89,7 +90,7 @@ MigrationStrategy migrationStrategy(GeneratedDatabase $db) => MigrationStrategy(
         await m.create(db.mwl);
         await m.create(db.mwlView);
 
-        await $db.update(db.settings).write(SettingsCompanion.custom(
+        await $db.update(db.settings).write(v8.SettingsCompanion.custom(
               cardSort: db.settings.cardSort.iif(
                 db.settings.cardSort.isIn(CardSort.values.map((e) => e.name)),
                 db.settings.cardSort.defaultValue!,
@@ -125,6 +126,14 @@ MigrationStrategy migrationStrategy(GeneratedDatabase $db) => MigrationStrategy(
             ));
 
         await $db.delete(db.nrdb).go();
+      }
+      if (from < 9) {
+        final db = v9.DatabaseAtV9($db.executor);
+        await m.drop(db.mwlView);
+        await m.create(db.mwlView);
+        await m.drop(db.rotationView);
+        await m.create(db.rotationView);
+        await m.create(db.rotationCycleView);
       }
     });
 

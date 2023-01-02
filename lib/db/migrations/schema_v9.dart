@@ -675,14 +675,8 @@ class Rotation extends Table with TableInfo {
       type: DriftSqlType.dateTime,
       requiredDuringInsert: false,
       $customConstraints: '');
-  late final GeneratedColumn<String> type = GeneratedColumn<String>(
-      'type', aliasedName, true,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      $customConstraints: '');
   @override
-  List<GeneratedColumn> get $columns =>
-      [code, formatCode, name, dateStart, type];
+  List<GeneratedColumn> get $columns => [code, formatCode, name, dateStart];
   @override
   String get aliasedName => _alias ?? 'rotation';
   @override
@@ -708,20 +702,17 @@ class RotationCompanion extends UpdateCompanion<dynamic> {
   final Value<String> formatCode;
   final Value<String> name;
   final Value<DateTime?> dateStart;
-  final Value<String?> type;
   const RotationCompanion({
     this.code = const Value.absent(),
     this.formatCode = const Value.absent(),
     this.name = const Value.absent(),
     this.dateStart = const Value.absent(),
-    this.type = const Value.absent(),
   });
   RotationCompanion.insert({
     required String code,
     required String formatCode,
     required String name,
     this.dateStart = const Value.absent(),
-    this.type = const Value.absent(),
   })  : code = Value(code),
         formatCode = Value(formatCode),
         name = Value(name);
@@ -730,14 +721,12 @@ class RotationCompanion extends UpdateCompanion<dynamic> {
     Expression<String>? formatCode,
     Expression<String>? name,
     Expression<DateTime>? dateStart,
-    Expression<String>? type,
   }) {
     return RawValuesInsertable({
       if (code != null) 'code': code,
       if (formatCode != null) 'format_code': formatCode,
       if (name != null) 'name': name,
       if (dateStart != null) 'date_start': dateStart,
-      if (type != null) 'type': type,
     });
   }
 
@@ -745,14 +734,12 @@ class RotationCompanion extends UpdateCompanion<dynamic> {
       {Value<String>? code,
       Value<String>? formatCode,
       Value<String>? name,
-      Value<DateTime?>? dateStart,
-      Value<String?>? type}) {
+      Value<DateTime?>? dateStart}) {
     return RotationCompanion(
       code: code ?? this.code,
       formatCode: formatCode ?? this.formatCode,
       name: name ?? this.name,
       dateStart: dateStart ?? this.dateStart,
-      type: type ?? this.type,
     );
   }
 
@@ -771,9 +758,6 @@ class RotationCompanion extends UpdateCompanion<dynamic> {
     if (dateStart.present) {
       map['date_start'] = Variable<DateTime>(dateStart.value);
     }
-    if (type.present) {
-      map['type'] = Variable<String>(type.value);
-    }
     return map;
   }
 
@@ -783,11 +767,62 @@ class RotationCompanion extends UpdateCompanion<dynamic> {
           ..write('code: $code, ')
           ..write('formatCode: $formatCode, ')
           ..write('name: $name, ')
-          ..write('dateStart: $dateStart, ')
-          ..write('type: $type')
+          ..write('dateStart: $dateStart')
           ..write(')'))
         .toString();
   }
+}
+
+class RotationView extends ViewInfo<RotationView, Never>
+    implements HasResultSet {
+  final String? _alias;
+  @override
+  final DatabaseAtV9 attachedDatabase;
+  RotationView(this.attachedDatabase, [this._alias]);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [code, rotationCode, formatCode, name, dateStart, type];
+  @override
+  String get aliasedName => _alias ?? entityName;
+  @override
+  String get entityName => 'rotation_view';
+  @override
+  String get createViewStmt =>
+      'CREATE VIEW rotation_view (code,rotation_code,format_code,name,date_start,type) AS SELECT rotation.* FROM (SELECT format.code || \'@current\' AS code, rotation.code AS rotation_code, format.code AS format_code, format.name || \' Current (\' || COALESCE(rotation.name, \'None\') || \')\' AS name, rotation.date_start, \'current\' AS type FROM format LEFT JOIN (SELECT *, MAX(date_start) FROM rotation WHERE DATE(date_start) <= DATE(\'NOW\') GROUP BY rotation.format_code) AS rotation ON rotation.format_code = format.code UNION ALL SELECT format.code || \'@latest\' AS code, rotation.code AS rotation_code, format.code AS format_code, format.name || \' Latest (\' || COALESCE(rotation.name, \'None\') || \')\' AS name, rotation.date_start, \'latest\' AS type FROM format LEFT JOIN (SELECT *, MAX(date_start) FROM rotation GROUP BY rotation.format_code) AS rotation ON rotation.format_code = format.code UNION ALL SELECT rotation.code, rotation.code AS rotation_code, rotation.format_code, rotation.name, rotation.date_start, NULL AS type FROM rotation) AS rotation INNER JOIN format ON format.code = rotation.format_code ORDER BY format.id, rotation.type DESC NULLS LAST, rotation.date_start DESC;';
+  @override
+  RotationView get asDslTable => this;
+  @override
+  Never map(Map<String, dynamic> data, {String? tablePrefix}) {
+    throw UnsupportedError('TableInfo.map in schema verification code');
+  }
+
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+      'code', aliasedName, false,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<String> rotationCode = GeneratedColumn<String>(
+      'rotation_code', aliasedName, true,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<String> formatCode = GeneratedColumn<String>(
+      'format_code', aliasedName, false,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<DateTime> dateStart = GeneratedColumn<DateTime>(
+      'date_start', aliasedName, true,
+      type: DriftSqlType.dateTime);
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+      'type', aliasedName, true,
+      type: DriftSqlType.string);
+  @override
+  RotationView createAlias(String alias) {
+    return RotationView(attachedDatabase, alias);
+  }
+
+  @override
+  Query? get query => null;
+  @override
+  Set<String> get readTables => const {};
 }
 
 class Mwl extends Table with TableInfo {
@@ -815,11 +850,6 @@ class Mwl extends Table with TableInfo {
       type: DriftSqlType.dateTime,
       requiredDuringInsert: false,
       $customConstraints: '');
-  late final GeneratedColumn<String> type = GeneratedColumn<String>(
-      'type', aliasedName, true,
-      type: DriftSqlType.string,
-      requiredDuringInsert: false,
-      $customConstraints: '');
   late final GeneratedColumn<int> runnerPoints = GeneratedColumn<int>(
       'runner_points', aliasedName, true,
       type: DriftSqlType.int,
@@ -832,7 +862,7 @@ class Mwl extends Table with TableInfo {
       $customConstraints: '');
   @override
   List<GeneratedColumn> get $columns =>
-      [code, formatCode, name, dateStart, type, runnerPoints, corpPoints];
+      [code, formatCode, name, dateStart, runnerPoints, corpPoints];
   @override
   String get aliasedName => _alias ?? 'mwl';
   @override
@@ -858,7 +888,6 @@ class MwlCompanion extends UpdateCompanion<dynamic> {
   final Value<String> formatCode;
   final Value<String> name;
   final Value<DateTime?> dateStart;
-  final Value<String?> type;
   final Value<int?> runnerPoints;
   final Value<int?> corpPoints;
   const MwlCompanion({
@@ -866,7 +895,6 @@ class MwlCompanion extends UpdateCompanion<dynamic> {
     this.formatCode = const Value.absent(),
     this.name = const Value.absent(),
     this.dateStart = const Value.absent(),
-    this.type = const Value.absent(),
     this.runnerPoints = const Value.absent(),
     this.corpPoints = const Value.absent(),
   });
@@ -875,7 +903,6 @@ class MwlCompanion extends UpdateCompanion<dynamic> {
     required String formatCode,
     required String name,
     this.dateStart = const Value.absent(),
-    this.type = const Value.absent(),
     this.runnerPoints = const Value.absent(),
     this.corpPoints = const Value.absent(),
   })  : code = Value(code),
@@ -886,7 +913,6 @@ class MwlCompanion extends UpdateCompanion<dynamic> {
     Expression<String>? formatCode,
     Expression<String>? name,
     Expression<DateTime>? dateStart,
-    Expression<String>? type,
     Expression<int>? runnerPoints,
     Expression<int>? corpPoints,
   }) {
@@ -895,7 +921,6 @@ class MwlCompanion extends UpdateCompanion<dynamic> {
       if (formatCode != null) 'format_code': formatCode,
       if (name != null) 'name': name,
       if (dateStart != null) 'date_start': dateStart,
-      if (type != null) 'type': type,
       if (runnerPoints != null) 'runner_points': runnerPoints,
       if (corpPoints != null) 'corp_points': corpPoints,
     });
@@ -906,7 +931,6 @@ class MwlCompanion extends UpdateCompanion<dynamic> {
       Value<String>? formatCode,
       Value<String>? name,
       Value<DateTime?>? dateStart,
-      Value<String?>? type,
       Value<int?>? runnerPoints,
       Value<int?>? corpPoints}) {
     return MwlCompanion(
@@ -914,7 +938,6 @@ class MwlCompanion extends UpdateCompanion<dynamic> {
       formatCode: formatCode ?? this.formatCode,
       name: name ?? this.name,
       dateStart: dateStart ?? this.dateStart,
-      type: type ?? this.type,
       runnerPoints: runnerPoints ?? this.runnerPoints,
       corpPoints: corpPoints ?? this.corpPoints,
     );
@@ -935,9 +958,6 @@ class MwlCompanion extends UpdateCompanion<dynamic> {
     if (dateStart.present) {
       map['date_start'] = Variable<DateTime>(dateStart.value);
     }
-    if (type.present) {
-      map['type'] = Variable<String>(type.value);
-    }
     if (runnerPoints.present) {
       map['runner_points'] = Variable<int>(runnerPoints.value);
     }
@@ -954,12 +974,76 @@ class MwlCompanion extends UpdateCompanion<dynamic> {
           ..write('formatCode: $formatCode, ')
           ..write('name: $name, ')
           ..write('dateStart: $dateStart, ')
-          ..write('type: $type, ')
           ..write('runnerPoints: $runnerPoints, ')
           ..write('corpPoints: $corpPoints')
           ..write(')'))
         .toString();
   }
+}
+
+class MwlView extends ViewInfo<MwlView, Never> implements HasResultSet {
+  final String? _alias;
+  @override
+  final DatabaseAtV9 attachedDatabase;
+  MwlView(this.attachedDatabase, [this._alias]);
+  @override
+  List<GeneratedColumn> get $columns => [
+        code,
+        formatCode,
+        mwlCode,
+        name,
+        dateStart,
+        runnerPoints,
+        corpPoints,
+        type
+      ];
+  @override
+  String get aliasedName => _alias ?? entityName;
+  @override
+  String get entityName => 'mwl_view';
+  @override
+  String get createViewStmt =>
+      'CREATE VIEW mwl_view (code,format_code,mwl_code,name,date_start,runner_points,corp_points,type) AS SELECT mwl.* FROM (SELECT format.code || \'@active\' AS code, format.code AS format_code, mwl.code AS mwl_code, format.name || \' Active (\' || COALESCE(mwl.name, \'None\') || \')\' AS name, mwl.date_start, mwl.runner_points, mwl.corp_points, \'active\' AS type FROM format LEFT JOIN (SELECT *, MAX(date_start) FROM mwl WHERE DATE(date_start) <= DATE(\'NOW\') GROUP BY mwl.format_code) AS mwl ON mwl.format_code = format.code UNION ALL SELECT format.code || \'@latest\' AS code, format.code AS format_code, mwl.code AS mwl_code, format.name || \' Latest (\' || COALESCE(mwl.name, \'None\') || \')\' AS name, mwl.date_start, mwl.runner_points, mwl.corp_points, \'latest\' AS type FROM format LEFT JOIN (SELECT *, MAX(date_start) FROM mwl GROUP BY mwl.format_code) AS mwl ON mwl.format_code = format.code UNION ALL SELECT mwl.code, mwl.format_code, mwl.code, mwl.name, mwl.date_start, mwl.runner_points, mwl.corp_points, NULL AS type FROM mwl) AS mwl INNER JOIN format ON format.code = mwl.format_code ORDER BY format.id, mwl.type DESC NULLS LAST, mwl.date_start DESC;';
+  @override
+  MwlView get asDslTable => this;
+  @override
+  Never map(Map<String, dynamic> data, {String? tablePrefix}) {
+    throw UnsupportedError('TableInfo.map in schema verification code');
+  }
+
+  late final GeneratedColumn<String> code = GeneratedColumn<String>(
+      'code', aliasedName, false,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<String> formatCode = GeneratedColumn<String>(
+      'format_code', aliasedName, false,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<String> mwlCode = GeneratedColumn<String>(
+      'mwl_code', aliasedName, true,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<DateTime> dateStart = GeneratedColumn<DateTime>(
+      'date_start', aliasedName, true,
+      type: DriftSqlType.dateTime);
+  late final GeneratedColumn<int> runnerPoints = GeneratedColumn<int>(
+      'runner_points', aliasedName, true,
+      type: DriftSqlType.int);
+  late final GeneratedColumn<int> corpPoints = GeneratedColumn<int>(
+      'corp_points', aliasedName, true,
+      type: DriftSqlType.int);
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+      'type', aliasedName, true,
+      type: DriftSqlType.string);
+  @override
+  MwlView createAlias(String alias) {
+    return MwlView(attachedDatabase, alias);
+  }
+
+  @override
+  Query? get query => null;
+  @override
+  Set<String> get readTables => const {};
 }
 
 class RotationCycle extends Table with TableInfo {
@@ -1193,6 +1277,45 @@ class CycleCompanion extends UpdateCompanion<dynamic> {
           ..write(')'))
         .toString();
   }
+}
+
+class RotationCycleView extends ViewInfo<RotationCycleView, Never>
+    implements HasResultSet {
+  final String? _alias;
+  @override
+  final DatabaseAtV9 attachedDatabase;
+  RotationCycleView(this.attachedDatabase, [this._alias]);
+  @override
+  List<GeneratedColumn> get $columns => [rotationCode, cycleCode];
+  @override
+  String get aliasedName => _alias ?? entityName;
+  @override
+  String get entityName => 'rotation_cycle_view';
+  @override
+  String get createViewStmt =>
+      'CREATE VIEW rotation_cycle_view (rotation_code,cycle_code) AS SELECT rotation.code, rotation_cycle.cycle_code FROM rotation_view AS rotation INNER JOIN rotation_cycle ON rotation_cycle.rotation_code = rotation.rotation_code UNION ALL SELECT rotation.code, cycle.code FROM rotation_view AS rotation CROSS JOIN cycle WHERE rotation.rotation_code IS NULL;';
+  @override
+  RotationCycleView get asDslTable => this;
+  @override
+  Never map(Map<String, dynamic> data, {String? tablePrefix}) {
+    throw UnsupportedError('TableInfo.map in schema verification code');
+  }
+
+  late final GeneratedColumn<String> rotationCode = GeneratedColumn<String>(
+      'rotation_code', aliasedName, false,
+      type: DriftSqlType.string);
+  late final GeneratedColumn<String> cycleCode = GeneratedColumn<String>(
+      'cycle_code', aliasedName, false,
+      type: DriftSqlType.string);
+  @override
+  RotationCycleView createAlias(String alias) {
+    return RotationCycleView(attachedDatabase, alias);
+  }
+
+  @override
+  Query? get query => null;
+  @override
+  Set<String> get readTables => const {};
 }
 
 class Pack extends Table with TableInfo {
@@ -2241,8 +2364,8 @@ class MwlCard extends Table with TableInfo {
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
-  late final GeneratedColumn<String> cardCode = GeneratedColumn<String>(
-      'card_code', aliasedName, false,
+  late final GeneratedColumn<String> cardTitle = GeneratedColumn<String>(
+      'card_title', aliasedName, false,
       type: DriftSqlType.string,
       requiredDuringInsert: true,
       $customConstraints: 'NOT NULL');
@@ -2274,7 +2397,7 @@ class MwlCard extends Table with TableInfo {
   @override
   List<GeneratedColumn> get $columns => [
         mwlCode,
-        cardCode,
+        cardTitle,
         isRestricted,
         globalPenalty,
         universalFactionCost,
@@ -2286,7 +2409,7 @@ class MwlCard extends Table with TableInfo {
   @override
   String get actualTableName => 'mwl_card';
   @override
-  Set<GeneratedColumn> get $primaryKey => {mwlCode, cardCode};
+  Set<GeneratedColumn> get $primaryKey => {mwlCode, cardTitle};
   @override
   Never map(Map<String, dynamic> data, {String? tablePrefix}) {
     throw UnsupportedError('TableInfo.map in schema verification code');
@@ -2299,14 +2422,14 @@ class MwlCard extends Table with TableInfo {
 
   @override
   List<String> get customConstraints =>
-      const ['PRIMARY KEY(mwl_code, card_code)'];
+      const ['PRIMARY KEY(mwl_code, card_title)'];
   @override
   bool get dontWriteConstraints => true;
 }
 
 class MwlCardCompanion extends UpdateCompanion<dynamic> {
   final Value<String> mwlCode;
-  final Value<String> cardCode;
+  final Value<String> cardTitle;
   final Value<bool> isRestricted;
   final Value<int?> globalPenalty;
   final Value<int?> universalFactionCost;
@@ -2314,7 +2437,7 @@ class MwlCardCompanion extends UpdateCompanion<dynamic> {
   final Value<int?> points;
   const MwlCardCompanion({
     this.mwlCode = const Value.absent(),
-    this.cardCode = const Value.absent(),
+    this.cardTitle = const Value.absent(),
     this.isRestricted = const Value.absent(),
     this.globalPenalty = const Value.absent(),
     this.universalFactionCost = const Value.absent(),
@@ -2323,18 +2446,18 @@ class MwlCardCompanion extends UpdateCompanion<dynamic> {
   });
   MwlCardCompanion.insert({
     required String mwlCode,
-    required String cardCode,
+    required String cardTitle,
     required bool isRestricted,
     this.globalPenalty = const Value.absent(),
     this.universalFactionCost = const Value.absent(),
     this.deckLimit = const Value.absent(),
     this.points = const Value.absent(),
   })  : mwlCode = Value(mwlCode),
-        cardCode = Value(cardCode),
+        cardTitle = Value(cardTitle),
         isRestricted = Value(isRestricted);
   static Insertable<dynamic> custom({
     Expression<String>? mwlCode,
-    Expression<String>? cardCode,
+    Expression<String>? cardTitle,
     Expression<bool>? isRestricted,
     Expression<int>? globalPenalty,
     Expression<int>? universalFactionCost,
@@ -2343,7 +2466,7 @@ class MwlCardCompanion extends UpdateCompanion<dynamic> {
   }) {
     return RawValuesInsertable({
       if (mwlCode != null) 'mwl_code': mwlCode,
-      if (cardCode != null) 'card_code': cardCode,
+      if (cardTitle != null) 'card_title': cardTitle,
       if (isRestricted != null) 'is_restricted': isRestricted,
       if (globalPenalty != null) 'global_penalty': globalPenalty,
       if (universalFactionCost != null)
@@ -2355,7 +2478,7 @@ class MwlCardCompanion extends UpdateCompanion<dynamic> {
 
   MwlCardCompanion copyWith(
       {Value<String>? mwlCode,
-      Value<String>? cardCode,
+      Value<String>? cardTitle,
       Value<bool>? isRestricted,
       Value<int?>? globalPenalty,
       Value<int?>? universalFactionCost,
@@ -2363,7 +2486,7 @@ class MwlCardCompanion extends UpdateCompanion<dynamic> {
       Value<int?>? points}) {
     return MwlCardCompanion(
       mwlCode: mwlCode ?? this.mwlCode,
-      cardCode: cardCode ?? this.cardCode,
+      cardTitle: cardTitle ?? this.cardTitle,
       isRestricted: isRestricted ?? this.isRestricted,
       globalPenalty: globalPenalty ?? this.globalPenalty,
       universalFactionCost: universalFactionCost ?? this.universalFactionCost,
@@ -2378,8 +2501,8 @@ class MwlCardCompanion extends UpdateCompanion<dynamic> {
     if (mwlCode.present) {
       map['mwl_code'] = Variable<String>(mwlCode.value);
     }
-    if (cardCode.present) {
-      map['card_code'] = Variable<String>(cardCode.value);
+    if (cardTitle.present) {
+      map['card_title'] = Variable<String>(cardTitle.value);
     }
     if (isRestricted.present) {
       map['is_restricted'] = Variable<bool>(isRestricted.value);
@@ -2403,7 +2526,7 @@ class MwlCardCompanion extends UpdateCompanion<dynamic> {
   String toString() {
     return (StringBuffer('MwlCardCompanion(')
           ..write('mwlCode: $mwlCode, ')
-          ..write('cardCode: $cardCode, ')
+          ..write('cardTitle: $cardTitle, ')
           ..write('isRestricted: $isRestricted, ')
           ..write('globalPenalty: $globalPenalty, ')
           ..write('universalFactionCost: $universalFactionCost, ')
@@ -2952,17 +3075,20 @@ class CollectionCompanion extends UpdateCompanion<dynamic> {
   }
 }
 
-class DatabaseAtV7 extends GeneratedDatabase {
-  DatabaseAtV7(QueryExecutor e) : super(e);
-  DatabaseAtV7.connect(DatabaseConnection c) : super.connect(c);
+class DatabaseAtV9 extends GeneratedDatabase {
+  DatabaseAtV9(QueryExecutor e) : super(e);
+  DatabaseAtV9.connect(DatabaseConnection c) : super.connect(c);
   late final Type type = Type(this);
   late final Side side = Side(this);
   late final Settings settings = Settings(this);
   late final Format format = Format(this);
   late final Rotation rotation = Rotation(this);
+  late final RotationView rotationView = RotationView(this);
   late final Mwl mwl = Mwl(this);
+  late final MwlView mwlView = MwlView(this);
   late final RotationCycle rotationCycle = RotationCycle(this);
   late final Cycle cycle = Cycle(this);
+  late final RotationCycleView rotationCycleView = RotationCycleView(this);
   late final Pack pack = Pack(this);
   late final Card card = Card(this);
   late final Faction faction = Faction(this);
@@ -2982,9 +3108,12 @@ class DatabaseAtV7 extends GeneratedDatabase {
         settings,
         format,
         rotation,
+        rotationView,
         mwl,
+        mwlView,
         rotationCycle,
         cycle,
+        rotationCycleView,
         pack,
         card,
         faction,
@@ -2996,7 +3125,7 @@ class DatabaseAtV7 extends GeneratedDatabase {
         collection
       ];
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 9;
   @override
   DriftDatabaseOptions get options =>
       const DriftDatabaseOptions(storeDateTimeAsText: true);

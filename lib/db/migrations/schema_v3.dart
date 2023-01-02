@@ -55,6 +55,94 @@ class Type extends Table with TableInfo {
   bool get dontWriteConstraints => true;
 }
 
+class TypeCompanion extends UpdateCompanion<dynamic> {
+  final Value<String> code;
+  final Value<String?> sideCode;
+  final Value<int> position;
+  final Value<String> name;
+  final Value<bool> isSubtype;
+  const TypeCompanion({
+    this.code = const Value.absent(),
+    this.sideCode = const Value.absent(),
+    this.position = const Value.absent(),
+    this.name = const Value.absent(),
+    this.isSubtype = const Value.absent(),
+  });
+  TypeCompanion.insert({
+    required String code,
+    this.sideCode = const Value.absent(),
+    required int position,
+    required String name,
+    required bool isSubtype,
+  })  : code = Value(code),
+        position = Value(position),
+        name = Value(name),
+        isSubtype = Value(isSubtype);
+  static Insertable<dynamic> custom({
+    Expression<String>? code,
+    Expression<String>? sideCode,
+    Expression<int>? position,
+    Expression<String>? name,
+    Expression<bool>? isSubtype,
+  }) {
+    return RawValuesInsertable({
+      if (code != null) 'code': code,
+      if (sideCode != null) 'side_code': sideCode,
+      if (position != null) 'position': position,
+      if (name != null) 'name': name,
+      if (isSubtype != null) 'is_subtype': isSubtype,
+    });
+  }
+
+  TypeCompanion copyWith(
+      {Value<String>? code,
+      Value<String?>? sideCode,
+      Value<int>? position,
+      Value<String>? name,
+      Value<bool>? isSubtype}) {
+    return TypeCompanion(
+      code: code ?? this.code,
+      sideCode: sideCode ?? this.sideCode,
+      position: position ?? this.position,
+      name: name ?? this.name,
+      isSubtype: isSubtype ?? this.isSubtype,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (sideCode.present) {
+      map['side_code'] = Variable<String>(sideCode.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (isSubtype.present) {
+      map['is_subtype'] = Variable<bool>(isSubtype.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TypeCompanion(')
+          ..write('code: $code, ')
+          ..write('sideCode: $sideCode, ')
+          ..write('position: $position, ')
+          ..write('name: $name, ')
+          ..write('isSubtype: $isSubtype')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class Side extends Table with TableInfo {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -90,6 +178,57 @@ class Side extends Table with TableInfo {
 
   @override
   bool get dontWriteConstraints => true;
+}
+
+class SideCompanion extends UpdateCompanion<dynamic> {
+  final Value<String> code;
+  final Value<String> name;
+  const SideCompanion({
+    this.code = const Value.absent(),
+    this.name = const Value.absent(),
+  });
+  SideCompanion.insert({
+    required String code,
+    required String name,
+  })  : code = Value(code),
+        name = Value(name);
+  static Insertable<dynamic> custom({
+    Expression<String>? code,
+    Expression<String>? name,
+  }) {
+    return RawValuesInsertable({
+      if (code != null) 'code': code,
+      if (name != null) 'name': name,
+    });
+  }
+
+  SideCompanion copyWith({Value<String>? code, Value<String>? name}) {
+    return SideCompanion(
+      code: code ?? this.code,
+      name: name ?? this.name,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SideCompanion(')
+          ..write('code: $code, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
 }
 
 class Settings extends Table with TableInfo {
@@ -221,6 +360,191 @@ class Settings extends Table with TableInfo {
   bool get dontWriteConstraints => true;
 }
 
+class SettingsCompanion extends UpdateCompanion<dynamic> {
+  final Value<bool> id;
+  final Value<String?> filterFormatCode;
+  final Value<String?> filterRotationCode;
+  final Value<String?> filterMwlCode;
+  final Value<bool> filterCollection;
+  final Value<String> cardSort;
+  final Value<String> cardGroup;
+  final Value<String> deckSort;
+  final Value<String> deckGroup;
+  final Value<String> deckCardSort;
+  final Value<String> deckCardGroup;
+  final Value<String> compareCardSort;
+  final Value<bool> apexResources;
+  final Value<String> cardGalleryView;
+  const SettingsCompanion({
+    this.id = const Value.absent(),
+    this.filterFormatCode = const Value.absent(),
+    this.filterRotationCode = const Value.absent(),
+    this.filterMwlCode = const Value.absent(),
+    this.filterCollection = const Value.absent(),
+    this.cardSort = const Value.absent(),
+    this.cardGroup = const Value.absent(),
+    this.deckSort = const Value.absent(),
+    this.deckGroup = const Value.absent(),
+    this.deckCardSort = const Value.absent(),
+    this.deckCardGroup = const Value.absent(),
+    this.compareCardSort = const Value.absent(),
+    this.apexResources = const Value.absent(),
+    this.cardGalleryView = const Value.absent(),
+  });
+  SettingsCompanion.insert({
+    this.id = const Value.absent(),
+    this.filterFormatCode = const Value.absent(),
+    this.filterRotationCode = const Value.absent(),
+    this.filterMwlCode = const Value.absent(),
+    this.filterCollection = const Value.absent(),
+    this.cardSort = const Value.absent(),
+    this.cardGroup = const Value.absent(),
+    this.deckSort = const Value.absent(),
+    this.deckGroup = const Value.absent(),
+    this.deckCardSort = const Value.absent(),
+    this.deckCardGroup = const Value.absent(),
+    this.compareCardSort = const Value.absent(),
+    this.apexResources = const Value.absent(),
+    this.cardGalleryView = const Value.absent(),
+  });
+  static Insertable<dynamic> custom({
+    Expression<bool>? id,
+    Expression<String>? filterFormatCode,
+    Expression<String>? filterRotationCode,
+    Expression<String>? filterMwlCode,
+    Expression<bool>? filterCollection,
+    Expression<String>? cardSort,
+    Expression<String>? cardGroup,
+    Expression<String>? deckSort,
+    Expression<String>? deckGroup,
+    Expression<String>? deckCardSort,
+    Expression<String>? deckCardGroup,
+    Expression<String>? compareCardSort,
+    Expression<bool>? apexResources,
+    Expression<String>? cardGalleryView,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (filterFormatCode != null) 'filter_format_code': filterFormatCode,
+      if (filterRotationCode != null)
+        'filter_rotation_code': filterRotationCode,
+      if (filterMwlCode != null) 'filter_mwl_code': filterMwlCode,
+      if (filterCollection != null) 'filter_collection': filterCollection,
+      if (cardSort != null) 'card_sort': cardSort,
+      if (cardGroup != null) 'card_group': cardGroup,
+      if (deckSort != null) 'deck_sort': deckSort,
+      if (deckGroup != null) 'deck_group': deckGroup,
+      if (deckCardSort != null) 'deck_card_sort': deckCardSort,
+      if (deckCardGroup != null) 'deck_card_group': deckCardGroup,
+      if (compareCardSort != null) 'compare_card_sort': compareCardSort,
+      if (apexResources != null) 'apex_resources': apexResources,
+      if (cardGalleryView != null) 'card_gallery_view': cardGalleryView,
+    });
+  }
+
+  SettingsCompanion copyWith(
+      {Value<bool>? id,
+      Value<String?>? filterFormatCode,
+      Value<String?>? filterRotationCode,
+      Value<String?>? filterMwlCode,
+      Value<bool>? filterCollection,
+      Value<String>? cardSort,
+      Value<String>? cardGroup,
+      Value<String>? deckSort,
+      Value<String>? deckGroup,
+      Value<String>? deckCardSort,
+      Value<String>? deckCardGroup,
+      Value<String>? compareCardSort,
+      Value<bool>? apexResources,
+      Value<String>? cardGalleryView}) {
+    return SettingsCompanion(
+      id: id ?? this.id,
+      filterFormatCode: filterFormatCode ?? this.filterFormatCode,
+      filterRotationCode: filterRotationCode ?? this.filterRotationCode,
+      filterMwlCode: filterMwlCode ?? this.filterMwlCode,
+      filterCollection: filterCollection ?? this.filterCollection,
+      cardSort: cardSort ?? this.cardSort,
+      cardGroup: cardGroup ?? this.cardGroup,
+      deckSort: deckSort ?? this.deckSort,
+      deckGroup: deckGroup ?? this.deckGroup,
+      deckCardSort: deckCardSort ?? this.deckCardSort,
+      deckCardGroup: deckCardGroup ?? this.deckCardGroup,
+      compareCardSort: compareCardSort ?? this.compareCardSort,
+      apexResources: apexResources ?? this.apexResources,
+      cardGalleryView: cardGalleryView ?? this.cardGalleryView,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<bool>(id.value);
+    }
+    if (filterFormatCode.present) {
+      map['filter_format_code'] = Variable<String>(filterFormatCode.value);
+    }
+    if (filterRotationCode.present) {
+      map['filter_rotation_code'] = Variable<String>(filterRotationCode.value);
+    }
+    if (filterMwlCode.present) {
+      map['filter_mwl_code'] = Variable<String>(filterMwlCode.value);
+    }
+    if (filterCollection.present) {
+      map['filter_collection'] = Variable<bool>(filterCollection.value);
+    }
+    if (cardSort.present) {
+      map['card_sort'] = Variable<String>(cardSort.value);
+    }
+    if (cardGroup.present) {
+      map['card_group'] = Variable<String>(cardGroup.value);
+    }
+    if (deckSort.present) {
+      map['deck_sort'] = Variable<String>(deckSort.value);
+    }
+    if (deckGroup.present) {
+      map['deck_group'] = Variable<String>(deckGroup.value);
+    }
+    if (deckCardSort.present) {
+      map['deck_card_sort'] = Variable<String>(deckCardSort.value);
+    }
+    if (deckCardGroup.present) {
+      map['deck_card_group'] = Variable<String>(deckCardGroup.value);
+    }
+    if (compareCardSort.present) {
+      map['compare_card_sort'] = Variable<String>(compareCardSort.value);
+    }
+    if (apexResources.present) {
+      map['apex_resources'] = Variable<bool>(apexResources.value);
+    }
+    if (cardGalleryView.present) {
+      map['card_gallery_view'] = Variable<String>(cardGalleryView.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SettingsCompanion(')
+          ..write('id: $id, ')
+          ..write('filterFormatCode: $filterFormatCode, ')
+          ..write('filterRotationCode: $filterRotationCode, ')
+          ..write('filterMwlCode: $filterMwlCode, ')
+          ..write('filterCollection: $filterCollection, ')
+          ..write('cardSort: $cardSort, ')
+          ..write('cardGroup: $cardGroup, ')
+          ..write('deckSort: $deckSort, ')
+          ..write('deckGroup: $deckGroup, ')
+          ..write('deckCardSort: $deckCardSort, ')
+          ..write('deckCardGroup: $deckCardGroup, ')
+          ..write('compareCardSort: $compareCardSort, ')
+          ..write('apexResources: $apexResources, ')
+          ..write('cardGalleryView: $cardGalleryView')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class Rotation extends Table with TableInfo {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -279,6 +603,107 @@ class Rotation extends Table with TableInfo {
   bool get dontWriteConstraints => true;
 }
 
+class RotationCompanion extends UpdateCompanion<dynamic> {
+  final Value<String> code;
+  final Value<String> formatCode;
+  final Value<String> name;
+  final Value<int> dateStart;
+  final Value<bool> current;
+  final Value<bool> latest;
+  const RotationCompanion({
+    this.code = const Value.absent(),
+    this.formatCode = const Value.absent(),
+    this.name = const Value.absent(),
+    this.dateStart = const Value.absent(),
+    this.current = const Value.absent(),
+    this.latest = const Value.absent(),
+  });
+  RotationCompanion.insert({
+    required String code,
+    required String formatCode,
+    required String name,
+    required int dateStart,
+    required bool current,
+    required bool latest,
+  })  : code = Value(code),
+        formatCode = Value(formatCode),
+        name = Value(name),
+        dateStart = Value(dateStart),
+        current = Value(current),
+        latest = Value(latest);
+  static Insertable<dynamic> custom({
+    Expression<String>? code,
+    Expression<String>? formatCode,
+    Expression<String>? name,
+    Expression<int>? dateStart,
+    Expression<bool>? current,
+    Expression<bool>? latest,
+  }) {
+    return RawValuesInsertable({
+      if (code != null) 'code': code,
+      if (formatCode != null) 'format_code': formatCode,
+      if (name != null) 'name': name,
+      if (dateStart != null) 'date_start': dateStart,
+      if (current != null) 'current': current,
+      if (latest != null) 'latest': latest,
+    });
+  }
+
+  RotationCompanion copyWith(
+      {Value<String>? code,
+      Value<String>? formatCode,
+      Value<String>? name,
+      Value<int>? dateStart,
+      Value<bool>? current,
+      Value<bool>? latest}) {
+    return RotationCompanion(
+      code: code ?? this.code,
+      formatCode: formatCode ?? this.formatCode,
+      name: name ?? this.name,
+      dateStart: dateStart ?? this.dateStart,
+      current: current ?? this.current,
+      latest: latest ?? this.latest,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (formatCode.present) {
+      map['format_code'] = Variable<String>(formatCode.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (dateStart.present) {
+      map['date_start'] = Variable<int>(dateStart.value);
+    }
+    if (current.present) {
+      map['current'] = Variable<bool>(current.value);
+    }
+    if (latest.present) {
+      map['latest'] = Variable<bool>(latest.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RotationCompanion(')
+          ..write('code: $code, ')
+          ..write('formatCode: $formatCode, ')
+          ..write('name: $name, ')
+          ..write('dateStart: $dateStart, ')
+          ..write('current: $current, ')
+          ..write('latest: $latest')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class RotationCycle extends Table with TableInfo {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -317,6 +742,58 @@ class RotationCycle extends Table with TableInfo {
       const ['PRIMARY KEY (rotation_code, cycle_code)'];
   @override
   bool get dontWriteConstraints => true;
+}
+
+class RotationCycleCompanion extends UpdateCompanion<dynamic> {
+  final Value<String> rotationCode;
+  final Value<String> cycleCode;
+  const RotationCycleCompanion({
+    this.rotationCode = const Value.absent(),
+    this.cycleCode = const Value.absent(),
+  });
+  RotationCycleCompanion.insert({
+    required String rotationCode,
+    required String cycleCode,
+  })  : rotationCode = Value(rotationCode),
+        cycleCode = Value(cycleCode);
+  static Insertable<dynamic> custom({
+    Expression<String>? rotationCode,
+    Expression<String>? cycleCode,
+  }) {
+    return RawValuesInsertable({
+      if (rotationCode != null) 'rotation_code': rotationCode,
+      if (cycleCode != null) 'cycle_code': cycleCode,
+    });
+  }
+
+  RotationCycleCompanion copyWith(
+      {Value<String>? rotationCode, Value<String>? cycleCode}) {
+    return RotationCycleCompanion(
+      rotationCode: rotationCode ?? this.rotationCode,
+      cycleCode: cycleCode ?? this.cycleCode,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (rotationCode.present) {
+      map['rotation_code'] = Variable<String>(rotationCode.value);
+    }
+    if (cycleCode.present) {
+      map['cycle_code'] = Variable<String>(cycleCode.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RotationCycleCompanion(')
+          ..write('rotationCode: $rotationCode, ')
+          ..write('cycleCode: $cycleCode')
+          ..write(')'))
+        .toString();
+  }
 }
 
 class Pack extends Table with TableInfo {
@@ -375,6 +852,105 @@ class Pack extends Table with TableInfo {
 
   @override
   bool get dontWriteConstraints => true;
+}
+
+class PackCompanion extends UpdateCompanion<dynamic> {
+  final Value<String> code;
+  final Value<String> cycleCode;
+  final Value<int> position;
+  final Value<String> name;
+  final Value<int?> dateRelease;
+  final Value<int?> size;
+  const PackCompanion({
+    this.code = const Value.absent(),
+    this.cycleCode = const Value.absent(),
+    this.position = const Value.absent(),
+    this.name = const Value.absent(),
+    this.dateRelease = const Value.absent(),
+    this.size = const Value.absent(),
+  });
+  PackCompanion.insert({
+    required String code,
+    required String cycleCode,
+    required int position,
+    required String name,
+    this.dateRelease = const Value.absent(),
+    this.size = const Value.absent(),
+  })  : code = Value(code),
+        cycleCode = Value(cycleCode),
+        position = Value(position),
+        name = Value(name);
+  static Insertable<dynamic> custom({
+    Expression<String>? code,
+    Expression<String>? cycleCode,
+    Expression<int>? position,
+    Expression<String>? name,
+    Expression<int>? dateRelease,
+    Expression<int>? size,
+  }) {
+    return RawValuesInsertable({
+      if (code != null) 'code': code,
+      if (cycleCode != null) 'cycle_code': cycleCode,
+      if (position != null) 'position': position,
+      if (name != null) 'name': name,
+      if (dateRelease != null) 'date_release': dateRelease,
+      if (size != null) 'size': size,
+    });
+  }
+
+  PackCompanion copyWith(
+      {Value<String>? code,
+      Value<String>? cycleCode,
+      Value<int>? position,
+      Value<String>? name,
+      Value<int?>? dateRelease,
+      Value<int?>? size}) {
+    return PackCompanion(
+      code: code ?? this.code,
+      cycleCode: cycleCode ?? this.cycleCode,
+      position: position ?? this.position,
+      name: name ?? this.name,
+      dateRelease: dateRelease ?? this.dateRelease,
+      size: size ?? this.size,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (cycleCode.present) {
+      map['cycle_code'] = Variable<String>(cycleCode.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (dateRelease.present) {
+      map['date_release'] = Variable<int>(dateRelease.value);
+    }
+    if (size.present) {
+      map['size'] = Variable<int>(size.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('PackCompanion(')
+          ..write('code: $code, ')
+          ..write('cycleCode: $cycleCode, ')
+          ..write('position: $position, ')
+          ..write('name: $name, ')
+          ..write('dateRelease: $dateRelease, ')
+          ..write('size: $size')
+          ..write(')'))
+        .toString();
+  }
 }
 
 class Nrdb extends Table with TableInfo {
@@ -475,6 +1051,168 @@ class Nrdb extends Table with TableInfo {
   bool get dontWriteConstraints => true;
 }
 
+class NrdbCompanion extends UpdateCompanion<dynamic> {
+  final Value<bool> id;
+  final Value<int> expires;
+  final Value<int> cycleLastUpdated;
+  final Value<int> packLastUpdated;
+  final Value<int> sideLastUpdated;
+  final Value<int> factionLastUpdated;
+  final Value<int> typeLastUpdated;
+  final Value<int> cardLastUpdated;
+  final Value<int> formatLastUpdated;
+  final Value<int> rotationLastUpdated;
+  final Value<int> mwlLastUpdated;
+  const NrdbCompanion({
+    this.id = const Value.absent(),
+    this.expires = const Value.absent(),
+    this.cycleLastUpdated = const Value.absent(),
+    this.packLastUpdated = const Value.absent(),
+    this.sideLastUpdated = const Value.absent(),
+    this.factionLastUpdated = const Value.absent(),
+    this.typeLastUpdated = const Value.absent(),
+    this.cardLastUpdated = const Value.absent(),
+    this.formatLastUpdated = const Value.absent(),
+    this.rotationLastUpdated = const Value.absent(),
+    this.mwlLastUpdated = const Value.absent(),
+  });
+  NrdbCompanion.insert({
+    this.id = const Value.absent(),
+    required int expires,
+    required int cycleLastUpdated,
+    required int packLastUpdated,
+    required int sideLastUpdated,
+    required int factionLastUpdated,
+    required int typeLastUpdated,
+    required int cardLastUpdated,
+    required int formatLastUpdated,
+    required int rotationLastUpdated,
+    required int mwlLastUpdated,
+  })  : expires = Value(expires),
+        cycleLastUpdated = Value(cycleLastUpdated),
+        packLastUpdated = Value(packLastUpdated),
+        sideLastUpdated = Value(sideLastUpdated),
+        factionLastUpdated = Value(factionLastUpdated),
+        typeLastUpdated = Value(typeLastUpdated),
+        cardLastUpdated = Value(cardLastUpdated),
+        formatLastUpdated = Value(formatLastUpdated),
+        rotationLastUpdated = Value(rotationLastUpdated),
+        mwlLastUpdated = Value(mwlLastUpdated);
+  static Insertable<dynamic> custom({
+    Expression<bool>? id,
+    Expression<int>? expires,
+    Expression<int>? cycleLastUpdated,
+    Expression<int>? packLastUpdated,
+    Expression<int>? sideLastUpdated,
+    Expression<int>? factionLastUpdated,
+    Expression<int>? typeLastUpdated,
+    Expression<int>? cardLastUpdated,
+    Expression<int>? formatLastUpdated,
+    Expression<int>? rotationLastUpdated,
+    Expression<int>? mwlLastUpdated,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (expires != null) 'expires': expires,
+      if (cycleLastUpdated != null) 'cycle_last_updated': cycleLastUpdated,
+      if (packLastUpdated != null) 'pack_last_updated': packLastUpdated,
+      if (sideLastUpdated != null) 'side_last_updated': sideLastUpdated,
+      if (factionLastUpdated != null)
+        'faction_last_updated': factionLastUpdated,
+      if (typeLastUpdated != null) 'type_last_updated': typeLastUpdated,
+      if (cardLastUpdated != null) 'card_last_updated': cardLastUpdated,
+      if (formatLastUpdated != null) 'format_last_updated': formatLastUpdated,
+      if (rotationLastUpdated != null)
+        'rotation_last_updated': rotationLastUpdated,
+      if (mwlLastUpdated != null) 'mwl_last_updated': mwlLastUpdated,
+    });
+  }
+
+  NrdbCompanion copyWith(
+      {Value<bool>? id,
+      Value<int>? expires,
+      Value<int>? cycleLastUpdated,
+      Value<int>? packLastUpdated,
+      Value<int>? sideLastUpdated,
+      Value<int>? factionLastUpdated,
+      Value<int>? typeLastUpdated,
+      Value<int>? cardLastUpdated,
+      Value<int>? formatLastUpdated,
+      Value<int>? rotationLastUpdated,
+      Value<int>? mwlLastUpdated}) {
+    return NrdbCompanion(
+      id: id ?? this.id,
+      expires: expires ?? this.expires,
+      cycleLastUpdated: cycleLastUpdated ?? this.cycleLastUpdated,
+      packLastUpdated: packLastUpdated ?? this.packLastUpdated,
+      sideLastUpdated: sideLastUpdated ?? this.sideLastUpdated,
+      factionLastUpdated: factionLastUpdated ?? this.factionLastUpdated,
+      typeLastUpdated: typeLastUpdated ?? this.typeLastUpdated,
+      cardLastUpdated: cardLastUpdated ?? this.cardLastUpdated,
+      formatLastUpdated: formatLastUpdated ?? this.formatLastUpdated,
+      rotationLastUpdated: rotationLastUpdated ?? this.rotationLastUpdated,
+      mwlLastUpdated: mwlLastUpdated ?? this.mwlLastUpdated,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<bool>(id.value);
+    }
+    if (expires.present) {
+      map['expires'] = Variable<int>(expires.value);
+    }
+    if (cycleLastUpdated.present) {
+      map['cycle_last_updated'] = Variable<int>(cycleLastUpdated.value);
+    }
+    if (packLastUpdated.present) {
+      map['pack_last_updated'] = Variable<int>(packLastUpdated.value);
+    }
+    if (sideLastUpdated.present) {
+      map['side_last_updated'] = Variable<int>(sideLastUpdated.value);
+    }
+    if (factionLastUpdated.present) {
+      map['faction_last_updated'] = Variable<int>(factionLastUpdated.value);
+    }
+    if (typeLastUpdated.present) {
+      map['type_last_updated'] = Variable<int>(typeLastUpdated.value);
+    }
+    if (cardLastUpdated.present) {
+      map['card_last_updated'] = Variable<int>(cardLastUpdated.value);
+    }
+    if (formatLastUpdated.present) {
+      map['format_last_updated'] = Variable<int>(formatLastUpdated.value);
+    }
+    if (rotationLastUpdated.present) {
+      map['rotation_last_updated'] = Variable<int>(rotationLastUpdated.value);
+    }
+    if (mwlLastUpdated.present) {
+      map['mwl_last_updated'] = Variable<int>(mwlLastUpdated.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('NrdbCompanion(')
+          ..write('id: $id, ')
+          ..write('expires: $expires, ')
+          ..write('cycleLastUpdated: $cycleLastUpdated, ')
+          ..write('packLastUpdated: $packLastUpdated, ')
+          ..write('sideLastUpdated: $sideLastUpdated, ')
+          ..write('factionLastUpdated: $factionLastUpdated, ')
+          ..write('typeLastUpdated: $typeLastUpdated, ')
+          ..write('cardLastUpdated: $cardLastUpdated, ')
+          ..write('formatLastUpdated: $formatLastUpdated, ')
+          ..write('rotationLastUpdated: $rotationLastUpdated, ')
+          ..write('mwlLastUpdated: $mwlLastUpdated')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class Mwl extends Table with TableInfo {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -551,6 +1289,129 @@ class Mwl extends Table with TableInfo {
   bool get dontWriteConstraints => true;
 }
 
+class MwlCompanion extends UpdateCompanion<dynamic> {
+  final Value<String> code;
+  final Value<String> formatCode;
+  final Value<String> name;
+  final Value<int> dateStart;
+  final Value<bool> active;
+  final Value<bool> latest;
+  final Value<int?> runnerPoints;
+  final Value<int?> corpPoints;
+  const MwlCompanion({
+    this.code = const Value.absent(),
+    this.formatCode = const Value.absent(),
+    this.name = const Value.absent(),
+    this.dateStart = const Value.absent(),
+    this.active = const Value.absent(),
+    this.latest = const Value.absent(),
+    this.runnerPoints = const Value.absent(),
+    this.corpPoints = const Value.absent(),
+  });
+  MwlCompanion.insert({
+    required String code,
+    required String formatCode,
+    required String name,
+    required int dateStart,
+    required bool active,
+    required bool latest,
+    this.runnerPoints = const Value.absent(),
+    this.corpPoints = const Value.absent(),
+  })  : code = Value(code),
+        formatCode = Value(formatCode),
+        name = Value(name),
+        dateStart = Value(dateStart),
+        active = Value(active),
+        latest = Value(latest);
+  static Insertable<dynamic> custom({
+    Expression<String>? code,
+    Expression<String>? formatCode,
+    Expression<String>? name,
+    Expression<int>? dateStart,
+    Expression<bool>? active,
+    Expression<bool>? latest,
+    Expression<int>? runnerPoints,
+    Expression<int>? corpPoints,
+  }) {
+    return RawValuesInsertable({
+      if (code != null) 'code': code,
+      if (formatCode != null) 'format_code': formatCode,
+      if (name != null) 'name': name,
+      if (dateStart != null) 'date_start': dateStart,
+      if (active != null) 'active': active,
+      if (latest != null) 'latest': latest,
+      if (runnerPoints != null) 'runner_points': runnerPoints,
+      if (corpPoints != null) 'corp_points': corpPoints,
+    });
+  }
+
+  MwlCompanion copyWith(
+      {Value<String>? code,
+      Value<String>? formatCode,
+      Value<String>? name,
+      Value<int>? dateStart,
+      Value<bool>? active,
+      Value<bool>? latest,
+      Value<int?>? runnerPoints,
+      Value<int?>? corpPoints}) {
+    return MwlCompanion(
+      code: code ?? this.code,
+      formatCode: formatCode ?? this.formatCode,
+      name: name ?? this.name,
+      dateStart: dateStart ?? this.dateStart,
+      active: active ?? this.active,
+      latest: latest ?? this.latest,
+      runnerPoints: runnerPoints ?? this.runnerPoints,
+      corpPoints: corpPoints ?? this.corpPoints,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (formatCode.present) {
+      map['format_code'] = Variable<String>(formatCode.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (dateStart.present) {
+      map['date_start'] = Variable<int>(dateStart.value);
+    }
+    if (active.present) {
+      map['active'] = Variable<bool>(active.value);
+    }
+    if (latest.present) {
+      map['latest'] = Variable<bool>(latest.value);
+    }
+    if (runnerPoints.present) {
+      map['runner_points'] = Variable<int>(runnerPoints.value);
+    }
+    if (corpPoints.present) {
+      map['corp_points'] = Variable<int>(corpPoints.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MwlCompanion(')
+          ..write('code: $code, ')
+          ..write('formatCode: $formatCode, ')
+          ..write('name: $name, ')
+          ..write('dateStart: $dateStart, ')
+          ..write('active: $active, ')
+          ..write('latest: $latest, ')
+          ..write('runnerPoints: $runnerPoints, ')
+          ..write('corpPoints: $corpPoints')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class MwlCard extends Table with TableInfo {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -624,6 +1485,116 @@ class MwlCard extends Table with TableInfo {
   bool get dontWriteConstraints => true;
 }
 
+class MwlCardCompanion extends UpdateCompanion<dynamic> {
+  final Value<String> mwlCode;
+  final Value<String> cardCode;
+  final Value<bool> isRestricted;
+  final Value<int?> globalPenalty;
+  final Value<int?> universalFactionCost;
+  final Value<int?> deckLimit;
+  final Value<int?> points;
+  const MwlCardCompanion({
+    this.mwlCode = const Value.absent(),
+    this.cardCode = const Value.absent(),
+    this.isRestricted = const Value.absent(),
+    this.globalPenalty = const Value.absent(),
+    this.universalFactionCost = const Value.absent(),
+    this.deckLimit = const Value.absent(),
+    this.points = const Value.absent(),
+  });
+  MwlCardCompanion.insert({
+    required String mwlCode,
+    required String cardCode,
+    required bool isRestricted,
+    this.globalPenalty = const Value.absent(),
+    this.universalFactionCost = const Value.absent(),
+    this.deckLimit = const Value.absent(),
+    this.points = const Value.absent(),
+  })  : mwlCode = Value(mwlCode),
+        cardCode = Value(cardCode),
+        isRestricted = Value(isRestricted);
+  static Insertable<dynamic> custom({
+    Expression<String>? mwlCode,
+    Expression<String>? cardCode,
+    Expression<bool>? isRestricted,
+    Expression<int>? globalPenalty,
+    Expression<int>? universalFactionCost,
+    Expression<int>? deckLimit,
+    Expression<int>? points,
+  }) {
+    return RawValuesInsertable({
+      if (mwlCode != null) 'mwl_code': mwlCode,
+      if (cardCode != null) 'card_code': cardCode,
+      if (isRestricted != null) 'is_restricted': isRestricted,
+      if (globalPenalty != null) 'global_penalty': globalPenalty,
+      if (universalFactionCost != null)
+        'universal_faction_cost': universalFactionCost,
+      if (deckLimit != null) 'deck_limit': deckLimit,
+      if (points != null) 'points': points,
+    });
+  }
+
+  MwlCardCompanion copyWith(
+      {Value<String>? mwlCode,
+      Value<String>? cardCode,
+      Value<bool>? isRestricted,
+      Value<int?>? globalPenalty,
+      Value<int?>? universalFactionCost,
+      Value<int?>? deckLimit,
+      Value<int?>? points}) {
+    return MwlCardCompanion(
+      mwlCode: mwlCode ?? this.mwlCode,
+      cardCode: cardCode ?? this.cardCode,
+      isRestricted: isRestricted ?? this.isRestricted,
+      globalPenalty: globalPenalty ?? this.globalPenalty,
+      universalFactionCost: universalFactionCost ?? this.universalFactionCost,
+      deckLimit: deckLimit ?? this.deckLimit,
+      points: points ?? this.points,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (mwlCode.present) {
+      map['mwl_code'] = Variable<String>(mwlCode.value);
+    }
+    if (cardCode.present) {
+      map['card_code'] = Variable<String>(cardCode.value);
+    }
+    if (isRestricted.present) {
+      map['is_restricted'] = Variable<bool>(isRestricted.value);
+    }
+    if (globalPenalty.present) {
+      map['global_penalty'] = Variable<int>(globalPenalty.value);
+    }
+    if (universalFactionCost.present) {
+      map['universal_faction_cost'] = Variable<int>(universalFactionCost.value);
+    }
+    if (deckLimit.present) {
+      map['deck_limit'] = Variable<int>(deckLimit.value);
+    }
+    if (points.present) {
+      map['points'] = Variable<int>(points.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MwlCardCompanion(')
+          ..write('mwlCode: $mwlCode, ')
+          ..write('cardCode: $cardCode, ')
+          ..write('isRestricted: $isRestricted, ')
+          ..write('globalPenalty: $globalPenalty, ')
+          ..write('universalFactionCost: $universalFactionCost, ')
+          ..write('deckLimit: $deckLimit, ')
+          ..write('points: $points')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class Format extends Table with TableInfo {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -664,6 +1635,69 @@ class Format extends Table with TableInfo {
 
   @override
   bool get dontWriteConstraints => true;
+}
+
+class FormatCompanion extends UpdateCompanion<dynamic> {
+  final Value<int> id;
+  final Value<String> code;
+  final Value<String> name;
+  const FormatCompanion({
+    this.id = const Value.absent(),
+    this.code = const Value.absent(),
+    this.name = const Value.absent(),
+  });
+  FormatCompanion.insert({
+    required int id,
+    required String code,
+    required String name,
+  })  : id = Value(id),
+        code = Value(code),
+        name = Value(name);
+  static Insertable<dynamic> custom({
+    Expression<int>? id,
+    Expression<String>? code,
+    Expression<String>? name,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (code != null) 'code': code,
+      if (name != null) 'name': name,
+    });
+  }
+
+  FormatCompanion copyWith(
+      {Value<int>? id, Value<String>? code, Value<String>? name}) {
+    return FormatCompanion(
+      id: id ?? this.id,
+      code: code ?? this.code,
+      name: name ?? this.name,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FormatCompanion(')
+          ..write('id: $id, ')
+          ..write('code: $code, ')
+          ..write('name: $name')
+          ..write(')'))
+        .toString();
+  }
 }
 
 class Faction extends Table with TableInfo {
@@ -716,6 +1750,95 @@ class Faction extends Table with TableInfo {
 
   @override
   bool get dontWriteConstraints => true;
+}
+
+class FactionCompanion extends UpdateCompanion<dynamic> {
+  final Value<String> code;
+  final Value<String> sideCode;
+  final Value<String> name;
+  final Value<int> color;
+  final Value<bool> isMini;
+  const FactionCompanion({
+    this.code = const Value.absent(),
+    this.sideCode = const Value.absent(),
+    this.name = const Value.absent(),
+    this.color = const Value.absent(),
+    this.isMini = const Value.absent(),
+  });
+  FactionCompanion.insert({
+    required String code,
+    required String sideCode,
+    required String name,
+    required int color,
+    required bool isMini,
+  })  : code = Value(code),
+        sideCode = Value(sideCode),
+        name = Value(name),
+        color = Value(color),
+        isMini = Value(isMini);
+  static Insertable<dynamic> custom({
+    Expression<String>? code,
+    Expression<String>? sideCode,
+    Expression<String>? name,
+    Expression<int>? color,
+    Expression<bool>? isMini,
+  }) {
+    return RawValuesInsertable({
+      if (code != null) 'code': code,
+      if (sideCode != null) 'side_code': sideCode,
+      if (name != null) 'name': name,
+      if (color != null) 'color': color,
+      if (isMini != null) 'is_mini': isMini,
+    });
+  }
+
+  FactionCompanion copyWith(
+      {Value<String>? code,
+      Value<String>? sideCode,
+      Value<String>? name,
+      Value<int>? color,
+      Value<bool>? isMini}) {
+    return FactionCompanion(
+      code: code ?? this.code,
+      sideCode: sideCode ?? this.sideCode,
+      name: name ?? this.name,
+      color: color ?? this.color,
+      isMini: isMini ?? this.isMini,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (sideCode.present) {
+      map['side_code'] = Variable<String>(sideCode.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (color.present) {
+      map['color'] = Variable<int>(color.value);
+    }
+    if (isMini.present) {
+      map['is_mini'] = Variable<bool>(isMini.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('FactionCompanion(')
+          ..write('code: $code, ')
+          ..write('sideCode: $sideCode, ')
+          ..write('name: $name, ')
+          ..write('color: $color, ')
+          ..write('isMini: $isMini')
+          ..write(')'))
+        .toString();
+  }
 }
 
 class Deck extends Table with TableInfo {
@@ -818,6 +1941,174 @@ class Deck extends Table with TableInfo {
   bool get dontWriteConstraints => true;
 }
 
+class DeckCompanion extends UpdateCompanion<dynamic> {
+  final Value<String> id;
+  final Value<String> identityCode;
+  final Value<String?> formatCode;
+  final Value<String?> rotationCode;
+  final Value<String?> mwlCode;
+  final Value<String> name;
+  final Value<String> description;
+  final Value<int> created;
+  final Value<int> updated;
+  final Value<bool> deleted;
+  final Value<int?> remoteUpdated;
+  final Value<int?> synced;
+  const DeckCompanion({
+    this.id = const Value.absent(),
+    this.identityCode = const Value.absent(),
+    this.formatCode = const Value.absent(),
+    this.rotationCode = const Value.absent(),
+    this.mwlCode = const Value.absent(),
+    this.name = const Value.absent(),
+    this.description = const Value.absent(),
+    this.created = const Value.absent(),
+    this.updated = const Value.absent(),
+    this.deleted = const Value.absent(),
+    this.remoteUpdated = const Value.absent(),
+    this.synced = const Value.absent(),
+  });
+  DeckCompanion.insert({
+    required String id,
+    required String identityCode,
+    this.formatCode = const Value.absent(),
+    this.rotationCode = const Value.absent(),
+    this.mwlCode = const Value.absent(),
+    required String name,
+    required String description,
+    required int created,
+    required int updated,
+    required bool deleted,
+    this.remoteUpdated = const Value.absent(),
+    this.synced = const Value.absent(),
+  })  : id = Value(id),
+        identityCode = Value(identityCode),
+        name = Value(name),
+        description = Value(description),
+        created = Value(created),
+        updated = Value(updated),
+        deleted = Value(deleted);
+  static Insertable<dynamic> custom({
+    Expression<String>? id,
+    Expression<String>? identityCode,
+    Expression<String>? formatCode,
+    Expression<String>? rotationCode,
+    Expression<String>? mwlCode,
+    Expression<String>? name,
+    Expression<String>? description,
+    Expression<int>? created,
+    Expression<int>? updated,
+    Expression<bool>? deleted,
+    Expression<int>? remoteUpdated,
+    Expression<int>? synced,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (identityCode != null) 'identity_code': identityCode,
+      if (formatCode != null) 'format_code': formatCode,
+      if (rotationCode != null) 'rotation_code': rotationCode,
+      if (mwlCode != null) 'mwl_code': mwlCode,
+      if (name != null) 'name': name,
+      if (description != null) 'description': description,
+      if (created != null) 'created': created,
+      if (updated != null) 'updated': updated,
+      if (deleted != null) 'deleted': deleted,
+      if (remoteUpdated != null) 'remote_updated': remoteUpdated,
+      if (synced != null) 'synced': synced,
+    });
+  }
+
+  DeckCompanion copyWith(
+      {Value<String>? id,
+      Value<String>? identityCode,
+      Value<String?>? formatCode,
+      Value<String?>? rotationCode,
+      Value<String?>? mwlCode,
+      Value<String>? name,
+      Value<String>? description,
+      Value<int>? created,
+      Value<int>? updated,
+      Value<bool>? deleted,
+      Value<int?>? remoteUpdated,
+      Value<int?>? synced}) {
+    return DeckCompanion(
+      id: id ?? this.id,
+      identityCode: identityCode ?? this.identityCode,
+      formatCode: formatCode ?? this.formatCode,
+      rotationCode: rotationCode ?? this.rotationCode,
+      mwlCode: mwlCode ?? this.mwlCode,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      created: created ?? this.created,
+      updated: updated ?? this.updated,
+      deleted: deleted ?? this.deleted,
+      remoteUpdated: remoteUpdated ?? this.remoteUpdated,
+      synced: synced ?? this.synced,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (identityCode.present) {
+      map['identity_code'] = Variable<String>(identityCode.value);
+    }
+    if (formatCode.present) {
+      map['format_code'] = Variable<String>(formatCode.value);
+    }
+    if (rotationCode.present) {
+      map['rotation_code'] = Variable<String>(rotationCode.value);
+    }
+    if (mwlCode.present) {
+      map['mwl_code'] = Variable<String>(mwlCode.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (created.present) {
+      map['created'] = Variable<int>(created.value);
+    }
+    if (updated.present) {
+      map['updated'] = Variable<int>(updated.value);
+    }
+    if (deleted.present) {
+      map['deleted'] = Variable<bool>(deleted.value);
+    }
+    if (remoteUpdated.present) {
+      map['remote_updated'] = Variable<int>(remoteUpdated.value);
+    }
+    if (synced.present) {
+      map['synced'] = Variable<int>(synced.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DeckCompanion(')
+          ..write('id: $id, ')
+          ..write('identityCode: $identityCode, ')
+          ..write('formatCode: $formatCode, ')
+          ..write('rotationCode: $rotationCode, ')
+          ..write('mwlCode: $mwlCode, ')
+          ..write('name: $name, ')
+          ..write('description: $description, ')
+          ..write('created: $created, ')
+          ..write('updated: $updated, ')
+          ..write('deleted: $deleted, ')
+          ..write('remoteUpdated: $remoteUpdated, ')
+          ..write('synced: $synced')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class DeckTag extends Table with TableInfo {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -855,6 +2146,57 @@ class DeckTag extends Table with TableInfo {
   List<String> get customConstraints => const ['PRIMARY KEY (deck_id, tag)'];
   @override
   bool get dontWriteConstraints => true;
+}
+
+class DeckTagCompanion extends UpdateCompanion<dynamic> {
+  final Value<String> deckId;
+  final Value<String> tag;
+  const DeckTagCompanion({
+    this.deckId = const Value.absent(),
+    this.tag = const Value.absent(),
+  });
+  DeckTagCompanion.insert({
+    required String deckId,
+    required String tag,
+  })  : deckId = Value(deckId),
+        tag = Value(tag);
+  static Insertable<dynamic> custom({
+    Expression<String>? deckId,
+    Expression<String>? tag,
+  }) {
+    return RawValuesInsertable({
+      if (deckId != null) 'deck_id': deckId,
+      if (tag != null) 'tag': tag,
+    });
+  }
+
+  DeckTagCompanion copyWith({Value<String>? deckId, Value<String>? tag}) {
+    return DeckTagCompanion(
+      deckId: deckId ?? this.deckId,
+      tag: tag ?? this.tag,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (deckId.present) {
+      map['deck_id'] = Variable<String>(deckId.value);
+    }
+    if (tag.present) {
+      map['tag'] = Variable<String>(tag.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DeckTagCompanion(')
+          ..write('deckId: $deckId, ')
+          ..write('tag: $tag')
+          ..write(')'))
+        .toString();
+  }
 }
 
 class DeckCard extends Table with TableInfo {
@@ -900,6 +2242,69 @@ class DeckCard extends Table with TableInfo {
       const ['PRIMARY KEY (deck_id, card_code)'];
   @override
   bool get dontWriteConstraints => true;
+}
+
+class DeckCardCompanion extends UpdateCompanion<dynamic> {
+  final Value<String> deckId;
+  final Value<String> cardCode;
+  final Value<int> quantity;
+  const DeckCardCompanion({
+    this.deckId = const Value.absent(),
+    this.cardCode = const Value.absent(),
+    this.quantity = const Value.absent(),
+  });
+  DeckCardCompanion.insert({
+    required String deckId,
+    required String cardCode,
+    required int quantity,
+  })  : deckId = Value(deckId),
+        cardCode = Value(cardCode),
+        quantity = Value(quantity);
+  static Insertable<dynamic> custom({
+    Expression<String>? deckId,
+    Expression<String>? cardCode,
+    Expression<int>? quantity,
+  }) {
+    return RawValuesInsertable({
+      if (deckId != null) 'deck_id': deckId,
+      if (cardCode != null) 'card_code': cardCode,
+      if (quantity != null) 'quantity': quantity,
+    });
+  }
+
+  DeckCardCompanion copyWith(
+      {Value<String>? deckId, Value<String>? cardCode, Value<int>? quantity}) {
+    return DeckCardCompanion(
+      deckId: deckId ?? this.deckId,
+      cardCode: cardCode ?? this.cardCode,
+      quantity: quantity ?? this.quantity,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (deckId.present) {
+      map['deck_id'] = Variable<String>(deckId.value);
+    }
+    if (cardCode.present) {
+      map['card_code'] = Variable<String>(cardCode.value);
+    }
+    if (quantity.present) {
+      map['quantity'] = Variable<int>(quantity.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('DeckCardCompanion(')
+          ..write('deckId: $deckId, ')
+          ..write('cardCode: $cardCode, ')
+          ..write('quantity: $quantity')
+          ..write(')'))
+        .toString();
+  }
 }
 
 class Cycle extends Table with TableInfo {
@@ -954,6 +2359,95 @@ class Cycle extends Table with TableInfo {
   bool get dontWriteConstraints => true;
 }
 
+class CycleCompanion extends UpdateCompanion<dynamic> {
+  final Value<String> code;
+  final Value<int> position;
+  final Value<String> name;
+  final Value<int> size;
+  final Value<bool> rotated;
+  const CycleCompanion({
+    this.code = const Value.absent(),
+    this.position = const Value.absent(),
+    this.name = const Value.absent(),
+    this.size = const Value.absent(),
+    this.rotated = const Value.absent(),
+  });
+  CycleCompanion.insert({
+    required String code,
+    required int position,
+    required String name,
+    required int size,
+    required bool rotated,
+  })  : code = Value(code),
+        position = Value(position),
+        name = Value(name),
+        size = Value(size),
+        rotated = Value(rotated);
+  static Insertable<dynamic> custom({
+    Expression<String>? code,
+    Expression<int>? position,
+    Expression<String>? name,
+    Expression<int>? size,
+    Expression<bool>? rotated,
+  }) {
+    return RawValuesInsertable({
+      if (code != null) 'code': code,
+      if (position != null) 'position': position,
+      if (name != null) 'name': name,
+      if (size != null) 'size': size,
+      if (rotated != null) 'rotated': rotated,
+    });
+  }
+
+  CycleCompanion copyWith(
+      {Value<String>? code,
+      Value<int>? position,
+      Value<String>? name,
+      Value<int>? size,
+      Value<bool>? rotated}) {
+    return CycleCompanion(
+      code: code ?? this.code,
+      position: position ?? this.position,
+      name: name ?? this.name,
+      size: size ?? this.size,
+      rotated: rotated ?? this.rotated,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (size.present) {
+      map['size'] = Variable<int>(size.value);
+    }
+    if (rotated.present) {
+      map['rotated'] = Variable<bool>(rotated.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CycleCompanion(')
+          ..write('code: $code, ')
+          ..write('position: $position, ')
+          ..write('name: $name, ')
+          ..write('size: $size, ')
+          ..write('rotated: $rotated')
+          ..write(')'))
+        .toString();
+  }
+}
+
 class Collection extends Table with TableInfo {
   @override
   final GeneratedDatabase attachedDatabase;
@@ -984,6 +2478,46 @@ class Collection extends Table with TableInfo {
 
   @override
   bool get dontWriteConstraints => true;
+}
+
+class CollectionCompanion extends UpdateCompanion<dynamic> {
+  final Value<String> packCode;
+  const CollectionCompanion({
+    this.packCode = const Value.absent(),
+  });
+  CollectionCompanion.insert({
+    required String packCode,
+  }) : packCode = Value(packCode);
+  static Insertable<dynamic> custom({
+    Expression<String>? packCode,
+  }) {
+    return RawValuesInsertable({
+      if (packCode != null) 'pack_code': packCode,
+    });
+  }
+
+  CollectionCompanion copyWith({Value<String>? packCode}) {
+    return CollectionCompanion(
+      packCode: packCode ?? this.packCode,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (packCode.present) {
+      map['pack_code'] = Variable<String>(packCode.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CollectionCompanion(')
+          ..write('packCode: $packCode')
+          ..write(')'))
+        .toString();
+  }
 }
 
 class Card extends Table with TableInfo {
@@ -1162,6 +2696,321 @@ class Card extends Table with TableInfo {
 
   @override
   bool get dontWriteConstraints => true;
+}
+
+class CardCompanion extends UpdateCompanion<dynamic> {
+  final Value<String> code;
+  final Value<String> packCode;
+  final Value<String> factionCode;
+  final Value<String> typeCode;
+  final Value<int> position;
+  final Value<String> title;
+  final Value<String> strippedTitle;
+  final Value<String?> body;
+  final Value<String?> strippedBody;
+  final Value<String?> keywords;
+  final Value<int> quantity;
+  final Value<int?> cost;
+  final Value<int> deckLimit;
+  final Value<int> factionCost;
+  final Value<bool> uniqueness;
+  final Value<int?> strength;
+  final Value<int?> agendaPoints;
+  final Value<int?> memoryCost;
+  final Value<int?> advancementCost;
+  final Value<int?> trashCost;
+  final Value<int?> baseLink;
+  final Value<int?> influenceLimit;
+  final Value<int?> minimumDeckSize;
+  final Value<String?> flavor;
+  final Value<String?> illustrator;
+  const CardCompanion({
+    this.code = const Value.absent(),
+    this.packCode = const Value.absent(),
+    this.factionCode = const Value.absent(),
+    this.typeCode = const Value.absent(),
+    this.position = const Value.absent(),
+    this.title = const Value.absent(),
+    this.strippedTitle = const Value.absent(),
+    this.body = const Value.absent(),
+    this.strippedBody = const Value.absent(),
+    this.keywords = const Value.absent(),
+    this.quantity = const Value.absent(),
+    this.cost = const Value.absent(),
+    this.deckLimit = const Value.absent(),
+    this.factionCost = const Value.absent(),
+    this.uniqueness = const Value.absent(),
+    this.strength = const Value.absent(),
+    this.agendaPoints = const Value.absent(),
+    this.memoryCost = const Value.absent(),
+    this.advancementCost = const Value.absent(),
+    this.trashCost = const Value.absent(),
+    this.baseLink = const Value.absent(),
+    this.influenceLimit = const Value.absent(),
+    this.minimumDeckSize = const Value.absent(),
+    this.flavor = const Value.absent(),
+    this.illustrator = const Value.absent(),
+  });
+  CardCompanion.insert({
+    required String code,
+    required String packCode,
+    required String factionCode,
+    required String typeCode,
+    required int position,
+    required String title,
+    required String strippedTitle,
+    this.body = const Value.absent(),
+    this.strippedBody = const Value.absent(),
+    this.keywords = const Value.absent(),
+    required int quantity,
+    this.cost = const Value.absent(),
+    required int deckLimit,
+    required int factionCost,
+    required bool uniqueness,
+    this.strength = const Value.absent(),
+    this.agendaPoints = const Value.absent(),
+    this.memoryCost = const Value.absent(),
+    this.advancementCost = const Value.absent(),
+    this.trashCost = const Value.absent(),
+    this.baseLink = const Value.absent(),
+    this.influenceLimit = const Value.absent(),
+    this.minimumDeckSize = const Value.absent(),
+    this.flavor = const Value.absent(),
+    this.illustrator = const Value.absent(),
+  })  : code = Value(code),
+        packCode = Value(packCode),
+        factionCode = Value(factionCode),
+        typeCode = Value(typeCode),
+        position = Value(position),
+        title = Value(title),
+        strippedTitle = Value(strippedTitle),
+        quantity = Value(quantity),
+        deckLimit = Value(deckLimit),
+        factionCost = Value(factionCost),
+        uniqueness = Value(uniqueness);
+  static Insertable<dynamic> custom({
+    Expression<String>? code,
+    Expression<String>? packCode,
+    Expression<String>? factionCode,
+    Expression<String>? typeCode,
+    Expression<int>? position,
+    Expression<String>? title,
+    Expression<String>? strippedTitle,
+    Expression<String>? body,
+    Expression<String>? strippedBody,
+    Expression<String>? keywords,
+    Expression<int>? quantity,
+    Expression<int>? cost,
+    Expression<int>? deckLimit,
+    Expression<int>? factionCost,
+    Expression<bool>? uniqueness,
+    Expression<int>? strength,
+    Expression<int>? agendaPoints,
+    Expression<int>? memoryCost,
+    Expression<int>? advancementCost,
+    Expression<int>? trashCost,
+    Expression<int>? baseLink,
+    Expression<int>? influenceLimit,
+    Expression<int>? minimumDeckSize,
+    Expression<String>? flavor,
+    Expression<String>? illustrator,
+  }) {
+    return RawValuesInsertable({
+      if (code != null) 'code': code,
+      if (packCode != null) 'pack_code': packCode,
+      if (factionCode != null) 'faction_code': factionCode,
+      if (typeCode != null) 'type_code': typeCode,
+      if (position != null) 'position': position,
+      if (title != null) 'title': title,
+      if (strippedTitle != null) 'stripped_title': strippedTitle,
+      if (body != null) 'body': body,
+      if (strippedBody != null) 'stripped_body': strippedBody,
+      if (keywords != null) 'keywords': keywords,
+      if (quantity != null) 'quantity': quantity,
+      if (cost != null) 'cost': cost,
+      if (deckLimit != null) 'deck_limit': deckLimit,
+      if (factionCost != null) 'faction_cost': factionCost,
+      if (uniqueness != null) 'uniqueness': uniqueness,
+      if (strength != null) 'strength': strength,
+      if (agendaPoints != null) 'agenda_points': agendaPoints,
+      if (memoryCost != null) 'memory_cost': memoryCost,
+      if (advancementCost != null) 'advancement_cost': advancementCost,
+      if (trashCost != null) 'trash_cost': trashCost,
+      if (baseLink != null) 'base_link': baseLink,
+      if (influenceLimit != null) 'influence_limit': influenceLimit,
+      if (minimumDeckSize != null) 'minimum_deck_size': minimumDeckSize,
+      if (flavor != null) 'flavor': flavor,
+      if (illustrator != null) 'illustrator': illustrator,
+    });
+  }
+
+  CardCompanion copyWith(
+      {Value<String>? code,
+      Value<String>? packCode,
+      Value<String>? factionCode,
+      Value<String>? typeCode,
+      Value<int>? position,
+      Value<String>? title,
+      Value<String>? strippedTitle,
+      Value<String?>? body,
+      Value<String?>? strippedBody,
+      Value<String?>? keywords,
+      Value<int>? quantity,
+      Value<int?>? cost,
+      Value<int>? deckLimit,
+      Value<int>? factionCost,
+      Value<bool>? uniqueness,
+      Value<int?>? strength,
+      Value<int?>? agendaPoints,
+      Value<int?>? memoryCost,
+      Value<int?>? advancementCost,
+      Value<int?>? trashCost,
+      Value<int?>? baseLink,
+      Value<int?>? influenceLimit,
+      Value<int?>? minimumDeckSize,
+      Value<String?>? flavor,
+      Value<String?>? illustrator}) {
+    return CardCompanion(
+      code: code ?? this.code,
+      packCode: packCode ?? this.packCode,
+      factionCode: factionCode ?? this.factionCode,
+      typeCode: typeCode ?? this.typeCode,
+      position: position ?? this.position,
+      title: title ?? this.title,
+      strippedTitle: strippedTitle ?? this.strippedTitle,
+      body: body ?? this.body,
+      strippedBody: strippedBody ?? this.strippedBody,
+      keywords: keywords ?? this.keywords,
+      quantity: quantity ?? this.quantity,
+      cost: cost ?? this.cost,
+      deckLimit: deckLimit ?? this.deckLimit,
+      factionCost: factionCost ?? this.factionCost,
+      uniqueness: uniqueness ?? this.uniqueness,
+      strength: strength ?? this.strength,
+      agendaPoints: agendaPoints ?? this.agendaPoints,
+      memoryCost: memoryCost ?? this.memoryCost,
+      advancementCost: advancementCost ?? this.advancementCost,
+      trashCost: trashCost ?? this.trashCost,
+      baseLink: baseLink ?? this.baseLink,
+      influenceLimit: influenceLimit ?? this.influenceLimit,
+      minimumDeckSize: minimumDeckSize ?? this.minimumDeckSize,
+      flavor: flavor ?? this.flavor,
+      illustrator: illustrator ?? this.illustrator,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (code.present) {
+      map['code'] = Variable<String>(code.value);
+    }
+    if (packCode.present) {
+      map['pack_code'] = Variable<String>(packCode.value);
+    }
+    if (factionCode.present) {
+      map['faction_code'] = Variable<String>(factionCode.value);
+    }
+    if (typeCode.present) {
+      map['type_code'] = Variable<String>(typeCode.value);
+    }
+    if (position.present) {
+      map['position'] = Variable<int>(position.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (strippedTitle.present) {
+      map['stripped_title'] = Variable<String>(strippedTitle.value);
+    }
+    if (body.present) {
+      map['body'] = Variable<String>(body.value);
+    }
+    if (strippedBody.present) {
+      map['stripped_body'] = Variable<String>(strippedBody.value);
+    }
+    if (keywords.present) {
+      map['keywords'] = Variable<String>(keywords.value);
+    }
+    if (quantity.present) {
+      map['quantity'] = Variable<int>(quantity.value);
+    }
+    if (cost.present) {
+      map['cost'] = Variable<int>(cost.value);
+    }
+    if (deckLimit.present) {
+      map['deck_limit'] = Variable<int>(deckLimit.value);
+    }
+    if (factionCost.present) {
+      map['faction_cost'] = Variable<int>(factionCost.value);
+    }
+    if (uniqueness.present) {
+      map['uniqueness'] = Variable<bool>(uniqueness.value);
+    }
+    if (strength.present) {
+      map['strength'] = Variable<int>(strength.value);
+    }
+    if (agendaPoints.present) {
+      map['agenda_points'] = Variable<int>(agendaPoints.value);
+    }
+    if (memoryCost.present) {
+      map['memory_cost'] = Variable<int>(memoryCost.value);
+    }
+    if (advancementCost.present) {
+      map['advancement_cost'] = Variable<int>(advancementCost.value);
+    }
+    if (trashCost.present) {
+      map['trash_cost'] = Variable<int>(trashCost.value);
+    }
+    if (baseLink.present) {
+      map['base_link'] = Variable<int>(baseLink.value);
+    }
+    if (influenceLimit.present) {
+      map['influence_limit'] = Variable<int>(influenceLimit.value);
+    }
+    if (minimumDeckSize.present) {
+      map['minimum_deck_size'] = Variable<int>(minimumDeckSize.value);
+    }
+    if (flavor.present) {
+      map['flavor'] = Variable<String>(flavor.value);
+    }
+    if (illustrator.present) {
+      map['illustrator'] = Variable<String>(illustrator.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CardCompanion(')
+          ..write('code: $code, ')
+          ..write('packCode: $packCode, ')
+          ..write('factionCode: $factionCode, ')
+          ..write('typeCode: $typeCode, ')
+          ..write('position: $position, ')
+          ..write('title: $title, ')
+          ..write('strippedTitle: $strippedTitle, ')
+          ..write('body: $body, ')
+          ..write('strippedBody: $strippedBody, ')
+          ..write('keywords: $keywords, ')
+          ..write('quantity: $quantity, ')
+          ..write('cost: $cost, ')
+          ..write('deckLimit: $deckLimit, ')
+          ..write('factionCost: $factionCost, ')
+          ..write('uniqueness: $uniqueness, ')
+          ..write('strength: $strength, ')
+          ..write('agendaPoints: $agendaPoints, ')
+          ..write('memoryCost: $memoryCost, ')
+          ..write('advancementCost: $advancementCost, ')
+          ..write('trashCost: $trashCost, ')
+          ..write('baseLink: $baseLink, ')
+          ..write('influenceLimit: $influenceLimit, ')
+          ..write('minimumDeckSize: $minimumDeckSize, ')
+          ..write('flavor: $flavor, ')
+          ..write('illustrator: $illustrator')
+          ..write(')'))
+        .toString();
+  }
 }
 
 class DatabaseAtV3 extends GeneratedDatabase {

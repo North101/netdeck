@@ -301,19 +301,19 @@ packages:
     description:
       path: drift
       ref: develop
-      resolved-ref: "810ecb169ab50051f34c71ca78b281515d7aa674"
+      resolved-ref: fafcf114a3b1d2aaae25b13464f2c2b331b08d0e
       url: "https://github.com/simolus3/drift.git"
     source: git
-    version: "2.4.1"
+    version: "2.4.2"
   drift_dev:
     dependency: "direct dev"
     description:
       path: drift_dev
       ref: develop
-      resolved-ref: "810ecb169ab50051f34c71ca78b281515d7aa674"
+      resolved-ref: fafcf114a3b1d2aaae25b13464f2c2b331b08d0e
       url: "https://github.com/simolus3/drift.git"
     source: git
-    version: "2.4.0"
+    version: "2.4.1"
   ffi:
     dependency: transitive
     description:
@@ -927,10 +927,10 @@ packages:
     description:
       path: sqlparser
       ref: develop
-      resolved-ref: "810ecb169ab50051f34c71ca78b281515d7aa674"
+      resolved-ref: fafcf114a3b1d2aaae25b13464f2c2b331b08d0e
       url: "https://github.com/simolus3/drift.git"
     source: git
-    version: "0.25.0"
+    version: "0.26.0"
   stack_trace:
     dependency: transitive
     description:

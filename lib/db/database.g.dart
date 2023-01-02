@@ -3549,16 +3549,27 @@ class Nrdb extends Table with TableInfo<Nrdb, NrdbData> {
 }
 
 class NrdbData extends DataClass with NrdbToColumns {
+  @override
   final bool id;
+  @override
   final DateTime expires;
+  @override
   final DateTime cycleLastUpdated;
+  @override
   final DateTime packLastUpdated;
+  @override
   final DateTime sideLastUpdated;
+  @override
   final DateTime factionLastUpdated;
+  @override
   final DateTime typeLastUpdated;
+  @override
   final DateTime cardLastUpdated;
+  @override
   final DateTime formatLastUpdated;
+  @override
   final DateTime rotationLastUpdated;
+  @override
   final DateTime mwlLastUpdated;
   const NrdbData(
       {required this.id,
@@ -4045,12 +4056,19 @@ class MwlCard extends Table with TableInfo<MwlCard, MwlCardData> {
 }
 
 class MwlCardData extends DataClass with MwlCardToColumns {
+  @override
   final String mwlCode;
+  @override
   final String cardTitle;
+  @override
   final bool isRestricted;
+  @override
   final int? globalPenalty;
+  @override
   final int? universalFactionCost;
+  @override
   final int? deckLimit;
+  @override
   final int? points;
   const MwlCardData(
       {required this.mwlCode,
@@ -4783,7 +4801,9 @@ class DeckTag extends Table with TableInfo<DeckTag, DeckTagData> {
 }
 
 class DeckTagData extends DataClass with DeckTagToColumns {
+  @override
   final String deckId;
+  @override
   final String tag;
   const DeckTagData({required this.deckId, required this.tag});
   DeckTagCompanion toCompanion(bool nullToAbsent) {
@@ -5108,6 +5128,7 @@ class Collection extends Table with TableInfo<Collection, CollectionData> {
 }
 
 class CollectionData extends DataClass with CollectionToColumns {
+  @override
   final String packCode;
   const CollectionData({required this.packCode});
   CollectionCompanion toCompanion(bool nullToAbsent) {
