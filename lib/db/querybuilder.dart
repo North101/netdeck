@@ -639,7 +639,7 @@ class CardQueryBuilder extends CodeNameQueryBuilder<Card> {
       'rotation': CardRotationQueryBuilder(db,
           table: db.rotationView, format: db.format, pack: pack, extraFields: extraFields, help: 'card rotation'),
       'banlist': CardMwlQueryBuilder(db,
-          card: card, format: db.format, table: db.mwlView, extraFields: extraFields, help: 'card mwl'),
+          card: card, format: db.format, table: db.mwlView, extraFields: extraFields, help: 'card banlist'),
     });
     return CardQueryBuilder._(db, table: card, extraFields: extraFields, help: 'card title');
   }
@@ -709,7 +709,7 @@ class DeckQueryBuilder extends ContainsStringQueryBuilder<Deck> {
       'tag': DeckTagsQueryBuilder(db, deck: deck, table: db.deckTag, extraFields: extraFields, help: 'deck tag'),
       'format': FormatQueryBuilder(db, table: format, extraFields: extraFields, help: 'deck format'),
       'rotation': RotationQueryBuilder(db, table: rotation, extraFields: extraFields, help: 'deck rotation'),
-      'banlist': MwlQueryBuilder(db, format: format, table: mwl, extraFields: extraFields, help: 'deck mwl'),
+      'banlist': MwlQueryBuilder(db, format: format, table: mwl, extraFields: extraFields, help: 'deck banlist'),
     });
     return DeckQueryBuilder._(db, table: deck, extraFields: extraFields, help: 'deck name');
   }
