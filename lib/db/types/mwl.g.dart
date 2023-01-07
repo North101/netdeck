@@ -39,7 +39,7 @@ _$MwlViewData _$$MwlViewDataFromJson(Map json) => _$MwlViewData(
           : DateTime.parse(json['date_start'] as String),
       runnerPoints: json['runner_points'] as int?,
       corpPoints: json['corp_points'] as int?,
-      type: json['type'] as String?,
+      type: $enumDecodeNullable(_$MwlTypeEnumMap, json['type']),
       $type: json['runtimeType'] as String?,
     );
 
@@ -52,6 +52,11 @@ Map<String, dynamic> _$$MwlViewDataToJson(_$MwlViewData instance) =>
       'date_start': instance.dateStart?.toIso8601String(),
       'runner_points': instance.runnerPoints,
       'corp_points': instance.corpPoints,
-      'type': instance.type,
+      'type': _$MwlTypeEnumMap[instance.type],
       'runtimeType': instance.$type,
     };
+
+const _$MwlTypeEnumMap = {
+  MwlType.active: 'active',
+  MwlType.latest: 'latest',
+};

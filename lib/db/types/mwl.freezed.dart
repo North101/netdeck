@@ -48,7 +48,7 @@ mixin _$MwlData {
             DateTime? dateStart,
             int? runnerPoints,
             int? corpPoints,
-            String? type)
+            MwlType? type)
         view,
   }) =>
       throw _privateConstructorUsedError;
@@ -65,7 +65,7 @@ mixin _$MwlData {
             DateTime? dateStart,
             int? runnerPoints,
             int? corpPoints,
-            String? type)?
+            MwlType? type)?
         view,
   }) =>
       throw _privateConstructorUsedError;
@@ -82,7 +82,7 @@ mixin _$MwlData {
             DateTime? dateStart,
             int? runnerPoints,
             int? corpPoints,
-            String? type)?
+            MwlType? type)?
         view,
     required TResult orElse(),
   }) =>
@@ -316,7 +316,7 @@ class _$_MwlData extends _MwlData {
             DateTime? dateStart,
             int? runnerPoints,
             int? corpPoints,
-            String? type)
+            MwlType? type)
         view,
   }) {
     return $default(
@@ -337,7 +337,7 @@ class _$_MwlData extends _MwlData {
             DateTime? dateStart,
             int? runnerPoints,
             int? corpPoints,
-            String? type)?
+            MwlType? type)?
         view,
   }) {
     return $default?.call(
@@ -358,7 +358,7 @@ class _$_MwlData extends _MwlData {
             DateTime? dateStart,
             int? runnerPoints,
             int? corpPoints,
-            String? type)?
+            MwlType? type)?
         view,
     required TResult orElse(),
   }) {
@@ -453,7 +453,7 @@ abstract class _$$MwlViewDataCopyWith<$Res> implements $MwlDataCopyWith<$Res> {
       DateTime? dateStart,
       int? runnerPoints,
       int? corpPoints,
-      String? type});
+      MwlType? type});
 }
 
 /// @nodoc
@@ -508,7 +508,7 @@ class __$$MwlViewDataCopyWithImpl<$Res>
       type: freezed == type
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as MwlType?,
     ));
   }
 }
@@ -547,7 +547,7 @@ class _$MwlViewData extends MwlViewData {
   @override
   final int? corpPoints;
   @override
-  final String? type;
+  final MwlType? type;
 
   @JsonKey(name: 'runtimeType')
   final String $type;
@@ -601,7 +601,7 @@ class _$MwlViewData extends MwlViewData {
             DateTime? dateStart,
             int? runnerPoints,
             int? corpPoints,
-            String? type)
+            MwlType? type)
         view,
   }) {
     return view(code, mwlCode, formatCode, name, dateStart, runnerPoints,
@@ -622,7 +622,7 @@ class _$MwlViewData extends MwlViewData {
             DateTime? dateStart,
             int? runnerPoints,
             int? corpPoints,
-            String? type)?
+            MwlType? type)?
         view,
   }) {
     return view?.call(code, mwlCode, formatCode, name, dateStart, runnerPoints,
@@ -643,7 +643,7 @@ class _$MwlViewData extends MwlViewData {
             DateTime? dateStart,
             int? runnerPoints,
             int? corpPoints,
-            String? type)?
+            MwlType? type)?
         view,
     required TResult orElse(),
   }) {
@@ -702,7 +702,7 @@ abstract class MwlViewData extends MwlData {
       required final DateTime? dateStart,
       required final int? runnerPoints,
       required final int? corpPoints,
-      required final String? type}) = _$MwlViewData;
+      required final MwlType? type}) = _$MwlViewData;
   const MwlViewData._() : super._();
 
   factory MwlViewData.fromJson(Map<String, dynamic> json) =
@@ -721,7 +721,7 @@ abstract class MwlViewData extends MwlData {
   int? get runnerPoints;
   @override
   int? get corpPoints;
-  String? get type;
+  MwlType? get type;
   @override
   @JsonKey(ignore: true)
   _$$MwlViewDataCopyWith<_$MwlViewData> get copyWith =>

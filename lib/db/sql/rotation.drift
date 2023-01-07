@@ -1,3 +1,5 @@
+import 'package:drift/drift.dart';
+
 import '/db/types.dart';
 
 import 'format.drift';
@@ -17,7 +19,13 @@ CREATE VIEW rotation_view WITH RotationViewData (
   date_start,
   type
 ) AS
-SELECT rotation.*
+SELECT
+  rotation.code,
+  rotation.rotation_code,
+  rotation.format_code,
+  rotation.name,
+  rotation.date_start,
+  CAST(rotation.type AS ENUMNAME(RotationType)) AS type
 FROM (
   -- current
   SELECT

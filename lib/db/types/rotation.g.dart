@@ -33,7 +33,7 @@ _$RotationViewData _$$RotationViewDataFromJson(Map json) => _$RotationViewData(
       dateStart: json['date_start'] == null
           ? null
           : DateTime.parse(json['date_start'] as String),
-      type: json['type'] as String?,
+      type: $enumDecodeNullable(_$RotationTypeEnumMap, json['type']),
       $type: json['runtimeType'] as String?,
     );
 
@@ -44,9 +44,14 @@ Map<String, dynamic> _$$RotationViewDataToJson(_$RotationViewData instance) =>
       'format_code': instance.formatCode,
       'name': instance.name,
       'date_start': instance.dateStart?.toIso8601String(),
-      'type': instance.type,
+      'type': _$RotationTypeEnumMap[instance.type],
       'runtimeType': instance.$type,
     };
+
+const _$RotationTypeEnumMap = {
+  RotationType.current: 'current',
+  RotationType.latest: 'latest',
+};
 
 _$_RotationCycleData _$$_RotationCycleDataFromJson(Map json) =>
     _$_RotationCycleData(

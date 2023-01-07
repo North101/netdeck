@@ -1242,7 +1242,7 @@ class RotationView extends ViewInfo<RotationView, RotationViewData>
   String get entityName => 'rotation_view';
   @override
   String get createViewStmt =>
-      'CREATE VIEW rotation_view (code,rotation_code,format_code,name,date_start,type) AS SELECT rotation.* FROM (SELECT format.code || \'@current\' AS code, rotation.code AS rotation_code, format.code AS format_code, format.name || \' Current (\' || COALESCE(rotation.name, \'None\') || \')\' AS name, rotation.date_start, \'current\' AS type FROM format LEFT JOIN (SELECT *, MAX(date_start) FROM rotation WHERE DATE(date_start) <= DATE(\'NOW\') GROUP BY rotation.format_code) AS rotation ON rotation.format_code = format.code UNION ALL SELECT format.code || \'@latest\' AS code, rotation.code AS rotation_code, format.code AS format_code, format.name || \' Latest (\' || COALESCE(rotation.name, \'None\') || \')\' AS name, rotation.date_start, \'latest\' AS type FROM format LEFT JOIN (SELECT *, MAX(date_start) FROM rotation GROUP BY rotation.format_code) AS rotation ON rotation.format_code = format.code UNION ALL SELECT rotation.code, rotation.code AS rotation_code, rotation.format_code, rotation.name, rotation.date_start, NULL AS type FROM rotation) AS rotation INNER JOIN format ON format.code = rotation.format_code ORDER BY format.id, rotation.type DESC NULLS LAST, rotation.date_start DESC';
+      'CREATE VIEW rotation_view (code,rotation_code,format_code,name,date_start,type) AS SELECT rotation.code, rotation.rotation_code, rotation.format_code, rotation.name, rotation.date_start, CAST(rotation.type AS TEXT) AS type FROM (SELECT format.code || \'@current\' AS code, rotation.code AS rotation_code, format.code AS format_code, format.name || \' Current (\' || COALESCE(rotation.name, \'None\') || \')\' AS name, rotation.date_start, \'current\' AS type FROM format LEFT JOIN (SELECT *, MAX(date_start) FROM rotation WHERE DATE(date_start) <= DATE(\'NOW\') GROUP BY rotation.format_code) AS rotation ON rotation.format_code = format.code UNION ALL SELECT format.code || \'@latest\' AS code, rotation.code AS rotation_code, format.code AS format_code, format.name || \' Latest (\' || COALESCE(rotation.name, \'None\') || \')\' AS name, rotation.date_start, \'latest\' AS type FROM format LEFT JOIN (SELECT *, MAX(date_start) FROM rotation GROUP BY rotation.format_code) AS rotation ON rotation.format_code = format.code UNION ALL SELECT rotation.code, rotation.code AS rotation_code, rotation.format_code, rotation.name, rotation.date_start, NULL AS type FROM rotation) AS rotation INNER JOIN format ON format.code = rotation.format_code ORDER BY format.id, rotation.type DESC NULLS LAST, rotation.date_start DESC';
   @override
   RotationView get asDslTable => this;
   @override
@@ -1259,8 +1259,8 @@ class RotationView extends ViewInfo<RotationView, RotationViewData>
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       dateStart: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}date_start']),
-      type: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}type']),
+      type: RotationView.$convertertypen.fromSql(attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}type'])),
     );
   }
 
@@ -1279,9 +1279,10 @@ class RotationView extends ViewInfo<RotationView, RotationViewData>
   late final GeneratedColumn<DateTime> dateStart = GeneratedColumn<DateTime>(
       'date_start', aliasedName, true,
       type: DriftSqlType.dateTime);
-  late final GeneratedColumn<String> type = GeneratedColumn<String>(
-      'type', aliasedName, true,
-      type: DriftSqlType.string);
+  late final GeneratedColumnWithTypeConverter<RotationType?, String> type =
+      GeneratedColumn<String>('type', aliasedName, true,
+              type: DriftSqlType.string)
+          .withConverter<RotationType?>(RotationView.$convertertypen);
   @override
   RotationView createAlias(String alias) {
     return RotationView(attachedDatabase, alias);
@@ -1291,6 +1292,11 @@ class RotationView extends ViewInfo<RotationView, RotationViewData>
   Query? get query => null;
   @override
   Set<String> get readTables => const {'format', 'rotation'};
+
+  static JsonTypeConverter2<RotationType, String, String> $convertertype =
+      const EnumNameConverter<RotationType>(RotationType.values);
+  static JsonTypeConverter2<RotationType?, String?, String?> $convertertypen =
+      JsonTypeConverter2.asNullable($convertertype);
 }
 
 mixin MwlToColumns implements Insertable<MwlData> {
@@ -1565,7 +1571,7 @@ class MwlView extends ViewInfo<MwlView, MwlViewData> implements HasResultSet {
   String get entityName => 'mwl_view';
   @override
   String get createViewStmt =>
-      'CREATE VIEW mwl_view (code,format_code,mwl_code,name,date_start,runner_points,corp_points,type) AS SELECT mwl.* FROM (SELECT format.code || \'@active\' AS code, format.code AS format_code, mwl.code AS mwl_code, format.name || \' Active (\' || COALESCE(mwl.name, \'None\') || \')\' AS name, mwl.date_start, mwl.runner_points, mwl.corp_points, \'active\' AS type FROM format LEFT JOIN (SELECT *, MAX(date_start) FROM mwl WHERE DATE(date_start) <= DATE(\'NOW\') GROUP BY mwl.format_code) AS mwl ON mwl.format_code = format.code UNION ALL SELECT format.code || \'@latest\' AS code, format.code AS format_code, mwl.code AS mwl_code, format.name || \' Latest (\' || COALESCE(mwl.name, \'None\') || \')\' AS name, mwl.date_start, mwl.runner_points, mwl.corp_points, \'latest\' AS type FROM format LEFT JOIN (SELECT *, MAX(date_start) FROM mwl GROUP BY mwl.format_code) AS mwl ON mwl.format_code = format.code UNION ALL SELECT mwl.code, mwl.format_code, mwl.code, mwl.name, mwl.date_start, mwl.runner_points, mwl.corp_points, NULL AS type FROM mwl) AS mwl INNER JOIN format ON format.code = mwl.format_code ORDER BY format.id, mwl.type DESC NULLS LAST, mwl.date_start DESC';
+      'CREATE VIEW mwl_view (code,format_code,mwl_code,name,date_start,runner_points,corp_points,type) AS SELECT mwl.code, mwl.format_code, mwl.mwl_code, mwl.name, mwl.date_start, mwl.runner_points, mwl.corp_points, CAST(mwl.type AS TEXT) AS type FROM (SELECT format.code || \'@active\' AS code, format.code AS format_code, mwl.code AS mwl_code, format.name || \' Active (\' || COALESCE(mwl.name, \'None\') || \')\' AS name, mwl.date_start, mwl.runner_points, mwl.corp_points, \'active\' AS type FROM format LEFT JOIN (SELECT *, MAX(date_start) FROM mwl WHERE DATE(date_start) <= DATE(\'NOW\') GROUP BY mwl.format_code) AS mwl ON mwl.format_code = format.code UNION ALL SELECT format.code || \'@latest\' AS code, format.code AS format_code, mwl.code AS mwl_code, format.name || \' Latest (\' || COALESCE(mwl.name, \'None\') || \')\' AS name, mwl.date_start, mwl.runner_points, mwl.corp_points, \'latest\' AS type FROM format LEFT JOIN (SELECT *, MAX(date_start) FROM mwl GROUP BY mwl.format_code) AS mwl ON mwl.format_code = format.code UNION ALL SELECT mwl.code, mwl.format_code, mwl.code, mwl.name, mwl.date_start, mwl.runner_points, mwl.corp_points, NULL AS type FROM mwl) AS mwl INNER JOIN format ON format.code = mwl.format_code ORDER BY format.id, mwl.type DESC NULLS LAST, mwl.date_start DESC';
   @override
   MwlView get asDslTable => this;
   @override
@@ -1586,8 +1592,8 @@ class MwlView extends ViewInfo<MwlView, MwlViewData> implements HasResultSet {
           .read(DriftSqlType.int, data['${effectivePrefix}runner_points']),
       corpPoints: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}corp_points']),
-      type: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}type']),
+      type: MwlView.$convertertypen.fromSql(attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}type'])),
     );
   }
 
@@ -1612,9 +1618,10 @@ class MwlView extends ViewInfo<MwlView, MwlViewData> implements HasResultSet {
   late final GeneratedColumn<int> corpPoints = GeneratedColumn<int>(
       'corp_points', aliasedName, true,
       type: DriftSqlType.int);
-  late final GeneratedColumn<String> type = GeneratedColumn<String>(
-      'type', aliasedName, true,
-      type: DriftSqlType.string);
+  late final GeneratedColumnWithTypeConverter<MwlType?, String> type =
+      GeneratedColumn<String>('type', aliasedName, true,
+              type: DriftSqlType.string)
+          .withConverter<MwlType?>(MwlView.$convertertypen);
   @override
   MwlView createAlias(String alias) {
     return MwlView(attachedDatabase, alias);
@@ -1624,6 +1631,11 @@ class MwlView extends ViewInfo<MwlView, MwlViewData> implements HasResultSet {
   Query? get query => null;
   @override
   Set<String> get readTables => const {'format', 'mwl'};
+
+  static JsonTypeConverter2<MwlType, String, String> $convertertype =
+      const EnumNameConverter<MwlType>(MwlType.values);
+  static JsonTypeConverter2<MwlType?, String?, String?> $convertertypen =
+      JsonTypeConverter2.asNullable($convertertype);
 }
 
 mixin RotationCycleToColumns implements Insertable<RotationCycleData> {

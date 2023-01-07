@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:netrunner_deckbuilder/db/database.dart';
 
+import '/db/database.dart';
 import 'data.dart';
 
 part 'cycle.freezed.dart';

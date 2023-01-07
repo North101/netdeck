@@ -38,8 +38,13 @@ mixin _$RotationData {
     TResult Function(
             String code, String formatCode, String name, DateTime? dateStart)
         $default, {
-    required TResult Function(String code, String? rotationCode,
-            String formatCode, String name, DateTime? dateStart, String? type)
+    required TResult Function(
+            String code,
+            String? rotationCode,
+            String formatCode,
+            String name,
+            DateTime? dateStart,
+            RotationType? type)
         view,
   }) =>
       throw _privateConstructorUsedError;
@@ -49,7 +54,7 @@ mixin _$RotationData {
             String code, String formatCode, String name, DateTime? dateStart)?
         $default, {
     TResult? Function(String code, String? rotationCode, String formatCode,
-            String name, DateTime? dateStart, String? type)?
+            String name, DateTime? dateStart, RotationType? type)?
         view,
   }) =>
       throw _privateConstructorUsedError;
@@ -59,7 +64,7 @@ mixin _$RotationData {
             String code, String formatCode, String name, DateTime? dateStart)?
         $default, {
     TResult Function(String code, String? rotationCode, String formatCode,
-            String name, DateTime? dateStart, String? type)?
+            String name, DateTime? dateStart, RotationType? type)?
         view,
     required TResult orElse(),
   }) =>
@@ -247,8 +252,13 @@ class _$_RotationData extends _RotationData {
     TResult Function(
             String code, String formatCode, String name, DateTime? dateStart)
         $default, {
-    required TResult Function(String code, String? rotationCode,
-            String formatCode, String name, DateTime? dateStart, String? type)
+    required TResult Function(
+            String code,
+            String? rotationCode,
+            String formatCode,
+            String name,
+            DateTime? dateStart,
+            RotationType? type)
         view,
   }) {
     return $default(code, formatCode, name, dateStart);
@@ -261,7 +271,7 @@ class _$_RotationData extends _RotationData {
             String code, String formatCode, String name, DateTime? dateStart)?
         $default, {
     TResult? Function(String code, String? rotationCode, String formatCode,
-            String name, DateTime? dateStart, String? type)?
+            String name, DateTime? dateStart, RotationType? type)?
         view,
   }) {
     return $default?.call(code, formatCode, name, dateStart);
@@ -274,7 +284,7 @@ class _$_RotationData extends _RotationData {
             String code, String formatCode, String name, DateTime? dateStart)?
         $default, {
     TResult Function(String code, String? rotationCode, String formatCode,
-            String name, DateTime? dateStart, String? type)?
+            String name, DateTime? dateStart, RotationType? type)?
         view,
     required TResult orElse(),
   }) {
@@ -362,7 +372,7 @@ abstract class _$$RotationViewDataCopyWith<$Res>
       String formatCode,
       String name,
       DateTime? dateStart,
-      String? type});
+      RotationType? type});
 }
 
 /// @nodoc
@@ -407,7 +417,7 @@ class __$$RotationViewDataCopyWithImpl<$Res>
       type: freezed == type
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as RotationType?,
     ));
   }
 }
@@ -440,7 +450,7 @@ class _$RotationViewData extends RotationViewData {
   @override
   final DateTime? dateStart;
   @override
-  final String? type;
+  final RotationType? type;
 
   @JsonKey(name: 'runtimeType')
   final String $type;
@@ -483,8 +493,13 @@ class _$RotationViewData extends RotationViewData {
     TResult Function(
             String code, String formatCode, String name, DateTime? dateStart)
         $default, {
-    required TResult Function(String code, String? rotationCode,
-            String formatCode, String name, DateTime? dateStart, String? type)
+    required TResult Function(
+            String code,
+            String? rotationCode,
+            String formatCode,
+            String name,
+            DateTime? dateStart,
+            RotationType? type)
         view,
   }) {
     return view(code, rotationCode, formatCode, name, dateStart, type);
@@ -497,7 +512,7 @@ class _$RotationViewData extends RotationViewData {
             String code, String formatCode, String name, DateTime? dateStart)?
         $default, {
     TResult? Function(String code, String? rotationCode, String formatCode,
-            String name, DateTime? dateStart, String? type)?
+            String name, DateTime? dateStart, RotationType? type)?
         view,
   }) {
     return view?.call(code, rotationCode, formatCode, name, dateStart, type);
@@ -510,7 +525,7 @@ class _$RotationViewData extends RotationViewData {
             String code, String formatCode, String name, DateTime? dateStart)?
         $default, {
     TResult Function(String code, String? rotationCode, String formatCode,
-            String name, DateTime? dateStart, String? type)?
+            String name, DateTime? dateStart, RotationType? type)?
         view,
     required TResult orElse(),
   }) {
@@ -566,7 +581,7 @@ abstract class RotationViewData extends RotationData {
       required final String formatCode,
       required final String name,
       required final DateTime? dateStart,
-      required final String? type}) = _$RotationViewData;
+      required final RotationType? type}) = _$RotationViewData;
   const RotationViewData._() : super._();
 
   factory RotationViewData.fromJson(Map<String, dynamic> json) =
@@ -581,7 +596,7 @@ abstract class RotationViewData extends RotationData {
   String get name;
   @override
   DateTime? get dateStart;
-  String? get type;
+  RotationType? get type;
   @override
   @JsonKey(ignore: true)
   _$$RotationViewDataCopyWith<_$RotationViewData> get copyWith =>

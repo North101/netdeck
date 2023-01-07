@@ -1,6 +1,6 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:netrunner_deckbuilder/db/database.dart';
 
+import '/db/database.dart';
 import 'data.dart';
 
 part 'rotation.freezed.dart';
@@ -23,7 +23,7 @@ class RotationData with _$RotationData, RotationToColumns, DataMixin {
     required String formatCode,
     required String name,
     required DateTime? dateStart,
-    required String? type,
+    required RotationType? type
   }) = RotationViewData;
 
   factory RotationData.fromJson(Map<String, dynamic> json) => _$RotationDataFromJson(json);

@@ -27,7 +27,7 @@ class MwlData with _$MwlData, MwlToColumns, DataMixin {
     required DateTime? dateStart,
     required int? runnerPoints,
     required int? corpPoints,
-    required String? type,
+    required MwlType? type,
   }) = MwlViewData;
 
   factory MwlData.fromJson(Map<String, dynamic> json) => _$MwlDataFromJson(json);

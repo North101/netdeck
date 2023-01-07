@@ -21,7 +21,15 @@ CREATE VIEW mwl_view WITH MwlViewData (
   corp_points,
   type
 ) AS
-SELECT mwl.*
+SELECT
+  mwl.code,
+  mwl.format_code,
+  mwl.mwl_code,
+  mwl.name,
+  mwl.date_start,
+  mwl.runner_points,
+  mwl.corp_points,
+  CAST(mwl.type AS ENUMNAME(MwlType)) AS type
 FROM (
   -- active
   SELECT
