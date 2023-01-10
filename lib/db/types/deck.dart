@@ -41,7 +41,10 @@ mixin DeckNotifierMixin {
         mwlCode: mwlCode,
         dateCreation: created,
         dateUpdate: updated,
-        cards: cards,
+        cards: {
+          identityCode: 1,
+          ...cards,
+        },
         tags: tags,
       );
 }
