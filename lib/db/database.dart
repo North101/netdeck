@@ -54,7 +54,7 @@ class Database extends _$Database {
   }
 
   @override
-  int schemaVersion = 9;
+  int schemaVersion = 10;
 
   @override
   MigrationStrategy get migration => migrationStrategy(this);

@@ -9,6 +9,7 @@ import '/db/migrations/schema_v6.dart' as v6;
 import '/db/migrations/schema_v7.dart' as v7;
 import '/db/migrations/schema_v8.dart' as v8;
 import '/db/migrations/schema_v9.dart' as v9;
+import '/db/migrations/schema_v10.dart' as v10;
 
 MigrationStrategy migrationStrategy(GeneratedDatabase $db) => MigrationStrategy(onUpgrade: (m, from, to) async {
       if (from < 2) {
@@ -134,6 +135,17 @@ MigrationStrategy migrationStrategy(GeneratedDatabase $db) => MigrationStrategy(
         await m.drop(db.rotationView);
         await m.create(db.rotationView);
         await m.create(db.rotationCycleView);
+
+        await $db.delete(db.nrdb).go();
+      }
+      if (from < 10) {
+        final db = v10.DatabaseAtV10($db.executor);
+        await m.drop(db.mwlView);
+        await m.create(db.mwlView);
+        await m.drop(db.rotationView);
+        await m.create(db.rotationView);
+
+        await $db.delete(db.nrdb).go();
       }
     });
 
