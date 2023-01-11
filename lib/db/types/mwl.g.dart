@@ -15,7 +15,6 @@ _$_MwlData _$$_MwlDataFromJson(Map json) => _$_MwlData(
           : DateTime.parse(json['date_start'] as String),
       runnerPoints: json['runner_points'] as int?,
       corpPoints: json['corp_points'] as int?,
-      $type: json['runtimeType'] as String?,
     );
 
 Map<String, dynamic> _$$_MwlDataToJson(_$_MwlData instance) =>
@@ -26,10 +25,9 @@ Map<String, dynamic> _$$_MwlDataToJson(_$_MwlData instance) =>
       'date_start': instance.dateStart?.toIso8601String(),
       'runner_points': instance.runnerPoints,
       'corp_points': instance.corpPoints,
-      'runtimeType': instance.$type,
     };
 
-_$MwlViewData _$$MwlViewDataFromJson(Map json) => _$MwlViewData(
+_$_MwlViewData _$$_MwlViewDataFromJson(Map json) => _$_MwlViewData(
       code: json['code'] as String,
       mwlCode: json['mwl_code'] as String?,
       formatCode: json['format_code'] as String,
@@ -40,10 +38,9 @@ _$MwlViewData _$$MwlViewDataFromJson(Map json) => _$MwlViewData(
       runnerPoints: json['runner_points'] as int?,
       corpPoints: json['corp_points'] as int?,
       type: $enumDecodeNullable(_$MwlTypeEnumMap, json['type']),
-      $type: json['runtimeType'] as String?,
     );
 
-Map<String, dynamic> _$$MwlViewDataToJson(_$MwlViewData instance) =>
+Map<String, dynamic> _$$_MwlViewDataToJson(_$_MwlViewData instance) =>
     <String, dynamic>{
       'code': instance.code,
       'mwl_code': instance.mwlCode,
@@ -53,7 +50,6 @@ Map<String, dynamic> _$$MwlViewDataToJson(_$MwlViewData instance) =>
       'runner_points': instance.runnerPoints,
       'corp_points': instance.corpPoints,
       'type': _$MwlTypeEnumMap[instance.type],
-      'runtimeType': instance.$type,
     };
 
 const _$MwlTypeEnumMap = {

@@ -1367,6 +1367,8 @@ abstract class $DeckResultCopyWith<$Res> {
   $TypeDataCopyWith<$Res> get type;
   $TypeDataCopyWith<$Res>? get subtype;
   $FormatDataCopyWith<$Res>? get format;
+  $RotationViewDataCopyWith<$Res>? get rotation;
+  $MwlViewDataCopyWith<$Res>? get mwl;
 }
 
 /// @nodoc
@@ -1521,6 +1523,30 @@ class _$DeckResultCopyWithImpl<$Res, $Val extends DeckResult>
       return _then(_value.copyWith(format: value) as $Val);
     });
   }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $RotationViewDataCopyWith<$Res>? get rotation {
+    if (_value.rotation == null) {
+      return null;
+    }
+
+    return $RotationViewDataCopyWith<$Res>(_value.rotation!, (value) {
+      return _then(_value.copyWith(rotation: value) as $Val);
+    });
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $MwlViewDataCopyWith<$Res>? get mwl {
+    if (_value.mwl == null) {
+      return null;
+    }
+
+    return $MwlViewDataCopyWith<$Res>(_value.mwl!, (value) {
+      return _then(_value.copyWith(mwl: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -1562,6 +1588,10 @@ abstract class _$$_DeckResultCopyWith<$Res>
   $TypeDataCopyWith<$Res>? get subtype;
   @override
   $FormatDataCopyWith<$Res>? get format;
+  @override
+  $RotationViewDataCopyWith<$Res>? get rotation;
+  @override
+  $MwlViewDataCopyWith<$Res>? get mwl;
 }
 
 /// @nodoc
@@ -1962,6 +1992,10 @@ abstract class _$$DeckFullResultCopyWith<$Res>
   $TypeDataCopyWith<$Res>? get subtype;
   @override
   $FormatDataCopyWith<$Res>? get format;
+  @override
+  $RotationViewDataCopyWith<$Res>? get rotation;
+  @override
+  $MwlViewDataCopyWith<$Res>? get mwl;
 }
 
 /// @nodoc

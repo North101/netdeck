@@ -13,7 +13,6 @@ _$_RotationData _$$_RotationDataFromJson(Map json) => _$_RotationData(
       dateStart: json['date_start'] == null
           ? null
           : DateTime.parse(json['date_start'] as String),
-      $type: json['runtimeType'] as String?,
     );
 
 Map<String, dynamic> _$$_RotationDataToJson(_$_RotationData instance) =>
@@ -22,10 +21,10 @@ Map<String, dynamic> _$$_RotationDataToJson(_$_RotationData instance) =>
       'format_code': instance.formatCode,
       'name': instance.name,
       'date_start': instance.dateStart?.toIso8601String(),
-      'runtimeType': instance.$type,
     };
 
-_$RotationViewData _$$RotationViewDataFromJson(Map json) => _$RotationViewData(
+_$_RotationViewData _$$_RotationViewDataFromJson(Map json) =>
+    _$_RotationViewData(
       code: json['code'] as String,
       rotationCode: json['rotation_code'] as String?,
       formatCode: json['format_code'] as String,
@@ -34,10 +33,9 @@ _$RotationViewData _$$RotationViewDataFromJson(Map json) => _$RotationViewData(
           ? null
           : DateTime.parse(json['date_start'] as String),
       type: $enumDecodeNullable(_$RotationTypeEnumMap, json['type']),
-      $type: json['runtimeType'] as String?,
     );
 
-Map<String, dynamic> _$$RotationViewDataToJson(_$RotationViewData instance) =>
+Map<String, dynamic> _$$_RotationViewDataToJson(_$_RotationViewData instance) =>
     <String, dynamic>{
       'code': instance.code,
       'rotation_code': instance.rotationCode,
@@ -45,7 +43,6 @@ Map<String, dynamic> _$$RotationViewDataToJson(_$RotationViewData instance) =>
       'name': instance.name,
       'date_start': instance.dateStart?.toIso8601String(),
       'type': _$RotationTypeEnumMap[instance.type],
-      'runtimeType': instance.$type,
     };
 
 const _$RotationTypeEnumMap = {

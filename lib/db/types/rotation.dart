@@ -17,16 +17,23 @@ class RotationData with _$RotationData, RotationToColumns, DataMixin {
     required DateTime? dateStart,
   }) = _RotationData;
 
-  const factory RotationData.view({
+  factory RotationData.fromJson(Map<String, dynamic> json) => _$RotationDataFromJson(json);
+}
+
+@freezed
+class RotationViewData with _$RotationViewData, RotationToColumns, DataMixin {
+  const RotationViewData._();
+
+  const factory RotationViewData({
     required String code,
     required String? rotationCode,
     required String formatCode,
     required String name,
     required DateTime? dateStart,
     required RotationType? type
-  }) = RotationViewData;
+  }) = _RotationViewData;
 
-  factory RotationData.fromJson(Map<String, dynamic> json) => _$RotationDataFromJson(json);
+  factory RotationViewData.fromJson(Map<String, dynamic> json) => _$RotationViewDataFromJson(json);
 }
 
 @freezed

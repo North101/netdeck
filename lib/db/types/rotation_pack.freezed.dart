@@ -102,6 +102,7 @@ abstract class $RotationPackResultCopyWith<$Res> {
       CycleData cycle});
 
   $FormatDataCopyWith<$Res> get format;
+  $RotationViewDataCopyWith<$Res> get rotation;
   $PackDataCopyWith<$Res> get pack;
   $CycleDataCopyWith<$Res> get cycle;
 }
@@ -154,6 +155,14 @@ class _$RotationPackResultCopyWithImpl<$Res, $Val extends RotationPackResult>
 
   @override
   @pragma('vm:prefer-inline')
+  $RotationViewDataCopyWith<$Res> get rotation {
+    return $RotationViewDataCopyWith<$Res>(_value.rotation, (value) {
+      return _then(_value.copyWith(rotation: value) as $Val);
+    });
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
   $PackDataCopyWith<$Res> get pack {
     return $PackDataCopyWith<$Res>(_value.pack, (value) {
       return _then(_value.copyWith(pack: value) as $Val);
@@ -185,6 +194,8 @@ abstract class _$$_RotationPackResultCopyWith<$Res>
 
   @override
   $FormatDataCopyWith<$Res> get format;
+  @override
+  $RotationViewDataCopyWith<$Res> get rotation;
   @override
   $PackDataCopyWith<$Res> get pack;
   @override
@@ -405,6 +416,8 @@ abstract class _$$RotationCardResultCopyWith<$Res>
 
   @override
   $FormatDataCopyWith<$Res> get format;
+  @override
+  $RotationViewDataCopyWith<$Res> get rotation;
   @override
   $PackDataCopyWith<$Res> get pack;
   @override

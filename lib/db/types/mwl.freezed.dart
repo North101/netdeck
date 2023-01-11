@@ -15,16 +15,7 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
 MwlData _$MwlDataFromJson(Map<String, dynamic> json) {
-  switch (json['runtimeType']) {
-    case 'default':
-      return _MwlData.fromJson(json);
-    case 'view':
-      return MwlViewData.fromJson(json);
-
-    default:
-      throw CheckedFromJsonException(json, 'runtimeType', 'MwlData',
-          'Invalid union type "${json['runtimeType']}"!');
-  }
+  return _MwlData.fromJson(json);
 }
 
 /// @nodoc
@@ -35,77 +26,7 @@ mixin _$MwlData {
   DateTime? get dateStart => throw _privateConstructorUsedError;
   int? get runnerPoints => throw _privateConstructorUsedError;
   int? get corpPoints => throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>(
-    TResult Function(String code, String formatCode, String name,
-            DateTime? dateStart, int? runnerPoints, int? corpPoints)
-        $default, {
-    required TResult Function(
-            String code,
-            String? mwlCode,
-            String formatCode,
-            String name,
-            DateTime? dateStart,
-            int? runnerPoints,
-            int? corpPoints,
-            MwlType? type)
-        view,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function(String code, String formatCode, String name,
-            DateTime? dateStart, int? runnerPoints, int? corpPoints)?
-        $default, {
-    TResult? Function(
-            String code,
-            String? mwlCode,
-            String formatCode,
-            String name,
-            DateTime? dateStart,
-            int? runnerPoints,
-            int? corpPoints,
-            MwlType? type)?
-        view,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>(
-    TResult Function(String code, String formatCode, String name,
-            DateTime? dateStart, int? runnerPoints, int? corpPoints)?
-        $default, {
-    TResult Function(
-            String code,
-            String? mwlCode,
-            String formatCode,
-            String name,
-            DateTime? dateStart,
-            int? runnerPoints,
-            int? corpPoints,
-            MwlType? type)?
-        view,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>(
-    TResult Function(_MwlData value) $default, {
-    required TResult Function(MwlViewData value) view,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>(
-    TResult? Function(_MwlData value)? $default, {
-    TResult? Function(MwlViewData value)? view,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>(
-    TResult Function(_MwlData value)? $default, {
-    TResult Function(MwlViewData value)? view,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
   $MwlDataCopyWith<MwlData> get copyWith => throw _privateConstructorUsedError;
@@ -245,10 +166,8 @@ class _$_MwlData extends _MwlData {
       required this.name,
       required this.dateStart,
       required this.runnerPoints,
-      required this.corpPoints,
-      final String? $type})
-      : $type = $type ?? 'default',
-        super._();
+      required this.corpPoints})
+      : super._();
 
   factory _$_MwlData.fromJson(Map<String, dynamic> json) =>
       _$$_MwlDataFromJson(json);
@@ -265,9 +184,6 @@ class _$_MwlData extends _MwlData {
   final int? runnerPoints;
   @override
   final int? corpPoints;
-
-  @JsonKey(name: 'runtimeType')
-  final String $type;
 
   @override
   String toString() {
@@ -301,104 +217,6 @@ class _$_MwlData extends _MwlData {
   @pragma('vm:prefer-inline')
   _$$_MwlDataCopyWith<_$_MwlData> get copyWith =>
       __$$_MwlDataCopyWithImpl<_$_MwlData>(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>(
-    TResult Function(String code, String formatCode, String name,
-            DateTime? dateStart, int? runnerPoints, int? corpPoints)
-        $default, {
-    required TResult Function(
-            String code,
-            String? mwlCode,
-            String formatCode,
-            String name,
-            DateTime? dateStart,
-            int? runnerPoints,
-            int? corpPoints,
-            MwlType? type)
-        view,
-  }) {
-    return $default(
-        code, formatCode, name, dateStart, runnerPoints, corpPoints);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function(String code, String formatCode, String name,
-            DateTime? dateStart, int? runnerPoints, int? corpPoints)?
-        $default, {
-    TResult? Function(
-            String code,
-            String? mwlCode,
-            String formatCode,
-            String name,
-            DateTime? dateStart,
-            int? runnerPoints,
-            int? corpPoints,
-            MwlType? type)?
-        view,
-  }) {
-    return $default?.call(
-        code, formatCode, name, dateStart, runnerPoints, corpPoints);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>(
-    TResult Function(String code, String formatCode, String name,
-            DateTime? dateStart, int? runnerPoints, int? corpPoints)?
-        $default, {
-    TResult Function(
-            String code,
-            String? mwlCode,
-            String formatCode,
-            String name,
-            DateTime? dateStart,
-            int? runnerPoints,
-            int? corpPoints,
-            MwlType? type)?
-        view,
-    required TResult orElse(),
-  }) {
-    if ($default != null) {
-      return $default(
-          code, formatCode, name, dateStart, runnerPoints, corpPoints);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>(
-    TResult Function(_MwlData value) $default, {
-    required TResult Function(MwlViewData value) view,
-  }) {
-    return $default(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>(
-    TResult? Function(_MwlData value)? $default, {
-    TResult? Function(MwlViewData value)? view,
-  }) {
-    return $default?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>(
-    TResult Function(_MwlData value)? $default, {
-    TResult Function(MwlViewData value)? view,
-    required TResult orElse(),
-  }) {
-    if ($default != null) {
-      return $default(this);
-    }
-    return orElse();
-  }
 
   @override
   Map<String, dynamic> toJson() {
@@ -438,11 +256,109 @@ abstract class _MwlData extends MwlData {
       throw _privateConstructorUsedError;
 }
 
+MwlViewData _$MwlViewDataFromJson(Map<String, dynamic> json) {
+  return _MwlViewData.fromJson(json);
+}
+
 /// @nodoc
-abstract class _$$MwlViewDataCopyWith<$Res> implements $MwlDataCopyWith<$Res> {
-  factory _$$MwlViewDataCopyWith(
-          _$MwlViewData value, $Res Function(_$MwlViewData) then) =
-      __$$MwlViewDataCopyWithImpl<$Res>;
+mixin _$MwlViewData {
+  String get code => throw _privateConstructorUsedError;
+  String? get mwlCode => throw _privateConstructorUsedError;
+  String get formatCode => throw _privateConstructorUsedError;
+  String get name => throw _privateConstructorUsedError;
+  DateTime? get dateStart => throw _privateConstructorUsedError;
+  int? get runnerPoints => throw _privateConstructorUsedError;
+  int? get corpPoints => throw _privateConstructorUsedError;
+  MwlType? get type => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $MwlViewDataCopyWith<MwlViewData> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $MwlViewDataCopyWith<$Res> {
+  factory $MwlViewDataCopyWith(
+          MwlViewData value, $Res Function(MwlViewData) then) =
+      _$MwlViewDataCopyWithImpl<$Res, MwlViewData>;
+  @useResult
+  $Res call(
+      {String code,
+      String? mwlCode,
+      String formatCode,
+      String name,
+      DateTime? dateStart,
+      int? runnerPoints,
+      int? corpPoints,
+      MwlType? type});
+}
+
+/// @nodoc
+class _$MwlViewDataCopyWithImpl<$Res, $Val extends MwlViewData>
+    implements $MwlViewDataCopyWith<$Res> {
+  _$MwlViewDataCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? code = null,
+    Object? mwlCode = freezed,
+    Object? formatCode = null,
+    Object? name = null,
+    Object? dateStart = freezed,
+    Object? runnerPoints = freezed,
+    Object? corpPoints = freezed,
+    Object? type = freezed,
+  }) {
+    return _then(_value.copyWith(
+      code: null == code
+          ? _value.code
+          : code // ignore: cast_nullable_to_non_nullable
+              as String,
+      mwlCode: freezed == mwlCode
+          ? _value.mwlCode
+          : mwlCode // ignore: cast_nullable_to_non_nullable
+              as String?,
+      formatCode: null == formatCode
+          ? _value.formatCode
+          : formatCode // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      dateStart: freezed == dateStart
+          ? _value.dateStart
+          : dateStart // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      runnerPoints: freezed == runnerPoints
+          ? _value.runnerPoints
+          : runnerPoints // ignore: cast_nullable_to_non_nullable
+              as int?,
+      corpPoints: freezed == corpPoints
+          ? _value.corpPoints
+          : corpPoints // ignore: cast_nullable_to_non_nullable
+              as int?,
+      type: freezed == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as MwlType?,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$_MwlViewDataCopyWith<$Res>
+    implements $MwlViewDataCopyWith<$Res> {
+  factory _$$_MwlViewDataCopyWith(
+          _$_MwlViewData value, $Res Function(_$_MwlViewData) then) =
+      __$$_MwlViewDataCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -457,11 +373,11 @@ abstract class _$$MwlViewDataCopyWith<$Res> implements $MwlDataCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$MwlViewDataCopyWithImpl<$Res>
-    extends _$MwlDataCopyWithImpl<$Res, _$MwlViewData>
-    implements _$$MwlViewDataCopyWith<$Res> {
-  __$$MwlViewDataCopyWithImpl(
-      _$MwlViewData _value, $Res Function(_$MwlViewData) _then)
+class __$$_MwlViewDataCopyWithImpl<$Res>
+    extends _$MwlViewDataCopyWithImpl<$Res, _$_MwlViewData>
+    implements _$$_MwlViewDataCopyWith<$Res> {
+  __$$_MwlViewDataCopyWithImpl(
+      _$_MwlViewData _value, $Res Function(_$_MwlViewData) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -476,7 +392,7 @@ class __$$MwlViewDataCopyWithImpl<$Res>
     Object? corpPoints = freezed,
     Object? type = freezed,
   }) {
-    return _then(_$MwlViewData(
+    return _then(_$_MwlViewData(
       code: null == code
           ? _value.code
           : code // ignore: cast_nullable_to_non_nullable
@@ -515,8 +431,8 @@ class __$$MwlViewDataCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$MwlViewData extends MwlViewData {
-  const _$MwlViewData(
+class _$_MwlViewData extends _MwlViewData {
+  const _$_MwlViewData(
       {required this.code,
       required this.mwlCode,
       required this.formatCode,
@@ -524,13 +440,11 @@ class _$MwlViewData extends MwlViewData {
       required this.dateStart,
       required this.runnerPoints,
       required this.corpPoints,
-      required this.type,
-      final String? $type})
-      : $type = $type ?? 'view',
-        super._();
+      required this.type})
+      : super._();
 
-  factory _$MwlViewData.fromJson(Map<String, dynamic> json) =>
-      _$$MwlViewDataFromJson(json);
+  factory _$_MwlViewData.fromJson(Map<String, dynamic> json) =>
+      _$$_MwlViewDataFromJson(json);
 
   @override
   final String code;
@@ -549,19 +463,16 @@ class _$MwlViewData extends MwlViewData {
   @override
   final MwlType? type;
 
-  @JsonKey(name: 'runtimeType')
-  final String $type;
-
   @override
   String toString() {
-    return 'MwlData.view(code: $code, mwlCode: $mwlCode, formatCode: $formatCode, name: $name, dateStart: $dateStart, runnerPoints: $runnerPoints, corpPoints: $corpPoints, type: $type)';
+    return 'MwlViewData(code: $code, mwlCode: $mwlCode, formatCode: $formatCode, name: $name, dateStart: $dateStart, runnerPoints: $runnerPoints, corpPoints: $corpPoints, type: $type)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$MwlViewData &&
+            other is _$_MwlViewData &&
             (identical(other.code, code) || other.code == code) &&
             (identical(other.mwlCode, mwlCode) || other.mwlCode == mwlCode) &&
             (identical(other.formatCode, formatCode) ||
@@ -584,117 +495,19 @@ class _$MwlViewData extends MwlViewData {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$MwlViewDataCopyWith<_$MwlViewData> get copyWith =>
-      __$$MwlViewDataCopyWithImpl<_$MwlViewData>(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>(
-    TResult Function(String code, String formatCode, String name,
-            DateTime? dateStart, int? runnerPoints, int? corpPoints)
-        $default, {
-    required TResult Function(
-            String code,
-            String? mwlCode,
-            String formatCode,
-            String name,
-            DateTime? dateStart,
-            int? runnerPoints,
-            int? corpPoints,
-            MwlType? type)
-        view,
-  }) {
-    return view(code, mwlCode, formatCode, name, dateStart, runnerPoints,
-        corpPoints, type);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function(String code, String formatCode, String name,
-            DateTime? dateStart, int? runnerPoints, int? corpPoints)?
-        $default, {
-    TResult? Function(
-            String code,
-            String? mwlCode,
-            String formatCode,
-            String name,
-            DateTime? dateStart,
-            int? runnerPoints,
-            int? corpPoints,
-            MwlType? type)?
-        view,
-  }) {
-    return view?.call(code, mwlCode, formatCode, name, dateStart, runnerPoints,
-        corpPoints, type);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>(
-    TResult Function(String code, String formatCode, String name,
-            DateTime? dateStart, int? runnerPoints, int? corpPoints)?
-        $default, {
-    TResult Function(
-            String code,
-            String? mwlCode,
-            String formatCode,
-            String name,
-            DateTime? dateStart,
-            int? runnerPoints,
-            int? corpPoints,
-            MwlType? type)?
-        view,
-    required TResult orElse(),
-  }) {
-    if (view != null) {
-      return view(code, mwlCode, formatCode, name, dateStart, runnerPoints,
-          corpPoints, type);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>(
-    TResult Function(_MwlData value) $default, {
-    required TResult Function(MwlViewData value) view,
-  }) {
-    return view(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>(
-    TResult? Function(_MwlData value)? $default, {
-    TResult? Function(MwlViewData value)? view,
-  }) {
-    return view?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>(
-    TResult Function(_MwlData value)? $default, {
-    TResult Function(MwlViewData value)? view,
-    required TResult orElse(),
-  }) {
-    if (view != null) {
-      return view(this);
-    }
-    return orElse();
-  }
+  _$$_MwlViewDataCopyWith<_$_MwlViewData> get copyWith =>
+      __$$_MwlViewDataCopyWithImpl<_$_MwlViewData>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$MwlViewDataToJson(
+    return _$$_MwlViewDataToJson(
       this,
     );
   }
 }
 
-abstract class MwlViewData extends MwlData {
-  const factory MwlViewData(
+abstract class _MwlViewData extends MwlViewData {
+  const factory _MwlViewData(
       {required final String code,
       required final String? mwlCode,
       required final String formatCode,
@@ -702,14 +515,15 @@ abstract class MwlViewData extends MwlData {
       required final DateTime? dateStart,
       required final int? runnerPoints,
       required final int? corpPoints,
-      required final MwlType? type}) = _$MwlViewData;
-  const MwlViewData._() : super._();
+      required final MwlType? type}) = _$_MwlViewData;
+  const _MwlViewData._() : super._();
 
-  factory MwlViewData.fromJson(Map<String, dynamic> json) =
-      _$MwlViewData.fromJson;
+  factory _MwlViewData.fromJson(Map<String, dynamic> json) =
+      _$_MwlViewData.fromJson;
 
   @override
   String get code;
+  @override
   String? get mwlCode;
   @override
   String get formatCode;
@@ -721,9 +535,10 @@ abstract class MwlViewData extends MwlData {
   int? get runnerPoints;
   @override
   int? get corpPoints;
+  @override
   MwlType? get type;
   @override
   @JsonKey(ignore: true)
-  _$$MwlViewDataCopyWith<_$MwlViewData> get copyWith =>
+  _$$_MwlViewDataCopyWith<_$_MwlViewData> get copyWith =>
       throw _privateConstructorUsedError;
 }

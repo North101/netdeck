@@ -19,7 +19,14 @@ class MwlData with _$MwlData, MwlToColumns, DataMixin {
     required int? corpPoints,
   }) = _MwlData;
 
-  const factory MwlData.view({
+  factory MwlData.fromJson(Map<String, dynamic> json) => _$MwlDataFromJson(json);
+}
+
+@freezed
+class MwlViewData with _$MwlViewData, MwlToColumns, DataMixin {
+  const MwlViewData._();
+
+  const factory MwlViewData({
     required String code,
     required String? mwlCode,
     required String formatCode,
@@ -28,9 +35,9 @@ class MwlData with _$MwlData, MwlToColumns, DataMixin {
     required int? runnerPoints,
     required int? corpPoints,
     required MwlType? type,
-  }) = MwlViewData;
+  }) = _MwlViewData;
 
-  factory MwlData.fromJson(Map<String, dynamic> json) => _$MwlDataFromJson(json);
+  factory MwlViewData.fromJson(Map<String, dynamic> json) => _$MwlViewDataFromJson(json);
 
   int? points(SideData side) {
     switch (side.code) {

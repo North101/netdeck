@@ -216,6 +216,8 @@ abstract class $FormatResultCopyWith<$Res> {
       MwlViewData activeMwl});
 
   $FormatDataCopyWith<$Res> get format;
+  $RotationViewDataCopyWith<$Res> get currentRotation;
+  $MwlViewDataCopyWith<$Res> get activeMwl;
 }
 
 /// @nodoc
@@ -258,6 +260,22 @@ class _$FormatResultCopyWithImpl<$Res, $Val extends FormatResult>
       return _then(_value.copyWith(format: value) as $Val);
     });
   }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $RotationViewDataCopyWith<$Res> get currentRotation {
+    return $RotationViewDataCopyWith<$Res>(_value.currentRotation, (value) {
+      return _then(_value.copyWith(currentRotation: value) as $Val);
+    });
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $MwlViewDataCopyWith<$Res> get activeMwl {
+    return $MwlViewDataCopyWith<$Res>(_value.activeMwl, (value) {
+      return _then(_value.copyWith(activeMwl: value) as $Val);
+    });
+  }
 }
 
 /// @nodoc
@@ -275,6 +293,10 @@ abstract class _$$_FormatResultCopyWith<$Res>
 
   @override
   $FormatDataCopyWith<$Res> get format;
+  @override
+  $RotationViewDataCopyWith<$Res> get currentRotation;
+  @override
+  $MwlViewDataCopyWith<$Res> get activeMwl;
 }
 
 /// @nodoc

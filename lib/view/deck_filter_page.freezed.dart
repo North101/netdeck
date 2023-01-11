@@ -52,6 +52,8 @@ abstract class $DeckFilterArgumentsCopyWith<$Res> {
       Set<String> tags});
 
   $FormatDataCopyWith<$Res>? get format;
+  $RotationViewDataCopyWith<$Res>? get rotation;
+  $MwlViewDataCopyWith<$Res>? get mwl;
   $FilterTypeCopyWith<String, $Res> get packs;
   $FilterTypeCopyWith<String, $Res> get sides;
   $FilterTypeCopyWith<String, $Res> get factions;
@@ -130,6 +132,30 @@ class _$DeckFilterArgumentsCopyWithImpl<$Res, $Val extends DeckFilterArguments>
 
   @override
   @pragma('vm:prefer-inline')
+  $RotationViewDataCopyWith<$Res>? get rotation {
+    if (_value.rotation == null) {
+      return null;
+    }
+
+    return $RotationViewDataCopyWith<$Res>(_value.rotation!, (value) {
+      return _then(_value.copyWith(rotation: value) as $Val);
+    });
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $MwlViewDataCopyWith<$Res>? get mwl {
+    if (_value.mwl == null) {
+      return null;
+    }
+
+    return $MwlViewDataCopyWith<$Res>(_value.mwl!, (value) {
+      return _then(_value.copyWith(mwl: value) as $Val);
+    });
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
   $FilterTypeCopyWith<String, $Res> get packs {
     return $FilterTypeCopyWith<String, $Res>(_value.packs, (value) {
       return _then(_value.copyWith(packs: value) as $Val);
@@ -181,6 +207,10 @@ abstract class _$$_DeckFilterArgumentsCopyWith<$Res>
 
   @override
   $FormatDataCopyWith<$Res>? get format;
+  @override
+  $RotationViewDataCopyWith<$Res>? get rotation;
+  @override
+  $MwlViewDataCopyWith<$Res>? get mwl;
   @override
   $FilterTypeCopyWith<String, $Res> get packs;
   @override

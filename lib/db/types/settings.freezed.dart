@@ -825,6 +825,8 @@ abstract class _$$SettingsResultCopyWith<$Res>
       MwlViewData? filterMwl});
 
   $FormatDataCopyWith<$Res>? get filterFormat;
+  $RotationViewDataCopyWith<$Res>? get filterRotation;
+  $MwlViewDataCopyWith<$Res>? get filterMwl;
 }
 
 /// @nodoc
@@ -937,6 +939,30 @@ class __$$SettingsResultCopyWithImpl<$Res>
 
     return $FormatDataCopyWith<$Res>(_value.filterFormat!, (value) {
       return _then(_value.copyWith(filterFormat: value));
+    });
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $RotationViewDataCopyWith<$Res>? get filterRotation {
+    if (_value.filterRotation == null) {
+      return null;
+    }
+
+    return $RotationViewDataCopyWith<$Res>(_value.filterRotation!, (value) {
+      return _then(_value.copyWith(filterRotation: value));
+    });
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $MwlViewDataCopyWith<$Res>? get filterMwl {
+    if (_value.filterMwl == null) {
+      return null;
+    }
+
+    return $MwlViewDataCopyWith<$Res>(_value.filterMwl!, (value) {
+      return _then(_value.copyWith(filterMwl: value));
     });
   }
 }

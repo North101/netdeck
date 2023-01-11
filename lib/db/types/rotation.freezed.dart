@@ -15,16 +15,7 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
 RotationData _$RotationDataFromJson(Map<String, dynamic> json) {
-  switch (json['runtimeType']) {
-    case 'default':
-      return _RotationData.fromJson(json);
-    case 'view':
-      return RotationViewData.fromJson(json);
-
-    default:
-      throw CheckedFromJsonException(json, 'runtimeType', 'RotationData',
-          'Invalid union type "${json['runtimeType']}"!');
-  }
+  return _RotationData.fromJson(json);
 }
 
 /// @nodoc
@@ -33,61 +24,7 @@ mixin _$RotationData {
   String get formatCode => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   DateTime? get dateStart => throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>(
-    TResult Function(
-            String code, String formatCode, String name, DateTime? dateStart)
-        $default, {
-    required TResult Function(
-            String code,
-            String? rotationCode,
-            String formatCode,
-            String name,
-            DateTime? dateStart,
-            RotationType? type)
-        view,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function(
-            String code, String formatCode, String name, DateTime? dateStart)?
-        $default, {
-    TResult? Function(String code, String? rotationCode, String formatCode,
-            String name, DateTime? dateStart, RotationType? type)?
-        view,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>(
-    TResult Function(
-            String code, String formatCode, String name, DateTime? dateStart)?
-        $default, {
-    TResult Function(String code, String? rotationCode, String formatCode,
-            String name, DateTime? dateStart, RotationType? type)?
-        view,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>(
-    TResult Function(_RotationData value) $default, {
-    required TResult Function(RotationViewData value) view,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>(
-    TResult? Function(_RotationData value)? $default, {
-    TResult? Function(RotationViewData value)? view,
-  }) =>
-      throw _privateConstructorUsedError;
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>(
-    TResult Function(_RotationData value)? $default, {
-    TResult Function(RotationViewData value)? view,
-    required TResult orElse(),
-  }) =>
-      throw _privateConstructorUsedError;
+
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
   $RotationDataCopyWith<RotationData> get copyWith =>
@@ -197,10 +134,8 @@ class _$_RotationData extends _RotationData {
       {required this.code,
       required this.formatCode,
       required this.name,
-      required this.dateStart,
-      final String? $type})
-      : $type = $type ?? 'default',
-        super._();
+      required this.dateStart})
+      : super._();
 
   factory _$_RotationData.fromJson(Map<String, dynamic> json) =>
       _$$_RotationDataFromJson(json);
@@ -213,9 +148,6 @@ class _$_RotationData extends _RotationData {
   final String name;
   @override
   final DateTime? dateStart;
-
-  @JsonKey(name: 'runtimeType')
-  final String $type;
 
   @override
   String toString() {
@@ -245,85 +177,6 @@ class _$_RotationData extends _RotationData {
   @pragma('vm:prefer-inline')
   _$$_RotationDataCopyWith<_$_RotationData> get copyWith =>
       __$$_RotationDataCopyWithImpl<_$_RotationData>(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>(
-    TResult Function(
-            String code, String formatCode, String name, DateTime? dateStart)
-        $default, {
-    required TResult Function(
-            String code,
-            String? rotationCode,
-            String formatCode,
-            String name,
-            DateTime? dateStart,
-            RotationType? type)
-        view,
-  }) {
-    return $default(code, formatCode, name, dateStart);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function(
-            String code, String formatCode, String name, DateTime? dateStart)?
-        $default, {
-    TResult? Function(String code, String? rotationCode, String formatCode,
-            String name, DateTime? dateStart, RotationType? type)?
-        view,
-  }) {
-    return $default?.call(code, formatCode, name, dateStart);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>(
-    TResult Function(
-            String code, String formatCode, String name, DateTime? dateStart)?
-        $default, {
-    TResult Function(String code, String? rotationCode, String formatCode,
-            String name, DateTime? dateStart, RotationType? type)?
-        view,
-    required TResult orElse(),
-  }) {
-    if ($default != null) {
-      return $default(code, formatCode, name, dateStart);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>(
-    TResult Function(_RotationData value) $default, {
-    required TResult Function(RotationViewData value) view,
-  }) {
-    return $default(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>(
-    TResult? Function(_RotationData value)? $default, {
-    TResult? Function(RotationViewData value)? view,
-  }) {
-    return $default?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>(
-    TResult Function(_RotationData value)? $default, {
-    TResult Function(RotationViewData value)? view,
-    required TResult orElse(),
-  }) {
-    if ($default != null) {
-      return $default(this);
-    }
-    return orElse();
-  }
 
   @override
   Map<String, dynamic> toJson() {
@@ -358,12 +211,95 @@ abstract class _RotationData extends RotationData {
       throw _privateConstructorUsedError;
 }
 
+RotationViewData _$RotationViewDataFromJson(Map<String, dynamic> json) {
+  return _RotationViewData.fromJson(json);
+}
+
 /// @nodoc
-abstract class _$$RotationViewDataCopyWith<$Res>
-    implements $RotationDataCopyWith<$Res> {
-  factory _$$RotationViewDataCopyWith(
-          _$RotationViewData value, $Res Function(_$RotationViewData) then) =
-      __$$RotationViewDataCopyWithImpl<$Res>;
+mixin _$RotationViewData {
+  String get code => throw _privateConstructorUsedError;
+  String? get rotationCode => throw _privateConstructorUsedError;
+  String get formatCode => throw _privateConstructorUsedError;
+  String get name => throw _privateConstructorUsedError;
+  DateTime? get dateStart => throw _privateConstructorUsedError;
+  RotationType? get type => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $RotationViewDataCopyWith<RotationViewData> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $RotationViewDataCopyWith<$Res> {
+  factory $RotationViewDataCopyWith(
+          RotationViewData value, $Res Function(RotationViewData) then) =
+      _$RotationViewDataCopyWithImpl<$Res, RotationViewData>;
+  @useResult
+  $Res call(
+      {String code,
+      String? rotationCode,
+      String formatCode,
+      String name,
+      DateTime? dateStart,
+      RotationType? type});
+}
+
+/// @nodoc
+class _$RotationViewDataCopyWithImpl<$Res, $Val extends RotationViewData>
+    implements $RotationViewDataCopyWith<$Res> {
+  _$RotationViewDataCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? code = null,
+    Object? rotationCode = freezed,
+    Object? formatCode = null,
+    Object? name = null,
+    Object? dateStart = freezed,
+    Object? type = freezed,
+  }) {
+    return _then(_value.copyWith(
+      code: null == code
+          ? _value.code
+          : code // ignore: cast_nullable_to_non_nullable
+              as String,
+      rotationCode: freezed == rotationCode
+          ? _value.rotationCode
+          : rotationCode // ignore: cast_nullable_to_non_nullable
+              as String?,
+      formatCode: null == formatCode
+          ? _value.formatCode
+          : formatCode // ignore: cast_nullable_to_non_nullable
+              as String,
+      name: null == name
+          ? _value.name
+          : name // ignore: cast_nullable_to_non_nullable
+              as String,
+      dateStart: freezed == dateStart
+          ? _value.dateStart
+          : dateStart // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      type: freezed == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as RotationType?,
+    ) as $Val);
+  }
+}
+
+/// @nodoc
+abstract class _$$_RotationViewDataCopyWith<$Res>
+    implements $RotationViewDataCopyWith<$Res> {
+  factory _$$_RotationViewDataCopyWith(
+          _$_RotationViewData value, $Res Function(_$_RotationViewData) then) =
+      __$$_RotationViewDataCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -376,11 +312,11 @@ abstract class _$$RotationViewDataCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$RotationViewDataCopyWithImpl<$Res>
-    extends _$RotationDataCopyWithImpl<$Res, _$RotationViewData>
-    implements _$$RotationViewDataCopyWith<$Res> {
-  __$$RotationViewDataCopyWithImpl(
-      _$RotationViewData _value, $Res Function(_$RotationViewData) _then)
+class __$$_RotationViewDataCopyWithImpl<$Res>
+    extends _$RotationViewDataCopyWithImpl<$Res, _$_RotationViewData>
+    implements _$$_RotationViewDataCopyWith<$Res> {
+  __$$_RotationViewDataCopyWithImpl(
+      _$_RotationViewData _value, $Res Function(_$_RotationViewData) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -393,7 +329,7 @@ class __$$RotationViewDataCopyWithImpl<$Res>
     Object? dateStart = freezed,
     Object? type = freezed,
   }) {
-    return _then(_$RotationViewData(
+    return _then(_$_RotationViewData(
       code: null == code
           ? _value.code
           : code // ignore: cast_nullable_to_non_nullable
@@ -424,20 +360,18 @@ class __$$RotationViewDataCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$RotationViewData extends RotationViewData {
-  const _$RotationViewData(
+class _$_RotationViewData extends _RotationViewData {
+  const _$_RotationViewData(
       {required this.code,
       required this.rotationCode,
       required this.formatCode,
       required this.name,
       required this.dateStart,
-      required this.type,
-      final String? $type})
-      : $type = $type ?? 'view',
-        super._();
+      required this.type})
+      : super._();
 
-  factory _$RotationViewData.fromJson(Map<String, dynamic> json) =>
-      _$$RotationViewDataFromJson(json);
+  factory _$_RotationViewData.fromJson(Map<String, dynamic> json) =>
+      _$$_RotationViewDataFromJson(json);
 
   @override
   final String code;
@@ -452,19 +386,16 @@ class _$RotationViewData extends RotationViewData {
   @override
   final RotationType? type;
 
-  @JsonKey(name: 'runtimeType')
-  final String $type;
-
   @override
   String toString() {
-    return 'RotationData.view(code: $code, rotationCode: $rotationCode, formatCode: $formatCode, name: $name, dateStart: $dateStart, type: $type)';
+    return 'RotationViewData(code: $code, rotationCode: $rotationCode, formatCode: $formatCode, name: $name, dateStart: $dateStart, type: $type)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$RotationViewData &&
+            other is _$_RotationViewData &&
             (identical(other.code, code) || other.code == code) &&
             (identical(other.rotationCode, rotationCode) ||
                 other.rotationCode == rotationCode) &&
@@ -484,111 +415,33 @@ class _$RotationViewData extends RotationViewData {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$RotationViewDataCopyWith<_$RotationViewData> get copyWith =>
-      __$$RotationViewDataCopyWithImpl<_$RotationViewData>(this, _$identity);
-
-  @override
-  @optionalTypeArgs
-  TResult when<TResult extends Object?>(
-    TResult Function(
-            String code, String formatCode, String name, DateTime? dateStart)
-        $default, {
-    required TResult Function(
-            String code,
-            String? rotationCode,
-            String formatCode,
-            String name,
-            DateTime? dateStart,
-            RotationType? type)
-        view,
-  }) {
-    return view(code, rotationCode, formatCode, name, dateStart, type);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? whenOrNull<TResult extends Object?>(
-    TResult? Function(
-            String code, String formatCode, String name, DateTime? dateStart)?
-        $default, {
-    TResult? Function(String code, String? rotationCode, String formatCode,
-            String name, DateTime? dateStart, RotationType? type)?
-        view,
-  }) {
-    return view?.call(code, rotationCode, formatCode, name, dateStart, type);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeWhen<TResult extends Object?>(
-    TResult Function(
-            String code, String formatCode, String name, DateTime? dateStart)?
-        $default, {
-    TResult Function(String code, String? rotationCode, String formatCode,
-            String name, DateTime? dateStart, RotationType? type)?
-        view,
-    required TResult orElse(),
-  }) {
-    if (view != null) {
-      return view(code, rotationCode, formatCode, name, dateStart, type);
-    }
-    return orElse();
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult map<TResult extends Object?>(
-    TResult Function(_RotationData value) $default, {
-    required TResult Function(RotationViewData value) view,
-  }) {
-    return view(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult? mapOrNull<TResult extends Object?>(
-    TResult? Function(_RotationData value)? $default, {
-    TResult? Function(RotationViewData value)? view,
-  }) {
-    return view?.call(this);
-  }
-
-  @override
-  @optionalTypeArgs
-  TResult maybeMap<TResult extends Object?>(
-    TResult Function(_RotationData value)? $default, {
-    TResult Function(RotationViewData value)? view,
-    required TResult orElse(),
-  }) {
-    if (view != null) {
-      return view(this);
-    }
-    return orElse();
-  }
+  _$$_RotationViewDataCopyWith<_$_RotationViewData> get copyWith =>
+      __$$_RotationViewDataCopyWithImpl<_$_RotationViewData>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$RotationViewDataToJson(
+    return _$$_RotationViewDataToJson(
       this,
     );
   }
 }
 
-abstract class RotationViewData extends RotationData {
-  const factory RotationViewData(
+abstract class _RotationViewData extends RotationViewData {
+  const factory _RotationViewData(
       {required final String code,
       required final String? rotationCode,
       required final String formatCode,
       required final String name,
       required final DateTime? dateStart,
-      required final RotationType? type}) = _$RotationViewData;
-  const RotationViewData._() : super._();
+      required final RotationType? type}) = _$_RotationViewData;
+  const _RotationViewData._() : super._();
 
-  factory RotationViewData.fromJson(Map<String, dynamic> json) =
-      _$RotationViewData.fromJson;
+  factory _RotationViewData.fromJson(Map<String, dynamic> json) =
+      _$_RotationViewData.fromJson;
 
   @override
   String get code;
+  @override
   String? get rotationCode;
   @override
   String get formatCode;
@@ -596,10 +449,11 @@ abstract class RotationViewData extends RotationData {
   String get name;
   @override
   DateTime? get dateStart;
+  @override
   RotationType? get type;
   @override
   @JsonKey(ignore: true)
-  _$$RotationViewDataCopyWith<_$RotationViewData> get copyWith =>
+  _$$_RotationViewDataCopyWith<_$_RotationViewData> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
