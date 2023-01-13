@@ -52,7 +52,7 @@ class DeckCompareMoreActions extends ConsumerWidget {
     return settings.when(
       loading: () => const SizedBox.shrink(),
       error: (error, stacktrace) => const SizedBox.shrink(),
-      data: (settings) => PopupMenuButton(
+      data: (settings) => PopupMenuButton<Never>(
         itemBuilder: (context) => [
           PopupMenuItem(child: DeckCompareSortMenu(settings)),
         ],

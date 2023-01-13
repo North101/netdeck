@@ -30,7 +30,7 @@ class RotationViewData with _$RotationViewData, RotationToColumns, DataMixin {
     required String formatCode,
     required String name,
     required DateTime? dateStart,
-    required RotationType? type
+    required RotationType? type,
   }) = _RotationViewData;
 
   factory RotationViewData.fromJson(Map<String, dynamic> json) => _$RotationViewDataFromJson(json);

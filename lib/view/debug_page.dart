@@ -93,7 +93,7 @@ class DebugPage extends ConsumerWidget {
                 leading: const Icon(Icons.error, color: Colors.red),
                 actions: <Widget>[
                   TextButton(
-                    onPressed: () => showDialog(
+                    onPressed: () => showDialog<Never>(
                       context: context,
                       builder: (context) => AlertDialog(
                         title: const Text('Database Error'),

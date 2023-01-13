@@ -27,7 +27,7 @@ class DeckSelectedActions extends ConsumerWidget {
     final authState = await ref.read(nrdbAuthStateProvider).online();
     if (authState == null) {
       if (!context.mounted) return;
-      await showDialog(
+      await showDialog<bool>(
         context: context,
         builder: (context) => const SimpleDialog(
           title: Text('Not online'),
@@ -72,7 +72,7 @@ class DeckSelectedActions extends ConsumerWidget {
     final authState = await ref.read(nrdbAuthStateProvider).online();
     if (authState == null) {
       if (!context.mounted) return;
-      await showDialog(
+      await showDialog<bool>(
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Not online'),
@@ -138,7 +138,7 @@ class DeckSelectedActions extends ConsumerWidget {
   }
 
   Future<void> delete(BuildContext context, WidgetRef ref) async {
-    final result = await showDialog(
+    final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete selected decks?'),
@@ -175,8 +175,8 @@ class DeckSelectedActions extends ConsumerWidget {
     return settings.when(
       loading: () => const SizedBox.shrink(),
       error: (error, stacktrace) => const SizedBox.shrink(),
-      data: (settings) => PopupMenuButton(
-        itemBuilder: (context) => <PopupMenuEntry>[
+      data: (settings) => PopupMenuButton<Never>(
+        itemBuilder: (context) => [
           PopupMenuItem(
             child: const ListTile(title: Text('Compare')),
             onTap: () => Future(() => compare(context, ref)),

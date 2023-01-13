@@ -32,7 +32,7 @@ class DeckCompareDeckResult {
   int get hashCode => Object.hash(
         id,
         name,
-        const MapEquality().hash(cards),
+        const MapEquality<CardResult, int>().hash(cards),
       );
 
   @override
@@ -41,7 +41,7 @@ class DeckCompareDeckResult {
       (other is DeckCompareDeckResult &&
           other.id == id &&
           other.name == name &&
-          const MapEquality().equals(other.cards, cards));
+          const MapEquality<CardResult, int>().equals(other.cards, cards));
 }
 
 final compareDeckListProvider = Provider<Set<DeckCompareResult>>((ref) => throw UnimplementedError());

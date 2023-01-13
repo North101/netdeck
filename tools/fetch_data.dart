@@ -24,7 +24,7 @@ Future<DateTime?> fetchLastModified(File file) async {
   if (!await file.exists()) return null;
 
   final data = json.decode(await file.readAsString());
-  return DateTime.parse(data['last_updated']);
+  return DateTime.parse(data['last_updated'] as String);
 }
 
 Future<void> writeFile(File file, String contents) async {
@@ -47,7 +47,7 @@ Future<void> updateData(File file, Uri endpoint) async {
   }
   if (lastModified != null) {
     final data = json.decode(response.body);
-    final lastUpdated = DateTime.parse(data['last_updated']);
+    final lastUpdated = DateTime.parse(data['last_updated'] as String);
     if (!lastUpdated.isAfter(lastModified)) {
       print('> Unchanged');
       return;

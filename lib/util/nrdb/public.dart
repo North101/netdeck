@@ -32,8 +32,8 @@ class NrdbPublicApi {
 
   Future<ModifiedApiResult> loadData(String key) async {
     final results = json.decode(await rootBundle.loadString(key));
-    final lastUpdated = DateTime.parse(results['last_updated']);
-    return ModifiedApiResult(lastUpdated, results);
+    final lastUpdated = DateTime.parse(results['last_updated'] as String);
+    return ModifiedApiResult(lastUpdated, (results as Map).cast());
   }
 
   Future<ApiResult> fetchData(Uri url, DateTime lastModified, [bool force = false]) async {
@@ -43,10 +43,10 @@ class NrdbPublicApi {
     if (response.statusCode == 304) return ApiResult.unmodified(lastModified);
 
     final results = json.decode(response.body);
-    final lastUpdated = DateTime.parse(results['last_updated']);
+    final lastUpdated = DateTime.parse(results['last_updated'] as String);
     if (!lastUpdated.isAfter(lastModified)) return ApiResult.unmodified(lastModified);
 
-    return ApiResult.modified(lastUpdated, results);
+    return ApiResult.modified(lastUpdated, (results as Map).cast());
   }
 
   Future<ModifiedApiResult> initCycles() async {
@@ -140,14 +140,13 @@ class NrdbPublicApi {
       b.deleteAll<Faction, FactionData>(_db.faction);
       b.insertAll(
         _db.faction,
-        result.data
-            .map<FactionData>((e) => FactionData(
-                  code: e.code,
-                  sideCode: e.sideCode,
-                  name: e.name,
-                  color: Color(e.color),
-                  isMini: e.isMini,
-                )),
+        result.data.map<FactionData>((e) => FactionData(
+              code: e.code,
+              sideCode: e.sideCode,
+              name: e.name,
+              color: Color(e.color),
+              isMini: e.isMini,
+            )),
       );
     });
   }
@@ -196,33 +195,32 @@ class NrdbPublicApi {
       b.deleteAll<Card, CardData>(_db.card);
       b.insertAll<Card, CardData>(
         _db.card,
-        result.data
-            .map<CardData>((e) => CardData(
-                  code: e.code,
-                  packCode: e.packCode,
-                  factionCode: e.factionCode,
-                  typeCode: e.typeCode,
-                  position: e.position,
-                  title: e.title,
-                  body: e.text,
-                  keywords: e.keywords,
-                  quantity: e.quantity,
-                  cost: e.cost,
-                  deckLimit: e.deckLimit,
-                  factionCost: e.factionCost,
-                  uniqueness: e.uniqueness,
-                  strength: e.strength,
-                  agendaPoints: e.agendaPoints,
-                  memoryCost: e.memoryCost,
-                  advancementCost: e.advancementCost,
-                  trashCost: e.trashCost,
-                  baseLink: e.baseLink,
-                  influenceLimit: e.influenceLimit,
-                  minimumDeckSize: e.minimumDeckSize,
-                  flavor: e.flavor,
-                  illustrator: e.illustrator,
-                  imageUrl: imageUrlTemplate.replaceAll('{code}', e.code),
-                )),
+        result.data.map<CardData>((e) => CardData(
+              code: e.code,
+              packCode: e.packCode,
+              factionCode: e.factionCode,
+              typeCode: e.typeCode,
+              position: e.position,
+              title: e.title,
+              body: e.text,
+              keywords: e.keywords,
+              quantity: e.quantity,
+              cost: e.cost,
+              deckLimit: e.deckLimit,
+              factionCost: e.factionCost,
+              uniqueness: e.uniqueness,
+              strength: e.strength,
+              agendaPoints: e.agendaPoints,
+              memoryCost: e.memoryCost,
+              advancementCost: e.advancementCost,
+              trashCost: e.trashCost,
+              baseLink: e.baseLink,
+              influenceLimit: e.influenceLimit,
+              minimumDeckSize: e.minimumDeckSize,
+              flavor: e.flavor,
+              illustrator: e.illustrator,
+              imageUrl: imageUrlTemplate.replaceAll('{code}', e.code),
+            )),
       );
     });
   }
@@ -246,12 +244,11 @@ class NrdbPublicApi {
       b.deleteAll<Format, FormatData>(_db.format);
       b.insertAll<Format, FormatData>(
         _db.format,
-        result.data
-            .mapIndexed<FormatData>((index, e) => FormatData(
-                  id: index,
-                  code: e.code,
-                  name: e.name,
-                )),
+        result.data.mapIndexed<FormatData>((index, e) => FormatData(
+              id: index,
+              code: e.code,
+              name: e.name,
+            )),
       );
     });
   }

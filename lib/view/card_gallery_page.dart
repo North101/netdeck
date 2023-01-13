@@ -17,8 +17,7 @@ List<dynamic> itemsToJson(GroupedCardCodeList value) => value.toJson();
 @freezed
 class CardGalleryArguments with _$CardGalleryArguments {
   const factory CardGalleryArguments({
-    @JsonKey(fromJson: itemsFromJson, toJson: itemsToJson)
-    required GroupedCardCodeList items,
+    @JsonKey(fromJson: itemsFromJson, toJson: itemsToJson) required GroupedCardCodeList items,
     required int? index,
     required Map<String, int>? deckCards,
   }) = _CardGalleryArguments;

@@ -159,7 +159,7 @@ class DeckMoreActions extends ConsumerWidget {
 
   Future<void> delete(BuildContext context, WidgetRef ref) async {
     final navigator = Navigator.of(context);
-    final result = await showDialog(
+    final result = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Delete deck?'),
@@ -193,8 +193,8 @@ class DeckMoreActions extends ConsumerWidget {
     return settings.when(
       loading: () => const SizedBox.shrink(),
       error: (error, stacktrace) => const SizedBox.shrink(),
-      data: (settings) => PopupMenuButton(
-        itemBuilder: (_) => <PopupMenuEntry>[
+      data: (settings) => PopupMenuButton<Never>(
+        itemBuilder: (_) => [
           PopupMenuItem(
             child: const ListTile(title: Text('Compare to')),
             onTap: () => Future(() => compareTo(context, ref)),

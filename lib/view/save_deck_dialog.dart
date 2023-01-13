@@ -262,7 +262,7 @@ class SaveDeckRemoteDialogState extends ConsumerState<SaveDeckRemoteDialog> {
     final result = await onlineAuthState
         .saveDeck(deck.toNrdbDeck()) //
         .catchError((e) => const UnknownHttpResult<NrdbDeck>());
-    
+
     final uploadedDeck = result.mapOrNull(success: (result) => result.data);
     if (uploadedDeck == null) {
       dialogStateNotifier.state = SaveDialogState.warnNotUploaded;
@@ -385,7 +385,7 @@ class DownloadDeckProgressDialogState extends ConsumerState<DownloadDeckProgress
     final result = await onlineAuthState
         .getDeck(deck.id) //
         .catchError((e) => const UnknownHttpResult<NrdbDeck>());
-    
+
     final downloadedDeck = result.mapOrNull(success: (result) => result.data);
     if (downloadedDeck == null) {
       ref.read(downloadDialogStateProvider.notifier).state = DownloadDialogState.warnNotDownloaded;

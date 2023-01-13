@@ -72,7 +72,8 @@ class CycleApi with _$CycleApi {
 
   factory CycleApi.fromJson(Map<String, dynamic> json) => _$CycleApiFromJson(json);
 
-  static List<CycleData> cycleFromJson(List<dynamic> data) => data.map((e) => CycleData.fromJson(e)).toList();
+  static List<CycleData> cycleFromJson(List<dynamic> data) =>
+      data.map((e) => CycleData.fromJson((e as Map).cast())).toList();
 }
 
 @Freezed(toJson: false)
@@ -135,7 +136,8 @@ class PackApi with _$PackApi {
 
   factory PackApi.fromJson(Map<String, dynamic> json) => _$PackApiFromJson(json);
 
-  static List<PackData> packFromJson(List<dynamic> data) => data.map((e) => PackData.fromJson(e)).toList();
+  static List<PackData> packFromJson(List<dynamic> data) =>
+      data.map((e) => PackData.fromJson((e as Map).cast())).toList();
 }
 
 @Freezed(toJson: false)
@@ -150,7 +152,8 @@ class SideApi with _$SideApi {
 
   factory SideApi.fromJson(Map<String, dynamic> json) => _$SideApiFromJson(json);
 
-  static List<SideData> sideFromJson(List<dynamic> data) => data.map((e) => SideData.fromJson(e)).toList();
+  static List<SideData> sideFromJson(List<dynamic> data) =>
+      data.map((e) => SideData.fromJson((e as Map).cast())).toList();
 }
 
 @Freezed(toJson: false)
@@ -165,7 +168,8 @@ class TypeApi with _$TypeApi {
 
   factory TypeApi.fromJson(Map<String, dynamic> json) => _$TypeApiFromJson(json);
 
-  static List<TypeData> typeFromJson(List<dynamic> data) => data.map((e) => TypeData.fromJson(e)).toList();
+  static List<TypeData> typeFromJson(List<dynamic> data) =>
+      data.map((e) => TypeData.fromJson((e as Map).cast())).toList();
 }
 
 @Freezed(toJson: false)

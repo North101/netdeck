@@ -168,9 +168,11 @@ enum DeckGroup {
   String _groupByFormat(DeckResult item) {
     return item.format?.name ?? 'None';
   }
+
   String _groupByRotation(DeckResult item) {
     return item.rotation?.name ?? 'None';
   }
+
   String _groupByMwl(DeckResult item) {
     return item.mwl?.name ?? 'None';
   }

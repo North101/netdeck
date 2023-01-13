@@ -154,7 +154,7 @@ class CardListMoreActionsState extends ConsumerState<CardListMoreActions> with R
 
   @override
   Widget build(BuildContext context) {
-    return PopupMenuButton(
+    return PopupMenuButton<Never>(
       itemBuilder: (context) => [
         PopupMenuItem(
           child: const ListTile(title: Text('Filter By')),

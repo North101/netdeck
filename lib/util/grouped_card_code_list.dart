@@ -11,7 +11,7 @@ class GroupedCardCodeList extends HeaderList<String> {
   }
 
   factory GroupedCardCodeList.fromJson(List<String> data) {
-    return GroupedCardCodeList(data.cast<List>().map((e) {
+    return GroupedCardCodeList(data.cast<List<dynamic>>().map((e) {
       final items = e.cast<String>();
       return HeaderItems<String>(items.first, items.skip(1).toList());
     }).toList());

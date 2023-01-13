@@ -50,9 +50,9 @@ class NrdbDeck with _$NrdbDeck {
 
   factory NrdbDeck.fromJson(Map<String, dynamic> json) => _$NrdbDeckFromJson(json);
 
-  static idFromJson(dynamic id) => id.toString();
-  static tagsFromJson(String? tags) => tags?.split(' ').where((e) => e.isNotEmpty).toList() ?? [];
-  static tagsToJson(List<String> tags) => tags.isNotEmpty ? tags.join(' ') : null;
+  static String idFromJson(dynamic id) => id.toString();
+  static List<String> tagsFromJson(String? tags) => tags?.split(' ').where((e) => e.isNotEmpty).toList() ?? [];
+  static String? tagsToJson(List<String> tags) => tags.isNotEmpty ? tags.join(' ') : null;
 }
 
 @freezed

@@ -118,7 +118,7 @@ mixin AuthStateRefMixin on AuthState {
     );
     if (response.statusCode != 200) return null;
 
-    return NrdbUser.fromJson(json.decode(response.body)['data'][0]);
+    return NrdbUser.fromJson((json.decode(response.body)['data'][0] as Map).cast());
   }
 }
 
@@ -244,7 +244,7 @@ mixin OnlineAuthStateMixin on LogoutMixin, RefreshTokenMixin {
     );
     if (response.statusCode != 200) return const HttpResult.unknown();
 
-    return HttpResult.fromJson(json.decode(response.body), (json) {
+    return HttpResult.fromJson((json.decode(response.body) as Map).cast(), (json) {
       return (json as List).map((e) => NrdbDeck.fromJson((e as Map).cast())).toList();
     });
   }
@@ -260,7 +260,7 @@ mixin OnlineAuthStateMixin on LogoutMixin, RefreshTokenMixin {
       return const HttpResult.unknown();
     }
 
-    return HttpResult.fromJson(json.decode(response.body), (json) {
+    return HttpResult.fromJson((json.decode(response.body) as Map).cast(), (json) {
       return (json as List).map((e) => NrdbDeck.fromJson((e as Map).cast())).first;
     });
   }
@@ -283,7 +283,7 @@ mixin OnlineAuthStateMixin on LogoutMixin, RefreshTokenMixin {
       return const HttpResult.unknown();
     }
 
-    return HttpResult.fromJson(json.decode(response.body), (json) {
+    return HttpResult.fromJson((json.decode(response.body) as Map).cast(), (json) {
       return (json as List).map((e) => NrdbDeck.fromJson((e as Map).cast())).first;
     });
   }
@@ -438,4 +438,3 @@ mixin OnlineAuthStateMixin on LogoutMixin, RefreshTokenMixin {
     ]);
   }
 }
-

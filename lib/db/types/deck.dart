@@ -103,6 +103,7 @@ class DeckData with _$DeckData, DeckToColumns, DataMixin {
     }
   }
 }
+
 Map<CardResult, int> cardsFromJson(List<Object> value) => value
     .map((e) => MapEntry(
           CardResult.fromJson((e as Map).cast()),

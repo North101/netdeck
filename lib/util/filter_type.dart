@@ -18,9 +18,9 @@ class FilterType<T> extends Iterable<T> with _$FilterType<T> {
   factory FilterType.fromJson(Map<String, dynamic> data) {
     return FilterType(
       visible: data['visible'] as bool,
-      always: Set<T>.from(data['always']),
-      values: Set<T>.from(data['values']),
-      never: Set<T>.from(data['never']),
+      always: Set<T>.from(data['always'] as List),
+      values: Set<T>.from(data['values'] as List),
+      never: Set<T>.from(data['never'] as List),
     );
   }
 
